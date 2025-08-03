@@ -11,6 +11,10 @@ const records       = require('../metrics/records');
 const { buildCompatibilityCarousel } = require('../metrics/formatterFlexCarousel');
 const { calcZodiacTypeScores } = require('../metrics/zodiac');
 
+// 恋愛お告げ関連のインポート
+const FortuneEngine = require('../core/fortune-engine');
+const { buildFortuneCarousel } = require('../core/formatter/fortune-carousel');
+
 const commentsData = JSON.parse(
   fs.readFileSync(path.join(__dirname, '../comments.json'), 'utf8')
 );
@@ -18,6 +22,8 @@ const commentsData = JSON.parse(
 console.log("🔧 環境変数チェック:");
 console.log("  - CHANNEL_ACCESS_TOKEN:", process.env.CHANNEL_ACCESS_TOKEN ? "設定済み" : "未設定");
 console.log("  - CHANNEL_SECRET:", process.env.CHANNEL_SECRET ? "設定済み" : "未設定");
+console.log("  - OPENAI_API_KEY:", process.env.OPENAI_API_KEY ? "設定済み" : "未設定");
+console.log("  - FORTUNE_MODE:", process.env.FORTUNE_MODE || "未設定");
 
 const config = {
   channelAccessToken: process.env.CHANNEL_ACCESS_TOKEN,
@@ -102,6 +108,36 @@ module.exports = async (req, res) => {
 };
 
 
+/**
+ * モードを判定する
+ * @param {object} event - LINEイベント
+ * @param {string} fileName - ファイル名
+ * @returns {string} 'fortune' または 'compatibility'
+ */
+function determineMode(event, fileName = '') {
+  // ファイル名での判定
+  if (fileName && (fileName.includes('占い') || fileName.includes('お告げ') || fileName.includes('fortune'))) {
+    return 'fortune';
+  }
+  
+  // 環境変数での強制指定
+  if (process.env.FORTUNE_MODE === 'force') {
+    return 'fortune';
+  }
+  
+  // デフォルトは従来の相性診断
+  return 'compatibility';
+}
+
+/**
+ * ユーザーIDをハッシュ化（プライバシー保護）
+ * @param {string} userId - ユーザーID
+ * @returns {string} ハッシュ化されたID
+ */
+function hashUserId(userId) {
+  return userId ? userId.substring(0, 8) + '...' : 'unknown';
+}
+
 async function handleEvent(event) {
   console.log("📥 handleEvent start!");
   console.log("📎 fileName:", event.message?.fileName);
@@ -109,6 +145,20 @@ async function handleEvent(event) {
   if (event.type !== 'message' || event.message.type !== 'file') return;
 
   const userId = event.source.userId;
+  const fileName = event.message?.fileName || '';
+  const startTime = Date.now();
+  
+  // モード判定
+  const mode = determineMode(event, fileName);
+  console.log(`🎯 処理モード: ${mode} (ファイル名: ${fileName})`);
+  
+  // 基本ログ
+  console.log({
+    mode,
+    userId: hashUserId(userId),
+    fileName,
+    messageId: event.message.id
+  });
 
   // === ⭐️ ここにログ追加 ===
   console.log("📥 getMessageContent 開始");
@@ -172,55 +222,178 @@ async function handleEvent(event) {
     return;
   }
 
-  const profile = await client.getProfile(userId);
+  // ユーザープロファイル取得
+  let profile;
+  try {
+    profile = await client.getProfile(userId);
+  } catch (err) {
+    console.error("📛 getProfile error:", err);
+    profile = { displayName: 'ユーザー' };
+  }
+  
   const { self, other } = parser.extractParticipants(messages, profile.displayName);
-  const selfName  = self;
+  const selfName = self;
   const otherName = other;
 
-  const recordsData  = records.calcAll({ messages, selfName, otherName });
-  const compData     = compatibility.calcAll({ messages, selfName, otherName, recordsData });
-  const habitsData   = habits.calcAll({ messages, selfName, otherName });
-  const behaviorData = await behavior.calcAll({ messages, selfName, otherName });
+  // モード別処理分岐
+  if (mode === 'fortune') {
+    await handleFortuneMode(event, messages, userId, profile, startTime);
+  } else {
+    await handleCompatibilityMode(event, messages, userId, selfName, otherName, startTime);
+  }
+}
 
-  const { animalType, scores: zodiacScores } = calcZodiacTypeScores({
-    messages,
-    selfName,
-    otherName,
-    recordsData
-  });
-  const animalTypeData = commentsData.animalTypes?.[animalType] || {};
-  console.log('🐯 干支診断 scores:', zodiacScores);
+/**
+ * 恋愛お告げモードの処理
+ */
+async function handleFortuneMode(event, messages, userId, profile, startTime) {
+  console.log("🔮 恋愛お告げモード開始");
+  
+  try {
+    // お告げエンジン初期化
+    const fortuneEngine = new FortuneEngine();
+    
+    // お告げ生成（タイムアウト付き）
+    const fortunePromise = fortuneEngine.generateFortune(messages, userId, profile.displayName);
+    const timeoutPromise = new Promise((_, reject) => 
+      setTimeout(() => reject(new Error('Fortune generation timeout')), 7000)
+    );
+    
+    const fortune = await Promise.race([fortunePromise, timeoutPromise]);
+    
+    // カルーセル生成
+    const carousel = buildFortuneCarousel(fortune, profile);
+    
+    // サイズチェック
+    logCarouselSize(carousel, 'fortune');
+    
+    // 送信
+    await client.pushMessage(userId, carousel);
+    
+    // 成功ログ
+    const endTime = Date.now();
+    console.log({
+      mode: 'fortune',
+      userId: hashUserId(userId),
+      messageCount: messages.length,
+      processingTime: endTime - startTime,
+      aiUsed: !!fortune.metadata?.analysisSource?.ai,
+      success: true
+    });
+    
+    console.log("✅ 恋愛お告げ送信完了");
+    
+  } catch (err) {
+    console.error("📛 恋愛お告げ処理エラー:", err);
+    
+    // エラーログ
+    const endTime = Date.now();
+    console.log({
+      mode: 'fortune',
+      userId: hashUserId(userId),
+      messageCount: messages.length,
+      processingTime: endTime - startTime,
+      error: err.message,
+      success: false
+    });
+    
+    // フォールバックメッセージ
+    await sendFallbackMessage(userId, 'fortune');
+  }
+}
 
-  const radar = compData.radarScores;
-  const lowestCategory = Object.entries(radar).sort((a, b) => a[1] - b[1])[0][0];
-  const commentOverall = getShutaComment('overall', compData.overall).replace(/（相手）/g, otherName);
-  const comment7p      = getShutaComment('7p', lowestCategory).replace(/（相手）/g, otherName);
+/**
+ * 従来の相性診断モードの処理
+ */
+async function handleCompatibilityMode(event, messages, userId, selfName, otherName, startTime) {
+  console.log("💕 相性診断モード開始");
+  
+  try {
+    const recordsData  = records.calcAll({ messages, selfName, otherName });
+    const compData     = compatibility.calcAll({ messages, selfName, otherName, recordsData });
+    const habitsData   = habits.calcAll({ messages, selfName, otherName });
+    const behaviorData = await behavior.calcAll({ messages, selfName, otherName });
 
-  const carousel = buildCompatibilityCarousel({
-    selfName,
-    otherName,
-    radarScores: compData.radarScores,
-    overall:     compData.overall,
-    habitsData,
-    behaviorData,
-    recordsData,
-    comments: {
-      overall: commentOverall,
-      time:    commentsData.time,
-      balance: commentsData.balance,
-      tempo:   commentsData.tempo,
-      type:    commentsData.type,
-      words:   commentsData.words,
-      '7p':    comment7p,
-      animalTypes: commentsData.animalTypes,
-    },
-    animalType,
-    animalTypeData,
-    zodiacScores,
-    promotionalImageUrl: `${process.env.BASE_URL}/images/promotion.png`,
-    promotionalLinkUrl:  'https://note.com/enkyorikun/n/n38aad7b8a548'
-  });
+    const { animalType, scores: zodiacScores } = calcZodiacTypeScores({
+      messages,
+      selfName,
+      otherName,
+      recordsData
+    });
+    const animalTypeData = commentsData.animalTypes?.[animalType] || {};
+    console.log('🐯 干支診断 scores:', zodiacScores);
 
+    const radar = compData.radarScores;
+    const lowestCategory = Object.entries(radar).sort((a, b) => a[1] - b[1])[0][0];
+    const commentOverall = getShutaComment('overall', compData.overall).replace(/（相手）/g, otherName);
+    const comment7p      = getShutaComment('7p', lowestCategory).replace(/（相手）/g, otherName);
+
+    const carousel = buildCompatibilityCarousel({
+      selfName,
+      otherName,
+      radarScores: compData.radarScores,
+      overall:     compData.overall,
+      habitsData,
+      behaviorData,
+      recordsData,
+      comments: {
+        overall: commentOverall,
+        time:    commentsData.time,
+        balance: commentsData.balance,
+        tempo:   commentsData.tempo,
+        type:    commentsData.type,
+        words:   commentsData.words,
+        '7p':    comment7p,
+        animalTypes: commentsData.animalTypes,
+      },
+      animalType,
+      animalTypeData,
+      zodiacScores,
+      promotionalImageUrl: `${process.env.BASE_URL}/images/promotion.png`,
+      promotionalLinkUrl:  'https://note.com/enkyorikun/n/n38aad7b8a548'
+    });
+
+    // サイズチェック
+    logCarouselSize(carousel, 'compatibility');
+    
+    // 送信
+    await client.pushMessage(userId, carousel);
+    
+    // 成功ログ
+    const endTime = Date.now();
+    console.log({
+      mode: 'compatibility',
+      userId: hashUserId(userId),
+      messageCount: messages.length,
+      processingTime: endTime - startTime,
+      success: true
+    });
+    
+    console.log("✅ 相性診断送信完了");
+    
+  } catch (err) {
+    console.error("📛 相性診断処理エラー:", err);
+    
+    // エラーログ
+    const endTime = Date.now();
+    console.log({
+      mode: 'compatibility',
+      userId: hashUserId(userId),
+      messageCount: messages.length,
+      processingTime: endTime - startTime,
+      error: err.message,
+      success: false
+    });
+    
+    // フォールバックメッセージ
+    await sendFallbackMessage(userId, 'compatibility');
+  }
+}
+
+/**
+ * カルーセルサイズをログ出力
+ */
+function logCarouselSize(carousel, mode) {
   if (carousel?.contents?.type === 'carousel' && Array.isArray(carousel.contents.contents)) {
     carousel.contents.contents.forEach((bubble, index) => {
       const msg = {
@@ -229,25 +402,35 @@ async function handleEvent(event) {
         contents: bubble
       };
       const size = Buffer.byteLength(JSON.stringify(msg), 'utf8');
-      console.log(`📦 ページ${index + 1} のサイズ: ${size} bytes`);
+      console.log(`📦 [${mode}] ページ${index + 1} のサイズ: ${size} bytes`);
     });
 
     const totalSize = Buffer.byteLength(JSON.stringify(carousel), 'utf8');
-    console.log(`📦 全体（carousel）サイズ: ${totalSize} bytes`);
+    console.log(`📦 [${mode}] 全体（carousel）サイズ: ${totalSize} bytes`);
     if (totalSize > 25000) {
-      console.warn(`⚠️ Flex Message が 25KB を超えています！`);
+      console.warn(`⚠️ [${mode}] Flex Message が 25KB を超えています！`);
     }
   }
+}
 
-  try {
-    console.log("📮 pushMessage 開始");
-    await client.pushMessage(userId, carousel);
-    console.log("✅ pushMessage 完了");
-  } catch (err) {
-    console.error("📛 pushMessage error:", err);
-    await client.pushMessage(userId, {
+/**
+ * フォールバックメッセージを送信
+ */
+async function sendFallbackMessage(userId, mode) {
+  const messages = {
+    fortune: {
       type: 'text',
-      text: '⚠️ 結果の送信に失敗しました'
-    });
+      text: '⚠️ 恋愛お告げの生成中にエラーが発生しました。\n\n✨ でも大丈夫！あなたの恋愛運は必ず上向きます。\n今は心を穏やかにして、愛情を育む準備をしてくださいね💕'
+    },
+    compatibility: {
+      type: 'text',
+      text: '⚠️ 相性診断の処理中にエラーが発生しました。\n\n💕 お時間をおいて再度お試しください。'
+    }
+  };
+  
+  try {
+    await client.pushMessage(userId, messages[mode] || messages.compatibility);
+  } catch (err) {
+    console.error("📛 フォールバックメッセージ送信エラー:", err);
   }
 }
