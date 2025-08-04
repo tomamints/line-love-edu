@@ -148,8 +148,8 @@ async function handleEvent(event) {
   const fileName = event.message?.fileName || '';
   const startTime = Date.now();
   
-  // モード判定
-  const mode = determineMode(event, fileName);
+  // 常に占いモードで処理
+  const mode = 'fortune';
   console.log(`🎯 処理モード: ${mode} (ファイル名: ${fileName})`);
   
   // 基本ログ
@@ -235,12 +235,8 @@ async function handleEvent(event) {
   const selfName = self;
   const otherName = other;
 
-  // モード別処理分岐
-  if (mode === 'fortune') {
-    await handleFortuneMode(event, messages, userId, profile, startTime);
-  } else {
-    await handleCompatibilityMode(event, messages, userId, selfName, otherName, startTime);
-  }
+  // 常に占いモードで処理
+  await handleFortuneMode(event, messages, userId, profile, startTime);
 }
 
 /**
