@@ -75,9 +75,10 @@ class PDFReportGenerator {
         
         body {
             font-family: 'Hiragino Kaku Gothic ProN', 'ヒラギノ角ゴ ProN', 'メイリオ', 'Meiryo', sans-serif;
-            line-height: 1.8;
+            line-height: 1.7;
             color: #333;
             background: #f5f5f5;
+            font-size: 14px;
         }
         
         .report-container {
@@ -88,7 +89,7 @@ class PDFReportGenerator {
         }
         
         .page {
-            padding: 40px;
+            padding: 35px 40px;
             min-height: 100vh;
             page-break-after: always;
         }
@@ -104,10 +105,11 @@ class PDFReportGenerator {
         }
         
         .cover-title {
-            font-size: 3em;
+            font-size: 2.2em;
             font-weight: bold;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             color: #FFD700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
         
         .cover-subtitle {
@@ -129,32 +131,36 @@ class PDFReportGenerator {
         
         h1 {
             color: #1a0033;
-            font-size: 2.5em;
-            margin-bottom: 30px;
-            border-bottom: 3px solid #FFD700;
-            padding-bottom: 10px;
+            font-size: 1.8em;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #FFD700;
+            padding-bottom: 8px;
+            font-weight: 600;
         }
         
         h2 {
             color: #24243e;
-            font-size: 2em;
-            margin: 30px 0 20px 0;
-            border-left: 5px solid #E8B4B8;
-            padding-left: 15px;
+            font-size: 1.4em;
+            margin: 25px 0 15px 0;
+            border-left: 4px solid #E8B4B8;
+            padding-left: 12px;
+            font-weight: 600;
         }
         
         h3 {
             color: #1a0033;
-            font-size: 1.5em;
-            margin: 25px 0 15px 0;
+            font-size: 1.2em;
+            margin: 20px 0 12px 0;
+            font-weight: 600;
         }
         
         .summary-card {
-            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
-            border-radius: 15px;
-            padding: 25px;
-            margin: 20px 0;
-            border-left: 5px solid #FFD700;
+            background: linear-gradient(135deg, #fafbfc, #f3f4f6);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 15px 0;
+            border-left: 4px solid #FFD700;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         }
         
         .score-display {
@@ -167,14 +173,16 @@ class PDFReportGenerator {
         }
         
         .score-number {
-            font-size: 4em;
+            font-size: 2.5em;
             font-weight: bold;
             color: #FFD700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
         }
         
         .score-grade {
-            font-size: 2em;
+            font-size: 1.5em;
             color: #E8B4B8;
+            margin-top: 5px;
         }
         
         .compatibility-grid {
@@ -185,10 +193,12 @@ class PDFReportGenerator {
         }
         
         .compatibility-item {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 10px;
+            background: #ffffff;
+            padding: 15px 18px;
+            border-radius: 8px;
             border-left: 4px solid #28a745;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            margin-bottom: 10px;
         }
         
         .compatibility-item.medium {
@@ -200,12 +210,17 @@ class PDFReportGenerator {
         }
         
         .action-item {
-            background: #fff;
+            background: #ffffff;
             border: 1px solid #e9ecef;
-            border-radius: 10px;
-            padding: 20px;
-            margin: 15px 0;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin: 12px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.06);
+            transition: box-shadow 0.2s ease;
+        }
+        
+        .action-item:hover {
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
         
         .action-priority {
@@ -1052,8 +1067,8 @@ class PDFReportGenerator {
             
             // ファイル名を生成
             const today = new Date();
-            const dateStr = today.toLocaleDateString('ja-JP').replace(/\//g, '-');
-            const fileName = `恋愛レポート_${dateStr}.pdf`;
+            const dateStr = today.toLocaleDateString('ja-JP').replace(/\\/\\//g, '-');
+            const fileName = \`恋愛レポート_\${dateStr}.pdf\`;
             
             // 印刷ダイアログを表示
             setTimeout(() => {

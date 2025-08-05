@@ -24,8 +24,11 @@ class PremiumReportGenerator {
       // 基本分析を実行
       const fortune = await this.fortuneEngine.generateFortune(messages, userId, userName);
       
-      // 追加の詳細分析
-      const detailedAnalysis = await this.performDetailedAnalysis(messages, fortune);
+      // AIによる深い洞察を取得
+      const aiInsights = await this.getAIInsights(messages, fortune);
+      
+      // 追加の詳細分析（AI洞察を含む）
+      const detailedAnalysis = await this.performDetailedAnalysis(messages, fortune, aiInsights);
       
       // レポート構成
       const report = {
@@ -84,7 +87,7 @@ class PremiumReportGenerator {
    * @param {object} fortune - 基本運勢データ
    * @returns {object} 詳細分析結果
    */
-  async performDetailedAnalysis(messages, fortune) {
+  async performDetailedAnalysis(messages, fortune, aiInsights) {
     // 会話統計の詳細分析
     const statistics = this.calculateDetailedStatistics(messages);
     
@@ -106,7 +109,8 @@ class PremiumReportGenerator {
       timePatterns,
       emotionTimeline,
       topicDiversity,
-      relationshipProgression
+      relationshipProgression,
+      aiInsights // AI洞察を含める
     };
   }
   
@@ -125,15 +129,15 @@ class PremiumReportGenerator {
       overallAssessment: {
         score: overallScore,
         grade: this.getGradeFromScore(overallScore),
-        description: this.getScoreDescription(overallScore)
+        description: analysis.aiInsights?.emotionalInsights?.futureProspects || this.getScoreDescription(overallScore)
       },
-      keyFindings: [
+      keyFindings: analysis.aiInsights?.detailedStrengths?.slice(0, 4).map(s => s.title) || [
         `現在の関係性レベル: ${relationshipStage}/10 (${this.getRelationshipStageText(relationshipStage)})`,
         `会話の盛り上がりポイント: ${peaksCount}個発見`,
         `推定成功率: ${this.calculateSuccessRate(analysis)}%`,
         `最適なアプローチ方法: ${this.getOptimalApproach(analysis)}`
       ],
-      recommendations: [
+      recommendations: analysis.aiInsights?.actionPlan?.slice(0, 3).map(a => a.action) || [
         '最も効果的な3つのアクション',
         '避けるべき2つのNG行動',
         `最適な告白タイミング: ${this.calculateOptimalConfessionTiming(analysis)}`
@@ -201,9 +205,9 @@ class PremiumReportGenerator {
   generateConversationAnalysis(analysis) {
     return {
       conversationStyle: {
-        yourStyle: this.analyzeYourConversationStyle(analysis),
-        partnerStyle: this.analyzePartnerConversationStyle(analysis),
-        compatibility: this.calculateStyleCompatibility(analysis)
+        yourStyle: analysis.aiInsights?.communicationAnalysis?.userStyle || this.analyzeYourConversationStyle(analysis),
+        partnerStyle: analysis.aiInsights?.communicationAnalysis?.partnerStyle || this.analyzePartnerConversationStyle(analysis),
+        compatibility: analysis.aiInsights?.communicationAnalysis?.dynamics || this.calculateStyleCompatibility(analysis)
       },
       
       communicationPatterns: {
@@ -250,6 +254,30 @@ class PremiumReportGenerator {
       });
     }
     
+    // AI洞察の月別予測があれば優先的に使用
+    const aiMonthlyPredictions = analysis.aiInsights?.monthlyPredictions;
+    if (aiMonthlyPredictions && aiMonthlyPredictions.length > 0) {
+      const enrichedMonths = months.map((month, index) => {
+        const aiPrediction = aiMonthlyPredictions[index];
+        if (aiPrediction) {
+          return {
+            ...month,
+            theme: aiPrediction.prediction?.substring(0, 50) + '...' || month.theme,
+            detailedPrediction: aiPrediction.prediction,
+            keyEvents: aiPrediction.keyEvents || []
+          };
+        }
+        return month;
+      });
+      
+      return {
+        yearlyOverview: analysis.aiInsights?.uniqueInsights || this.generateYearlyOverview(enrichedMonths),
+        monthlyDetails: enrichedMonths,
+        seasonalHighlights: this.generateSeasonalHighlights(enrichedMonths),
+        yearEndPrediction: analysis.aiInsights?.confessionStrategy?.optimalTiming || this.generateYearEndPrediction(enrichedMonths)
+      };
+    }
+    
     return {
       yearlyOverview: this.generateYearlyOverview(months),
       monthlyDetails: months,
@@ -264,9 +292,52 @@ class PremiumReportGenerator {
    * @returns {object} アクションプラン
    */
   generateExtendedActionPlan(fortune, analysis) {
-    const actions = [];
+    // AI洞察のアクションプランがあれば優先的に使用
+    if (analysis.aiInsights?.actionPlan && analysis.aiInsights.actionPlan.length > 0) {
+      const aiActions = analysis.aiInsights.actionPlan.map((action, index) => ({
+        id: index + 1,
+        category: '総合的なアプローチ',
+        title: action.action,
+        description: action.details || action.expectedResult,
+        priority: action.priority.toLowerCase(),
+        difficulty: action.priority === 'HIGH' ? 'medium' : 'easy',
+        expectedImpact: action.expectedResult,
+        implementationTiming: action.timing,
+        successRate: 85 + Math.floor(Math.random() * 10)
+      }));
+      
+      // 追加のアクションを生成
+      const additionalActions = [];
+      const categories = [
+        { name: '日常会話の改善', count: 5 },
+        { name: 'デート・お出かけ', count: 4 },
+        { name: '感情的なつながり', count: 4 },
+        { name: '信頼関係の構築', count: 3 },
+        { name: '将来への発展', count: 3 }
+      ];
+      
+      let actionId = aiActions.length + 1;
+      categories.forEach(category => {
+        const categoryActions = this.generateCategoryActions(category.name, category.count, analysis);
+        categoryActions.forEach(action => {
+          action.id = actionId++;
+        });
+        additionalActions.push(...categoryActions);
+      });
+      
+      const allActions = [...aiActions, ...additionalActions];
+      
+      return {
+        totalActions: allActions.length,
+        categories: ['総合的なアプローチ', ...categories.map(cat => cat.name)],
+        priorityActions: allActions.filter(action => action.priority === 'high').slice(0, 15),
+        allActions: allActions,
+        implementationGuide: this.generateImplementationGuide(allActions)
+      };
+    }
     
-    // カテゴリー別にアクションを生成
+    // フォールバック：従来の方法でアクションを生成
+    const actions = [];
     const categories = [
       { name: '日常会話の改善', count: 8 },
       { name: 'デート・お出かけ', count: 6 },
@@ -747,7 +818,253 @@ class PremiumReportGenerator {
     };
   }
   
+  /**
+   * AIによる深い洞察を取得
+   * @param {Array} messages - メッセージ履歴
+   * @param {object} fortune - 基本分析結果
+   * @returns {object} AI洞察
+   */
+  async getAIInsights(messages, fortune) {
+    try {
+      const OpenAI = require('openai');
+      const openai = new OpenAI({
+        apiKey: process.env.OPENAI_API_KEY
+      });
+      
+      // 最近30メッセージを抽出
+      const recentMessages = messages.slice(-30).map(m => 
+        `${m.isUser ? 'あなた' : '相手'}: ${m.text.substring(0, 100)}`
+      ).join('\n');
+      
+      const prompt = `以下のLINEトーク履歴を分析し、恋愛アドバイザーとして非常に詳細なレポートを作成してください。
+
+会話サンプル：
+${recentMessages}
+
+基本分析結果：
+- 総合スコア: ${fortune.overall?.score || 70}点
+- 合計メッセージ数: ${messages.length}
+
+以下のJSON形式で詳細な分析を提供してください：
+{
+  "relationshipStage": "関係性の現在の段階（初期/友達/好意/両思い/恋人など）の詳細説明",
+  "communicationAnalysis": {
+    "userStyle": "ユーザーのコミュニケーションスタイルの非常に詳細な分析（200文字以上）",
+    "partnerStyle": "相手のコミュニケーションスタイルの非常に詳細な分析（200文字以上）",
+    "dynamics": "二人のコミュニケーションダイナミクスの詳細な説明（300文字以上）"
+  },
+  "emotionalInsights": {
+    "currentState": "現在の感情状態の詳細な分析",
+    "emotionalPatterns": "感情のパターンと傾向の詳細",
+    "futureProspects": "今後の感情発展の見通し"
+  },
+  "detailedStrengths": [
+    {
+      "title": "強み1のタイトル",
+      "description": "強みの非常に詳細な説明（150文字以上）",
+      "impact": "この強みが関係性に与える影響"
+    },
+    {
+      "title": "強み2のタイトル",
+      "description": "強みの非常に詳細な説明（150文字以上）",
+      "impact": "この強みが関係性に与える影響"
+    },
+    {
+      "title": "強み3のタイトル",
+      "description": "強みの非常に詳細な説明（150文字以上）",
+      "impact": "この強みが関係性に与える影響"
+    }
+  ],
+  "challenges": [
+    {
+      "title": "課題1のタイトル",
+      "description": "課題の詳細な説明（150文字以上）",
+      "solution": "具体的な解決策"
+    },
+    {
+      "title": "課題2のタイトル",
+      "description": "課題の詳細な説明（150文字以上）",
+      "solution": "具体的な解決策"
+    }
+  ],
+  "actionPlan": [
+    {
+      "priority": "HIGH",
+      "action": "具体的なアクション",
+      "timing": "実行タイミング",
+      "expectedResult": "期待される結果",
+      "details": "アクションの詳細な説明（200文字以上）"
+    },
+    {
+      "priority": "HIGH",
+      "action": "具体的なアクション2",
+      "timing": "実行タイミング",
+      "expectedResult": "期待される結果",
+      "details": "アクションの詳細な説明（200文字以上）"
+    },
+    {
+      "priority": "MEDIUM",
+      "action": "具体的なアクション3",
+      "timing": "実行タイミング",
+      "expectedResult": "期待される結果",
+      "details": "アクションの詳細な説明（200文字以上）"
+    }
+  ],
+  "monthlyPredictions": [
+    {
+      "month": "1ヶ月後",
+      "prediction": "詳細な予測内容（150文字以上）",
+      "keyEvents": ["重要イベント1", "重要イベント2"]
+    },
+    {
+      "month": "2ヶ月後",
+      "prediction": "詳細な予測内容（150文字以上）",
+      "keyEvents": ["重要イベント1", "重要イベント2"]
+    },
+    {
+      "month": "3ヶ月後",
+      "prediction": "詳細な予測内容（150文字以上）",
+      "keyEvents": ["重要イベント1", "重要イベント2"]
+    }
+  ],
+  "uniqueInsights": "この二人特有の非常に詳細な洞察（300文字以上）",
+  "confessionStrategy": {
+    "readiness": "告白の準備度評価",
+    "optimalTiming": "最適な告白タイミングの詳細",
+    "approach": "推奨される告白アプローチの詳細",
+    "successRate": "成功率の評価と根拠"
+  }
+}`;
+      
+      const completion = await openai.chat.completions.create({
+        model: 'gpt-4o-mini',
+        messages: [
+          {
+            role: 'system',
+            content: 'あなたは経験豊富な恋愛カウンセラーで、心理学の専門知識を持ち、日本の恋愛文化に精通しています。非常に詳細で具体的なアドバイスを提供してください。'
+          },
+          {
+            role: 'user',
+            content: prompt
+          }
+        ],
+        temperature: 0.8,
+        max_tokens: 3000,
+        response_format: { type: "json_object" }
+      });
+      
+      const aiResponse = JSON.parse(completion.choices[0].message.content);
+      return aiResponse;
+      
+    } catch (error) {
+      console.error('AI分析エラー:', error);
+      // フォールバック用の詳細なデフォルト値を返す
+      return this.getDefaultAIInsights();
+    }
+  }
+  
+  /**
+   * デフォルトのAI洞察を取得
+   * @returns {object} デフォルトのAI洞察
+   */
+  getDefaultAIInsights() {
+    return {
+      relationshipStage: "関係性は順調に発展しており、互いに好意を持ち始めている段階です。相手からの返信が安定しており、あなたに対する関心の高さが伺えます。",
+      communicationAnalysis: {
+        userStyle: "あなたは非常に思いやりがあり、相手の気持ちを大切にするコミュニケーションを心がけています。質問を上手に使い、相手の話を引き出す能力が高く、聞き上手な一面があります。絵文字やスタンプを適度に使用し、温かみのある雰囲気を作り出しています。",
+        partnerStyle: "相手は丁寧で誠実なコミュニケーションを取るタイプで、あなたのメッセージに対してしっかりと反応を返してくれます。少し慎重な面があり、感情表現は控えめですが、その分、言葉に重みがあり、信頼できる印象を与えています。",
+        dynamics: "二人のコミュニケーションは非常にバランスが取れており、相補的な関係性が築かれつつあります。あなたの明るさと相手の真面目さがうまく調和し、心地よい会話のリズムが生まれています。会話のキャッチボールが自然にできており、お互いに相手の話に興味を持っていることが伝わってきます。"
+      },
+      emotionalInsights: {
+        currentState: "現在、二人の間には穏やかな感情的なつながりが形成されつつあります。お互いに安心感を感じ始めており、より深い話題にも触れるようになってきています。",
+        emotionalPatterns: "会話の中でポジティブな感情が増加傾向にあり、特に共通の話題で盛り上がる傾向があります。相手からの好意的な反応が増えてきています。",
+        futureProspects: "今後、さらに深い信頼関係が築かれ、恋愛関係に発展する可能性が高いでしょう。適切なアプローチを続けることで、相手からの告白も期待できるかもしれません。"
+      },
+      detailedStrengths: [
+        {
+          title: "自然な会話の流れ",
+          description: "二人の会話には無理がなく、非常に自然な流れがあります。話題が途切れることなく、次から次へと展開していく様子は、お互いに相手への興味が強いことを示しています。これは関係性の基盤として非常に重要な要素です。",
+          impact: "この強みにより、今後もストレスなく関係を深めていくことができ、長期的な関係構築の可能性が高まります。"
+        },
+        {
+          title: "相互的な関心と尊重",
+          description: "お互いに相手の話をしっかりと聞き、適切な反応を返していることから、相互的な尊重関係が築かれています。質問を通じて相手をより深く知ろうとする姿勢が見られ、これは真剣な関心の表れです。",
+          impact: "この姿勢は相手に安心感を与え、よりオープンになることを促します。結果として、より深いレベルでのつながりが期待できます。"
+        },
+        {
+          title: "ポジティブな雰囲気作り",
+          description: "会話全体を通して明るくポジティブな雰囲気が保たれており、お互いに楽しい時間を過ごしていることが伝わってきます。適度なユーモアや絵文字の使用が、会話に彩りを添えています。",
+          impact: "ポジティブな雰囲気は相手に「この人と一緒にいると楽しい」という印象を与え、さらに会いたいという気持ちを強めます。"
+        }
+      ],
+      challenges: [
+        {
+          title: "直接的な感情表現の不足",
+          description: "お互いに好意はあるものの、まだ直接的な感情表現が少ない状況です。「好き」「会いたい」といったストレートな表現がまだ見られず、お互いの本心が分かりにくい状態かもしれません。",
+          solution: "少しずつでも自分の気持ちを素直に伝えるよう心がけましょう。「今日の会話楽しかった」「また話そう」など、小さな一歩から始めてみてください。"
+        },
+        {
+          title: "オンラインからオフラインへの移行",
+          description: "LINEでの会話は盛り上がっていますが、まだ実際に会う機会が少ないようです。オンラインでの関係性だけでは、どうしても限界があり、相手の本当の姿を知る機会が不足しています。",
+          solution: "自然な流れで「今度カフェでも行かない？」など、軽い誘いをしてみましょう。共通の趣味や興味に関連したイベントに誘うのも良いでしょう。"
+        }
+      ],
+      actionPlan: [
+        {
+          priority: "HIGH",
+          action: "共通の趣味や関心事について深掘りする",
+          timing: "今週中",
+          expectedResult: "より深いレベルでのつながりが生まれ、自然にデートの話題につなげやすくなる",
+          details: "これまでの会話で触れた共通の趣味や関心事について、より詳しく話してみましょう。たとえば、「そういえば前に○○の話してたけど、最近どう？」のように、以前の話題を拾い上げるのも効果的です。相手が熱中していることについて質問し、興味を示すことで、相手はあなたへの好意をさらに強めるでしょう。"
+        },
+        {
+          priority: "HIGH", 
+          action: "プライベートな話題を少しずつ共有する",
+          timing: "今週〜来週",
+          expectedResult: "お互いの信頼関係が深まり、より親密な関係に発展する",
+          details: "今までは当たり障りのない会話が中心でしたが、少しずつプライベートな話題も共有してみましょう。たとえば、「最近ちょっと疲れてて…」のような弱さを見せることで、相手も心を開きやすくなります。ただし、いきなり重い話は避け、軽い悩みや日常のできごとから始めることが大切です。"
+        },
+        {
+          priority: "MEDIUM",
+          action: "オフラインで会う機会を作る",
+          timing: "2-3週間後",
+          expectedResult: "実際に会うことで関係性が大きく前進し、恋愛関係への発展が期待できる",
+          details: "これまでのLINEでの会話を通じて、十分な信頼関係が築かれつつあります。そろそろ実際に会う段階に進んでも良いでしょう。「最近○○について話してたけど、今度一緒に行ってみない？」というように、会話の流れから自然に誘うのがポイントです。最初はランチやカフェなど、短時間でプレッシャーの少ない設定がおすすめです。"
+        }
+      ],
+      monthlyPredictions: [
+        {
+          month: "1ヶ月後",
+          prediction: "この時期には、二人の関係はより親密になっているでしょう。LINEでの会話が日常的になり、お互いの生活の一部として定着します。相手からの返信がより速くなり、絵文字やスタンプの使用も増えるなど、感情表現が豊かになるでしょう。",
+          keyEvents: ["初めてのデートの可能性", "お互いのプライベートな話題の共有"]
+        },
+        {
+          month: "2ヶ月後",
+          prediction: "この段階では、二人の関係は「友達以上恋人未満」の状態に進展している可能性が高いです。お互いに特別な存在として認識し、他の人とは違う特別な関係性を築いています。告白のタイミングを考え始める時期でもあります。",
+          keyEvents: ["関係性の明確化の必要性", "告白のチャンス"]
+        },
+        {
+          month: "3ヶ月後",  
+          prediction: "この時期には、二人の関係は重要な分岐点を迎えるでしょう。適切なアプローチを続けていれば、正式に恋人関係に発展する可能性が非常に高いです。一方で、何もアクションを起こさない場合、関係が停滞する可能性もあります。勇気を持って一歩踏み出すことが重要です。",
+          keyEvents: ["関係性の発展または停滞", "重要な決断の時"]
+        }
+      ],
+      uniqueInsights: "この二人の関係は、非常にバランスの取れた理想的な組み合わせです。お互いの違いを尊重しながらも、共通の価値観を持ち、自然に惹かれ合っている様子が伝わってきます。特に注目すべきは、会話の中で見られる「無言の理解」です。言葉にしなくても伝わるものがあり、これは長期的な関係構築において非常に重要な要素です。また、二人の会話には独特のリズムがあり、これは他の人との会話では得られない特別なものです。このリズムを大切にし、さらに発展させていくことで、より深い絆が生まれるでしょう。",
+      confessionStrategy: {
+        readiness: "現在の準備度は65%です。お互いに好意はあるものの、まだ確信が持てない状態です。もう少し関係を深めることで、成功率が大幅に上がります。",
+        optimalTiming: "最適な告白タイミングは、2-3ヶ月後が理想的です。ただし、実際に何度か会って、お互いの相性を確認した後が望ましいでしょう。特に、2人きりで楽しい時間を過ごした後や、特別なイベントの後などがチャンスです。",
+        approach: "あなたの場合、ストレートに気持ちを伝える方法が最も効果的です。回りくどい表現よりも、「あなたと一緒にいると楽しい」「もっと一緒にいたい」といった素直な気持ちを伝えましょう。重要なのは、相手にプレッシャーを与えないこと。「返事はいつでもいいよ」という余裕を見せることで、相手も素直に反応しやすくなります。",
+        successRate: "現時点での成功率は60%程度ですが、上記のアクションプランを実行することで、80%以上に高めることが可能です。特に、実際に会ってお互いの相性を確認できれば、成功はほぼ確実でしょう。"
+      }
+    };
+  }
+  
   generateConversationTips(analysis) {
+    // AI洞察があればそれを使用
+    if (analysis.aiInsights?.actionPlan) {
+      return analysis.aiInsights.actionPlan.slice(0, 3).map(a => a.action);
+    }
+    
     return [
       '相手の話題により深く踏み込んで質問してみましょう',
       '自分の感情をもっと素直に表現すると良いでしょう',
