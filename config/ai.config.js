@@ -3,7 +3,7 @@ module.exports = {
   // OpenAI API設定
   openai: {
     model: 'gpt-4o-mini',
-    maxTokens: 500,
+    maxTokens: 500,  // 短い回答用に戻す
     temperature: 0.7,
     topP: 1,
     frequencyPenalty: 0.2,

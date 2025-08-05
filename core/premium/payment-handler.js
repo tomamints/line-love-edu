@@ -5,12 +5,16 @@
 
 const PremiumReportGenerator = require('./report-generator');
 const PDFReportGenerator = require('./pdf-generator');
+const orderStorage = require('./order-storage');
 
 class PaymentHandler {
   constructor() {
     this.reportGenerator = new PremiumReportGenerator();
     this.pdfGenerator = new PDFReportGenerator();
-    this.orders = new Map(); // 実際はデータベースに保存
+    // 定期的に期限切れ注文をクリーンアップ
+    setInterval(() => {
+      orderStorage.cleanupExpiredOrders();
+    }, 60 * 60 * 1000); // 1時間ごと
   }
   
   /**
@@ -36,7 +40,7 @@ class PaymentHandler {
       };
       
       // 注文を保存
-      this.orders.set(orderId, orderInfo);
+      await orderStorage.saveOrder(orderId, orderInfo);
       
       // 決済URLを生成（実際はStripe等の決済サービスを使用）
       const paymentUrl = await this.generatePaymentUrl(orderInfo);
@@ -68,14 +72,16 @@ class PaymentHandler {
   async handlePaymentSuccess(orderId, messages) {
     try {
       // 注文情報を取得
-      const orderInfo = this.orders.get(orderId);
+      const orderInfo = await orderStorage.getOrder(orderId);
       if (!orderInfo) {
         throw new Error('注文情報が見つかりません');
       }
       
       // 注文ステータスを更新
-      orderInfo.status = 'paid';
-      orderInfo.paidAt = new Date().toISOString();
+      await orderStorage.updateOrder(orderId, {
+        status: 'paid',
+        paidAt: new Date().toISOString()
+      });
       
       // プレミアムレポートを生成
       const reportData = await this.reportGenerator.generatePremiumReport(
@@ -92,11 +98,11 @@ class PaymentHandler {
       const fileUrl = await this.saveReportFile(fileName, pdfBuffer);
       
       // 注文情報を更新
-      orderInfo.status = 'completed';
-      orderInfo.reportUrl = fileUrl;
-      orderInfo.reportData = reportData;
-      orderInfo.pdfBuffer = pdfBuffer;
-      orderInfo.completedAt = new Date().toISOString();
+      await orderStorage.updateOrder(orderId, {
+        status: 'completed',
+        reportUrl: fileUrl,
+        completedAt: new Date().toISOString()
+      });
       
       return {
         success: true,
@@ -112,11 +118,10 @@ class PaymentHandler {
       console.error('決済後処理エラー:', error);
       
       // エラー時は注文ステータスを更新
-      const orderInfo = this.orders.get(orderId);
-      if (orderInfo) {
-        orderInfo.status = 'error';
-        orderInfo.errorMessage = error.message;
-      }
+      await orderStorage.updateOrder(orderId, {
+        status: 'error',
+        errorMessage: error.message
+      });
       
       return {
         success: false,
@@ -203,9 +208,10 @@ class PaymentHandler {
     // }).promise();
     // return result.Location;
     
-    // プレースホルダー実装
-    const baseUrl = process.env.FILE_BASE_URL || 'https://your-app.vercel.app/reports';
-    return `${baseUrl}/${fileName}`;
+    // ローカル実装：注文IDからダウンロードURLを生成
+    const orderId = fileName.replace('premium_report_', '').replace('.pdf', '');
+    const baseUrl = process.env.BASE_URL || 'http://localhost:3000';
+    return `${baseUrl}/api/download-report?orderId=${orderId}`;
   }
   
   /**
@@ -213,8 +219,8 @@ class PaymentHandler {
    * @param {string} orderId - 注文ID
    * @returns {object} 注文情報
    */
-  getOrderStatus(orderId) {
-    const orderInfo = this.orders.get(orderId);
+  async getOrderStatus(orderId) {
+    const orderInfo = await orderStorage.getOrder(orderId);
     if (!orderInfo) {
       return {
         success: false,

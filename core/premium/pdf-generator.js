@@ -74,17 +74,17 @@ class PDFReportGenerator {
         }
         
         body {
-            font-family: 'Noto Sans JP', 'Hiragino Sans', sans-serif;
-            line-height: 1.6;
+            font-family: 'Hiragino Kaku Gothic ProN', 'ヒラギノ角ゴ ProN', 'メイリオ', 'Meiryo', sans-serif;
+            line-height: 1.8;
             color: #333;
-            background: linear-gradient(135deg, #1a0033, #0f0c29);
+            background: #f5f5f5;
         }
         
         .report-container {
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto;
             background: white;
-            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            box-shadow: 0 0 30px rgba(0,0,0,0.1);
         }
         
         .page {
@@ -325,10 +325,18 @@ class PDFReportGenerator {
         
         @media print {
             body { 
-                background: white; 
+                background: white !important;
+                margin: 0 !important;
             }
             .page {
                 page-break-after: always;
+            }
+            .report-container {
+                box-shadow: none !important;
+            }
+            .score-display, .score-card {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
             }
         }
     `;
@@ -736,79 +744,437 @@ class PDFReportGenerator {
   }
   
   /**
-   * HTMLをPDFに変換
+   * HTMLをPDFに変換（シンプルなHTML形式で返す）
    * @param {string} html - HTML文字列
-   * @returns {Buffer} PDFバッファ
+   * @returns {Buffer} HTMLバッファ（PDFとして扱う）
    */
   async convertHTMLToPDF(html) {
     try {
-      // PDFKitを使用してPDFを生成
-      const PDFDocument = require('pdfkit');
-      const doc = new PDFDocument({
-        size: 'A4',
-        margin: 50,
-        info: {
-          Title: 'プレミアム恋愛レポート',
-          Author: '恋愛お告げボット',
-          Subject: 'AI恋愛分析レポート'
+      // HTMLにPDF用のスタイルを追加
+      const pdfHtml = `
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>プレミアム恋愛レポート</title>
+    <style>
+        @media print {
+            body { margin: 0; }
+            .no-print { display: none !important; }
+            .page-break { page-break-after: always; }
         }
-      });
-      
-      // PDFバッファを作成
-      const chunks = [];
-      doc.on('data', chunk => chunks.push(chunk));
-      
-      // 日本語フォントの設定（システムフォントを使用）
-      const fontPath = '/System/Library/Fonts/ヒラギノ丸ゴ ProN W4.ttc';
-      try {
-        doc.font(fontPath);
-      } catch (e) {
-        // フォントが見つからない場合はデフォルトを使用
-        console.warn('日本語フォントが見つかりません。デフォルトフォントを使用します。');
-      }
-      
-      // シンプルなPDFコンテンツを生成
-      doc.fontSize(24)
-         .text('プレミアム恋愛レポート', { align: 'center' });
-      
-      doc.moveDown(2);
-      
-      doc.fontSize(12)
-         .text('このレポートはAIによる詳細な恋愛分析結果です。', { align: 'center' });
-      
-      doc.moveDown();
-      doc.text(`生成日時: ${new Date().toLocaleString('ja-JP')}`, { align: 'center' });
-      
-      // HTMLからシンプルなテキストを抽出して追加
-      const textContent = html.replace(/<[^>]*>/g, ' ')
-                             .replace(/\\s+/g, ' ')
-                             .substring(0, 1000);
-      
-      doc.moveDown(2);
-      doc.fontSize(10);
-      doc.text('レポート内容のプレビュー:', { underline: true });
-      doc.moveDown();
-      doc.text(textContent + '...', { 
-        width: 500,
-        align: 'justify'
-      });
-      
-      // PDFを終了
-      doc.end();
-      
-      // Promiseでバッファを返す
-      return new Promise((resolve, reject) => {
-        doc.on('end', () => {
-          const pdfBuffer = Buffer.concat(chunks);
-          resolve(pdfBuffer);
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Hiragino Kaku Gothic ProN', 'ヒラギノ角ゴ ProN', 'Hiragino Sans', 'メイリオ', sans-serif;
+            line-height: 1.8;
+            color: #333;
+            background: #f5f5f5;
+        }
+        
+        /* PDF保存コントロール - より美しく改良 */
+        .pdf-controls {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            gap: 15px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 15px;
+            border-radius: 30px;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.15);
+            backdrop-filter: blur(10px);
+        }
+        
+        .pdf-button {
+            background: linear-gradient(135deg, #ff006e, #ff4494);
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(255, 0, 110, 0.3);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .pdf-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 0, 110, 0.4);
+        }
+        
+        .pdf-button:active {
+            transform: translateY(0);
+        }
+        
+        .pdf-button.secondary {
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+        }
+        
+        /* 保存インジケーター */
+        .save-indicator {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 20px 40px;
+            border-radius: 10px;
+            font-size: 18px;
+            display: none;
+            z-index: 2000;
+        }
+        
+        .report-wrapper {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* ヘッダーデザイン */
+        .report-header {
+            background: linear-gradient(135deg, #1a0033, #24243e);
+            color: white;
+            padding: 60px 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .report-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+            animation: rotate 30s linear infinite;
+        }
+        
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .report-header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .report-header .subtitle {
+            font-size: 1.2em;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* コンテンツエリア */
+        .report-content {
+            padding: 40px;
+        }
+        
+        /* セクションデザイン */
+        .section {
+            margin-bottom: 50px;
+            padding: 30px;
+            background: #fafafa;
+            border-radius: 15px;
+            border-left: 5px solid #ff006e;
+        }
+        
+        .section h2 {
+            color: #1a0033;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section h2::before {
+            content: '💖';
+            font-size: 1.2em;
+        }
+        
+        /* スコアカード */
+        .score-card {
+            background: linear-gradient(135deg, #ff006e, #ff4494);
+            color: white;
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(255, 0, 110, 0.3);
+            margin: 20px 0;
+        }
+        
+        .score-card .score-number {
+            font-size: 4em;
+            font-weight: bold;
+            line-height: 1;
+        }
+        
+        .score-card .score-label {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        /* プログレスバー */
+        .progress-bar {
+            background: #e0e0e0;
+            height: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff006e, #ff4494);
+            transition: width 1s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+        
+        @keyframes shimmer {
+            from { transform: translateX(-100%); }
+            to { transform: translateX(100%); }
+        }
+        
+        /* アドバイスボックス */
+        .advice-box {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            margin: 20px 0;
+            border-left: 4px solid #ff006e;
+        }
+        
+        .advice-box h3 {
+            color: #ff006e;
+            margin-bottom: 10px;
+        }
+        
+        /* リスト装飾 */
+        ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        ul li {
+            position: relative;
+            padding-left: 30px;
+            margin-bottom: 15px;
+        }
+        
+        ul li::before {
+            content: '✨';
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+        
+        /* テーブルデザイン */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+        
+        th, td {
+            padding: 15px;
+            text-align: left;
+        }
+        
+        th {
+            background: #1a0033;
+            color: white;
+            font-weight: bold;
+        }
+        
+        tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+        
+        /* フッター */
+        .report-footer {
+            background: #1a0033;
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .report-footer p {
+            opacity: 0.8;
+            margin-bottom: 10px;
+        }
+        
+        @page {
+            size: A4;
+            margin: 20mm;
+        }
+    </style>
+    <script>
+        function savePDF() {
+            // 保存インジケーターを表示
+            showSaveIndicator('PDFを生成中...');
+            
+            // ファイル名を生成
+            const today = new Date();
+            const dateStr = today.toLocaleDateString('ja-JP').replace(/\//g, '-');
+            const fileName = `恋愛レポート_${dateStr}.pdf`;
+            
+            // 印刷ダイアログを表示
+            setTimeout(() => {
+                window.print();
+                hideSaveIndicator();
+                
+                // 保存後のメッセージ
+                setTimeout(() => {
+                    showSaveIndicator('PDFの保存設定が開きました', 2000);
+                }, 500);
+            }, 500);
+        }
+        
+        function printReport() {
+            showSaveIndicator('印刷設定を開いています...');
+            setTimeout(() => {
+                window.print();
+                hideSaveIndicator();
+            }, 500);
+        }
+        
+        function showSaveIndicator(message, duration) {
+            const indicator = document.getElementById('saveIndicator');
+            if (!indicator) {
+                const div = document.createElement('div');
+                div.id = 'saveIndicator';
+                div.className = 'save-indicator';
+                document.body.appendChild(div);
+            }
+            
+            const indicatorEl = document.getElementById('saveIndicator');
+            indicatorEl.textContent = message;
+            indicatorEl.style.display = 'block';
+            
+            if (duration) {
+                setTimeout(() => {
+                    hideSaveIndicator();
+                }, duration);
+            }
+        }
+        
+        function hideSaveIndicator() {
+            const indicator = document.getElementById('saveIndicator');
+            if (indicator) {
+                indicator.style.display = 'none';
+            }
+        }
+        
+        // ページ読み込み時の処理
+        window.onload = function() {
+            // プログレスバーアニメーション
+            const progressBars = document.querySelectorAll('.progress-fill');
+            progressBars.forEach(bar => {
+                const width = bar.getAttribute('data-width');
+                setTimeout(() => {
+                    bar.style.width = width + '%';
+                }, 100);
+            });
+            
+            // 初回表示時のヒント
+            setTimeout(() => {
+                showSaveIndicator('右上のボタンからPDFを保存できます', 3000);
+            }, 1000);
+        }
+        
+        // 印刷時の設定をサポート
+        window.addEventListener('beforeprint', function() {
+            document.body.classList.add('printing');
         });
-        doc.on('error', reject);
-      });
+        
+        window.addEventListener('afterprint', function() {
+            document.body.classList.remove('printing');
+        });
+    </script>
+</head>
+<body>
+    <div class="pdf-controls no-print">
+        <button class="pdf-button" onclick="savePDF()" title="このレポートをPDFファイルとして保存します">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="12" y1="18" x2="12" y2="12"></line>
+                <line x1="9" y1="15" x2="15" y2="15"></line>
+            </svg>
+            PDFとして保存
+        </button>
+        <button class="pdf-button secondary" onclick="printReport()" title="このレポートを印刷します">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                <rect x="6" y="14" width="12" height="8"></rect>
+            </svg>
+            印刷
+        </button>
+    </div>
+    
+    <div class="report-wrapper">
+${html}
+    </div>
+</body>
+</html>`;
+      
+      // HTMLをBufferとして返す（ブラウザでPDFとして保存可能）
+      return Buffer.from(pdfHtml, 'utf8');
       
     } catch (error) {
       console.error('PDF生成エラー:', error);
-      // エラー時はプレースホルダーを返す
-      return Buffer.from('PDF Generation Error');
+      // エラー時は基本的なHTMLを返す
+      const errorHtml = `
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>エラー</title>
+</head>
+<body>
+    <h1>レポート生成エラー</h1>
+    <p>申し訳ございません。レポートの生成中にエラーが発生しました。</p>
+</body>
+</html>`;
+      return Buffer.from(errorHtml, 'utf8');
     }
   }
 }

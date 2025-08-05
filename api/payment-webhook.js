@@ -27,14 +27,15 @@ module.exports = async (req, res) => {
     console.log(`💰 決済完了通知受信: ${orderId}`);
     
     // 注文情報を取得
-    const orderStatus = paymentHandler.getOrderStatus(orderId);
+    const orderStatus = await paymentHandler.getOrderStatus(orderId);
     if (!orderStatus.success) {
       console.error('注文情報が見つかりません:', orderId);
       return res.status(404).json({ error: 'Order not found' });
     }
     
     // ユーザーIDを取得
-    const order = paymentHandler.orders.get(orderId);
+    const orderStorage = require('../core/premium/order-storage');
+    const order = await orderStorage.getOrder(orderId);
     if (!order) {
       return res.status(404).json({ error: 'Order details not found' });
     }

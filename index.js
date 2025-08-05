@@ -537,11 +537,39 @@ ${roadmap.roadmap.slice(0, 2).map(milestone =>
   }
 }
 
-// ── ⑨ 起動
+// ── ⑨ 決済関連のルート（ローカルテスト用）
+app.get('/payment/success', async (req, res) => {
+  const paymentSuccess = require('./api/payment-success');
+  await paymentSuccess(req, res);
+});
+
+app.get('/payment/cancel', async (req, res) => {
+  const paymentCancel = require('./api/payment-cancel');
+  await paymentCancel(req, res);
+});
+
+app.post('/api/payment-webhook', express.json(), async (req, res) => {
+  const paymentWebhook = require('./api/payment-webhook');
+  await paymentWebhook(req, res);
+});
+
+app.get('/api/download-report', async (req, res) => {
+  const downloadReport = require('./api/download-report');
+  await downloadReport(req, res);
+});
+
+// Stripe Webhook（raw bodyが必要なので、express.json()の前に配置）
+app.post('/api/stripe/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
+  const stripeWebhook = require('./api/stripe-webhook');
+  await stripeWebhook(req, res);
+});
+
+// ── ⑩ 起動
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log(`🔮 恋愛お告げボット起動: http://localhost:${port}`);
   console.log('📡 Webhook URL: /webhook');
+  console.log(`💳 決済成功URL: http://localhost:${port}/payment/success`);
   console.log('✨ 準備完了！トーク履歴を送信してください');
 });
 

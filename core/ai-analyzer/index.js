@@ -106,26 +106,7 @@ class AIAnalyzer {
       .map(msg => `${msg.isUser ? 'ユーザー' : '相手'}: ${msg.text}`)
       .join('\\n');
     
-    const systemPrompt = `あなたは恋愛心理学と占星術の専門家です。
-以下のLINEトーク履歴を詳細に分析し、必ずJSON形式で結果を返してください。
-
-分析観点：
-1. personality: 相手の性格特性（5つのキーワード配列）
-2. emotionalPattern: 感情パターンオブジェクト
-3. communicationStyle: コミュニケーションスタイル（文字列）
-4. interests: 関心事トップ5（配列）
-5. optimalTiming: 最適な連絡タイミング（オブジェクト）
-6. avoidTopics: 避けるべき話題（配列）
-7. relationshipStage: 関係性の段階1-10（数値）
-8. advice: 具体的なアドバイス3つ（配列）
-9. responsePatterns: 相手の反応パターン分析（オブジェクト）
-10. suggestedActions: 具体的な推奨アクション（配列）
-
-特に重要：
-- responsePatterns では、どんなメッセージにどう反応するかを詳細に分析
-- suggestedActions では、「こう送ると→こう返ってくる」という具体例を含める
-
-JSON形式での回答を厳守してください。`;
+    const systemPrompt = `恋愛心理分析AIです。トーク履歴を分析し、短いJSON形式で返します。`;
 
     // 盛り上がり情報を含むコンテキスト
     let peaksContext = '';
@@ -141,42 +122,35 @@ JSON形式での回答を厳守してください。`;
 この情報を考慮して、より具体的で実用的な分析を行ってください。`;
     }
 
-    const userPrompt = `分析対象の会話:
-${conversationText}${peaksContext}
+    const userPrompt = `会話:
+${conversationText.substring(0, 1000)}
 
-上記の会話を分析し、以下のJSON形式で結果を返してください：
+短いJSON形式で分析:
 {
-  "personality": ["優しい", "慎重", "知的", "ユーモラス", "誠実"],
+  "personality": ["性格1", "性格2", "性格3"],
+  "interests": ["興味1", "興味2", "興味3"],
+  "relationshipStage": 5,
+  "advice": ["アドバイス1", "アドバイス2"],
   "emotionalPattern": {
-    "positive": ["褒められたとき", "共通の話題"],
-    "negative": ["批判的な発言", "プレッシャー"],
-    "neutral": ["日常会話", "事務的な連絡"]
+    "positive": ["ポジティブ1", "ポジティブ2"],
+    "negative": ["ネガティブ1"]
   },
-  "communicationStyle": "丁寧で思いやりがある",
-  "interests": ["映画", "旅行", "美食", "読書", "音楽"],
+  "communicationStyle": "スタイル",
   "optimalTiming": {
     "timeOfDay": "夜",
-    "frequency": "2-3日に1回",
-    "mood": "リラックスしているとき"
+    "frequency": "頻度"
   },
-  "avoidTopics": ["過去の恋愛", "プライベートすぎる質問"],
-  "relationshipStage": 5,
-  "advice": [
-    "共通の趣味の話題から始める",
-    "相手のペースに合わせる",
-    "自然な流れでデートに誘う"
-  ],
+  "avoidTopics": ["避ける話題"],
   "responsePatterns": {
-    "quickResponse": ["楽しい話題", "質問形式", "写真やスタンプ"],
-    "thoughtfulResponse": ["深い話題", "将来の話", "悩み相談"],
-    "shortResponse": ["朝の時間帯", "仕事中", "疲れているとき"],
-    "enthusiasticResponse": ["趣味の話", "褒め言葉", "共感的な返事"]
+    "quickResponse": ["パターン1"],
+    "thoughtfulResponse": ["パターン2"],
+    "shortResponse": ["パターン3"],
+    "enthusiasticResponse": ["パターン4"]
   },
-  "suggestedActions": [
-    {
-      "action": "おはよう！今日も一日頑張ろうね☀️",
-      "expectedResponse": "おはよう！ありがとう、〇〇も頑張ってね！",
-      "timing": "朝7-9時",
+  "suggestedActions": [{
+    "action": "行動",
+    "expectedResponse": "反応",
+    "timing": "時間"
       "successRate": 85,
       "basedOn": "朝の挨拶への反応パターン"
     },
@@ -236,7 +210,17 @@ ${conversationText}${peaksContext}
         return this.getDefaultAnalysis();
       }
       
-      const parsed = JSON.parse(response);
+      // JSONの不完全な応答を修正
+      let cleanedResponse = response.trim();
+      
+      // 末尾に}が不足している場合の対応
+      const openBraces = (cleanedResponse.match(/{/g) || []).length;
+      const closeBraces = (cleanedResponse.match(/}/g) || []).length;
+      if (openBraces > closeBraces) {
+        cleanedResponse += '}'.repeat(openBraces - closeBraces);
+      }
+      
+      const parsed = JSON.parse(cleanedResponse);
       
       return {
         personality: parsed.personality || [],
@@ -267,7 +251,8 @@ ${conversationText}${peaksContext}
       };
     } catch (error) {
       console.error('JSON解析エラー:', error);
-      throw new Error('AI応答の解析に失敗');
+      console.log('デフォルト分析を使用します');
+      return this.getDefaultAnalysis();
     }
   }
   

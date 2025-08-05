@@ -22,3 +22,6 @@ npm-debug.log*
 .vercel
 dist/
 build/
+
+# Order data
+orders/

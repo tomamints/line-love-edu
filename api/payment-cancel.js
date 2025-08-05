@@ -59,6 +59,9 @@ module.exports = async (req, res) => {
           margin-top: 20px;
           font-weight: bold;
         }
+        .line-button:hover {
+          background: #00A000;
+        }
       </style>
     </head>
     <body>
@@ -78,15 +81,24 @@ module.exports = async (req, res) => {
           ※ 決済に関するご質問は、<br>
           LINEで「サポート」とメッセージをお送りください。
         </div>
-        <a href="https://line.me/R/" class="line-button">LINEに戻る</a>
+        
+        <div style="margin-top: 40px; padding: 20px; background: rgba(255, 255, 255, 0.1); border-radius: 15px;">
+          <p style="font-size: 1.1em; color: #FFD700; margin-bottom: 15px;">
+            📱 LINEアプリに戻る方法
+          </p>
+          <p style="font-size: 0.95em; color: #F8F8FF; line-height: 1.8;">
+            このページの右上の「✕」ボタンをタップして<br>
+            ブラウザを閉じてください。<br>
+            自動的にLINEアプリに戻ります。
+          </p>
+          <div style="margin-top: 20px; padding: 15px; background: rgba(232, 180, 184, 0.2); border-radius: 10px;">
+            <p style="font-size: 0.85em; color: #E8B4B8; margin: 0;">
+              ※ もしLINEに戻れない場合は、<br>
+              ホーム画面からLINEアプリを開いてください。
+            </p>
+          </div>
+        </div>
       </div>
-      
-      <script>
-        // 5秒後にLINEアプリを開く
-        setTimeout(() => {
-          window.location.href = 'https://line.me/R/';
-        }, 5000);
-      </script>
     </body>
     </html>
   `);
