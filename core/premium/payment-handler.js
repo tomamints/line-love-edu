@@ -39,7 +39,7 @@ class PaymentHandler {
       this.orders.set(orderId, orderInfo);
       
       // 決済URLを生成（実際はStripe等の決済サービスを使用）
-      const paymentUrl = this.generatePaymentUrl(orderInfo);
+      const paymentUrl = await this.generatePaymentUrl(orderInfo);
       
       // ユーザーに決済案内を送信
       return {
@@ -94,6 +94,8 @@ class PaymentHandler {
       // 注文情報を更新
       orderInfo.status = 'completed';
       orderInfo.reportUrl = fileUrl;
+      orderInfo.reportData = reportData;
+      orderInfo.pdfBuffer = pdfBuffer;
       orderInfo.completedAt = new Date().toISOString();
       
       return {
@@ -101,6 +103,8 @@ class PaymentHandler {
         orderId,
         reportUrl: fileUrl,
         fileName,
+        reportData,
+        pdfBuffer,
         message: 'プレミアムレポートが完成しました！PDFファイルをダウンロードしてご確認ください。'
       };
       
@@ -137,15 +141,48 @@ class PaymentHandler {
    * @param {object} orderInfo - 注文情報
    * @returns {string} 決済URL
    */
-  generatePaymentUrl(orderInfo) {
-    // 実際の実装では Stripe, PayPal などの決済サービスのURLを生成
-    // const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-    // const session = await stripe.checkout.sessions.create({...});
-    // return session.url;
-    
-    // プレースホルダー実装
-    const baseUrl = process.env.PAYMENT_BASE_URL || 'https://your-app.vercel.app/payment';
-    return `${baseUrl}?order=${orderInfo.orderId}&amount=${orderInfo.amount}&user=${orderInfo.userId}`;
+  async generatePaymentUrl(orderInfo) {
+    try {
+      // Stripeを使用する場合
+      if (process.env.STRIPE_SECRET_KEY && process.env.STRIPE_SECRET_KEY !== 'sk_test_YOUR_STRIPE_SECRET_KEY') {
+        const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+        
+        const session = await stripe.checkout.sessions.create({
+          payment_method_types: ['card'],
+          line_items: [{
+            price_data: {
+              currency: 'jpy',
+              product_data: {
+                name: 'プレミアム恋愛レポート',
+                description: 'AIが分析した超詳細な恋愛診断書（PDF形式・約20ページ）',
+                images: ['https://your-app.vercel.app/images/premium-report.png']
+              },
+              unit_amount: orderInfo.amount
+            },
+            quantity: 1
+          }],
+          mode: 'payment',
+          success_url: `${process.env.BASE_URL || 'https://your-app.vercel.app'}/payment/success?orderId=${orderInfo.orderId}`,
+          cancel_url: `${process.env.BASE_URL || 'https://your-app.vercel.app'}/payment/cancel`,
+          metadata: {
+            orderId: orderInfo.orderId,
+            userId: orderInfo.userId
+          }
+        });
+        
+        return session.url;
+      }
+      
+      // Stripeが設定されていない場合はプレースホルダー
+      const baseUrl = process.env.PAYMENT_BASE_URL || 'https://your-app.vercel.app/payment';
+      return `${baseUrl}?order=${orderInfo.orderId}&amount=${orderInfo.amount}&user=${orderInfo.userId}`;
+      
+    } catch (error) {
+      console.error('決済URL生成エラー:', error);
+      // エラー時はプレースホルダーを返す
+      const baseUrl = process.env.PAYMENT_BASE_URL || 'https://your-app.vercel.app/payment';
+      return `${baseUrl}?order=${orderInfo.orderId}&amount=${orderInfo.amount}&user=${orderInfo.userId}`;
+    }
   }
   
   /**
