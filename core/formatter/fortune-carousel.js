@@ -14,24 +14,31 @@ class FortuneCarouselBuilder {
     this.userProfile = userProfile;
     this.userName = userProfile.displayName || 'あなた';
     
-    // スタイル定義
+    // スタイル定義 - NEW_UI_DESIGN.mdに基づく
     this.styles = {
-      primary: '#7B68EE',      // メインカラー（薄紫）
-      secondary: '#FFD700',    // セカンダリカラー（ゴールド）
-      background: '#1C1C3D',   // 背景色（ダークネイビー）
-      text: '#FFFFFF',         // テキスト色（白）
-      warning: '#FF6B6B',      // 警告色（赤）
-      success: '#4ECDC4',      // 成功色（ティール）
-      accent: '#FF69B4',       // アクセント色（ピンク）
-      mystical: '#9370DB',     // 神秘色（パープル）
+      // メインカラー
+      deepPurple: '#1a0033',       // ディープパープル（背景）
+      midnightBlue: '#0f0c29',     // ミッドナイトブルー（グラデーション）
+      cosmicPurple: '#24243e',     // コズミックパープル（カード背景）
       
-      // グラデーション
-      gradients: {
-        mystical: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        cosmic: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-        fortune: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
-        warning: 'linear-gradient(135deg, #ff758c 0%, #ff7eb3 100%)'
-      }
+      // アクセントカラー
+      gold: '#FFD700',             // ゴールド（重要テキスト）
+      roseGold: '#E8B4B8',         // ローズゴールド（サブテキスト）
+      starlight: '#F8F8FF',        // スターライト（通常テキスト）
+      
+      // エフェクトカラー
+      auroraGreen: '#00FF88',      // オーロラグリーン（ポジティブ）
+      mysticPink: '#FF006E',       // ミスティックピンク（注意）
+      stardust: '#B8E7FC',         // スターダスト（キラキラ）
+      
+      // 旧互換性のため一部マッピング
+      primary: '#1a0033',
+      secondary: '#FFD700',
+      text: '#F8F8FF',
+      warning: '#FF006E',
+      success: '#00FF88',
+      accent: '#E8B4B8',
+      mystical: '#24243e'
     };
   }
   
@@ -45,9 +52,9 @@ class FortuneCarouselBuilder {
         this.addOpeningPage(),          // 1. オープニング
         this.addOverallPage(),          // 2. 総合運勢
         ...this.addDestinyMomentPages(), // 3-5. 運命の瞬間（最大3ページ）
-        this.addWarningsPage(),         // 6. 注意事項
-        this.addLuckyItemsPage(),       // 7. 開運アイテム
-        this.addActionSummaryPage()     // 8. アクションまとめ
+        this.addLuckyItemsPage(),       // 6. 開運アイテム
+        this.addActionSummaryPage(),    // 7. アクションまとめ
+        this.addPremiumInvitePage()     // 8. 課金誘導ページ
       ];
       
       // 8ページを超えた場合は最初の8ページのみを使用
@@ -81,24 +88,46 @@ class FortuneCarouselBuilder {
       header: {
         type: 'box',
         layout: 'vertical',
-        backgroundColor: this.styles.primary,
+        backgroundColor: this.styles.deepPurple,
         paddingAll: '20px',
         contents: [
           {
             type: 'text',
-            text: '🌟 恋愛お告げ 🌟',
+            text: '🌙 ✨ 🌙',
             size: 'xl',
-            weight: 'bold',
-            color: this.styles.text,
+            color: this.styles.gold,
             align: 'center'
           },
           {
             type: 'text',
-            text: this.userName + 'さんへの特別なメッセージ',
-            size: 'sm',
-            color: this.styles.text,
+            text: '運命の扉が開かれます',
+            size: 'lg',
+            weight: 'bold',
+            color: this.styles.starlight,
             align: 'center',
-            margin: 'sm'
+            margin: 'md'
+          },
+          {
+            type: 'text',
+            text: 'あなたの恋の行方を',
+            size: 'md',
+            color: this.styles.roseGold,
+            align: 'center'
+          },
+          {
+            type: 'text',
+            text: '星々に問いかけます',
+            size: 'md',
+            color: this.styles.roseGold,
+            align: 'center'
+          },
+          {
+            type: 'text',
+            text: '💫 ✨ 💫',
+            size: 'lg',
+            color: this.styles.gold,
+            align: 'center',
+            margin: 'md'
           }
         ]
       },
@@ -107,99 +136,58 @@ class FortuneCarouselBuilder {
         layout: 'vertical',
         spacing: 'md',
         paddingAll: '20px',
-        backgroundColor: '#F8F6FF',
+        backgroundColor: this.styles.midnightBlue,
         contents: [
           {
             type: 'text',
-            text: mainMessage.substring(0, 150) + (mainMessage.length > 150 ? '...' : ''),
-            size: 'sm',
-            color: '#333333',
-            wrap: true,
-            align: 'center'
+            text: this.userName + 'さんと相手の方へ',
+            size: 'md',
+            color: this.styles.gold,
+            align: 'center',
+            weight: 'bold'
           },
           {
-            type: 'box',
-            layout: 'horizontal',
-            spacing: 'sm',
-            margin: 'lg',
-            contents: [
-              {
-                type: 'box',
-                layout: 'vertical',
-                flex: 1,
-                contents: [
-                  {
-                    type: 'text',
-                    text: '✨',
-                    size: 'xxl',
-                    align: 'center'
-                  },
-                  {
-                    type: 'text',
-                    text: '運勢',
-                    size: 'xs',
-                    align: 'center',
-                    color: '#666666'
-                  }
-                ]
-              },
-              {
-                type: 'box',
-                layout: 'vertical',
-                flex: 2,
-                contents: [
-                  {
-                    type: 'text',
-                    text: `${score}点`,
-                    size: 'xxl',
-                    weight: 'bold',
-                    color: this.getScoreColor(score),
-                    align: 'center'
-                  },
-                  {
-                    type: 'text',
-                    text: this.getScoreText(score),
-                    size: 'sm',
-                    color: this.getScoreColor(score),
-                    align: 'center'
-                  }
-                ]
-              },
-              {
-                type: 'box',
-                layout: 'vertical',
-                flex: 1,
-                contents: [
-                  {
-                    type: 'text',
-                    text: '🌙',
-                    size: 'xxl',
-                    align: 'center'
-                  },
-                  {
-                    type: 'text',
-                    text: '神秘',
-                    size: 'xs',
-                    align: 'center',
-                    color: '#666666'
-                  }
-                ]
-              }
-            ]
+            type: 'text',
+            text: this.formatMainMessage(mainMessage),
+            size: 'sm',
+            color: this.styles.starlight,
+            wrap: true,
+            align: 'center',
+            margin: 'sm'
+          },
+          {
+            type: 'separator',
+            margin: 'lg'
+          },
+          {
+            type: 'text',
+            text: `二人の恋愛運勢: ${score}点 - ${this.getScoreText(score)}`,
+            size: 'lg',
+            weight: 'bold',
+            color: this.styles.gold,
+            align: 'center',
+            margin: 'md'
+          },
+          {
+            type: 'text',
+            text: '✨ 二人の間に神秘的なエネルギーが高まっています ✨',
+            size: 'sm',
+            color: this.styles.roseGold,
+            align: 'center'
           }
         ]
       },
       footer: {
         type: 'box',
         layout: 'vertical',
-        backgroundColor: this.styles.primary,
-        paddingAll: '12px',
+        backgroundColor: this.styles.deepPurple,
+        paddingAll: '10px',
         contents: [
           {
             type: 'text',
-            text: '👆 左右にスワイプして詳細を見る 👆',
-            size: 'xs',
-            color: this.styles.text,
+            text: '▶ スワイプして次へ',
+            size: 'sm',
+            color: this.styles.gold,
             align: 'center'
           }
         ]
@@ -218,22 +206,31 @@ class FortuneCarouselBuilder {
     const element = overall.element || '火';
     const phase = overall.phase || '成長期';
     
+    // スコアに応じた星の数を生成
+    const starCount = Math.min(5, Math.max(1, Math.round(score / 20)));
+    const stars = '⭐'.repeat(starCount) + '☆'.repeat(5 - starCount);
+    
     return {
       type: 'bubble',
       size: 'mega',
       header: {
         type: 'box',
         layout: 'vertical',
-        backgroundColor: this.styles.mystical,
-        paddingAll: '16px',
+        backgroundColor: this.styles.midnightBlue,
+        paddingAll: '20px',
         contents: [
           {
             type: 'text',
-            text: '🔮 総合運勢 🔮',
-            size: 'lg',
+            text: '✨ 二人の恋愛運勢 ✨',
+            size: 'xl',
             weight: 'bold',
-            color: this.styles.text,
+            color: this.styles.gold,
             align: 'center'
+          },
+          {
+            type: 'separator',
+            margin: 'md',
+            color: this.styles.gold
           }
         ]
       },
@@ -242,100 +239,65 @@ class FortuneCarouselBuilder {
         layout: 'vertical',
         spacing: 'md',
         paddingAll: '20px',
-        backgroundColor: '#FFF8FF',
+        backgroundColor: this.styles.cosmicPurple,
         contents: [
-          {
-            type: 'box',
-            layout: 'horizontal',
-            spacing: 'md',
-            contents: [
-              {
-                type: 'box',
-                layout: 'vertical',
-                flex: 1,
-                contents: [
-                  {
-                    type: 'text',
-                    text: '総合スコア',
-                    size: 'sm',
-                    color: '#666666',
-                    align: 'center'
-                  },
-                  {
-                    type: 'text',
-                    text: `${score}`,
-                    size: 'xxl',
-                    weight: 'bold',
-                    color: this.getScoreColor(score),
-                    align: 'center'
-                  },
-                  {
-                    type: 'text',
-                    text: 'points',
-                    size: 'xs',
-                    color: '#666666',
-                    align: 'center'
-                  }
-                ]
-              },
-              {
-                type: 'separator'
-              },
-              {
-                type: 'box',
-                layout: 'vertical',
-                flex: 1,
-                contents: [
-                  {
-                    type: 'text',
-                    text: '運勢の流れ',
-                    size: 'sm',
-                    color: '#666666',
-                    align: 'center'
-                  },
-                  {
-                    type: 'text',
-                    text: trend,
-                    size: 'lg',
-                    weight: 'bold',
-                    color: this.styles.primary,
-                    align: 'center'
-                  }
-                ]
-              }
-            ]
-          },
-          { type: 'separator', margin: 'lg' },
           {
             type: 'box',
             layout: 'vertical',
             spacing: 'sm',
             contents: [
               {
-                type: 'box',
-                layout: 'horizontal',
-                contents: [
-                  { type: 'text', text: '信頼度', flex: 1, size: 'sm', color: '#333333' },
-                  { type: 'text', text: accuracy, flex: 1, size: 'sm', color: this.styles.secondary, align: 'end' }
-                ]
+                type: 'text',
+                text: stars,
+                size: 'xxl',
+                color: this.styles.gold,
+                align: 'center'
               },
               {
-                type: 'box',
-                layout: 'horizontal',
-                contents: [
-                  { type: 'text', text: '支配元素', flex: 1, size: 'sm', color: '#333333' },
-                  { type: 'text', text: this.getElementEmoji(element) + element, flex: 1, size: 'sm', color: this.styles.primary, align: 'end' }
-                ]
-              },
-              {
-                type: 'box',
-                layout: 'horizontal',
-                contents: [
-                  { type: 'text', text: '現在の段階', flex: 1, size: 'sm', color: '#333333' },
-                  { type: 'text', text: phase, flex: 1, size: 'sm', color: this.styles.accent, align: 'end' }
-                ]
+                type: 'text',
+                text: `${score}/100点`,
+                size: 'xl',
+                weight: 'bold',
+                color: this.styles.starlight,
+                align: 'center'
               }
             ]
+          },
+          {
+            type: 'text',
+            text: '二人の関係のキーワード',
+            size: 'sm',
+            color: this.styles.roseGold,
+            align: 'center',
+            margin: 'lg'
+          },
+          {
+            type: 'text',
+            text: `「${overall.keyword || '新たな扉'}」`,
+            size: 'xl',
+            weight: 'bold',
+            color: this.styles.gold,
+            align: 'center'
+          },
+          {
+            type: 'separator',
+            margin: 'lg',
+            color: this.styles.gold
+          },
+          {
+            type: 'text',
+            text: overall.cosmicMessage || '金星と木星が調和し',
+            size: 'sm',
+            color: this.styles.starlight,
+            align: 'center',
+            wrap: true
+          },
+          {
+            type: 'text',
+            text: '二人の愛のエネルギーが高まっています',
+            size: 'sm',
+            color: this.styles.starlight,
+            align: 'center'
           }
         ]
       }
@@ -357,8 +319,7 @@ class FortuneCarouselBuilder {
    * 運命の瞬間の個別ページを作成
    */
   createDestinyMomentPage(moment, rank) {
-    const rankEmojis = ['🥇', '🥈', '🥉'];
-    const rankColors = [this.styles.secondary, '#C0C0C0', '#CD7F32'];
+    const rankTexts = ['第一の瞬間', '第二の瞬間', '第三の瞬間'];
     
     return {
       type: 'bubble',
@@ -366,16 +327,21 @@ class FortuneCarouselBuilder {
       header: {
         type: 'box',
         layout: 'vertical',
-        backgroundColor: rankColors[rank - 1] || this.styles.primary,
-        paddingAll: '16px',
+        backgroundColor: this.styles.deepPurple,
+        paddingAll: '20px',
         contents: [
           {
             type: 'text',
-            text: `${rankEmojis[rank - 1] || '⭐'} 運命の瞬間 ${rank}`,
+            text: `🌟 ${rankTexts[rank - 1] || '特別な瞬間'} 🌟`,
             size: 'lg',
             weight: 'bold',
-            color: this.styles.text,
+            color: this.styles.gold,
             align: 'center'
+          },
+          {
+            type: 'separator',
+            margin: 'md',
+            color: this.styles.gold
           }
         ]
       },
@@ -384,91 +350,123 @@ class FortuneCarouselBuilder {
         layout: 'vertical',
         spacing: 'md',
         paddingAll: '20px',
-        backgroundColor: '#FFFAF0',
+        backgroundColor: this.styles.midnightBlue,
         contents: [
           {
             type: 'text',
             text: moment.datetime || '近日中',
             size: 'xl',
             weight: 'bold',
-            color: this.styles.primary,
+            color: this.styles.gold,
             align: 'center'
           },
           {
             type: 'text',
             text: moment.dayName || '',
             size: 'sm',
-            color: '#666666',
+            color: this.styles.roseGold,
             align: 'center'
           },
-          { type: 'separator', margin: 'lg' },
           {
-            type: 'box',
-            layout: 'vertical',
-            spacing: 'sm',
-            contents: [
-              {
-                type: 'text',
-                text: '✨ 推奨アクション',
-                size: 'sm',
-                weight: 'bold',
-                color: this.styles.mystical
-              },
-              {
-                type: 'text',
-                text: moment.action || '心からの感謝を伝える',
-                size: 'md',
-                color: '#333333',
-                wrap: true
-              }
-            ]
+            type: 'separator',
+            margin: 'md'
           },
           {
-            type: 'box',
-            layout: 'vertical',
-            spacing: 'sm',
-            margin: 'md',
-            contents: [
-              {
-                type: 'text',
-                text: '🌟 宇宙からの理由',
-                size: 'sm',
-                weight: 'bold',
-                color: this.styles.mystical
-              },
-              {
-                type: 'text',
-                text: moment.cosmicReason || '愛のエネルギーが高まる時',
-                size: 'sm',
-                color: '#666666',
-                wrap: true
-              }
-            ]
+            type: 'text',
+            text: '宇宙からのメッセージ',
+            size: 'sm',
+            weight: 'bold',
+            color: this.styles.gold,
+            align: 'center',
+            margin: 'md'
           },
           {
-            type: 'box',
-            layout: 'horizontal',
-            spacing: 'sm',
-            margin: 'lg',
-            contents: [
-              {
-                type: 'text',
-                text: '成功率',
-                flex: 1,
-                size: 'sm',
-                color: '#333333',
-                weight: 'bold'
-              },
-              {
-                type: 'text',
-                text: `${moment.successRate || 75}%`,
-                flex: 1,
-                size: 'lg',
-                weight: 'bold',
-                color: this.getSuccessRateColor(moment.successRate || 75),
-                align: 'end'
-              }
-            ]
+            type: 'text',
+            text: moment.cosmicReason || '愛のエネルギーが高まる時',
+            size: 'sm',
+            color: this.styles.starlight,
+            align: 'center',
+            wrap: true
+          },
+          {
+            type: 'text',
+            text: '推奨アクション',
+            size: 'sm',
+            weight: 'bold',
+            color: this.styles.gold,
+            align: 'center',
+            margin: 'lg'
+          },
+          {
+            type: 'text',
+            text: moment.action || '心からの感謝を伝える',
+            size: 'md',
+            color: this.styles.starlight,
+            align: 'center',
+            wrap: true,
+            margin: 'sm'
+          },
+          ...(moment.expectedResponse ? [
+            {
+              type: 'box',
+              layout: 'vertical',
+              backgroundColor: this.styles.cosmicPurple,
+              cornerRadius: '8px',
+              paddingAll: '12px',
+              margin: 'md',
+              borderWidth: '1px',
+              borderColor: this.styles.stardust,
+              contents: [
+                {
+                  type: 'text',
+                  text: '予想される反応',
+                  size: 'xs',
+                  color: this.styles.roseGold,
+                  weight: 'bold'
+                },
+                {
+                  type: 'text',
+                  text: moment.expectedResponse,
+                  size: 'xs',
+                  color: this.styles.starlight,
+                  wrap: true,
+                  margin: 'sm'
+                },
+                ...(moment.basedOn ? [
+                  {
+                    type: 'text',
+                    text: `💡 ${moment.basedOn}`,
+                    size: 'xxs',
+                    color: this.styles.stardust,
+                    wrap: true,
+                    margin: 'sm'
+                  }
+                ] : [])
+              ]
+            }
+          ] : []),
+          ...(moment.suggestedTiming && moment.isPersonalized ? [
+            {
+              type: 'text',
+              text: `最適なタイミング: ${moment.suggestedTiming}`,
+              size: 'xs',
+              color: this.styles.roseGold,
+              align: 'center',
+              margin: 'sm'
+            }
+          ] : []),
+          {
+            type: 'separator',
+            margin: 'lg'
+          },
+          {
+            type: 'text',
+            text: `成功率: ${moment.successRate || 75}%`,
+            size: 'lg',
+            weight: 'bold',
+            color: this.getSuccessRateColor(moment.successRate || 75),
+            align: 'center',
+            margin: 'sm'
           }
         ]
       }
@@ -487,16 +485,21 @@ class FortuneCarouselBuilder {
       header: {
         type: 'box',
         layout: 'vertical',
-        backgroundColor: this.styles.warning,
-        paddingAll: '16px',
+        backgroundColor: this.styles.deepPurple,
+        paddingAll: '20px',
         contents: [
           {
             type: 'text',
             text: '⚠️ 注意時間帯 ⚠️',
             size: 'lg',
             weight: 'bold',
-            color: this.styles.text,
+            color: this.styles.gold,
             align: 'center'
+          },
+          {
+            type: 'separator',
+            margin: 'md',
+            color: this.styles.mysticPink
           }
         ]
       },
@@ -505,13 +508,13 @@ class FortuneCarouselBuilder {
         layout: 'vertical',
         spacing: 'md',
         paddingAll: '20px',
-        backgroundColor: '#FFF5F5',
+        backgroundColor: this.styles.midnightBlue,
         contents: [
           {
             type: 'text',
             text: '以下の時間帯は慎重に行動しましょう',
             size: 'sm',
-            color: '#666666',
+            color: this.styles.roseGold,
             align: 'center',
             margin: 'md'
           },
@@ -519,36 +522,43 @@ class FortuneCarouselBuilder {
             type: 'box',
             layout: 'vertical',
             spacing: 'sm',
-            backgroundColor: '#FFEBEE',
+            backgroundColor: this.styles.cosmicPurple,
             cornerRadius: '8px',
             paddingAll: '12px',
             margin: 'sm',
+            borderWidth: '1px',
+            borderColor: this.styles.mysticPink,
             contents: [
               {
                 type: 'text',
                 text: `🚫 ${warning.message || '詳細情報なし'}`,
                 size: 'sm',
                 weight: 'bold',
-                color: this.styles.warning,
+                color: this.styles.mysticPink,
                 wrap: true
               },
               {
                 type: 'text',
                 text: warning.reason || '理由は不明です',
                 size: 'xs',
-                color: '#666666',
+                color: this.styles.starlight,
                 wrap: true
               }
             ]
           })) : [{
             type: 'box',
             layout: 'vertical',
+            backgroundColor: this.styles.cosmicPurple,
+            cornerRadius: '8px',
+            paddingAll: '16px',
+            borderWidth: '1px',
+            borderColor: this.styles.auroraGreen,
             contents: [
               {
                 type: 'text',
                 text: '🌟 特に注意すべき時間帯はありません',
                 size: 'sm',
-                color: this.styles.success,
+                color: this.styles.auroraGreen,
                 align: 'center',
                 wrap: true
               },
@@ -556,7 +566,7 @@ class FortuneCarouselBuilder {
                 type: 'text',
                 text: '自然体で過ごしてください',
                 size: 'xs',
-                color: '#666666',
+                color: this.styles.starlight,
                 align: 'center',
                 margin: 'sm'
               }
@@ -565,23 +575,25 @@ class FortuneCarouselBuilder {
           {
             type: 'box',
             layout: 'vertical',
-            backgroundColor: '#E8F5E8',
+            backgroundColor: this.styles.cosmicPurple,
             cornerRadius: '8px',
             paddingAll: '12px',
             margin: 'lg',
+            borderWidth: '1px',
+            borderColor: this.styles.gold,
             contents: [
               {
                 type: 'text',
                 text: '💡 アドバイス',
                 size: 'sm',
                 weight: 'bold',
-                color: this.styles.success
+                color: this.styles.gold
               },
               {
                 type: 'text',
                 text: '直感を信じて、相手の気持ちを最優先に考えることが大切です',
                 size: 'xs',
-                color: '#666666',
+                color: this.styles.starlight,
                 wrap: true
               }
             ]
@@ -603,16 +615,21 @@ class FortuneCarouselBuilder {
       header: {
         type: 'box',
         layout: 'vertical',
-        backgroundColor: this.styles.secondary,
-        paddingAll: '16px',
+        backgroundColor: this.styles.deepPurple,
+        paddingAll: '20px',
         contents: [
           {
             type: 'text',
-            text: '🍀 開運アイテム 🍀',
+            text: '💎 開運の導き 💎',
             size: 'lg',
             weight: 'bold',
-            color: '#333333',
+            color: this.styles.gold,
             align: 'center'
+          },
+          {
+            type: 'separator',
+            margin: 'md',
+            color: this.styles.gold
           }
         ]
       },
@@ -621,92 +638,70 @@ class FortuneCarouselBuilder {
         layout: 'vertical',
         spacing: 'md',
         paddingAll: '20px',
-        backgroundColor: '#FFFDF0',
+        backgroundColor: this.styles.midnightBlue,
         contents: [
           {
             type: 'text',
-            text: 'あなたの恋愛運を高める特別なアイテム',
-            size: 'sm',
-            color: '#666666',
+            text: '本日の開運アイテム',
+            size: 'md',
+            weight: 'bold',
+            color: this.styles.gold,
             align: 'center',
+            margin: 'sm'
+          },
+          {
+            type: 'separator',
             margin: 'md'
           },
-          ...[
-            {
-              title: '🎨 ラッキーカラー',
-              item: luckyItems.color,
-              defaultValue: 'ピンク'
-            },
-            {
-              title: '🔢 ラッキーナンバー',
-              item: luckyItems.number,
-              defaultValue: '7'
-            },
-            {
-              title: '✨ ラッキー絵文字',
-              item: luckyItems.emoji,
-              defaultValue: '💕'
-            },
-            {
-              title: '💬 ラッキーワード',
-              item: luckyItems.word,
-              defaultValue: 'ありがとう'
-            }
-          ].map(({ title, item, defaultValue }) => ({
-            type: 'box',
-            layout: 'vertical',
-            spacing: 'sm',
-            backgroundColor: '#F0F8FF',
-            cornerRadius: '8px',
-            paddingAll: '12px',
-            margin: 'sm',
-            contents: [
-              {
-                type: 'text',
-                text: title,
-                size: 'sm',
-                weight: 'bold',
-                color: this.styles.primary
-              },
-              {
-                type: 'text',
-                text: item?.name || item?.word || item?.emoji || item?.number?.toString() || defaultValue,
-                size: 'md',
-                weight: 'bold',
-                color: '#333333'
-              },
-              {
-                type: 'text',
-                text: item?.meaning || '幸運をもたらします',
-                size: 'xs',
-                color: '#666666',
-                wrap: true
-              }
-            ]
-          })),
           {
-            type: 'box',
-            layout: 'vertical',
-            backgroundColor: '#FFF0F5',
-            cornerRadius: '8px',
-            paddingAll: '12px',
-            margin: 'lg',
-            contents: [
-              {
-                type: 'text',
-                text: '🌟 特別な組み合わせ',
-                size: 'sm',
-                weight: 'bold',
-                color: this.styles.accent
-              },
-              {
-                type: 'text',
-                text: luckyItems.combination || '7の数字を意識した時間に行動する',
-                size: 'xs',
-                color: '#666666',
-                wrap: true
-              }
-            ]
+            type: 'text',
+            text: `ラッキーカラー: ${luckyItems.color?.name || 'アメジスト'}`,
+            size: 'sm',
+            color: this.styles.starlight,
+            align: 'center',
+            margin: 'sm'
+          },
+          {
+            type: 'text',
+            text: `パワーストーン: ${luckyItems.stone?.name || 'ローズクォーツ'}`,
+            size: 'sm',
+            color: this.styles.starlight,
+            align: 'center',
+            margin: 'sm'
+          },
+          {
+            type: 'text',
+            text: `幸運の数字: ${this.formatLuckyNumbers(luckyItems.numbers)}`,
+            size: 'sm',
+            color: this.styles.starlight,
+            align: 'center',
+            margin: 'sm'
+          },
+          {
+            type: 'text',
+            text: `魔法の言葉: 「${luckyItems.word?.word || 'ありがとう'}」`,
+            size: 'sm',
+            color: this.styles.starlight,
+            align: 'center',
+            margin: 'sm'
+          },
+          {
+            type: 'separator',
+            margin: 'lg'
+          },
+          {
+            type: 'text',
+            text: '✨ これらのアイテムが',
+            size: 'xs',
+            color: this.styles.roseGold,
+            align: 'center'
+          },
+          {
+            type: 'text',
+            text: 'あなたの恋愛運を高めます ✨',
+            size: 'xs',
+            color: this.styles.roseGold,
+            align: 'center'
           }
         ]
       }
@@ -726,16 +721,21 @@ class FortuneCarouselBuilder {
       header: {
         type: 'box',
         layout: 'vertical',
-        backgroundColor: this.styles.success,
-        paddingAll: '16px',
+        backgroundColor: this.styles.deepPurple,
+        paddingAll: '20px',
         contents: [
           {
             type: 'text',
-            text: '📋 今週のアクションプラン',
+            text: '📋 アクションプラン',
             size: 'lg',
             weight: 'bold',
-            color: this.styles.text,
+            color: this.styles.gold,
             align: 'center'
+          },
+          {
+            type: 'separator',
+            margin: 'md',
+            color: this.styles.gold
           }
         ]
       },
@@ -744,105 +744,71 @@ class FortuneCarouselBuilder {
         layout: 'vertical',
         spacing: 'md',
         paddingAll: '20px',
-        backgroundColor: '#F0FFF0',
+        backgroundColor: this.styles.midnightBlue,
         contents: [
           {
             type: 'text',
             text: '運命の瞬間を逃さないために',
             size: 'sm',
-            color: '#666666',
+            color: this.styles.roseGold,
             align: 'center',
             margin: 'md'
           },
           ...moments.slice(0, 3).map((moment, index) => ({
-            type: 'box',
-            layout: 'vertical',
-            spacing: 'sm',
-            backgroundColor: index === 0 ? '#E8F5E8' : '#F8F8F8',
-            cornerRadius: '8px',
-            paddingAll: '12px',
+            type: 'text',
+            text: `${index + 1}. ${moment.datetime || '近日中'} - ${moment.action || 'アクション未定'}`,
+            size: 'sm',
+            color: this.styles.starlight,
+            align: 'start',
             margin: 'sm',
-            contents: [
-              {
-                type: 'box',
-                layout: 'horizontal',
-                contents: [
-                  {
-                    type: 'text',
-                    text: `${index + 1}.`,
-                    flex: 0,
-                    size: 'sm',
-                    weight: 'bold',
-                    color: this.styles.primary
-                  },
-                  {
-                    type: 'box',
-                    layout: 'vertical',
-                    flex: 1,
-                    spacing: 'xs',
-                    margin: 'sm',
-                    contents: [
-                      {
-                        type: 'text',
-                        text: moment.datetime || '近日中',
-                        size: 'sm',
-                        weight: 'bold',
-                        color: '#333333'
-                      },
-                      {
-                        type: 'text',
-                        text: moment.action || 'アクション未定',
-                        size: 'xs',
-                        color: '#666666',
-                        wrap: true
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
+            wrap: true
           })),
-          { type: 'separator', margin: 'lg' },
           {
-            type: 'box',
-            layout: 'vertical',
-            backgroundColor: '#FFF8DC',
-            cornerRadius: '8px',
-            paddingAll: '12px',
-            contents: [
-              {
-                type: 'text',
-                text: '💝 最後のメッセージ',
-                size: 'sm',
-                weight: 'bold',
-                color: this.styles.accent,
-                align: 'center'
-              },
-              {
-                type: 'text',
-                text: '愛は勇気です。心を開いて、素直な気持ちを伝えてくださいね ✨',
-                size: 'xs',
-                color: '#666666',
-                wrap: true,
-                align: 'center',
-                margin: 'sm'
-              }
-            ]
+            type: 'separator',
+            margin: 'lg'
+          },
+          {
+            type: 'text',
+            text: '💝 最後のメッセージ',
+            size: 'sm',
+            weight: 'bold',
+            color: this.styles.gold,
+            align: 'center',
+            margin: 'md'
+          },
+          {
+            type: 'text',
+            text: '愛は勇気です。心を開いて、',
+            size: 'sm',
+            color: this.styles.starlight,
+            align: 'center',
+            wrap: true
+          },
+          {
+            type: 'text',
+            text: '素直な気持ちを伝えてくださいね ✨',
+            size: 'sm',
+            color: this.styles.starlight,
+            align: 'center',
+            wrap: true
           }
         ]
       },
       footer: {
         type: 'box',
         layout: 'vertical',
-        backgroundColor: this.styles.success,
+        backgroundColor: this.styles.deepPurple,
         paddingAll: '12px',
+        borderWidth: '1px',
+        borderColor: this.styles.gold,
         contents: [
           {
             type: 'text',
             text: '🌟 あなたの恋愛が実りますように 🌟',
-            size: 'xs',
-            color: this.styles.text,
-            align: 'center'
+            size: 'sm',
+            color: this.styles.gold,
+            align: 'center',
+            weight: 'bold'
           }
         ]
       }
@@ -853,10 +819,10 @@ class FortuneCarouselBuilder {
    * スコアに基づく色を取得
    */
   getScoreColor(score) {
-    if (score >= 85) return this.styles.success;
-    if (score >= 70) return this.styles.secondary;
-    if (score >= 55) return this.styles.primary;
-    return this.styles.warning;
+    if (score >= 85) return this.styles.auroraGreen;
+    if (score >= 70) return this.styles.gold;
+    if (score >= 55) return this.styles.roseGold;
+    return this.styles.mysticPink;
   }
   
   /**
@@ -873,9 +839,9 @@ class FortuneCarouselBuilder {
    * 成功率に基づく色を取得
    */
   getSuccessRateColor(rate) {
-    if (rate >= 85) return this.styles.success;
-    if (rate >= 70) return this.styles.secondary;
-    return this.styles.primary;
+    if (rate >= 85) return this.styles.auroraGreen;
+    if (rate >= 70) return this.styles.gold;
+    return this.styles.roseGold;
   }
   
   /**
@@ -889,6 +855,174 @@ class FortuneCarouselBuilder {
       '土': '🌍'
     };
     return emojis[element] || '⭐';
+  }
+  
+  /**
+   * 幸運の数字をフォーマット
+   */
+  formatLuckyNumbers(numbers) {
+    if (!numbers || !Array.isArray(numbers) || numbers.length === 0) {
+      return '7, 14, 23'; // デフォルト値
+    }
+    return numbers.map(n => n.number || n).join(', ');
+  }
+  
+  /**
+   * 8. 課金誘導ページ
+   */
+  addPremiumInvitePage() {
+    return {
+      type: 'bubble',
+      size: 'mega',
+      header: {
+        type: 'box',
+        layout: 'vertical',
+        backgroundColor: this.styles.deepPurple,
+        paddingAll: '20px',
+        contents: [
+          {
+            type: 'text',
+            text: '✨ より深い運命を知りたい方へ ✨',
+            size: 'lg',
+            weight: 'bold',
+            color: this.styles.gold,
+            align: 'center'
+          },
+          {
+            type: 'separator',
+            margin: 'md',
+            color: this.styles.gold
+          }
+        ]
+      },
+      body: {
+        type: 'box',
+        layout: 'vertical',
+        spacing: 'md',
+        paddingAll: '20px',
+        backgroundColor: this.styles.midnightBlue,
+        contents: [
+          {
+            type: 'text',
+            text: '🔮 プレミアム恋愛レポート',
+            size: 'xl',
+            weight: 'bold',
+            color: this.styles.gold,
+            align: 'center',
+            margin: 'md'
+          },
+          {
+            type: 'text',
+            text: 'AIが分析した超詳細な恋愛診断書をお届け',
+            size: 'sm',
+            color: this.styles.roseGold,
+            align: 'center',
+            wrap: true
+          },
+          {
+            type: 'separator',
+            margin: 'lg'
+          },
+          {
+            type: 'box',
+            layout: 'vertical',
+            spacing: 'sm',
+            contents: [
+              {
+                type: 'text',
+                text: '📊 含まれる内容',
+                size: 'md',
+                weight: 'bold',
+                color: this.styles.gold,
+                margin: 'md'
+              },
+              {
+                type: 'text',
+                text: '• 詳細な相性分析（20項目以上）\n• 会話の癖と改善点\n• 月別恋愛運勢カレンダー\n• パーソナライズされた40のアクション\n• 危険な時期とその対策\n• 告白成功の最適タイミング',
+                size: 'xs',
+                color: this.styles.starlight,
+                wrap: true,
+                margin: 'sm'
+              }
+            ]
+          },
+          {
+            type: 'separator',
+            margin: 'lg'
+          },
+          {
+            type: 'box',
+            layout: 'horizontal',
+            contents: [
+              {
+                type: 'text',
+                text: '特別価格',
+                size: 'sm',
+                color: this.styles.roseGold,
+                flex: 1
+              },
+              {
+                type: 'text',
+                text: '¥1,980',
+                size: 'xl',
+                weight: 'bold',
+                color: this.styles.gold,
+                align: 'end',
+                flex: 1
+              }
+            ]
+          }
+        ]
+      },
+      footer: {
+        type: 'box',
+        layout: 'vertical',
+        backgroundColor: this.styles.deepPurple,
+        paddingAll: '15px',
+        contents: [
+          {
+            type: 'button',
+            action: {
+              type: 'postback',
+              label: '📋 詳細レポートを注文する',
+              data: JSON.stringify({
+                action: 'order_premium_report',
+                userId: this.userProfile.userId || 'unknown'
+              })
+            },
+            style: 'primary',
+            color: this.styles.gold
+          },
+          {
+            type: 'text',
+            text: '💎 PDF形式で詳細レポートをお送りします',
+            size: 'xs',
+            color: this.styles.stardust,
+            align: 'center',
+            margin: 'sm'
+          }
+        ]
+      }
+    };
+  }
+  
+  /**
+   * メインメッセージをフォーマット
+   */
+  formatMainMessage(message) {
+    if (!message) return '星々があなたと相手の方の恋愛を見守っています✨';
+    
+    // 相手の名前や関係性が含まれているかチェック
+    const hasRelationshipContext = message.includes('相手') || message.includes('二人') || 
+                                   message.includes('お二人') || message.includes('あなたと');
+    
+    if (!hasRelationshipContext) {
+      // 相手との関係性を示す文言を追加
+      message = message.replace(/あなたの/g, 'お二人の');
+      message = message.replace(/あなたに/g, 'あなたと相手の方に');
+    }
+    
+    return message.substring(0, 150) + (message.length > 150 ? '...' : '');
   }
   
   /**

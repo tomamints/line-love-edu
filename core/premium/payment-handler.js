@@ -1,0 +1,462 @@
+/**
+ * 課金処理ハンドラー
+ * プレミアムレポートの注文と決済を処理
+ */
+
+const PremiumReportGenerator = require('./report-generator');
+const PDFReportGenerator = require('./pdf-generator');
+
+class PaymentHandler {
+  constructor() {
+    this.reportGenerator = new PremiumReportGenerator();
+    this.pdfGenerator = new PDFReportGenerator();
+    this.orders = new Map(); // 実際はデータベースに保存
+  }
+  
+  /**
+   * プレミアムレポート注文を処理
+   * @param {string} userId - ユーザーID
+   * @param {object} userProfile - ユーザープロフィール
+   * @returns {object} 注文情報と決済URL
+   */
+  async handlePremiumOrderRequest(userId, userProfile) {
+    try {
+      // 注文IDを生成
+      const orderId = this.generateOrderId(userId);
+      
+      // 注文情報を作成
+      const orderInfo = {
+        orderId,
+        userId,
+        userProfile,
+        amount: 1980, // 価格（円）
+        status: 'pending',
+        createdAt: new Date().toISOString(),
+        expiresAt: new Date(Date.now() + 30 * 60 * 1000).toISOString() // 30分後
+      };
+      
+      // 注文を保存
+      this.orders.set(orderId, orderInfo);
+      
+      // 決済URLを生成（実際はStripe等の決済サービスを使用）
+      const paymentUrl = this.generatePaymentUrl(orderInfo);
+      
+      // ユーザーに決済案内を送信
+      return {
+        success: true,
+        orderId,
+        paymentUrl,
+        message: 'プレミアムレポートの注文を受け付けました。下記のリンクから決済をお願いします。',
+        expiresAt: orderInfo.expiresAt
+      };
+      
+    } catch (error) {
+      console.error('注文処理エラー:', error);
+      return {
+        success: false,
+        message: '注文の処理中にエラーが発生しました。しばらく経ってから再度お試しください。'
+      };
+    }
+  }
+  
+  /**
+   * 決済完了後の処理
+   * @param {string} orderId - 注文ID
+   * @param {array} messages - メッセージ履歴
+   * @returns {object} 処理結果
+   */
+  async handlePaymentSuccess(orderId, messages) {
+    try {
+      // 注文情報を取得
+      const orderInfo = this.orders.get(orderId);
+      if (!orderInfo) {
+        throw new Error('注文情報が見つかりません');
+      }
+      
+      // 注文ステータスを更新
+      orderInfo.status = 'paid';
+      orderInfo.paidAt = new Date().toISOString();
+      
+      // プレミアムレポートを生成
+      const reportData = await this.reportGenerator.generatePremiumReport(
+        messages,
+        orderInfo.userId,
+        orderInfo.userProfile.displayName
+      );
+      
+      // PDFを生成
+      const pdfBuffer = await this.pdfGenerator.generatePDF(reportData);
+      
+      // ファイルを保存（実際はクラウドストレージに保存）
+      const fileName = `premium_report_${orderId}.pdf`;
+      const fileUrl = await this.saveReportFile(fileName, pdfBuffer);
+      
+      // 注文情報を更新
+      orderInfo.status = 'completed';
+      orderInfo.reportUrl = fileUrl;
+      orderInfo.completedAt = new Date().toISOString();
+      
+      return {
+        success: true,
+        orderId,
+        reportUrl: fileUrl,
+        fileName,
+        message: 'プレミアムレポートが完成しました！PDFファイルをダウンロードしてご確認ください。'
+      };
+      
+    } catch (error) {
+      console.error('決済後処理エラー:', error);
+      
+      // エラー時は注文ステータスを更新
+      const orderInfo = this.orders.get(orderId);
+      if (orderInfo) {
+        orderInfo.status = 'error';
+        orderInfo.errorMessage = error.message;
+      }
+      
+      return {
+        success: false,
+        message: 'レポートの生成中にエラーが発生しました。サポートまでお問い合わせください。'
+      };
+    }
+  }
+  
+  /**
+   * 注文IDを生成
+   * @param {string} userId - ユーザーID
+   * @returns {string} 注文ID
+   */
+  generateOrderId(userId) {
+    const timestamp = Date.now();
+    const random = Math.random().toString(36).substring(2, 8);
+    return `ORDER_${userId.substring(0, 8)}_${timestamp}_${random}`;
+  }
+  
+  /**
+   * 決済URLを生成
+   * @param {object} orderInfo - 注文情報
+   * @returns {string} 決済URL
+   */
+  generatePaymentUrl(orderInfo) {
+    // 実際の実装では Stripe, PayPal などの決済サービスのURLを生成
+    // const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+    // const session = await stripe.checkout.sessions.create({...});
+    // return session.url;
+    
+    // プレースホルダー実装
+    const baseUrl = process.env.PAYMENT_BASE_URL || 'https://your-app.vercel.app/payment';
+    return `${baseUrl}?order=${orderInfo.orderId}&amount=${orderInfo.amount}&user=${orderInfo.userId}`;
+  }
+  
+  /**
+   * レポートファイルを保存
+   * @param {string} fileName - ファイル名
+   * @param {Buffer} fileBuffer - ファイルバッファ
+   * @returns {string} ファイルURL
+   */
+  async saveReportFile(fileName, fileBuffer) {
+    // 実際の実装では AWS S3, Google Cloud Storage などを使用
+    // const AWS = require('aws-sdk');
+    // const s3 = new AWS.S3();
+    // const result = await s3.upload({
+    //   Bucket: process.env.S3_BUCKET,
+    //   Key: fileName,
+    //   Body: fileBuffer,
+    //   ContentType: 'application/pdf'
+    // }).promise();
+    // return result.Location;
+    
+    // プレースホルダー実装
+    const baseUrl = process.env.FILE_BASE_URL || 'https://your-app.vercel.app/reports';
+    return `${baseUrl}/${fileName}`;
+  }
+  
+  /**
+   * 注文ステータスを確認
+   * @param {string} orderId - 注文ID
+   * @returns {object} 注文情報
+   */
+  getOrderStatus(orderId) {
+    const orderInfo = this.orders.get(orderId);
+    if (!orderInfo) {
+      return {
+        success: false,
+        message: '注文情報が見つかりません'
+      };
+    }
+    
+    return {
+      success: true,
+      orderId,
+      status: orderInfo.status,
+      createdAt: orderInfo.createdAt,
+      amount: orderInfo.amount,
+      reportUrl: orderInfo.reportUrl
+    };
+  }
+  
+  /**
+   * 決済案内メッセージを生成
+   * @param {object} orderResult - 注文結果
+   * @returns {object} LINE メッセージ
+   */
+  generatePaymentMessage(orderResult) {
+    if (!orderResult.success) {
+      return {
+        type: 'text',
+        text: `❌ ${orderResult.message}`
+      };
+    }
+    
+    return {
+      type: 'flex',
+      altText: 'プレミアムレポート決済案内',
+      contents: {
+        type: 'bubble',
+        size: 'mega',
+        header: {
+          type: 'box',
+          layout: 'vertical',
+          backgroundColor: '#1a0033',
+          paddingAll: '20px',
+          contents: [
+            {
+              type: 'text',
+              text: '💳 決済のご案内',
+              size: 'xl',
+              weight: 'bold',
+              color: '#FFD700',
+              align: 'center'
+            }
+          ]
+        },
+        body: {
+          type: 'box',
+          layout: 'vertical',
+          spacing: 'md',
+          paddingAll: '20px',
+          backgroundColor: '#0f0c29',
+          contents: [
+            {
+              type: 'text',
+              text: '🔮 プレミアム恋愛レポート',
+              size: 'lg',
+              weight: 'bold',
+              color: '#FFD700',
+              align: 'center'
+            },
+            {
+              type: 'text',
+              text: 'ご注文ありがとうございます！',
+              size: 'md',
+              color: '#F8F8FF',
+              align: 'center',
+              margin: 'md'
+            },
+            {
+              type: 'separator',
+              margin: 'lg'
+            },
+            {
+              type: 'box',
+              layout: 'horizontal',
+              contents: [
+                {
+                  type: 'text',
+                  text: '注文ID',
+                  color: '#E8B4B8',
+                  flex: 1
+                },
+                {
+                  type: 'text',
+                  text: orderResult.orderId.substring(0, 20) + '...',
+                  color: '#F8F8FF',
+                  flex: 2,
+                  wrap: true
+                }
+              ]
+            },
+            {
+              type: 'box',
+              layout: 'horizontal',
+              contents: [
+                {
+                  type: 'text',
+                  text: '金額',
+                  color: '#E8B4B8',
+                  flex: 1
+                },
+                {
+                  type: 'text',
+                  text: '¥1,980',
+                  color: '#F8F8FF',
+                  flex: 2,
+                  weight: 'bold'
+                }
+              ]
+            },
+            {
+              type: 'box',
+              layout: 'horizontal',
+              contents: [
+                {
+                  type: 'text',
+                  text: '有効期限',
+                  color: '#E8B4B8',
+                  flex: 1
+                },
+                {
+                  type: 'text',
+                  text: '30分',
+                  color: '#FF006E',
+                  flex: 2,
+                  weight: 'bold'
+                }
+              ]
+            }
+          ]
+        },
+        footer: {
+          type: 'box',
+          layout: 'vertical',
+          backgroundColor: '#1a0033',
+          paddingAll: '15px',
+          contents: [
+            {
+              type: 'button',
+              action: {
+                type: 'uri',
+                label: '💳 決済を完了する',
+                uri: orderResult.paymentUrl
+              },
+              style: 'primary',
+              color: '#FFD700'
+            },
+            {
+              type: 'text',
+              text: '決済完了後、自動でレポートが送られます',
+              size: 'xs',
+              color: '#B8E7FC',
+              align: 'center',
+              margin: 'sm'
+            }
+          ]
+        }
+      }
+    };
+  }
+  
+  /**
+   * レポート完成通知メッセージを生成
+   * @param {object} completionResult - 完成結果
+   * @returns {object} LINE メッセージ
+   */
+  generateCompletionMessage(completionResult) {
+    if (!completionResult.success) {
+      return {
+        type: 'text',
+        text: `❌ ${completionResult.message}`
+      };
+    }
+    
+    return [
+      {
+        type: 'flex',
+        altText: 'プレミアムレポートが完成しました！',
+        contents: {
+          type: 'bubble',
+          size: 'mega',
+          header: {
+            type: 'box',
+            layout: 'vertical',
+            backgroundColor: '#1a0033',
+            paddingAll: '20px',
+            contents: [
+              {
+                type: 'text',
+                text: '✨ レポート完成！ ✨',
+                size: 'xl',
+                weight: 'bold',
+                color: '#FFD700',
+                align: 'center'
+              }
+            ]
+          },
+          body: {
+            type: 'box',
+            layout: 'vertical',
+            spacing: 'md',
+            paddingAll: '20px',
+            backgroundColor: '#0f0c29',
+            contents: [
+              {
+                type: 'text',
+                text: '🔮 プレミアム恋愛レポート',
+                size: 'lg',
+                weight: 'bold',
+                color: '#FFD700',
+                align: 'center'
+              },
+              {
+                type: 'text',
+                text: 'あなた専用の超詳細レポートが完成しました！',
+                size: 'md',
+                color: '#F8F8FF',
+                align: 'center',
+                wrap: true,
+                margin: 'md'
+              },
+              {
+                type: 'separator',
+                margin: 'lg'
+              },
+              {
+                type: 'text',
+                text: '📋 レポート内容',
+                size: 'md',
+                weight: 'bold',
+                color: '#E8B4B8',
+                margin: 'md'
+              },
+              {
+                type: 'text',
+                text: '• 20項目の詳細相性分析\n• 月別恋愛運勢カレンダー\n• 40個のパーソナルアクション\n• 告白成功戦略\n• 長期関係構築ロードマップ',
+                size: 'sm',
+                color: '#F8F8FF',
+                wrap: true
+              }
+            ]
+          },
+          footer: {
+            type: 'box',
+            layout: 'vertical',
+            backgroundColor: '#1a0033',
+            paddingAll: '15px',
+            contents: [
+              {
+                type: 'button',
+                action: {
+                  type: 'uri',
+                  label: '📄 レポートをダウンロード',
+                  uri: completionResult.reportUrl
+                },
+                style: 'primary',
+                color: '#FFD700'
+              },
+              {
+                type: 'text',
+                text: 'PDFファイル（A4・約20ページ）',
+                size: 'xs',
+                color: '#B8E7FC',
+                align: 'center',
+                margin: 'sm'
+              }
+            ]
+          }
+        }
+      }
+    ];
+  }
+}
+
+module.exports = PaymentHandler;

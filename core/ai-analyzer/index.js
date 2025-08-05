@@ -1,6 +1,7 @@
 const OpenAI = require('openai');
 const aiConfig = require('../../config/ai.config');
 const { cache } = require('../../utils/cache');
+const ConversationPeaksAnalyzer = require('./conversation-peaks');
 
 /**
  * AI分析エンジン
@@ -14,6 +15,7 @@ class AIAnalyzer {
     this.config = aiConfig;
     this.requestCount = new Map(); // レート制限管理
     this.lastRequestTime = new Map();
+    this.peaksAnalyzer = new ConversationPeaksAnalyzer();
   }
   
   /**
@@ -43,14 +45,20 @@ class AIAnalyzer {
         return this.getFallbackAnalysis('メッセージ不足');
       }
       
-      // プロンプト構築
-      const prompt = this.buildAnalysisPrompt(processedMessages);
+      // 会話の盛り上がり分析
+      const peaksAnalysis = this.peaksAnalyzer.analyzeConversationPeaks(messages);
+      
+      // プロンプト構築（盛り上がり情報を含む）
+      const prompt = this.buildAnalysisPrompt(processedMessages, peaksAnalysis);
       
       // OpenAI API呼び出し
       const response = await this.callOpenAI(prompt);
       
       // レスポンス処理
       const analysis = this.processResponse(response);
+      
+      // 盛り上がり分析結果を統合
+      analysis.conversationPeaks = peaksAnalysis;
       
       // バリデーション
       const validatedAnalysis = this.validateResponse(analysis);
@@ -90,9 +98,10 @@ class AIAnalyzer {
   /**
    * 分析用プロンプトを構築
    * @param {array} messages - 処理済みメッセージ
+   * @param {object} peaksAnalysis - 盛り上がり分析結果
    * @returns {array} プロンプトメッセージ配列
    */
-  buildAnalysisPrompt(messages) {
+  buildAnalysisPrompt(messages, peaksAnalysis = null) {
     const conversationText = messages
       .map(msg => `${msg.isUser ? 'ユーザー' : '相手'}: ${msg.text}`)
       .join('\\n');
@@ -109,11 +118,31 @@ class AIAnalyzer {
 6. avoidTopics: 避けるべき話題（配列）
 7. relationshipStage: 関係性の段階1-10（数値）
 8. advice: 具体的なアドバイス3つ（配列）
+9. responsePatterns: 相手の反応パターン分析（オブジェクト）
+10. suggestedActions: 具体的な推奨アクション（配列）
+
+特に重要：
+- responsePatterns では、どんなメッセージにどう反応するかを詳細に分析
+- suggestedActions では、「こう送ると→こう返ってくる」という具体例を含める
 
 JSON形式での回答を厳守してください。`;
 
+    // 盛り上がり情報を含むコンテキスト
+    let peaksContext = '';
+    if (peaksAnalysis && peaksAnalysis.peaks.length > 0) {
+      const topPeak = peaksAnalysis.peaks[0];
+      peaksContext = `\n\n【会話の盛り上がり分析】
+- 最も盛り上がった話題: ${topPeak.topics.map(t => t.topic).join(', ')}
+- 盛り上がり度: ${topPeak.excitementScore}/100
+- 感情トーン: ${topPeak.emotionalTone.dominant}
+- パターン: ${peaksAnalysis.patterns.commonTopics.map(t => t.topic).join(', ')}
+- 推奨時間帯: ${peaksAnalysis.patterns.bestTimeOfDay || '特定なし'}
+
+この情報を考慮して、より具体的で実用的な分析を行ってください。`;
+    }
+
     const userPrompt = `分析対象の会話:
-${conversationText}
+${conversationText}${peaksContext}
 
 上記の会話を分析し、以下のJSON形式で結果を返してください：
 {
@@ -136,6 +165,35 @@ ${conversationText}
     "共通の趣味の話題から始める",
     "相手のペースに合わせる",
     "自然な流れでデートに誘う"
+  ],
+  "responsePatterns": {
+    "quickResponse": ["楽しい話題", "質問形式", "写真やスタンプ"],
+    "thoughtfulResponse": ["深い話題", "将来の話", "悩み相談"],
+    "shortResponse": ["朝の時間帯", "仕事中", "疲れているとき"],
+    "enthusiasticResponse": ["趣味の話", "褒め言葉", "共感的な返事"]
+  },
+  "suggestedActions": [
+    {
+      "action": "おはよう！今日も一日頑張ろうね☀️",
+      "expectedResponse": "おはよう！ありがとう、〇〇も頑張ってね！",
+      "timing": "朝7-9時",
+      "successRate": 85,
+      "basedOn": "朝の挨拶への反応パターン"
+    },
+    {
+      "action": "最近見た映画で面白いのある？",
+      "expectedResponse": "〇〇って映画見たよ！すごく良かった！",
+      "timing": "夜20-22時",
+      "successRate": 90,
+      "basedOn": "映画の話題での盛り上がり"
+    },
+    {
+      "action": "今度一緒にカフェでも行かない？",
+      "expectedResponse": "いいね！来週末とかどう？",
+      "timing": "金曜日の夜",
+      "successRate": 75,
+      "basedOn": "デートの提案への前向きな反応"
+    }
   ]
 }`;
 
@@ -172,6 +230,12 @@ ${conversationText}
    */
   processResponse(response) {
     try {
+      // レスポンスが空の場合のチェック
+      if (!response || response.trim() === '') {
+        console.warn('AI応答が空です');
+        return this.getDefaultAnalysis();
+      }
+      
       const parsed = JSON.parse(response);
       
       return {
@@ -191,6 +255,13 @@ ${conversationText}
         avoidTopics: parsed.avoidTopics || [],
         relationshipStage: parsed.relationshipStage || 5,
         advice: parsed.advice || [],
+        responsePatterns: parsed.responsePatterns || {
+          quickResponse: [],
+          thoughtfulResponse: [],
+          shortResponse: [],
+          enthusiasticResponse: []
+        },
+        suggestedActions: parsed.suggestedActions || [],
         confidence: this.calculateConfidence(parsed),
         analyzedAt: new Date().toISOString()
       };
@@ -198,6 +269,53 @@ ${conversationText}
       console.error('JSON解析エラー:', error);
       throw new Error('AI応答の解析に失敗');
     }
+  }
+  
+  /**
+   * デフォルトの分析結果を返す
+   * @returns {object} デフォルト分析
+   */
+  getDefaultAnalysis() {
+    return {
+      personality: ['優しい', '思いやりがある', '真面目'],
+      emotionalPattern: {
+        positive: ['嬉しい', '楽しい', 'ありがとう'],
+        negative: ['心配', '不安'],
+        neutral: ['そうですね', 'わかりました']
+      },
+      communicationStyle: 'バランス型',
+      interests: ['日常会話', '趣味', '食事'],
+      optimalTiming: {
+        timeOfDay: '夜',
+        frequency: '毎日',
+        mood: 'リラックス時'
+      },
+      avoidTopics: [],
+      relationshipStage: 5,
+      advice: [
+        '相手のペースに合わせて会話を進めましょう',
+        '共通の話題を見つけて深めていきましょう',
+        '素直な気持ちを伝えることが大切です'
+      ],
+      responsePatterns: {
+        quickResponse: ['楽しい話題'],
+        thoughtfulResponse: ['将来の話'],
+        shortResponse: ['忙しい時'],
+        enthusiasticResponse: ['趣味の話']
+      },
+      suggestedActions: [
+        {
+          action: '今度の週末について聞いてみる',
+          expectedResponse: '予定を確認して返事をくれるでしょう',
+          basedOn: '週末の話題での反応',
+          timing: '金曜日の夜',
+          successRate: 80,
+          isPersonalized: false
+        }
+      ],
+      confidence: 50,
+      exampleMessages: []
+    };
   }
   
   /**
@@ -241,6 +359,32 @@ ${conversationText}
       advice: Array.isArray(analysis.advice) ? 
         analysis.advice.slice(0, 3) : ['自然な会話を心がける'],
         
+      responsePatterns: {
+        quickResponse: Array.isArray(analysis.responsePatterns?.quickResponse) ?
+          analysis.responsePatterns.quickResponse : ['楽しい話題'],
+        thoughtfulResponse: Array.isArray(analysis.responsePatterns?.thoughtfulResponse) ?
+          analysis.responsePatterns.thoughtfulResponse : ['深い話題'],
+        shortResponse: Array.isArray(analysis.responsePatterns?.shortResponse) ?
+          analysis.responsePatterns.shortResponse : ['忙しい時間帯'],
+        enthusiasticResponse: Array.isArray(analysis.responsePatterns?.enthusiasticResponse) ?
+          analysis.responsePatterns.enthusiasticResponse : ['趣味の話']
+      },
+      
+      suggestedActions: Array.isArray(analysis.suggestedActions) ? 
+        analysis.suggestedActions.slice(0, 5) : [{
+          action: '気軽な挨拶から始める',
+          expectedResponse: 'ポジティブな返事',
+          timing: '夜の時間帯',
+          successRate: 70,
+          basedOn: '一般的なパターン'
+        }],
+        
+      conversationPeaks: analysis.conversationPeaks || {
+        peaks: [],
+        patterns: {},
+        recommendations: []
+      },
+        
       confidence: analysis.confidence || 0.7,
       analyzedAt: analysis.analyzedAt || new Date().toISOString()
     };
@@ -281,6 +425,24 @@ ${conversationText}
       fallbackReason: reason,
       fallbackDetails: details
     };
+  }
+  
+  /**
+   * 信頼度を計算
+   * @param {object} analysis - 分析結果
+   * @returns {number} 信頼度（0-100）
+   */
+  calculateConfidence(analysis) {
+    let confidence = 50; // 基本値
+    
+    // 各要素の存在で信頼度を上げる
+    if (analysis.personality && analysis.personality.length > 0) confidence += 10;
+    if (analysis.interests && analysis.interests.length > 0) confidence += 10;
+    if (analysis.advice && analysis.advice.length > 0) confidence += 10;
+    if (analysis.suggestedActions && analysis.suggestedActions.length > 0) confidence += 10;
+    if (analysis.responsePatterns) confidence += 10;
+    
+    return Math.min(100, confidence);
   }
   
   /**

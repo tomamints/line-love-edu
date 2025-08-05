@@ -3,13 +3,12 @@
   "rewrites": [
     {
       "source": "/webhook",
-      "destination": "/api/webhook.js"
+      "destination": "/api/index.js"
     }
   ],
   "functions": {
-    "api/webhook.js": {
-      "includeFiles": "comments.json",
-      "maxDuration": 10,
+    "api/index.js": {
+      "maxDuration": 30,
       "memory": 1024
     }
   },
