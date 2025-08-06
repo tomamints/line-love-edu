@@ -28,7 +28,9 @@ module.exports = async (req, res) => {
     let pdfBuffer;
     const fs = require('fs').promises;
     const path = require('path');
-    const pdfPath = path.join(process.cwd(), 'orders', `${orderId}.pdf`);
+    const pdfPath = process.env.VERCEL 
+      ? path.join('/tmp/orders', `${orderId}.pdf`)
+      : path.join(process.cwd(), 'orders', `${orderId}.pdf`);
     
     try {
       // キャッシュされたPDFを読み込み

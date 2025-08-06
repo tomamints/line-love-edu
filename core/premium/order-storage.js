@@ -9,7 +9,10 @@ const path = require('path');
 
 class OrderStorage {
   constructor() {
-    this.ordersDir = path.join(process.cwd(), 'orders');
+    // Vercel環境では/tmpを使用、ローカルではordersディレクトリを使用
+    this.ordersDir = process.env.VERCEL 
+      ? '/tmp/orders'
+      : path.join(process.cwd(), 'orders');
     this.initStorage();
   }
   

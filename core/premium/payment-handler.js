@@ -101,7 +101,9 @@ class PaymentHandler {
       // PDFをファイルシステムに保存
       const fs = require('fs').promises;
       const path = require('path');
-      const ordersDir = path.join(process.cwd(), 'orders');
+      const ordersDir = process.env.VERCEL 
+        ? '/tmp/orders'
+        : path.join(process.cwd(), 'orders');
       
       // ディレクトリが存在しない場合は作成
       try {
