@@ -74,36 +74,49 @@ class OrdersDB {
 
   // 注文を取得
   async getOrder(orderId) {
+    console.log('📊 getOrder開始:', orderId);
+    console.log('📊 useDatabase:', this.useDatabase);
+    
     if (!this.useDatabase) {
+      console.log('📊 ファイルストレージから取得');
       return orderStorage.getOrder(orderId);
     }
 
     try {
+      console.log('📊 Supabaseから注文を取得中...');
       const { data, error } = await supabase
         .from('orders')
         .select('*')
         .eq('id', orderId)
         .single();
 
+      console.log('📊 Supabase応答:', { data: !!data, error: !!error });
+      
       if (error) {
         console.error('注文取得エラー:', error);
+        console.error('エラー詳細:', JSON.stringify(error));
         // フォールバック：ファイルストレージを試す
+        console.log('📊 フォールバック: ファイルストレージから取得');
         return orderStorage.getOrder(orderId);
       }
 
       if (!data) {
+        console.log('📊 データベースに注文なし、ファイルストレージを確認');
         // データベースにない場合、ファイルストレージを確認
         const fileOrder = await orderStorage.getOrder(orderId);
         if (fileOrder) {
+          console.log('📊 ファイルストレージに注文あり、DBに移行');
           // ファイルにある場合はデータベースに移行
           await this.saveOrder(orderId, fileOrder);
           return fileOrder;
         }
+        console.log('📊 注文が見つかりません');
         return null;
       }
 
+      console.log('📊 注文データ取得成功:', data.id);
       // データベースの形式をアプリケーションの形式に変換
-      return {
+      const formattedOrder = {
         orderId: data.id,
         userId: data.user_id,
         amount: data.amount,
@@ -114,6 +127,8 @@ class OrdersDB {
         createdAt: data.created_at,
         updatedAt: data.updated_at
       };
+      console.log('📊 フォーマット済み注文:', formattedOrder);
+      return formattedOrder;
     } catch (err) {
       console.error('データベースエラー:', err);
       return orderStorage.getOrder(orderId);

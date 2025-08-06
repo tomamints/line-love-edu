@@ -149,25 +149,33 @@ async function processPaymentAsync(orderId, userId, stripeSessionId) {
     console.log('🔮 レポート生成開始...');
     
     // テスト用のメッセージ履歴を生成
+    console.log('📝 テストメッセージ生成中...');
     const testMessages = generateTestMessages();
     console.log('📝 テストメッセージ生成完了:', testMessages.length, '件');
+    console.log('📝 最初のメッセージ:', testMessages[0]);
+    console.log('📝 最後のメッセージ:', testMessages[testMessages.length - 1]);
     
     // レポートを生成
     console.log('⚙️ handlePaymentSuccess呼び出し中...');
+    console.log('⚙️ 引数:', { orderId, messageCount: testMessages.length });
     const completionResult = await paymentHandler.handlePaymentSuccess(orderId, testMessages);
     console.log('📊 レポート生成結果:', completionResult);
+    console.log('📊 レポートURL:', completionResult?.reportUrl);
     
     console.log('📤 LINEでレポート送信準備...');
     
     // LINEでレポート完成通知を送信
+    console.log('💬 完成メッセージ生成中...');
     const completionMessages = paymentHandler.generateCompletionMessage(completionResult);
-    console.log('💬 送信メッセージ:', completionMessages);
+    console.log('💬 送信メッセージタイプ:', typeof completionMessages);
+    console.log('💬 送信メッセージ詳細:', JSON.stringify(completionMessages, null, 2));
     
     if (Array.isArray(completionMessages)) {
       console.log('📨 複数メッセージを送信:', completionMessages.length, '件');
-      for (const message of completionMessages) {
-        const result = await lineClient.pushMessage(userId, message);
-        console.log('📤 メッセージ送信結果:', result);
+      for (let i = 0; i < completionMessages.length; i++) {
+        console.log(`📨 メッセージ ${i+1}/${completionMessages.length} 送信中...`);
+        const result = await lineClient.pushMessage(userId, completionMessages[i]);
+        console.log(`📤 メッセージ ${i+1} 送信結果:`, result);
       }
     } else {
       console.log('📨 単一メッセージを送信');
@@ -176,6 +184,7 @@ async function processPaymentAsync(orderId, userId, stripeSessionId) {
     }
     
     console.log('✅ Stripe Webhook処理完了');
+    console.log('✅ 処理時間:', new Date().toISOString());
     
   } catch (error) {
     console.error('レポート生成エラー:', error);
