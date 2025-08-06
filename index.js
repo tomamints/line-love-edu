@@ -5,13 +5,21 @@ const express = require('express');
 const path    = require('path');
 const fs      = require('fs');
 const { Client, middleware } = require('@line/bot-sdk');
-const parser = require('./metrics/parser');
-const FortuneEngine = require('./core/fortune-engine');
-const { FortuneCarouselBuilder } = require('./core/formatter/fortune-carousel');
-const PaymentHandler = require('./core/premium/payment-handler');
-const WaveFortuneEngine = require('./core/wave-fortune');
-const MoonFortuneEngine = require('./core/moon-fortune');
-const UserProfileManager = require('./core/user-profile');
+
+// 重いモジュールは必要時に遅延ロード
+let parser, FortuneEngine, FortuneCarouselBuilder, PaymentHandler;
+let WaveFortuneEngine, MoonFortuneEngine, UserProfileManager;
+
+// 必要時に初期化
+function loadHeavyModules() {
+  if (!parser) parser = require('./metrics/parser');
+  if (!FortuneEngine) FortuneEngine = require('./core/fortune-engine');
+  if (!FortuneCarouselBuilder) ({ FortuneCarouselBuilder } = require('./core/formatter/fortune-carousel'));
+  if (!PaymentHandler) PaymentHandler = require('./core/premium/payment-handler');
+  if (!WaveFortuneEngine) WaveFortuneEngine = require('./core/wave-fortune');
+  if (!MoonFortuneEngine) MoonFortuneEngine = require('./core/moon-fortune');
+  if (!UserProfileManager) UserProfileManager = require('./core/user-profile');
+}
 
 // ── ① 環境変数チェック
 console.log("✅ SECRET:", !!process.env.CHANNEL_SECRET);
@@ -26,8 +34,25 @@ const config = {
 
 const app    = express();
 const client = new Client(config);
-const paymentHandler = new PaymentHandler();
-const profileManager = new UserProfileManager();
+
+// インスタンスも遅延初期化
+let paymentHandler, profileManager;
+
+function getPaymentHandler() {
+  if (!paymentHandler) {
+    loadHeavyModules();
+    paymentHandler = new PaymentHandler();
+  }
+  return paymentHandler;
+}
+
+function getProfileManager() {
+  if (!profileManager) {
+    loadHeavyModules();
+    profileManager = new UserProfileManager();
+  }
+  return profileManager;
+}
 
 // 静的ファイルの提供
 app.use('/images', express.static(path.join(__dirname, 'images')));
@@ -384,7 +409,7 @@ async function handleTextMessage(event) {
     
     // リセットコマンド
     if (text === 'リセット' || text === 'reset') {
-      await profileManager.deleteProfile(userId);
+      await getProfileManager().deleteProfile(userId);
       
       // リセット後、占いを始めるボタンを送信
       await client.replyMessage(event.replyToken, [
@@ -409,7 +434,7 @@ async function handleTextMessage(event) {
     }
     
     // プロファイルが完成していない場合
-    const hasComplete = await profileManager.hasCompleteProfile(userId);
+    const hasComplete = await getProfileManager().hasCompleteProfile(userId);
     if (!hasComplete) {
       await client.replyMessage(event.replyToken, {
         type: 'text',
@@ -448,7 +473,8 @@ async function handleTextMessage(event) {
 // 月相占い結果を送信
 async function sendMoonFortuneResult(replyToken, userId) {
   try {
-    const profile = await profileManager.getProfile(userId);
+    const profile = await getProfileManager().getProfile(userId);
+    loadHeavyModules();
     const moonEngine = new MoonFortuneEngine();
     
     // 月相占いレポートを生成
@@ -515,6 +541,7 @@ async function handleFortuneEvent(event) {
 
     // メッセージ解析
     console.log('📊 トーク履歴を分析中...');
+    loadHeavyModules();
     const messages = parser.parseTLText(rawText);
     console.log(`💬 メッセージ数: ${messages.length}`);
     
@@ -529,11 +556,13 @@ async function handleFortuneEvent(event) {
     
     // お告げ生成
     console.log('🔮 運命のお告げを生成中...');
+    loadHeavyModules();
     const fortuneEngine = new FortuneEngine();
     const fortune = await fortuneEngine.generateFortune(messages, userId, profile.displayName);
     
     // 波動系占いも生成
     console.log('💫 波動恋愛診断を実行中...');
+    loadHeavyModules();
     const waveEngine = new WaveFortuneEngine();
     const waveAnalysis = waveEngine.analyzeWaveVibration(messages);
     const waveResult = waveEngine.formatWaveFortuneResult(waveAnalysis);
@@ -543,13 +572,14 @@ async function handleFortuneEvent(event) {
     
     // 月相占いも生成
     console.log('🌙 月相占い診断を実行中...');
+    loadHeavyModules();
     const moonEngine = new MoonFortuneEngine();
     
     // ユーザープロファイルを取得
-    const userProfile = await profileManager.getProfile(userId);
+    const userProfile = await getProfileManager().getProfile(userId);
     let moonReport = null;
     
-    if (userProfile && await profileManager.hasCompleteProfile(userId)) {
+    if (userProfile && await getProfileManager().hasCompleteProfile(userId)) {
       // プロファイルが完成している場合は実際のデータを使用
       const userMoonProfile = {
         birthDate: userProfile.birthDate,
@@ -581,6 +611,7 @@ async function handleFortuneEvent(event) {
     
     // カルーセル作成
     console.log('🎨 お告げカルーセルを作成中...');
+    loadHeavyModules();
     const builder = new FortuneCarouselBuilder(fortune, profile);
     const carousel = builder.build();
     
@@ -644,7 +675,7 @@ async function handlePostbackEvent(event) {
     if (action === 'userBirthDate') {
       try {
         // 生年月日を一時保存
-        await profileManager.saveProfile(userId, {
+        await getProfileManager().saveProfile(userId, {
           birthDate: selectedDate
         });
         
@@ -669,7 +700,7 @@ async function handlePostbackEvent(event) {
     
     // ユーザーの性別選択（生年月日入力後）
     if (action === 'userGenderWithBirthDate') {
-      const profile = await profileManager.getProfile(userId);
+      const profile = await getProfileManager().getProfile(userId);
       
       // 生年月日が入力されているか確認
       if (!profile || !profile.birthDate) {
@@ -683,7 +714,7 @@ async function handlePostbackEvent(event) {
       }
       
       // 性別を保存
-      await profileManager.saveProfile(userId, {
+      await getProfileManager().saveProfile(userId, {
         gender: value
       });
       
@@ -798,7 +829,7 @@ async function handlePostbackEvent(event) {
     // お相手の生年月日選択
     if (action === 'partnerBirthDate') {
       // 生年月日を一時保存
-      await profileManager.saveProfile(userId, {
+      await getProfileManager().saveProfile(userId, {
         partnerBirthDate: selectedDate
       });
       
@@ -985,7 +1016,7 @@ async function handlePostbackEvent(event) {
     
     // お相手の性別選択（生年月日入力後）
     if (action === 'partnerGenderWithBirthDate') {
-      const profile = await profileManager.getProfile(userId);
+      const profile = await getProfileManager().getProfile(userId);
       
       // お相手の生年月日が入力されているか確認
       if (!profile || !profile.partnerBirthDate) {
@@ -999,13 +1030,14 @@ async function handlePostbackEvent(event) {
       }
       
       // 性別を保存してプロフィールを完成
-      await profileManager.saveProfile(userId, {
+      await getProfileManager().saveProfile(userId, {
         partnerGender: value,
         status: 'complete'
       });
       
       // 月相占い結果を生成
-      const moonEngine = new MoonFortuneEngine();
+      loadHeavyModules();
+    const moonEngine = new MoonFortuneEngine();
       const moonReport = moonEngine.generateFreeReport(
         {
           birthDate: profile.birthDate,
@@ -1544,10 +1576,10 @@ async function handlePremiumReportOrder(userId, profile) {
   
   try {
     // 注文を処理
-    const orderResult = await paymentHandler.handlePremiumOrderRequest(userId, profile);
+    const orderResult = await getPaymentHandler().handlePremiumOrderRequest(userId, profile);
     
     // 決済案内メッセージを送信
-    const paymentMessage = paymentHandler.generatePaymentMessage(orderResult);
+    const paymentMessage = getPaymentHandler().generatePaymentMessage(orderResult);
     await client.pushMessage(userId, paymentMessage);
     
     console.log('✅ 決済案内送信完了');
@@ -1585,10 +1617,10 @@ async function handlePaymentSuccess(orderId, userId) {
     const messages = []; // 実際はデータベースから取得
     
     // 決済完了後の処理（レポート生成）
-    const completionResult = await paymentHandler.handlePaymentSuccess(orderId, messages);
+    const completionResult = await getPaymentHandler().handlePaymentSuccess(orderId, messages);
     
     // 完成通知メッセージを送信
-    const completionMessages = paymentHandler.generateCompletionMessage(completionResult);
+    const completionMessages = getPaymentHandler().generateCompletionMessage(completionResult);
     
     if (Array.isArray(completionMessages)) {
       for (const message of completionMessages) {
@@ -1636,7 +1668,7 @@ async function handleTestReport(event) {
     });
     
     // プレミアムレポートを生成
-    const reportData = await paymentHandler.reportGenerator.generatePremiumReport(
+    const reportData = await getPaymentHandler().reportGenerator.generatePremiumReport(
       testMessages,
       userId,
       profile.displayName
