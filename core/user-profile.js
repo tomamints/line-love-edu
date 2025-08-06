@@ -37,7 +37,10 @@ class UserProfileManager {
       // 既存のプロファイルがあれば読み込んでマージ
       const existingProfile = await this.getProfile(userId);
       if (existingProfile) {
+        // 既存データとマージ（新しいデータで上書き）
         Object.assign(data, existingProfile, profileData);
+        // updatedAtは常に最新に
+        data.updatedAt = new Date().toISOString();
       }
       
       await fs.writeFile(filePath, JSON.stringify(data, null, 2));
@@ -59,6 +62,20 @@ class UserProfileManager {
       if (error.code === 'ENOENT') {
         return null; // ファイルが存在しない
       }
+      
+      // JSONパースエラーの場合は破損したファイルを削除
+      if (error instanceof SyntaxError) {
+        console.error('プロファイルJSONが破損しています。削除します:', error);
+        try {
+          const filePath = this.getProfilePath(userId);
+          await fs.unlink(filePath);
+          console.log('破損したプロファイルファイルを削除しました');
+        } catch (deleteError) {
+          console.error('ファイル削除エラー:', deleteError);
+        }
+        return null; // 新規作成扱い
+      }
+      
       console.error('プロファイル読み込みエラー:', error);
       throw error;
     }
