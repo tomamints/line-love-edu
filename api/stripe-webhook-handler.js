@@ -4,7 +4,7 @@
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const { Client } = require('@line/bot-sdk');
 const PaymentHandler = require('../core/premium/payment-handler');
-const orderStorage = require('../core/premium/order-storage');
+const ordersDB = require('../core/database/orders-db');
 
 const lineConfig = {
   channelSecret: process.env.CHANNEL_SECRET,
@@ -78,15 +78,15 @@ async function handler(req, res) {
 // 非同期でレポート生成と送信を処理
 async function processPaymentAsync(orderId, userId, stripeSessionId) {
   try {
-    // 注文情報を取得
-    const order = await orderStorage.getOrder(orderId);
+    // 注文情報を取得（データベースから）
+    const order = await ordersDB.getOrder(orderId);
     if (!order) {
       console.error('注文が見つかりません:', orderId);
       return;
     }
     
-    // 注文ステータスを更新
-    await orderStorage.updateOrder(orderId, {
+    // 注文ステータスを更新（データベースに）
+    await ordersDB.updateOrder(orderId, {
       status: 'paid',
       stripeSessionId: stripeSessionId,
       paidAt: new Date().toISOString()

@@ -5,7 +5,7 @@
 
 const PremiumReportGenerator = require('./report-generator');
 const PDFReportGenerator = require('./pdf-generator');
-const orderStorage = require('./order-storage');
+const ordersDB = require('../database/orders-db');
 
 class PaymentHandler {
   constructor() {
@@ -13,7 +13,7 @@ class PaymentHandler {
     this.pdfGenerator = new PDFReportGenerator();
     // 定期的に期限切れ注文をクリーンアップ
     setInterval(() => {
-      orderStorage.cleanupExpiredOrders();
+      ordersDB.cleanupExpiredOrders();
     }, 60 * 60 * 1000); // 1時間ごと
   }
   
@@ -40,7 +40,7 @@ class PaymentHandler {
       };
       
       // 注文を保存
-      await orderStorage.saveOrder(orderId, orderInfo);
+      await ordersDB.saveOrder(orderId, orderInfo);
       
       // 決済URLを生成（実際はStripe等の決済サービスを使用）
       const paymentUrl = await this.generatePaymentUrl(orderInfo);
@@ -72,13 +72,13 @@ class PaymentHandler {
   async handlePaymentSuccess(orderId, messages) {
     try {
       // 注文情報を取得
-      const orderInfo = await orderStorage.getOrder(orderId);
+      const orderInfo = await ordersDB.getOrder(orderId);
       if (!orderInfo) {
         throw new Error('注文情報が見つかりません');
       }
       
       // 注文ステータスを更新（生成中）
-      await orderStorage.updateOrder(orderId, {
+      await ordersDB.updateOrder(orderId, {
         status: 'generating',
         paidAt: new Date().toISOString()
       });
@@ -122,7 +122,7 @@ class PaymentHandler {
       const fileUrl = await this.saveReportFile(fileName, pdfBuffer);
       
       // 注文情報を更新
-      await orderStorage.updateOrder(orderId, {
+      await ordersDB.updateOrder(orderId, {
         status: 'completed',
         reportUrl: fileUrl,
         completedAt: new Date().toISOString()
@@ -142,7 +142,7 @@ class PaymentHandler {
       console.error('決済後処理エラー:', error);
       
       // エラー時は注文ステータスを更新
-      await orderStorage.updateOrder(orderId, {
+      await ordersDB.updateOrder(orderId, {
         status: 'error',
         errorMessage: error.message
       });
@@ -244,7 +244,7 @@ class PaymentHandler {
    * @returns {object} 注文情報
    */
   async getOrderStatus(orderId) {
-    const orderInfo = await orderStorage.getOrder(orderId);
+    const orderInfo = await ordersDB.getOrder(orderId);
     if (!orderInfo) {
       return {
         success: false,
