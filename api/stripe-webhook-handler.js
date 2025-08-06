@@ -93,7 +93,13 @@ async function processPaymentAsync(orderId, userId, stripeSessionId) {
     
     let order;
     try {
-      order = await ordersDB.getOrder(orderId);
+      // タイムアウト付きで注文を取得（5秒）
+      const getOrderPromise = ordersDB.getOrder(orderId);
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('注文取得タイムアウト (5秒)')), 5000)
+      );
+      
+      order = await Promise.race([getOrderPromise, timeoutPromise]);
       console.log('📦 取得した注文:', order);
     } catch (getOrderError) {
       console.error('❌ 注文取得エラー:', getOrderError);
@@ -105,7 +111,8 @@ async function processPaymentAsync(orderId, userId, stripeSessionId) {
       order = {
         orderId,
         userId,
-        status: 'pending'
+        status: 'pending',
+        amount: 4980  // デフォルト金額
       };
     }
     
@@ -122,11 +129,17 @@ async function processPaymentAsync(orderId, userId, stripeSessionId) {
     // 注文ステータスを更新（データベースに）
     console.log('📝 注文ステータスを更新中...');
     try {
-      await ordersDB.updateOrder(orderId, {
+      // タイムアウト付きで更新（3秒）
+      const updatePromise = ordersDB.updateOrder(orderId, {
         status: 'paid',
         stripeSessionId: stripeSessionId,
         paidAt: new Date().toISOString()
       });
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('注文更新タイムアウト (3秒)')), 3000)
+      );
+      
+      await Promise.race([updatePromise, timeoutPromise]);
       console.log('✅ 注文ステータス更新完了');
     } catch (updateError) {
       console.error('⚠️ 注文更新エラー（続行）:', updateError.message);
