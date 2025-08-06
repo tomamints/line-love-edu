@@ -175,16 +175,43 @@ async function handleFollowEventLocal(event) {
   // まずシンプルなテキストメッセージを送信してテスト
   try {
     console.log('📤 テキストメッセージ送信開始...');
-    const result = await client.replyMessage(event.replyToken, {
+    console.log('🔑 Access Token exists:', !!config.channelAccessToken);
+    console.log('📝 Reply Token:', event.replyToken);
+    
+    // タイムアウト付きでreplyMessageを実行
+    const timeoutPromise = new Promise((_, reject) => 
+      setTimeout(() => reject(new Error('Reply message timeout after 5 seconds')), 5000)
+    );
+    
+    const replyPromise = client.replyMessage(event.replyToken, {
       type: 'text',
       text: '🌙 月相恋愛占いへようこそ！\n\n生年月日から二人の相性を占います✨\n\n「占いを始める」と送信してください'
     });
+    
+    console.log('⏳ Waiting for reply message...');
+    const result = await Promise.race([replyPromise, timeoutPromise]);
     console.log('✅ テキストメッセージ送信成功:', result);
     return;
   } catch (error) {
-    console.error('❌ テキストメッセージ送信失敗:', error);
-    console.error('❌ エラー詳細:', error.response?.data || error.message);
+    console.error('❌ テキストメッセージ送信失敗:', error.message || error);
+    if (error.response) {
+      console.error('❌ Response status:', error.response.status);
+      console.error('❌ Response data:', JSON.stringify(error.response.data));
+      console.error('❌ Response headers:', error.response.headers);
+    }
     console.error('❌ エラースタック:', error.stack);
+    
+    // Push messageで試す（reply tokenが無効な場合のフォールバック）
+    try {
+      console.log('🔄 Push messageで再試行...');
+      const pushResult = await client.pushMessage(event.source.userId, {
+        type: 'text',
+        text: '🌙 月相恋愛占いへようこそ！\n\n生年月日から二人の相性を占います✨\n\n「占いを始める」と送信してください'
+      });
+      console.log('✅ Push message成功:', pushResult);
+    } catch (pushError) {
+      console.error('❌ Push messageも失敗:', pushError.message);
+    }
   }
   
   // Flexメッセージは一旦コメントアウト
