@@ -210,7 +210,9 @@ function getRandomMessage(isUser, dayIndex) {
 
 // Vercel設定を含めてエクスポート
 module.exports = handler;
-module.exports.config = {
+
+// Vercel用の設定
+handler.config = {
   api: {
     bodyParser: false,
   },
