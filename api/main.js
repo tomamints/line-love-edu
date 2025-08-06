@@ -151,11 +151,6 @@
 //   }
 // };
 
-// Vercelはハンドラー関数を期待するので、Expressアプリではなく関数をエクスポート
-module.exports = async (req, res) => {
-  // index.jsのExpressアプリを取得
-  const app = require('../index');
-  
-  // Expressアプリにリクエストを渡す
-  return app(req, res);
-};
+// index.jsを直接エクスポート
+const app = require('../index');
+module.exports = app;
