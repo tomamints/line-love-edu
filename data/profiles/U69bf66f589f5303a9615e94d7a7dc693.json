@@ -1,11 +1,11 @@
 {
   "userId": "U69bf66f589f5303a9615e94d7a7dc693",
-  "partnerGender": "male",
+  "partnerGender": "female",
   "status": "complete",
   "updatedAt": "2025-08-06T07:11:33.773Z",
+  "partnerBirthDate": "1995-01-01",
   "gender": "male",
   "birthDate": "1995-01-01",
-  "partnerBirthDate": "1995-01-01",
   "userName": "とま",
   "createdAt": "2025-08-06T07:11:33.773Z"
 }

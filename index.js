@@ -623,6 +623,7 @@ async function handleFortuneEvent(event) {
 // ── ⑥ Postbackイベント処理
 async function handlePostbackEvent(event) {
   console.log('💳 Postback処理開始:', event.postback.data);
+  console.log('📅 Postback params:', event.postback.params);
   
   const userId = event.source.userId;
   
@@ -635,18 +636,28 @@ async function handlePostbackEvent(event) {
     
     // ユーザーの生年月日選択
     if (action === 'userBirthDate') {
-      // 生年月日を一時保存
-      await profileManager.saveProfile(userId, {
-        birthDate: selectedDate
-      });
-      
-      // 生年月日選択後のメッセージ
-      await client.replyMessage(event.replyToken, [
-        {
-          type: 'text',
-          text: '✅ 生年月日を選択しました\n\n次に、上のカードから性別を選んでください'
-        }
-      ]);
+      try {
+        // 生年月日を一時保存
+        await profileManager.saveProfile(userId, {
+          birthDate: selectedDate
+        });
+        
+        // 生年月日選択後のメッセージ
+        await client.replyMessage(event.replyToken, [
+          {
+            type: 'text',
+            text: '✅ 生年月日を選択しました\n\n次に、上のカードから性別を選んでください'
+          }
+        ]);
+      } catch (error) {
+        console.error('生年月日保存エラー:', error);
+        await client.replyMessage(event.replyToken, [
+          {
+            type: 'text',
+            text: `エラーが発生しました: ${error.message}\n\nもう一度お試しください。`
+          }
+        ]);
+      }
       return;
     }
     

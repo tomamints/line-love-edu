@@ -4,7 +4,10 @@ const path = require('path');
 
 class UserProfileManager {
   constructor() {
-    this.profileDir = path.join(__dirname, '../data/profiles');
+    // Vercel環境では/tmpを使用、ローカルではdata/profilesを使用
+    this.profileDir = process.env.VERCEL 
+      ? '/tmp/profiles'
+      : path.join(__dirname, '../data/profiles');
     this.ensureDirectoryExists();
   }
 
