@@ -518,26 +518,52 @@ async function sendMoonFortuneResult(replyToken, userId) {
 // ── ⑦ お告げ生成イベント処理
 async function handleFortuneEvent(event) {
   console.log('🔮 恋愛お告げ生成開始');
-  if (event.type !== 'message' || event.message.type !== 'file') return;
+  console.log('📱 イベントタイプ:', event.type);
+  console.log('📱 メッセージタイプ:', event.message?.type);
+  
+  if (event.type !== 'message' || event.message.type !== 'file') {
+    console.log('⏭️ ファイルメッセージではないためスキップ');
+    return;
+  }
 
   const userId = event.source.userId;
   const startTime = Date.now();
   
+  // タイムアウト設定（25秒）
+  const timeout = setTimeout(() => {
+    console.error('⏱️ タイムアウト: 処理が25秒を超えました');
+    client.pushMessage(userId, {
+      type: 'text',
+      text: '⏱️ 処理がタイムアウトしました。\nファイルサイズが大きすぎる可能性があります。\n\nもう一度お試しください。'
+    }).catch(err => console.error('タイムアウトメッセージ送信エラー:', err));
+  }, 25000);
+  
   try {
+    console.log('📢 Step 1: 分析開始メッセージ送信');
     // 分析開始メッセージを送信
     await client.pushMessage(userId, {
       type: 'text',
       text: '📥 トーク履歴を受信しました！\n\n🔍 会話パターンを分析中...\n\nしばらくお待ちください（約30秒〜1分）'
     });
+    console.log('✅ メッセージ送信完了');
     
     // ファイルダウンロード
-    console.log('📥 トーク履歴を読み込み中...');
+    console.log('📥 Step 2: トーク履歴を読み込み中...');
     const stream = await client.getMessageContent(event.message.id);
+    console.log('📥 Stream取得完了');
+    
     const chunks = [];
+    let chunkCount = 0;
     for await (const c of stream) {
       chunks.push(c);
+      chunkCount++;
+      if (chunkCount % 100 === 0) {
+        console.log(`📥 チャンク読み込み中: ${chunkCount}`);
+      }
     }
+    console.log(`📥 総チャンク数: ${chunkCount}`);
     const rawText = Buffer.concat(chunks).toString('utf8');
+    console.log(`📥 テキストサイズ: ${rawText.length} 文字`);
 
     // メッセージ解析
     console.log('📊 トーク履歴を分析中...');
@@ -639,11 +665,14 @@ async function handleFortuneEvent(event) {
     }
     
     // 完了ログ
+    clearTimeout(timeout); // タイムアウトをクリア
     const endTime = Date.now();
     console.log(`✨ お告げ生成完了！ (処理時間: ${endTime - startTime}ms)`);
     
   } catch (error) {
+    clearTimeout(timeout); // タイムアウトをクリア
     console.error('❌ エラー発生:', error);
+    console.error('❌ エラースタック:', error.stack);
     
     // エラー時のフォールバック
     try {
