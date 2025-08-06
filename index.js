@@ -182,10 +182,15 @@ app.post('/webhook', middleware(config), async (req, res) => {
 // ── ⑤ 友達追加イベント処理
 async function handleFollowEvent(event) {
   console.log('👋 新しい友達が追加されました');
+  console.log('📍 Reply Token:', event.replyToken);
+  console.log('👤 User ID:', event.source.userId);
+  console.log('🔑 Client exists:', !!client);
+  console.log('🔑 Access Token exists:', !!config.channelAccessToken);
   
   try {
+    console.log('📤 Flexメッセージ送信開始...');
     // 美しいウェルカムカードを送信
-    await client.replyMessage(event.replyToken, {
+    const result = await client.replyMessage(event.replyToken, {
       type: 'flex',
       altText: '🌙 月相恋愛占いへようこそ！',
       contents: {
@@ -305,18 +310,24 @@ async function handleFollowEvent(event) {
         }
       }
     });
-    console.log('✅ ウェルカムカード送信成功');
+    console.log('✅ ウェルカムカード送信成功:', result);
     return;
   } catch (error) {
-    console.error('❌ ウェルカムカード送信失敗:', error.message);
+    console.error('❌ ウェルカムカード送信失敗:', error);
+    console.error('❌ エラー詳細:', error.message);
+    console.error('❌ エラースタック:', error.stack);
+    
     // フォールバック：シンプルなテキストメッセージ
     try {
-      await client.replyMessage(event.replyToken, {
+      console.log('📤 フォールバックメッセージ送信開始...');
+      const fallbackResult = await client.replyMessage(event.replyToken, {
         type: 'text', 
         text: '🌙 月相恋愛占いへようこそ！\n\n生年月日から二人の相性を占います✨\n\n「占いを始める」と送信してください'
       });
+      console.log('✅ フォールバックメッセージ送信成功:', fallbackResult);
     } catch (fallbackError) {
-      console.error('❌ フォールバックメッセージも失敗:', fallbackError.message);
+      console.error('❌ フォールバックメッセージも失敗:', fallbackError);
+      console.error('❌ フォールバックエラー詳細:', fallbackError.message);
     }
   }
   
