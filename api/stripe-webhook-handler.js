@@ -1,5 +1,5 @@
-// api/stripe-webhook.js
-// Stripeからの決済完了通知を受け取る正式なWebhook
+// api/stripe-webhook-handler.js
+// Stripeからの決済完了通知を受け取る正式なWebhook（Vercel対応版）
 
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const { Client } = require('@line/bot-sdk');
@@ -17,55 +17,35 @@ const paymentHandler = new PaymentHandler();
 // Stripe Webhookの署名検証用
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
-// Vercel設定: body parsingを無効化
-module.exports.config = {
-  api: {
-    bodyParser: false,
-  },
-};
+// raw bodyを取得するヘルパー関数
+async function buffer(readable) {
+  const chunks = [];
+  for await (const chunk of readable) {
+    chunks.push(typeof chunk === 'string' ? Buffer.from(chunk) : chunk);
+  }
+  return Buffer.concat(chunks);
+}
 
-module.exports = async (req, res) => {
+async function handler(req, res) {
+  if (req.method !== 'POST') {
+    res.setHeader('Allow', 'POST');
+    return res.status(405).end('Method Not Allowed');
+  }
+
   const sig = req.headers['stripe-signature'];
   let event;
 
   try {
     // Vercel環境でraw bodyを取得
-    let rawBody;
-    
-    // req.bodyがすでにBufferまたは文字列の場合はそのまま使用
-    if (Buffer.isBuffer(req.body)) {
-      rawBody = req.body;
-    } else if (typeof req.body === 'string') {
-      rawBody = Buffer.from(req.body);
-    } else if (req.body && typeof req.body === 'object') {
-      // オブジェクトの場合（Vercelがパース済み）、文字列に戻す
-      // これは署名検証には使えないが、開発環境用のフォールバック
-      console.warn('⚠️ リクエストボディがパース済みです。署名検証をスキップします。');
-      
-      // 署名検証をスキップしてイベントをそのまま使用
-      if (endpointSecret && endpointSecret !== 'whsec_YOUR_WEBHOOK_SECRET') {
-        console.error('署名検証が必要ですが、raw bodyが利用できません');
-        return res.status(400).send('Raw body required for signature verification');
-      }
-      
-      event = req.body;
-    } else {
-      // readable streamから読み取り
-      const chunks = [];
-      await new Promise((resolve, reject) => {
-        req.on('data', chunk => chunks.push(chunk));
-        req.on('end', resolve);
-        req.on('error', reject);
-      });
-      rawBody = Buffer.concat(chunks);
-    }
+    const rawBody = await buffer(req);
+    const bodyString = rawBody.toString('utf8');
 
-    // Stripeからのイベントを検証（raw bodyがある場合のみ）
-    if (rawBody && endpointSecret && endpointSecret !== 'whsec_YOUR_WEBHOOK_SECRET') {
-      event = stripe.webhooks.constructEvent(rawBody, sig, endpointSecret);
-    } else if (!event) {
-      // テスト環境または署名検証をスキップ
-      event = rawBody ? JSON.parse(rawBody.toString()) : req.body;
+    // Stripeからのイベントを検証
+    if (endpointSecret && endpointSecret !== 'whsec_YOUR_WEBHOOK_SECRET') {
+      event = stripe.webhooks.constructEvent(bodyString, sig, endpointSecret);
+    } else {
+      // テスト環境では署名検証をスキップ
+      event = JSON.parse(bodyString);
     }
   } catch (err) {
     console.error('Webhook署名検証エラー:', err.message);
@@ -93,7 +73,7 @@ module.exports = async (req, res) => {
   
   // Stripeに即座に200を返す（レポート生成を待たない）
   res.json({ received: true });
-};
+}
 
 // 非同期でレポート生成と送信を処理
 async function processPaymentAsync(orderId, userId, stripeSessionId) {
@@ -206,3 +186,11 @@ function getRandomMessage(isUser, dayIndex) {
   
   return messages[randomIndex];
 }
+
+// Vercel設定を含めてエクスポート
+module.exports = handler;
+module.exports.config = {
+  api: {
+    bodyParser: false,
+  },
+};

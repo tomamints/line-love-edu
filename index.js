@@ -182,12 +182,24 @@ app.post('/webhook', middleware(config), async (req, res) => {
 // ── ⑤ 友達追加イベント処理
 async function handleFollowEvent(event) {
   console.log('👋 新しい友達が追加されました');
-  console.log('📍 Reply Token:', event.replyToken);
-  console.log('📍 User ID:', event.source.userId);
+  
+  // コールドスタート対策：シンプルなメッセージを即座に送信
+  try {
+    await client.replyMessage(event.replyToken, {
+      type: 'text', 
+      text: '🌙 月相恋愛占いへようこそ！\n\n生年月日から二人の相性を占います✨\n\n「占いを始める」と送信してください'
+    });
+    console.log('✅ ウェルカムメッセージ送信成功');
+    return;
+  } catch (error) {
+    console.error('❌ ウェルカムメッセージ送信失敗:', error.message);
+  }
+  
+  // 以下は実行されない（上でreturn）
   const userId = event.source.userId;
   
   try {
-    console.log('📮 ウェルカムメッセージ送信開始...');
+    console.log('📮 リッチカード送信開始...');
     // 美しいウェルカムカードを送信
     const result = await client.replyMessage(event.replyToken, [
       {
