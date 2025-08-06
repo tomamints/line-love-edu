@@ -9,6 +9,14 @@ class OrdersDB {
   }
   
   checkDatabase() {
+    // 環境変数で強制的にファイルストレージを使用
+    if (process.env.FORCE_FILE_STORAGE === 'true') {
+      console.log('⚠️ FORCE_FILE_STORAGE=true - ファイルストレージを強制使用');
+      this.useDatabase = false;
+      this.supabase = null;
+      return;
+    }
+    
     this.useDatabase = isDatabaseConfigured();
     
     if (this.useDatabase) {
@@ -78,11 +86,26 @@ class OrdersDB {
       
       console.log('💾 Supabaseに保存するデータ:', upsertData);
       
-      const { data, error } = await this.supabase
+      // タイムアウト付きで保存
+      const savePromise = this.supabase
         .from('orders')
         .upsert(upsertData)
         .select()
         .single();
+      
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error('保存タイムアウト')), 2000);
+      });
+      
+      let data, error;
+      try {
+        const result = await Promise.race([savePromise, timeoutPromise]);
+        data = result.data;
+        error = result.error;
+      } catch (timeoutErr) {
+        console.error('⚠️ Supabase保存タイムアウト:', timeoutErr.message);
+        return orderStorage.saveOrder(orderId, orderData);
+      }
 
       if (error) {
         console.error('注文保存エラー:', error);
@@ -120,11 +143,26 @@ class OrdersDB {
       
       console.log('📊 Supabaseから注文を取得中...');
       
-      const { data, error } = await this.supabase
+      // タイムアウト付きでクエリを実行
+      const queryPromise = this.supabase
         .from('orders')
         .select('*')
         .eq('id', orderId)
         .single();
+      
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error('Supabaseクエリタイムアウト')), 2000);
+      });
+      
+      let data, error;
+      try {
+        const result = await Promise.race([queryPromise, timeoutPromise]);
+        data = result.data;
+        error = result.error;
+      } catch (timeoutErr) {
+        console.log('📊 Supabaseタイムアウト、ファイルストレージを使用');
+        return orderStorage.getOrder(orderId);
+      }
       
       console.log('📊 Supabase応答:', { 
         hasData: !!data, 
@@ -210,12 +248,27 @@ class OrdersDB {
       if (updates.paidAt !== undefined) updateData.paid_at = updates.paidAt;
       if (updates.reportUrl !== undefined) updateData.report_url = updates.reportUrl;
 
-      const { data, error } = await this.supabase
+      // タイムアウト付きで更新
+      const updatePromise = this.supabase
         .from('orders')
         .update(updateData)
         .eq('id', orderId)
         .select()
         .single();
+      
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error('更新タイムアウト')), 2000);
+      });
+      
+      let data, error;
+      try {
+        const result = await Promise.race([updatePromise, timeoutPromise]);
+        data = result.data;
+        error = result.error;
+      } catch (timeoutErr) {
+        console.error('⚠️ Supabase更新タイムアウト:', timeoutErr.message);
+        return orderStorage.updateOrder(orderId, updates);
+      }
 
       if (error) {
         console.error('注文更新エラー:', error);
