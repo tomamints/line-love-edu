@@ -83,77 +83,81 @@ module.exports = async (req, res) => {
     console.log(`⚠️ リトライ検出: ${retryCount}回目のリトライ`);
   }
 
-  // LINEに即座に200を返す
-  res.status(200).json({});
-
   // ハンドラーをロード
   loadHandlers();
 
-  // イベント処理は非同期で実行
+  // まず200を返す（LINEのタイムアウトを防ぐ）
+  res.status(200).json({ status: 'ok' });
+  console.log('✅ 200レスポンス送信完了');
+
+  // イベント処理を非同期で実行
   try {
     const events = body.events || [];
-    const promises = events.map(async event => {
-      // 友達追加イベント
-      if (event.type === 'follow') {
-        return handleFollowEventLocal(event).catch(err => {
-          console.error('❌ 友達追加イベントエラー:', err);
-        });
-      }
-      
-      // テキストメッセージの処理
-      if (event.type === 'message' && event.message.type === 'text') {
-        return handleTextMessageLocal(event).catch(err => {
-          console.error('テキストメッセージ処理エラー:', err);
-          return client.replyMessage(event.replyToken, {
-            type: 'text',
-            text: `エラーが発生しました:\n${err.message}\n\nもう一度「占いを始める」と送信してください。`
-          });
-        });
-      }
-      
-      // Postbackイベント処理（生年月日入力など）
-      if (event.type === 'postback') {
-        const postbackId = `${event.source.userId}_${event.postback.data}_${event.timestamp}`;
-        
-        if (recentPostbackIds.has(postbackId)) {
-          console.log("⏭️ 重複postbackをスキップ:", postbackId);
-          return Promise.resolve();
-        }
-        recentPostbackIds.add(postbackId);
-        
-        // サイズ制限
-        if (recentPostbackIds.size > 1000) {
-          const firstKey = recentPostbackIds.values().next().value;
-          recentPostbackIds.delete(firstKey);
-        }
-        
-        return handlePostbackEventLocal(event).catch(err => {
-          console.error('=== Postback処理中にエラー ===', err);
-          return client.replyMessage(event.replyToken, {
-            type: 'text',
-            text: `⚠️ エラーが発生しました:\n${err.message}\n\nもう一度お試しください。`
-          });
-        });
-      }
-      
-      // テスト用レポート生成
-      if (event.type === 'message' && event.message.type === 'text' && 
-          event.message.text === 'テストレポート') {
-        return handleTestReportLocal(event).catch(err => {
-          console.error('=== テストレポート生成エラー ===', err);
-          return client.pushMessage(event.source.userId, {
-            type: 'text',
-            text: '⚠️ テストレポートの生成中にエラーが発生しました。'
-          }).catch(pushErr => console.error('Push message error:', pushErr));
-        });
-      }
-      
-      return Promise.resolve();
-    });
     
-    await Promise.all(promises);
+    // 各イベントを順番に処理（エラーハンドリングを強化）
+    for (const event of events) {
+      try {
+        // 友達追加イベント
+        if (event.type === 'follow') {
+          console.log('🎯 Followイベント処理開始');
+          await handleFollowEventLocal(event);
+          console.log('✅ Followイベント処理完了');
+          continue;
+      }
+        
+        // テキストメッセージの処理
+        if (event.type === 'message' && event.message.type === 'text') {
+          console.log('🎯 テキストメッセージ処理開始:', event.message.text);
+          await handleTextMessageLocal(event);
+          console.log('✅ テキストメッセージ処理完了');
+          continue;
+        }
+        
+        // Postbackイベント処理（生年月日入力など）
+        if (event.type === 'postback') {
+          const postbackId = `${event.source.userId}_${event.postback.data}_${event.timestamp}`;
+          
+          if (recentPostbackIds.has(postbackId)) {
+            console.log("⏭️ 重複postbackをスキップ:", postbackId);
+            continue;
+          }
+          recentPostbackIds.add(postbackId);
+          
+          // サイズ制限
+          if (recentPostbackIds.size > 1000) {
+            const firstKey = recentPostbackIds.values().next().value;
+            recentPostbackIds.delete(firstKey);
+          }
+          
+          console.log('🎯 Postbackイベント処理開始');
+          await handlePostbackEventLocal(event);
+          console.log('✅ Postbackイベント処理完了');
+          continue;
+        }
+        
+        // テスト用レポート生成
+        if (event.type === 'message' && event.message.type === 'text' && 
+            event.message.text === 'テストレポート') {
+          console.log('🎯 テストレポート処理開始');
+          await handleTestReportLocal(event).catch(err => {
+            console.error('=== テストレポート生成エラー ===', err);
+          });
+          console.log('✅ テストレポート処理完了');
+          continue;
+        }
+        
+        console.log('⏭️ 未処理のイベントタイプ:', event.type);
+      } catch (eventError) {
+        console.error('❌ イベント処理エラー:', eventError);
+        console.error('❌ エラー詳細:', eventError.stack);
+      }
+    }
+    
+    console.log('✅ すべてのイベント処理完了');
+    
   } catch (fatal) {
-    console.error('🌋 致命的なエラー', fatal);
+    console.error('🌋 致命的なエラー:', fatal);
+    console.error('🌋 スタック:', fatal.stack);
   }
 };
 
