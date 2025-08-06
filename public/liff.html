@@ -291,9 +291,11 @@
     </div>
     
     <script src="https://static.line-scdn.net/liff/edge/versions/2.22.3/sdk.js"></script>
+    <script src="/liff-config.js"></script>
     <script>
         let userGender = null;
         let partnerGender = null;
+        let liffConfig = null;
         
         // 性別ボタンの処理
         document.querySelectorAll('.gender-btn').forEach(btn => {
@@ -347,8 +349,11 @@
         // LIFF初期化
         async function initializeLiff() {
             try {
+                // LIFF設定を取得
+                liffConfig = await fetchLiffConfig();
+                
                 await liff.init({
-                    liffId: '2006754848-5GVVkzzV' // LIFF ID
+                    liffId: liffConfig.liffId
                 });
                 
                 if (!liff.isLoggedIn()) {
@@ -408,8 +413,8 @@
             };
             
             try {
-                // プロファイルデータをサーバーに送信（本番環境向け）
-                const response = await fetch('https://line-love-edu.vercel.app/api/save-profile', {
+                // プロファイルデータをサーバーに送信
+                const response = await fetch(liffConfig.apiUrl, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

@@ -17,6 +17,8 @@ const UserProfileManager = require('./core/user-profile');
 console.log("✅ SECRET:", !!process.env.CHANNEL_SECRET);
 console.log("✅ TOKEN:", !!process.env.CHANNEL_ACCESS_TOKEN);
 console.log("✅ OPENAI_API_KEY:", !!process.env.OPENAI_API_KEY);
+console.log("✅ LIFF_ID:", !!process.env.LIFF_ID);
+console.log("✅ BASE_URL:", process.env.BASE_URL || 'http://localhost:3000');
 
 // ── ② LINEクライアント初期化
 const config = {
@@ -37,6 +39,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/api', express.json());
 
 // APIルーティング
+app.get('/api/liff-config', require('./api/liff-config'));
 app.post('/api/save-profile', require('./api/save-profile'));
 
 // ── ③ 重複防止
@@ -141,7 +144,7 @@ async function handleFollowEvent(event) {
             aspectMode: 'cover',
             action: {
               type: 'uri',
-              uri: 'https://liff.line.me/2006754848-5GVVkzzV'
+              uri: `https://liff.line.me/${process.env.LIFF_ID}`
             }
           },
           body: {
@@ -246,7 +249,7 @@ async function handleFollowEvent(event) {
                 action: {
                   type: 'uri',
                   label: '🔮 占いを始める',
-                  uri: 'https://liff.line.me/2006754848-5GVVkzzV'
+                  uri: `https://liff.line.me/${process.env.LIFF_ID}`
                 },
                 color: '#764ba2'
               },
@@ -323,7 +326,7 @@ async function handleTextMessage(event) {
                   action: {
                     type: 'uri',
                     label: '🔮 もう一度占いを始める',
-                    uri: 'https://liff.line.me/2006754848-5GVVkzzV'
+                    uri: `https://liff.line.me/${process.env.LIFF_ID}`
                   },
                   color: '#764ba2'
                 }
