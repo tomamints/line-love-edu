@@ -4,8 +4,12 @@ const UserProfileManager = require('../user-profile');
 
 class ProfilesDB {
   constructor() {
+    console.log('🔧 ProfilesDB初期化開始');
     this.useDatabase = isDatabaseConfigured();
     this.fileManager = new UserProfileManager();
+    
+    console.log('🔍 isDatabaseConfigured():', this.useDatabase);
+    console.log('🔍 supabase client exists:', !!supabase);
     
     if (this.useDatabase) {
       console.log('✅ Supabase接続成功 - プロファイルデータベース');
@@ -35,35 +39,49 @@ class ProfilesDB {
 
   // プロファイルを保存
   async saveProfile(userId, profileData) {
+    console.log('📝 saveProfile呼び出し:', { userId, profileData });
+    console.log('🔍 useDatabase:', this.useDatabase);
+    
     if (!this.useDatabase) {
+      console.log('⚠️ データベース未設定、ファイルストレージを使用');
       return this.fileManager.saveProfile(userId, profileData);
     }
 
     try {
+      // 既存のプロファイルを取得してマージ
+      const existingProfile = await this.getProfile(userId) || {};
+      const mergedData = { ...existingProfile, ...profileData };
+      
+      const upsertData = {
+        user_id: userId,
+        user_name: mergedData.userName || null,
+        birth_date: mergedData.birthDate || null,
+        gender: mergedData.gender || null,
+        partner_name: mergedData.partnerName || null,
+        partner_birth_date: mergedData.partnerBirthDate || null,
+        partner_gender: mergedData.partnerGender || null,
+        updated_at: new Date().toISOString()
+      };
+      
+      console.log('📤 Supabaseに送信するデータ:', upsertData);
+      
       const { data, error } = await supabase
         .from('profiles')
-        .upsert({
-          user_id: userId,
-          user_name: profileData.userName,
-          birth_date: profileData.birthDate,
-          gender: profileData.gender,
-          partner_name: profileData.partnerName,
-          partner_birth_date: profileData.partnerBirthDate,
-          partner_gender: profileData.partnerGender,
-          updated_at: new Date().toISOString()
-        })
+        .upsert(upsertData)
         .select()
         .single();
 
       if (error) {
-        console.error('プロファイル保存エラー:', error);
+        console.error('❌ プロファイル保存エラー:', error);
+        console.error('❌ エラー詳細:', JSON.stringify(error));
         return this.fileManager.saveProfile(userId, profileData);
       }
 
-      console.log('✅ プロファイルをデータベースに保存:', userId);
+      console.log('✅ プロファイルをデータベースに保存成功:', data);
       return this.formatProfile(data);
     } catch (err) {
-      console.error('データベースエラー:', err);
+      console.error('❌ データベースエラー:', err);
+      console.error('❌ エラースタック:', err.stack);
       return this.fileManager.saveProfile(userId, profileData);
     }
   }
