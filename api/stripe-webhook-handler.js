@@ -67,8 +67,15 @@ async function handler(req, res) {
       return res.status(400).send('Missing metadata');
     }
     
+    console.log('🚀 processPaymentAsync開始:', { orderId, userId });
+    
     // レポート生成を非同期で実行（レスポンスを待たない）
-    processPaymentAsync(orderId, userId, session.id);
+    processPaymentAsync(orderId, userId, session.id).then(() => {
+      console.log('✅ processPaymentAsync完了');
+    }).catch(err => {
+      console.error('❌ processPaymentAsyncエラー:', err);
+      console.error('❌ エラースタック:', err.stack);
+    });
   }
   
   // Stripeに即座に200を返す（レポート生成を待たない）
@@ -77,11 +84,17 @@ async function handler(req, res) {
 
 // 非同期でレポート生成と送信を処理
 async function processPaymentAsync(orderId, userId, stripeSessionId) {
+  console.log('📋 processPaymentAsync実行開始');
+  console.log('📋 引数:', { orderId, userId, stripeSessionId });
+  
   try {
     // 注文情報を取得（データベースから）
+    console.log('🔍 注文を取得中:', orderId);
     const order = await ordersDB.getOrder(orderId);
+    console.log('📦 取得した注文:', order);
+    
     if (!order) {
-      console.error('注文が見つかりません:', orderId);
+      console.error('❌ 注文が見つかりません:', orderId);
       return;
     }
     
@@ -96,21 +109,29 @@ async function processPaymentAsync(orderId, userId, stripeSessionId) {
     
     // テスト用のメッセージ履歴を生成
     const testMessages = generateTestMessages();
+    console.log('📝 テストメッセージ生成完了:', testMessages.length, '件');
     
     // レポートを生成
+    console.log('⚙️ handlePaymentSuccess呼び出し中...');
     const completionResult = await paymentHandler.handlePaymentSuccess(orderId, testMessages);
+    console.log('📊 レポート生成結果:', completionResult);
     
-    console.log('📤 LINEでレポート送信...');
+    console.log('📤 LINEでレポート送信準備...');
     
     // LINEでレポート完成通知を送信
     const completionMessages = paymentHandler.generateCompletionMessage(completionResult);
+    console.log('💬 送信メッセージ:', completionMessages);
     
     if (Array.isArray(completionMessages)) {
+      console.log('📨 複数メッセージを送信:', completionMessages.length, '件');
       for (const message of completionMessages) {
-        await lineClient.pushMessage(userId, message);
+        const result = await lineClient.pushMessage(userId, message);
+        console.log('📤 メッセージ送信結果:', result);
       }
     } else {
-      await lineClient.pushMessage(userId, completionMessages);
+      console.log('📨 単一メッセージを送信');
+      const result = await lineClient.pushMessage(userId, completionMessages);
+      console.log('📤 メッセージ送信結果:', result);
     }
     
     console.log('✅ Stripe Webhook処理完了');
