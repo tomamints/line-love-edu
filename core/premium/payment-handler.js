@@ -77,11 +77,13 @@ class PaymentHandler {
         throw new Error('注文情報が見つかりません');
       }
       
-      // 注文ステータスを更新
+      // 注文ステータスを更新（生成中）
       await orderStorage.updateOrder(orderId, {
-        status: 'paid',
+        status: 'generating',
         paidAt: new Date().toISOString()
       });
+      
+      console.log('🔮 プレミアムレポート生成開始...');
       
       // プレミアムレポートを生成
       const reportData = await this.reportGenerator.generatePremiumReport(
@@ -90,10 +92,30 @@ class PaymentHandler {
         orderInfo.userProfile.displayName
       );
       
-      // PDFを生成
-      const pdfBuffer = await this.pdfGenerator.generatePDF(reportData);
+      console.log('📝 レポートデータ生成完了');
       
-      // ファイルを保存（実際はクラウドストレージに保存）
+      // PDFを生成して保存
+      const pdfBuffer = await this.pdfGenerator.generatePDF(reportData);
+      console.log('📄 PDF生成完了');
+      
+      // PDFをファイルシステムに保存
+      const fs = require('fs').promises;
+      const path = require('path');
+      const ordersDir = path.join(process.cwd(), 'orders');
+      
+      // ディレクトリが存在しない場合は作成
+      try {
+        await fs.mkdir(ordersDir, { recursive: true });
+      } catch (err) {
+        // ディレクトリが既に存在する場合は無視
+      }
+      
+      // PDFファイルを保存
+      const pdfPath = path.join(ordersDir, `${orderId}.pdf`);
+      await fs.writeFile(pdfPath, pdfBuffer);
+      console.log('💾 PDFファイル保存完了:', pdfPath);
+      
+      // ダウンロードURLを生成
       const fileName = `premium_report_${orderId}.pdf`;
       const fileUrl = await this.saveReportFile(fileName, pdfBuffer);
       
@@ -377,7 +399,7 @@ class PaymentHandler {
             },
             {
               type: 'text',
-              text: '決済完了後、自動でレポートが送られます',
+              text: '決済完了後、レポートを生成してお送りします',
               size: 'xs',
               color: '#B8E7FC',
               align: 'center',
@@ -442,11 +464,20 @@ class PaymentHandler {
               },
               {
                 type: 'text',
-                text: 'あなた専用の超詳細レポートが完成しました！',
+                text: '全50ページのPDFレポート',
                 size: 'md',
                 color: '#F8F8FF',
                 align: 'center',
                 wrap: true,
+                margin: 'md'
+              },
+              {
+                type: 'text',
+                text: '✅ 生成完了しました！',
+                size: 'lg',
+                color: '#00ff00',
+                align: 'center',
+                weight: 'bold',
                 margin: 'md'
               },
               {
@@ -480,7 +511,7 @@ class PaymentHandler {
                 type: 'button',
                 action: {
                   type: 'uri',
-                  label: '📄 レポートをダウンロード',
+                  label: '📄 レポートをブラウザで閲覧',
                   uri: completionResult.reportUrl
                 },
                 style: 'primary',
@@ -488,7 +519,7 @@ class PaymentHandler {
               },
               {
                 type: 'text',
-                text: 'PDFファイル（A4・約20ページ）',
+                text: '※ブラウザで開いてPDF保存が可能です',
                 size: 'xs',
                 color: '#B8E7FC',
                 align: 'center',

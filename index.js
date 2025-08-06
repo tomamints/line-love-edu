@@ -17,8 +17,6 @@ const UserProfileManager = require('./core/user-profile');
 console.log("✅ SECRET:", !!process.env.CHANNEL_SECRET);
 console.log("✅ TOKEN:", !!process.env.CHANNEL_ACCESS_TOKEN);
 console.log("✅ OPENAI_API_KEY:", !!process.env.OPENAI_API_KEY);
-console.log("✅ LIFF_ID:", !!process.env.LIFF_ID);
-console.log("✅ BASE_URL:", process.env.BASE_URL || 'http://localhost:3000');
 
 // ── ② LINEクライアント初期化
 const config = {
@@ -35,12 +33,15 @@ const profileManager = new UserProfileManager();
 app.use('/images', express.static(path.join(__dirname, 'images')));
 app.use(express.static(path.join(__dirname, 'public')));
 
-// JSONボディパーサー（API用）
+// Stripe Webhook（raw bodyが必要なので、他のミドルウェアの前に配置）
+app.post('/api/stripe/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
+  const stripeWebhook = require('./api/stripe-webhook');
+  await stripeWebhook(req, res);
+});
+
+// JSONボディパーサー（API用） - Stripe Webhookの後に配置
 app.use('/api', express.json());
 
-// APIルーティング
-app.get('/api/liff-config', require('./api/liff-config'));
-app.post('/api/save-profile', require('./api/save-profile'));
 
 // ── ③ 重複防止
 const recentMessageIds = new Set();
@@ -129,23 +130,51 @@ async function handleFollowEvent(event) {
   const userId = event.source.userId;
   
   try {
-    // ウェルカムカードを送信
+    // 美しいウェルカムカードを送信
     await client.replyMessage(event.replyToken, [
       {
         type: 'flex',
-        altText: '月相恋愛占いへようこそ！',
+        altText: '🌙 月相恋愛占いへようこそ！',
         contents: {
           type: 'bubble',
-          hero: {
-            type: 'image',
-            url: 'https://line-love-edu.vercel.app/images/moon-welcome.jpg',
-            size: 'full',
-            aspectRatio: '20:13',
-            aspectMode: 'cover',
-            action: {
-              type: 'uri',
-              uri: `https://liff.line.me/${process.env.LIFF_ID}`
-            }
+          size: 'mega',
+          header: {
+            type: 'box',
+            layout: 'vertical',
+            contents: [
+              {
+                type: 'box',
+                layout: 'vertical',
+                contents: [
+                  {
+                    type: 'text',
+                    text: '🌙',
+                    size: '60px',
+                    align: 'center'
+                  },
+                  {
+                    type: 'text',
+                    text: '月相恋愛占い',
+                    size: 'xl',
+                    color: '#ffffff',
+                    align: 'center',
+                    weight: 'bold'
+                  },
+                  {
+                    type: 'text',
+                    text: '生年月日から導く運命の相性',
+                    size: 'sm',
+                    color: '#ffffff',
+                    align: 'center',
+                    margin: 'sm'
+                  }
+                ]
+              }
+            ],
+            paddingAll: '20px',
+            backgroundColor: '#764ba2',
+            spacing: 'md',
+            paddingTop: '22px'
           },
           body: {
             type: 'box',
@@ -153,19 +182,22 @@ async function handleFollowEvent(event) {
             contents: [
               {
                 type: 'text',
-                text: '🌙 月相恋愛占い',
-                weight: 'bold',
-                size: 'xl',
-                margin: 'md',
-                color: '#764ba2'
+                text: 'あなたと大切な人の相性を',
+                size: 'md',
+                wrap: true,
+                align: 'center'
               },
               {
                 type: 'text',
-                text: '生年月日から導く運命の相性',
-                size: 'sm',
-                color: '#999999',
-                margin: 'md',
-                wrap: true
+                text: '月の満ち欠けから占います',
+                size: 'md',
+                wrap: true,
+                align: 'center',
+                margin: 'sm'
+              },
+              {
+                type: 'separator',
+                margin: 'lg'
               },
               {
                 type: 'box',
@@ -174,64 +206,27 @@ async function handleFollowEvent(event) {
                 spacing: 'sm',
                 contents: [
                   {
-                    type: 'box',
-                    layout: 'horizontal',
-                    contents: [
-                      {
-                        type: 'text',
-                        text: '🌑',
-                        size: 'sm',
-                        flex: 0
-                      },
-                      {
-                        type: 'text',
-                        text: '月の満ち欠けから性格を分析',
-                        size: 'sm',
-                        color: '#666666',
-                        margin: 'md',
-                        flex: 1
-                      }
-                    ]
+                    type: 'text',
+                    text: '📝 かんたん3ステップ',
+                    weight: 'bold',
+                    size: 'sm',
+                    color: '#764ba2'
                   },
                   {
-                    type: 'box',
-                    layout: 'horizontal',
-                    contents: [
-                      {
-                        type: 'text',
-                        text: '💫',
-                        size: 'sm',
-                        flex: 0
-                      },
-                      {
-                        type: 'text',
-                        text: '二人の相性を数値で診断',
-                        size: 'sm',
-                        color: '#666666',
-                        margin: 'md',
-                        flex: 1
-                      }
-                    ]
+                    type: 'text',
+                    text: '1. あなたの生年月日を入力',
+                    size: 'sm',
+                    margin: 'sm'
                   },
                   {
-                    type: 'box',
-                    layout: 'horizontal',
-                    contents: [
-                      {
-                        type: 'text',
-                        text: '📅',
-                        size: 'sm',
-                        flex: 0
-                      },
-                      {
-                        type: 'text',
-                        text: '今月のラッキーデーもお知らせ',
-                        size: 'sm',
-                        color: '#666666',
-                        margin: 'md',
-                        flex: 1
-                      }
-                    ]
+                    type: 'text',
+                    text: '2. お相手の生年月日を入力',
+                    size: 'sm'
+                  },
+                  {
+                    type: 'text',
+                    text: '3. 相性診断結果をチェック！',
+                    size: 'sm'
                   }
                 ]
               }
@@ -247,19 +242,11 @@ async function handleFollowEvent(event) {
                 style: 'primary',
                 height: 'md',
                 action: {
-                  type: 'uri',
+                  type: 'message',
                   label: '🔮 占いを始める',
-                  uri: `https://liff.line.me/${process.env.LIFF_ID}`
+                  text: '占いを始める'
                 },
                 color: '#764ba2'
-              },
-              {
-                type: 'text',
-                text: '完全無料で相性診断',
-                size: 'xs',
-                color: '#999999',
-                align: 'center',
-                margin: 'sm'
               }
             ]
           }
@@ -272,66 +259,143 @@ async function handleFollowEvent(event) {
   }
 }
 
+
 // ── ⑥ テキストメッセージ処理
 async function handleTextMessage(event) {
   const userId = event.source.userId;
   const text = event.message.text;
   
   try {
-    // リセットコマンド
-    if (text === 'リセット' || text === 'reset') {
-      await profileManager.deleteProfile(userId);
-      
-      // リセット後、新しいカードを送信
+    // 占いを始める
+    if (text === '占いを始める' || text === 'start') {
+      // あなたの情報入力カード（生年月日と性別を一つのカードで）
       await client.replyMessage(event.replyToken, [
         {
-          type: 'text',
-          text: 'プロファイルをリセットしました。'
-        },
-        {
           type: 'flex',
-          altText: '新しく占いを始める',
+          altText: 'あなたの情報を入力',
           contents: {
             type: 'bubble',
-            body: {
+            header: {
               type: 'box',
               layout: 'vertical',
               contents: [
                 {
                   type: 'text',
-                  text: '🔄 リセット完了',
-                  weight: 'bold',
+                  text: 'STEP 1/2',
+                  size: 'xs',
+                  color: '#ffffff'
+                },
+                {
+                  type: 'text',
+                  text: 'あなたの情報',
                   size: 'lg',
+                  color: '#ffffff',
+                  weight: 'bold'
+                }
+              ],
+              backgroundColor: '#764ba2',
+              paddingAll: '15px'
+            },
+            body: {
+              type: 'box',
+              layout: 'vertical',
+              spacing: 'md',
+              contents: [
+                {
+                  type: 'text',
+                  text: '1️⃣ 生年月日',
+                  size: 'sm',
+                  weight: 'bold',
+                  color: '#764ba2'
+                },
+                {
+                  type: 'button',
+                  action: {
+                    type: 'datetimepicker',
+                    label: '📅 生年月日を選択',
+                    data: 'action=userBirthDate',
+                    mode: 'date',
+                    initial: '1995-01-01',
+                    max: '2010-12-31',
+                    min: '1950-01-01'
+                  },
+                  style: 'secondary'
+                },
+                {
+                  type: 'separator',
                   margin: 'md'
                 },
                 {
                   type: 'text',
-                  text: '新しいプロフィールを登録してください',
+                  text: '2️⃣ 性別',
                   size: 'sm',
-                  color: '#999999',
-                  margin: 'md',
-                  wrap: true
-                }
-              ]
-            },
-            footer: {
-              type: 'box',
-              layout: 'vertical',
-              spacing: 'sm',
-              contents: [
+                  weight: 'bold',
+                  color: '#764ba2',
+                  margin: 'md'
+                },
                 {
-                  type: 'button',
-                  style: 'primary',
-                  height: 'md',
-                  action: {
-                    type: 'uri',
-                    label: '🔮 もう一度占いを始める',
-                    uri: `https://liff.line.me/${process.env.LIFF_ID}`
-                  },
-                  color: '#764ba2'
+                  type: 'box',
+                  layout: 'horizontal',
+                  spacing: 'sm',
+                  contents: [
+                    {
+                      type: 'button',
+                      action: {
+                        type: 'postback',
+                        label: '👨 男性',
+                        data: 'action=userGenderWithBirthDate&value=male'
+                      },
+                      style: 'secondary',
+                      flex: 1
+                    },
+                    {
+                      type: 'button',
+                      action: {
+                        type: 'postback',
+                        label: '👩 女性',
+                        data: 'action=userGenderWithBirthDate&value=female'
+                      },
+                      style: 'secondary',
+                      flex: 1
+                    }
+                  ]
+                },
+                {
+                  type: 'text',
+                  text: '※ まず生年月日を選択してから性別を選んでください',
+                  size: 'xs',
+                  color: '#999999',
+                  wrap: true,
+                  margin: 'md'
                 }
               ]
             }
+          }
+        }
+      ]);
+      return;
+    }
+    
+    // リセットコマンド
+    if (text === 'リセット' || text === 'reset') {
+      await profileManager.deleteProfile(userId);
+      
+      // リセット後、占いを始めるボタンを送信
+      await client.replyMessage(event.replyToken, [
+        {
+          type: 'text',
+          text: 'プロファイルをリセットしました✨\n\nもう一度占いを始めるには「占いを始める」とメッセージを送信してください。',
+          quickReply: {
+            items: [
+              {
+                type: 'action',
+                action: {
+                  type: 'message',
+                  label: '🔮 占いを始める',
+                  text: '占いを始める'
+                }
+              }
+            ]
           }
         }
       ]);
@@ -342,58 +406,28 @@ async function handleTextMessage(event) {
     const hasComplete = await profileManager.hasCompleteProfile(userId);
     if (!hasComplete) {
       await client.replyMessage(event.replyToken, {
-        type: 'flex',
-        altText: 'プロフィール登録が必要です',
-        contents: {
-          type: 'bubble',
-          body: {
-            type: 'box',
-            layout: 'vertical',
-            contents: [
-              {
-                type: 'text',
-                text: '📝 プロフィール登録',
-                weight: 'bold',
-                size: 'lg',
-                margin: 'md'
-              },
-              {
-                type: 'text',
-                text: '占いを始めるには、まずプロフィールを登録してください',
-                size: 'sm',
-                color: '#999999',
-                margin: 'md',
-                wrap: true
+        type: 'text',
+        text: '月相恋愛占いを始めるには「占いを始める」と送信してください🌙',
+        quickReply: {
+          items: [
+            {
+              type: 'action',
+              action: {
+                type: 'message',
+                label: '🔮 占いを始める',
+                text: '占いを始める'
               }
-            ]
-          },
-          footer: {
-            type: 'box',
-            layout: 'vertical',
-            spacing: 'sm',
-            contents: [
-              {
-                type: 'button',
-                style: 'primary',
-                height: 'md',
-                action: {
-                  type: 'uri',
-                  label: '🔮 プロフィールを登録',
-                  uri: `https://liff.line.me/${process.env.LIFF_ID || '2006754848-5GVVkzzV'}`
-                },
-                color: '#764ba2'
-              }
-            ]
-          }
+            }
+          ]
         }
       });
       return;
     }
     
-    // その他のテキストメッセージ
+    // プロファイルが完成している場合
     await client.replyMessage(event.replyToken, {
       type: 'text',
-      text: '月相占いの結果を確認するには、トーク履歴ファイルを送信してください📁\n\nプロフィールを変更したい場合は「リセット」と送信してください。'
+      text: '占い結果を更新するには、トーク履歴ファイルを送信してください📁\n\n生年月日を変更したい場合は「リセット」と送信してください。'
     });
     
   } catch (error) {
@@ -458,6 +492,12 @@ async function handleFortuneEvent(event) {
   const startTime = Date.now();
   
   try {
+    // 分析開始メッセージを送信
+    await client.pushMessage(userId, {
+      type: 'text',
+      text: '📥 トーク履歴を受信しました！\n\n🔍 会話パターンを分析中...\n\nしばらくお待ちください（約30秒〜1分）'
+    });
+    
     // ファイルダウンロード
     console.log('📥 トーク履歴を読み込み中...');
     const stream = await client.getMessageContent(event.message.id);
@@ -580,11 +620,872 @@ async function handleFortuneEvent(event) {
   }
 }
 
-// ── ⑥ Postbackイベント処理（課金処理）
+// ── ⑥ Postbackイベント処理
 async function handlePostbackEvent(event) {
   console.log('💳 Postback処理開始:', event.postback.data);
   
   const userId = event.source.userId;
+  
+  // postback処理（日付選択と性別選択）
+  if (event.postback.data.startsWith('action=')) {
+    const params = new URLSearchParams(event.postback.data);
+    const action = params.get('action');
+    const value = params.get('value');
+    const selectedDate = event.postback.params?.date; // YYYY-MM-DD format
+    
+    // ユーザーの生年月日選択
+    if (action === 'userBirthDate') {
+      // 生年月日を一時保存
+      await profileManager.saveProfile(userId, {
+        birthDate: selectedDate
+      });
+      
+      // 生年月日選択後のメッセージ
+      await client.replyMessage(event.replyToken, [
+        {
+          type: 'text',
+          text: '✅ 生年月日を選択しました\n\n次に、上のカードから性別を選んでください'
+        }
+      ]);
+      return;
+    }
+    
+    // ユーザーの性別選択（生年月日入力後）
+    if (action === 'userGenderWithBirthDate') {
+      const profile = await profileManager.getProfile(userId);
+      
+      // 生年月日が入力されているか確認
+      if (!profile || !profile.birthDate) {
+        await client.replyMessage(event.replyToken, [
+          {
+            type: 'text',
+            text: '⚠️ まず生年月日を選択してください'
+          }
+        ]);
+        return;
+      }
+      
+      // 性別を保存
+      await profileManager.saveProfile(userId, {
+        gender: value
+      });
+      
+      // お相手の情報入力カード
+      await client.replyMessage(event.replyToken, [
+        {
+          type: 'flex',
+          altText: 'お相手の情報を入力',
+          contents: {
+            type: 'bubble',
+            header: {
+              type: 'box',
+              layout: 'vertical',
+              contents: [
+                {
+                  type: 'text',
+                  text: 'STEP 2/2',
+                  size: 'xs',
+                  color: '#ffffff'
+                },
+                {
+                  type: 'text',
+                  text: 'お相手の情報',
+                  size: 'lg',
+                  color: '#ffffff',
+                  weight: 'bold'
+                }
+              ],
+              backgroundColor: '#764ba2',
+              paddingAll: '15px'
+            },
+            body: {
+              type: 'box',
+              layout: 'vertical',
+              spacing: 'md',
+              contents: [
+                {
+                  type: 'text',
+                  text: '1️⃣ 生年月日',
+                  size: 'sm',
+                  weight: 'bold',
+                  color: '#764ba2'
+                },
+                {
+                  type: 'button',
+                  action: {
+                    type: 'datetimepicker',
+                    label: '📅 生年月日を選択',
+                    data: 'action=partnerBirthDate',
+                    mode: 'date',
+                    initial: '1995-01-01',
+                    max: '2010-12-31',
+                    min: '1950-01-01'
+                  },
+                  style: 'secondary'
+                },
+                {
+                  type: 'separator',
+                  margin: 'md'
+                },
+                {
+                  type: 'text',
+                  text: '2️⃣ 性別',
+                  size: 'sm',
+                  weight: 'bold',
+                  color: '#764ba2',
+                  margin: 'md'
+                },
+                {
+                  type: 'box',
+                  layout: 'horizontal',
+                  spacing: 'sm',
+                  contents: [
+                    {
+                      type: 'button',
+                      action: {
+                        type: 'postback',
+                        label: '👨 男性',
+                        data: 'action=partnerGenderWithBirthDate&value=male'
+                      },
+                      style: 'secondary',
+                      flex: 1
+                    },
+                    {
+                      type: 'button',
+                      action: {
+                        type: 'postback',
+                        label: '👩 女性',
+                        data: 'action=partnerGenderWithBirthDate&value=female'
+                      },
+                      style: 'secondary',
+                      flex: 1
+                    }
+                  ]
+                },
+                {
+                  type: 'text',
+                  text: '※ まず生年月日を選択してから性別を選んでください',
+                  size: 'xs',
+                  color: '#999999',
+                  wrap: true,
+                  margin: 'md'
+                }
+              ]
+            }
+          }
+        }
+      ]);
+      return;
+    }
+    
+    // お相手の生年月日選択
+    if (action === 'partnerBirthDate') {
+      // 生年月日を一時保存
+      await profileManager.saveProfile(userId, {
+        partnerBirthDate: selectedDate
+      });
+      
+      // 生年月日選択後のメッセージ
+      await client.replyMessage(event.replyToken, [
+        {
+          type: 'text',
+          text: '✅ お相手の生年月日を選択しました\n\n次に、上のカードからお相手の性別を選んでください'
+        }
+      ]);
+      return;
+    }
+    
+    // 「知りたい！」ボタンが押された時
+    if (action === 'want_more_analysis') {
+      // トーク履歴送信の案内を送信
+      await client.replyMessage(event.replyToken, [
+        {
+          type: 'text',
+          text: '💕 もっと詳しく知りたいんですね！\n\n💬 LINEのトーク履歴を送信すると、会話パターンから二人の深層心理を分析します。\n\n具体的に分かること：\n✨ 会話の相性度\n✨ 感情の温度差\n✨ コミュニケーションパターン\n✨ 関係性の深さ\n✨ 将来の可能性'
+        },
+        {
+          type: 'flex',
+          altText: '📤 トーク履歴の送信方法',
+          contents: {
+            type: 'bubble',
+            size: 'mega',
+            header: {
+              type: 'box',
+              layout: 'vertical',
+              contents: [
+                {
+                  type: 'text',
+                  text: '📤 トーク履歴の送信方法',
+                  size: 'lg',
+                  color: '#ffffff',
+                  weight: 'bold',
+                  align: 'center'
+                }
+              ],
+              backgroundColor: '#06c755',
+              paddingAll: '15px'
+            },
+            body: {
+              type: 'box',
+              layout: 'vertical',
+              spacing: 'md',
+              contents: [
+                {
+                  type: 'box',
+                  layout: 'horizontal',
+                  contents: [
+                    {
+                      type: 'text',
+                      text: '1️⃣',
+                      size: 'lg',
+                      flex: 0
+                    },
+                    {
+                      type: 'text',
+                      text: 'トークルームの右上「≡」をタップ',
+                      size: 'md',
+                      margin: 'md',
+                      wrap: true,
+                      flex: 1
+                    }
+                  ]
+                },
+                {
+                  type: 'box',
+                  layout: 'horizontal',
+                  contents: [
+                    {
+                      type: 'text',
+                      text: '2️⃣',
+                      size: 'lg',
+                      flex: 0
+                    },
+                    {
+                      type: 'text',
+                      text: '「設定」を選択',
+                      size: 'md',
+                      margin: 'md',
+                      wrap: true,
+                      flex: 1
+                    }
+                  ]
+                },
+                {
+                  type: 'box',
+                  layout: 'horizontal',
+                  contents: [
+                    {
+                      type: 'text',
+                      text: '3️⃣',
+                      size: 'lg',
+                      flex: 0
+                    },
+                    {
+                      type: 'text',
+                      text: '「トーク履歴のバックアップ」をタップ',
+                      size: 'md',
+                      margin: 'md',
+                      wrap: true,
+                      flex: 1
+                    }
+                  ]
+                },
+                {
+                  type: 'box',
+                  layout: 'horizontal',
+                  contents: [
+                    {
+                      type: 'text',
+                      text: '4️⃣',
+                      size: 'lg',
+                      flex: 0
+                    },
+                    {
+                      type: 'text',
+                      text: '「LINE」をタップ',
+                      size: 'md',
+                      margin: 'md',
+                      wrap: true,
+                      flex: 1
+                    }
+                  ]
+                },
+                {
+                  type: 'box',
+                  layout: 'horizontal',
+                  contents: [
+                    {
+                      type: 'text',
+                      text: '5️⃣',
+                      size: 'lg',
+                      flex: 0
+                    },
+                    {
+                      type: 'text',
+                      text: '「おつきさま診断🌙」をタップして転送',
+                      size: 'md',
+                      margin: 'md',
+                      wrap: true,
+                      flex: 1
+                    }
+                  ]
+                },
+                {
+                  type: 'separator',
+                  margin: 'lg'
+                },
+                {
+                  type: 'text',
+                  text: '💡 ポイント',
+                  weight: 'bold',
+                  size: 'md',
+                  color: '#06c755',
+                  margin: 'lg'
+                },
+                {
+                  type: 'text',
+                  text: '• テキストファイル(.txt)が送信されます\n• 1ヶ月分以上のデータがおすすめ\n• 相手との会話が多いほど精度UP！',
+                  size: 'sm',
+                  color: '#666666',
+                  wrap: true,
+                  margin: 'sm'
+                }
+              ],
+              paddingAll: '20px'
+            }
+          }
+        },
+        // 動画を直接送信
+        {
+          type: 'video',
+          originalContentUrl: `${process.env.BASE_URL || 'https://line-love-edu.vercel.app'}/videos/talk-history-tutorial.mp4`,
+          previewImageUrl: `${process.env.BASE_URL || 'https://line-love-edu.vercel.app'}/images/video-thumbnail.jpg`,
+          trackingId: 'talk-history-tutorial'
+        }
+      ]);
+      return;
+    }
+    
+    // お相手の性別選択（生年月日入力後）
+    if (action === 'partnerGenderWithBirthDate') {
+      const profile = await profileManager.getProfile(userId);
+      
+      // お相手の生年月日が入力されているか確認
+      if (!profile || !profile.partnerBirthDate) {
+        await client.replyMessage(event.replyToken, [
+          {
+            type: 'text',
+            text: '⚠️ まずお相手の生年月日を選択してください'
+          }
+        ]);
+        return;
+      }
+      
+      // 性別を保存してプロフィールを完成
+      await profileManager.saveProfile(userId, {
+        partnerGender: value,
+        status: 'complete'
+      });
+      
+      // 月相占い結果を生成
+      const moonEngine = new MoonFortuneEngine();
+      const moonReport = moonEngine.generateFreeReport(
+        {
+          birthDate: profile.birthDate,
+          birthTime: '00:00',
+          gender: profile.gender || 'female'
+        },
+        {
+          birthDate: profile.partnerBirthDate,
+          birthTime: '00:00',
+          gender: value
+        }
+      );
+      
+      // 複数カードで充実した結果を送信
+      const compatScore = parseFloat(moonReport.compatibility.score);
+      const starCount = Math.floor(compatScore / 20);
+      
+      // カルーセルで複数カードを送信
+      await client.replyMessage(event.replyToken, [
+        {
+          type: 'flex',
+          altText: '🌙 月相恋愛占いの結果',
+          contents: {
+            type: 'carousel',
+            contents: [
+              // カード1: 総合相性
+              {
+                type: 'bubble',
+                size: 'mega',
+                header: {
+                  type: 'box',
+                  layout: 'vertical',
+                  contents: [
+                    {
+                      type: 'text',
+                      text: '🌙 月相恋愛占い',
+                      size: 'xl',
+                      color: '#ffffff',
+                      weight: 'bold',
+                      align: 'center'
+                    },
+                    {
+                      type: 'text',
+                      text: `総合相性: ${compatScore}%`,
+                      size: 'xxl',
+                      color: '#ffd700',
+                      align: 'center',
+                      margin: 'md',
+                      weight: 'bold'
+                    },
+                    {
+                      type: 'text',
+                      text: '★'.repeat(starCount) + '☆'.repeat(5 - starCount),
+                      size: 'xxl',
+                      color: '#ffd700',
+                      align: 'center',
+                      margin: 'sm'
+                    }
+                  ],
+                  backgroundColor: '#764ba2',
+                  paddingAll: '20px'
+                },
+                body: {
+                  type: 'box',
+                  layout: 'vertical',
+                  spacing: 'md',
+                  contents: [
+                    {
+                      type: 'text',
+                      text: `【${moonReport.compatibility.level}】`,
+                      weight: 'bold',
+                      size: 'xl',
+                      color: '#764ba2',
+                      align: 'center'
+                    },
+                    {
+                      type: 'text',
+                      text: moonReport.compatibility.description,
+                      wrap: true,
+                      size: 'md',
+                      margin: 'md'
+                    },
+                    {
+                      type: 'separator',
+                      margin: 'xl'
+                    },
+                    {
+                      type: 'text',
+                      text: '🔮 相性のポイント',
+                      weight: 'bold',
+                      size: 'lg',
+                      color: '#764ba2',
+                      margin: 'xl'
+                    },
+                    {
+                      type: 'text',
+                      text: moonReport.compatibility.advice.slice(0, 2).join('\n\n'),
+                      wrap: true,
+                      size: 'sm',
+                      margin: 'md',
+                      color: '#555555'
+                    }
+                  ],
+                  paddingAll: '20px'
+                }
+              },
+              // カード2: あなたの月相タイプ
+              {
+                type: 'bubble',
+                size: 'mega',
+                header: {
+                  type: 'box',
+                  layout: 'vertical',
+                  contents: [
+                    {
+                      type: 'text',
+                      text: 'あなたの月相',
+                      size: 'lg',
+                      color: '#ffffff',
+                      weight: 'bold',
+                      align: 'center'
+                    },
+                    {
+                      type: 'text',
+                      text: `${moonReport.user.moonPhaseType.symbol}`,
+                      size: '80px',
+                      align: 'center',
+                      margin: 'md'
+                    },
+                    {
+                      type: 'text',
+                      text: moonReport.user.moonPhaseType.name,
+                      size: 'xl',
+                      color: '#ffd700',
+                      align: 'center',
+                      weight: 'bold'
+                    }
+                  ],
+                  backgroundColor: '#667eea',
+                  paddingAll: '20px'
+                },
+                body: {
+                  type: 'box',
+                  layout: 'vertical',
+                  spacing: 'md',
+                  contents: [
+                    {
+                      type: 'text',
+                      text: moonReport.user.moonPhaseType.traits,
+                      weight: 'bold',
+                      size: 'md',
+                      color: '#667eea',
+                      align: 'center'
+                    },
+                    {
+                      type: 'separator',
+                      margin: 'lg'
+                    },
+                    {
+                      type: 'text',
+                      text: moonReport.user.moonPhaseType.description,
+                      wrap: true,
+                      size: 'sm',
+                      margin: 'md'
+                    },
+                    {
+                      type: 'separator',
+                      margin: 'lg'
+                    },
+                    {
+                      type: 'text',
+                      text: '🌟 特徴キーワード',
+                      weight: 'bold',
+                      size: 'md',
+                      color: '#667eea',
+                      margin: 'lg'
+                    },
+                    {
+                      type: 'text',
+                      text: moonReport.user.moonPhaseType.keywords.join(' / '),
+                      wrap: true,
+                      size: 'sm',
+                      margin: 'sm',
+                      align: 'center',
+                      color: '#555555'
+                    },
+                    {
+                      type: 'box',
+                      layout: 'horizontal',
+                      margin: 'lg',
+                      spacing: 'sm',
+                      contents: [
+                        {
+                          type: 'text',
+                          text: '月齢:',
+                          size: 'sm',
+                          flex: 1
+                        },
+                        {
+                          type: 'text',
+                          text: `${moonReport.user.moonAge}日`,
+                          size: 'sm',
+                          align: 'end',
+                          color: '#667eea'
+                        }
+                      ]
+                    },
+                    {
+                      type: 'box',
+                      layout: 'horizontal',
+                      spacing: 'sm',
+                      contents: [
+                        {
+                          type: 'text',
+                          text: '輝面比:',
+                          size: 'sm',
+                          flex: 1
+                        },
+                        {
+                          type: 'text',
+                          text: `${moonReport.user.illumination}%`,
+                          size: 'sm',
+                          align: 'end',
+                          color: '#667eea'
+                        }
+                      ]
+                    }
+                  ],
+                  paddingAll: '20px'
+                }
+              },
+              // カード3: お相手の月相タイプ
+              {
+                type: 'bubble',
+                size: 'mega',
+                header: {
+                  type: 'box',
+                  layout: 'vertical',
+                  contents: [
+                    {
+                      type: 'text',
+                      text: 'お相手の月相',
+                      size: 'lg',
+                      color: '#ffffff',
+                      weight: 'bold',
+                      align: 'center'
+                    },
+                    {
+                      type: 'text',
+                      text: `${moonReport.partner.moonPhaseType.symbol}`,
+                      size: '80px',
+                      align: 'center',
+                      margin: 'md'
+                    },
+                    {
+                      type: 'text',
+                      text: moonReport.partner.moonPhaseType.name,
+                      size: 'xl',
+                      color: '#ffd700',
+                      align: 'center',
+                      weight: 'bold'
+                    }
+                  ],
+                  backgroundColor: '#e91e63',
+                  paddingAll: '20px'
+                },
+                body: {
+                  type: 'box',
+                  layout: 'vertical',
+                  spacing: 'md',
+                  contents: [
+                    {
+                      type: 'text',
+                      text: moonReport.partner.moonPhaseType.traits,
+                      weight: 'bold',
+                      size: 'md',
+                      color: '#e91e63',
+                      align: 'center'
+                    },
+                    {
+                      type: 'separator',
+                      margin: 'lg'
+                    },
+                    {
+                      type: 'text',
+                      text: moonReport.partner.moonPhaseType.description,
+                      wrap: true,
+                      size: 'sm',
+                      margin: 'md'
+                    },
+                    {
+                      type: 'separator',
+                      margin: 'lg'
+                    },
+                    {
+                      type: 'text',
+                      text: '🌟 特徴キーワード',
+                      weight: 'bold',
+                      size: 'md',
+                      color: '#e91e63',
+                      margin: 'lg'
+                    },
+                    {
+                      type: 'text',
+                      text: moonReport.partner.moonPhaseType.keywords.join(' / '),
+                      wrap: true,
+                      size: 'sm',
+                      margin: 'sm',
+                      align: 'center',
+                      color: '#555555'
+                    },
+                    {
+                      type: 'box',
+                      layout: 'horizontal',
+                      margin: 'lg',
+                      spacing: 'sm',
+                      contents: [
+                        {
+                          type: 'text',
+                          text: '月齢:',
+                          size: 'sm',
+                          flex: 1
+                        },
+                        {
+                          type: 'text',
+                          text: `${moonReport.partner.moonAge}日`,
+                          size: 'sm',
+                          align: 'end',
+                          color: '#e91e63'
+                        }
+                      ]
+                    },
+                    {
+                      type: 'box',
+                      layout: 'horizontal',
+                      spacing: 'sm',
+                      contents: [
+                        {
+                          type: 'text',
+                          text: '輝面比:',
+                          size: 'sm',
+                          flex: 1
+                        },
+                        {
+                          type: 'text',
+                          text: `${moonReport.partner.illumination}%`,
+                          size: 'sm',
+                          align: 'end',
+                          color: '#e91e63'
+                        }
+                      ]
+                    }
+                  ],
+                  paddingAll: '20px'
+                }
+              },
+              // カード4: 今月の運勢
+              {
+                type: 'bubble',
+                size: 'mega',
+                header: {
+                  type: 'box',
+                  layout: 'vertical',
+                  contents: [
+                    {
+                      type: 'text',
+                      text: '🌃 今月の恋愛運',
+                      size: 'xl',
+                      color: '#ffffff',
+                      weight: 'bold',
+                      align: 'center'
+                    },
+                    {
+                      type: 'text',
+                      text: `【${moonReport.monthlyFortune.fortune.level}】`,
+                      size: 'lg',
+                      color: '#ffd700',
+                      align: 'center',
+                      margin: 'md',
+                      weight: 'bold'
+                    }
+                  ],
+                  backgroundColor: '#ff6b6b',
+                  paddingAll: '20px'
+                },
+                body: {
+                  type: 'box',
+                  layout: 'vertical',
+                  spacing: 'md',
+                  contents: [
+                    {
+                      type: 'text',
+                      text: '🌙 現在の月相',
+                      weight: 'bold',
+                      size: 'md',
+                      color: '#ff6b6b'
+                    },
+                    {
+                      type: 'text',
+                      text: `${moonReport.monthlyFortune.currentMoonSymbol} ${moonReport.monthlyFortune.currentMoonPhase}`,
+                      size: 'sm',
+                      margin: 'sm',
+                      align: 'center'
+                    },
+                    {
+                      type: 'separator',
+                      margin: 'lg'
+                    },
+                    {
+                      type: 'text',
+                      text: '💫 月からのメッセージ',
+                      weight: 'bold',
+                      size: 'md',
+                      color: '#ff6b6b',
+                      margin: 'lg'
+                    },
+                    {
+                      type: 'text',
+                      text: moonReport.monthlyFortune.fortune.message,
+                      wrap: true,
+                      size: 'sm',
+                      margin: 'md'
+                    },
+                    {
+                      type: 'separator',
+                      margin: 'lg'
+                    },
+                    {
+                      type: 'text',
+                      text: '🌟 ラッキーデー',
+                      weight: 'bold',
+                      size: 'md',
+                      color: '#ff6b6b',
+                      margin: 'lg'
+                    },
+                    {
+                      type: 'text',
+                      text: moonReport.monthlyFortune.luckyDays.length > 0 
+                        ? moonReport.monthlyFortune.luckyDays.slice(0, 3).map(day => 
+                            `${day.date}日 ${day.moonPhase}`
+                          ).join('\n')
+                        : '今月は内面を充実させる時期です',
+                      wrap: true,
+                      size: 'sm',
+                      margin: 'md'
+                    }
+                  ],
+                  paddingAll: '20px'
+                },
+                footer: {
+                  type: 'box',
+                  layout: 'vertical',
+                  spacing: 'md',
+                  backgroundColor: '#f0f0f0',
+                  paddingAll: '15px',
+                  contents: [
+                    {
+                      type: 'text',
+                      text: '🔮 もっと詳しく二人の相性を知りたいですか？',
+                      wrap: true,
+                      size: 'sm',
+                      weight: 'bold',
+                      color: '#333333',
+                      align: 'center'
+                    },
+                    {
+                      type: 'text',
+                      text: '会話パターンから深層心理を分析します',
+                      wrap: true,
+                      size: 'xs',
+                      color: '#666666',
+                      align: 'center',
+                      margin: 'sm'
+                    },
+                    {
+                      type: 'button',
+                      action: {
+                        type: 'postback',
+                        label: '💖 知りたい！',
+                        data: 'action=want_more_analysis'
+                      },
+                      style: 'primary',
+                      color: '#ff6b6b',
+                      height: 'md'
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ]);
+      return;
+    }
+  }
+  
+  // 既存の課金処理用のJSONパース
   const postbackData = JSON.parse(event.postback.data);
   
   try {
@@ -649,6 +1550,19 @@ async function handlePaymentSuccess(orderId, userId) {
   console.log('💰 決済完了処理開始:', orderId);
   
   try {
+    // まず購入完了メッセージを送信
+    await client.pushMessage(userId, [
+      {
+        type: 'text',
+        text: '✅ 購入完了しました！\n\n🔮 プレミアムレポートを作成中です...\n\n少々お待ちください（約1〜2分）'
+      },
+      {
+        type: 'sticker',
+        packageId: '11537',
+        stickerId: '52002750' // LINEのローディングスタンプ
+      }
+    ]);
+    
     // 注文に関連するメッセージ履歴を取得（実際の実装では保存されたデータから取得）
     // ここではプレースホルダーとして空配列を使用
     const messages = []; // 実際はデータベースから取得
@@ -955,12 +1869,6 @@ app.post('/api/payment-webhook', express.json(), async (req, res) => {
 app.get('/api/download-report', async (req, res) => {
   const downloadReport = require('./api/download-report');
   await downloadReport(req, res);
-});
-
-// Stripe Webhook（raw bodyが必要なので、express.json()の前に配置）
-app.post('/api/stripe/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
-  const stripeWebhook = require('./api/stripe-webhook');
-  await stripeWebhook(req, res);
 });
 
 // ── ⑩ 起動
