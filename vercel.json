@@ -1,29 +1,34 @@
 {
   "version": 2,
-  "builds": [
+  "rewrites": [
     {
-      "src": "index.js",
-      "use": "@vercel/node"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/webhook",
-      "dest": "/index.js"
+      "source": "/webhook",
+      "destination": "/api/main"
     },
     {
-      "src": "/api/stripe/webhook",
-      "dest": "/index.js"
+      "source": "/api/stripe/webhook",
+      "destination": "/api/stripe-webhook"
     },
     {
-      "src": "/(.*)",
-      "dest": "/index.js"
+      "source": "/payment/success",
+      "destination": "/api/payment-success"
+    },
+    {
+      "source": "/payment/cancel",
+      "destination": "/api/payment-cancel"
+    },
+    {
+      "source": "/api/download-report",
+      "destination": "/api/download-report"
     }
   ],
   "functions": {
-    "index.js": {
+    "api/main.js": {
       "maxDuration": 30,
       "memory": 1024
+    },
+    "api/*.js": {
+      "maxDuration": 30
     }
   },
   "env": {
