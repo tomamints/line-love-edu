@@ -70,13 +70,20 @@ app.use('/api', express.json());
 
 // ── ③ 重複防止
 const recentMessageIds = new Set();
+const recentPostbackIds = new Set();
 
 // ── ④ Webhook
 app.post('/webhook', middleware(config), async (req, res) => {
   console.log("🔮 恋愛お告げボット - リクエスト受信");
   console.log("📝 イベント数:", req.body.events?.length || 0);
+  
+  // X-Line-Retryヘッダーをチェック（リトライ回数）
+  const retryCount = req.headers['x-line-retry'] || 0;
+  if (retryCount > 0) {
+    console.log(`⚠️ リトライ検出: ${retryCount}回目のリトライ`);
+  }
 
-  // LINEに即座に200を返す
+  // LINEに即座に200を返す（超重要：これを早くしないとリトライされる）
   res.status(200).json({});
 
   // イベント処理は非同期で実行
@@ -124,6 +131,20 @@ app.post('/webhook', middleware(config), async (req, res) => {
       
       // postbackイベント（課金処理）の処理
       if (event.type === 'postback') {
+        // postbackの重複チェック
+        const postbackId = `${event.source.userId}_${event.postback.data}_${event.timestamp}`;
+        if (recentPostbackIds.has(postbackId)) {
+          console.log("⏭️ 重複postbackをスキップ:", postbackId);
+          return Promise.resolve();
+        }
+        recentPostbackIds.add(postbackId);
+        
+        // サイズ制限
+        if (recentPostbackIds.size > 1000) {
+          const firstKey = recentPostbackIds.values().next().value;
+          recentPostbackIds.delete(firstKey);
+        }
+        
         return handlePostbackEvent(event).catch(err => {
           console.error('=== Postback処理中にエラー ===', err);
           return client.replyMessage(event.replyToken, {
@@ -708,28 +729,21 @@ async function handlePostbackEvent(event) {
     
     // ユーザーの生年月日選択
     if (action === 'userBirthDate') {
-      try {
-        // 生年月日を一時保存
-        await getProfileManager().saveProfile(userId, {
-          birthDate: selectedDate
-        });
-        
-        // 生年月日選択後のメッセージ
-        await client.replyMessage(event.replyToken, [
-          {
-            type: 'text',
-            text: '✅ 生年月日を選択しました\n\n次に、上のカードから性別を選んでください'
-          }
-        ]);
-      } catch (error) {
-        console.error('生年月日保存エラー:', error);
-        await client.replyMessage(event.replyToken, [
-          {
-            type: 'text',
-            text: `エラーが発生しました: ${error.message}\n\nもう一度お試しください。`
-          }
-        ]);
-      }
+      // 即座にレスポンスを返す（重要）
+      await client.replyMessage(event.replyToken, [
+        {
+          type: 'text',
+          text: '✅ 生年月日を選択しました\n\n次に、上のカードから性別を選んでください'
+        }
+      ]);
+      
+      // プロファイル保存は非同期で実行（エラーが出ても無視）
+      getProfileManager().saveProfile(userId, {
+        birthDate: selectedDate
+      }).catch(err => {
+        console.error('生年月日保存エラー（無視）:', err);
+      });
+      
       return;
     }
     
