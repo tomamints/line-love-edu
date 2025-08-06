@@ -141,7 +141,7 @@ async function handleFollowEvent(event) {
             aspectMode: 'cover',
             action: {
               type: 'uri',
-              uri: 'https://line-love-edu.vercel.app/liff-register'
+              uri: 'https://liff.line.me/2006754848-5GVVkzzV'
             }
           },
           body: {
