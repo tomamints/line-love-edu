@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>月相占い画像ジェネレーター</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: sans-serif;
+            background: #f0f0f0;
+        }
+        .canvas-container {
+            margin-bottom: 20px;
+        }
+        canvas {
+            border: 1px solid #ccc;
+            display: block;
+            margin-bottom: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            background: #764ba2;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="canvas-container">
+        <h2>ウェルカム画像 (1040x676px)</h2>
+        <canvas id="welcomeCanvas" width="1040" height="676"></canvas>
+        <button onclick="downloadImage('welcomeCanvas', 'moon-welcome.jpg')">ダウンロード</button>
+    </div>
+    
+    <div class="canvas-container">
+        <h2>月相占い画像 (1040x676px)</h2>
+        <canvas id="fortuneCanvas" width="1040" height="676"></canvas>
+        <button onclick="downloadImage('fortuneCanvas', 'moon-fortune.jpg')">ダウンロード</button>
+    </div>
+
+    <script>
+        // ウェルカム画像を描画
+        function drawWelcomeImage() {
+            const canvas = document.getElementById('welcomeCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            // グラデーション背景
+            const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+            gradient.addColorStop(0, '#667eea');
+            gradient.addColorStop(1, '#764ba2');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // 星を描画
+            for (let i = 0; i < 50; i++) {
+                ctx.fillStyle = 'rgba(255, 255, 255, ' + Math.random() * 0.8 + ')';
+                ctx.beginPath();
+                ctx.arc(
+                    Math.random() * canvas.width,
+                    Math.random() * canvas.height,
+                    Math.random() * 2,
+                    0,
+                    Math.PI * 2
+                );
+                ctx.fill();
+            }
+            
+            // 月を描画
+            ctx.save();
+            ctx.translate(canvas.width / 2, canvas.height / 2 - 50);
+            
+            // 月の光輪
+            for (let i = 3; i > 0; i--) {
+                ctx.fillStyle = `rgba(255, 255, 255, ${0.05 * i})`;
+                ctx.beginPath();
+                ctx.arc(0, 0, 80 + i * 30, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            
+            // 月本体
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath();
+            ctx.arc(0, 0, 80, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // 月のクレーター
+            ctx.fillStyle = 'rgba(200, 200, 200, 0.3)';
+            ctx.beginPath();
+            ctx.arc(-20, -20, 15, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(30, 10, 20, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(-10, 30, 10, 0, Math.PI * 2);
+            ctx.fill();
+            
+            ctx.restore();
+            
+            // テキスト
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 60px "Hiragino Sans", sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('🌙 月相恋愛占い', canvas.width / 2, canvas.height / 2 + 100);
+            
+            ctx.font = '30px "Hiragino Sans", sans-serif';
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+            ctx.fillText('生年月日から導く運命の相性診断', canvas.width / 2, canvas.height / 2 + 150);
+        }
+        
+        // 月相占い結果画像を描画
+        function drawFortuneImage() {
+            const canvas = document.getElementById('fortuneCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            // グラデーション背景（夜空）
+            const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            gradient.addColorStop(0, '#0a0e27');
+            gradient.addColorStop(0.5, '#1e3c72');
+            gradient.addColorStop(1, '#2a5298');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // 星を描画
+            for (let i = 0; i < 100; i++) {
+                ctx.fillStyle = 'rgba(255, 255, 255, ' + (Math.random() * 0.8 + 0.2) + ')';
+                ctx.beginPath();
+                ctx.arc(
+                    Math.random() * canvas.width,
+                    Math.random() * canvas.height,
+                    Math.random() * 1.5,
+                    0,
+                    Math.PI * 2
+                );
+                ctx.fill();
+            }
+            
+            // 月の満ち欠けを描画
+            const phases = ['🌑', '🌒', '🌓', '🌔', '🌕', '🌖', '🌗', '🌘'];
+            ctx.font = '50px serif';
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2 - 50;
+            const radius = 150;
+            
+            phases.forEach((phase, i) => {
+                const angle = (i / phases.length) * Math.PI * 2 - Math.PI / 2;
+                const x = centerX + Math.cos(angle) * radius;
+                const y = centerY + Math.sin(angle) * radius;
+                ctx.fillText(phase, x - 25, y + 25);
+            });
+            
+            // 中央のハート
+            ctx.fillStyle = 'rgba(255, 100, 150, 0.8)';
+            ctx.font = '80px serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('💕', centerX, centerY + 10);
+            
+            // タイトル
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 50px "Hiragino Sans", sans-serif';
+            ctx.fillText('月相相性診断', canvas.width / 2, canvas.height - 100);
+            
+            ctx.font = '25px "Hiragino Sans", sans-serif';
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+            ctx.fillText('二人の運命を月が導く', canvas.width / 2, canvas.height - 50);
+        }
+        
+        // 画像をダウンロード
+        function downloadImage(canvasId, filename) {
+            const canvas = document.getElementById(canvasId);
+            const link = document.createElement('a');
+            link.download = filename;
+            link.href = canvas.toDataURL('image/jpeg', 0.9);
+            link.click();
+        }
+        
+        // 初期描画
+        drawWelcomeImage();
+        drawFortuneImage();
+    </script>
+</body>
+</html>

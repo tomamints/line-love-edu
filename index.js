@@ -28,7 +28,16 @@ const app    = express();
 const client = new Client(config);
 const paymentHandler = new PaymentHandler();
 const profileManager = new UserProfileManager();
+
+// 静的ファイルの提供
 app.use('/images', express.static(path.join(__dirname, 'images')));
+app.use(express.static(path.join(__dirname, 'public')));
+
+// JSONボディパーサー（API用）
+app.use('/api', express.json());
+
+// APIルーティング
+app.post('/api/save-profile', require('./api/save-profile'));
 
 // ── ③ 重複防止
 const recentMessageIds = new Set();
@@ -117,178 +126,272 @@ async function handleFollowEvent(event) {
   const userId = event.source.userId;
   
   try {
-    // ウェルカムメッセージを送信
+    // ウェルカムカードを送信
     await client.replyMessage(event.replyToken, [
       {
-        type: 'text',
-        text: `はじめまして！🌙\n月相恋愛占いへようこそ！\n\nあなたと気になるお相手の相性を、月の満ち欠けから占います。\n\nまず、あなたのお名前を教えてください（ニックネームでOK）`
+        type: 'flex',
+        altText: '月相恋愛占いへようこそ！',
+        contents: {
+          type: 'bubble',
+          hero: {
+            type: 'image',
+            url: 'https://line-love-edu.vercel.app/images/moon-welcome.jpg',
+            size: 'full',
+            aspectRatio: '20:13',
+            aspectMode: 'cover',
+            action: {
+              type: 'uri',
+              uri: 'https://line-love-edu.vercel.app/liff-register'
+            }
+          },
+          body: {
+            type: 'box',
+            layout: 'vertical',
+            contents: [
+              {
+                type: 'text',
+                text: '🌙 月相恋愛占い',
+                weight: 'bold',
+                size: 'xl',
+                margin: 'md',
+                color: '#764ba2'
+              },
+              {
+                type: 'text',
+                text: '生年月日から導く運命の相性',
+                size: 'sm',
+                color: '#999999',
+                margin: 'md',
+                wrap: true
+              },
+              {
+                type: 'box',
+                layout: 'vertical',
+                margin: 'lg',
+                spacing: 'sm',
+                contents: [
+                  {
+                    type: 'box',
+                    layout: 'horizontal',
+                    contents: [
+                      {
+                        type: 'text',
+                        text: '🌑',
+                        size: 'sm',
+                        flex: 0
+                      },
+                      {
+                        type: 'text',
+                        text: '月の満ち欠けから性格を分析',
+                        size: 'sm',
+                        color: '#666666',
+                        margin: 'md',
+                        flex: 1
+                      }
+                    ]
+                  },
+                  {
+                    type: 'box',
+                    layout: 'horizontal',
+                    contents: [
+                      {
+                        type: 'text',
+                        text: '💫',
+                        size: 'sm',
+                        flex: 0
+                      },
+                      {
+                        type: 'text',
+                        text: '二人の相性を数値で診断',
+                        size: 'sm',
+                        color: '#666666',
+                        margin: 'md',
+                        flex: 1
+                      }
+                    ]
+                  },
+                  {
+                    type: 'box',
+                    layout: 'horizontal',
+                    contents: [
+                      {
+                        type: 'text',
+                        text: '📅',
+                        size: 'sm',
+                        flex: 0
+                      },
+                      {
+                        type: 'text',
+                        text: '今月のラッキーデーもお知らせ',
+                        size: 'sm',
+                        color: '#666666',
+                        margin: 'md',
+                        flex: 1
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          footer: {
+            type: 'box',
+            layout: 'vertical',
+            spacing: 'sm',
+            contents: [
+              {
+                type: 'button',
+                style: 'primary',
+                height: 'md',
+                action: {
+                  type: 'uri',
+                  label: '🔮 占いを始める',
+                  uri: 'https://liff.line.me/2006754848-5GVVkzzV'
+                },
+                color: '#764ba2'
+              },
+              {
+                type: 'text',
+                text: '完全無料で相性診断',
+                size: 'xs',
+                color: '#999999',
+                align: 'center',
+                margin: 'sm'
+              }
+            ]
+          }
+        }
       }
     ]);
-    
-    // 初期プロファイルを作成
-    await profileManager.saveProfile(userId, {
-      createdAt: new Date().toISOString(),
-      status: 'waitingUserName'
-    });
     
   } catch (error) {
     console.error('友達追加処理エラー:', error);
   }
 }
 
-// ── ⑥ テキストメッセージ処理（プロファイル入力）
+// ── ⑥ テキストメッセージ処理
 async function handleTextMessage(event) {
   const userId = event.source.userId;
   const text = event.message.text;
   
   try {
-    // ユーザープロファイルを取得
-    const profile = await profileManager.getProfile(userId) || {};
-    const status = await profileManager.getInputStatus(userId);
-    
     // リセットコマンド
     if (text === 'リセット' || text === 'reset') {
       await profileManager.deleteProfile(userId);
+      
+      // リセット後、新しいカードを送信
+      await client.replyMessage(event.replyToken, [
+        {
+          type: 'text',
+          text: 'プロファイルをリセットしました。'
+        },
+        {
+          type: 'flex',
+          altText: '新しく占いを始める',
+          contents: {
+            type: 'bubble',
+            body: {
+              type: 'box',
+              layout: 'vertical',
+              contents: [
+                {
+                  type: 'text',
+                  text: '🔄 リセット完了',
+                  weight: 'bold',
+                  size: 'lg',
+                  margin: 'md'
+                },
+                {
+                  type: 'text',
+                  text: '新しいプロフィールを登録してください',
+                  size: 'sm',
+                  color: '#999999',
+                  margin: 'md',
+                  wrap: true
+                }
+              ]
+            },
+            footer: {
+              type: 'box',
+              layout: 'vertical',
+              spacing: 'sm',
+              contents: [
+                {
+                  type: 'button',
+                  style: 'primary',
+                  height: 'md',
+                  action: {
+                    type: 'uri',
+                    label: '🔮 もう一度占いを始める',
+                    uri: 'https://liff.line.me/2006754848-5GVVkzzV'
+                  },
+                  color: '#764ba2'
+                }
+              ]
+            }
+          }
+        }
+      ]);
+      return;
+    }
+    
+    // プロファイルが完成していない場合
+    const hasComplete = await profileManager.hasCompleteProfile(userId);
+    if (!hasComplete) {
       await client.replyMessage(event.replyToken, {
-        type: 'text',
-        text: 'プロファイルをリセットしました。\n\nあなたのお名前を教えてください（ニックネームでOK）'
-      });
-      await profileManager.saveProfile(userId, {
-        createdAt: new Date().toISOString(),
-        status: 'waitingUserName'
+        type: 'flex',
+        altText: 'プロフィール登録が必要です',
+        contents: {
+          type: 'bubble',
+          body: {
+            type: 'box',
+            layout: 'vertical',
+            contents: [
+              {
+                type: 'text',
+                text: '📝 プロフィール登録',
+                weight: 'bold',
+                size: 'lg',
+                margin: 'md'
+              },
+              {
+                type: 'text',
+                text: '占いを始めるには、まずプロフィールを登録してください',
+                size: 'sm',
+                color: '#999999',
+                margin: 'md',
+                wrap: true
+              }
+            ]
+          },
+          footer: {
+            type: 'box',
+            layout: 'vertical',
+            spacing: 'sm',
+            contents: [
+              {
+                type: 'button',
+                style: 'primary',
+                height: 'md',
+                action: {
+                  type: 'uri',
+                  label: '🔮 プロフィールを登録',
+                  uri: `https://liff.line.me/${process.env.LIFF_ID || '2006754848-5GVVkzzV'}`
+                },
+                color: '#764ba2'
+              }
+            ]
+          }
+        }
       });
       return;
     }
     
-    // 入力ステップに応じた処理
-    switch (status.currentStep) {
-      case 'userName':
-        // 名前を保存
-        await profileManager.saveProfile(userId, {
-          userName: text,
-          status: 'waitingUserBirthDate'
-        });
-        await client.replyMessage(event.replyToken, {
-          type: 'text',
-          text: `${text}さん、よろしくお願いします！✨\n\n次に、あなたの生年月日を教えてください\n（例: 1998/4/30 または 1998年4月30日）`
-        });
-        break;
-        
-      case 'userBirthDate':
-        // 生年月日をパース
-        const userBirthDate = profileManager.parseBirthDate(text);
-        if (!userBirthDate) {
-          await client.replyMessage(event.replyToken, {
-            type: 'text',
-            text: '生年月日の形式が正しくありません。\n\n以下の形式で入力してください：\n・1998/4/30\n・1998年4月30日\n・19980430'
-          });
-          return;
-        }
-        
-        await profileManager.saveProfile(userId, {
-          birthDate: userBirthDate,
-          status: 'waitingUserGender'
-        });
-        await client.replyMessage(event.replyToken, {
-          type: 'text',
-          text: '生年月日を登録しました！📅\n\nあなたの性別を教えてください\n（男性/女性）'
-        });
-        break;
-        
-      case 'userGender':
-        // 性別をパース
-        const userGender = profileManager.parseGender(text);
-        if (!userGender) {
-          await client.replyMessage(event.replyToken, {
-            type: 'text',
-            text: '性別を選択してください：\n・男性（男、M）\n・女性（女、F）'
-          });
-          return;
-        }
-        
-        await profileManager.saveProfile(userId, {
-          gender: userGender,
-          status: 'waitingPartnerBirthDate'
-        });
-        
-        // プロファイルを再取得して月相タイプを計算
-        const updatedProfile = await profileManager.getProfile(userId);
-        const moonEngine = new MoonFortuneEngine();
-        const userPhase = moonEngine.calculateMoonPhase(updatedProfile.birthDate);
-        const userType = moonEngine.getMoonPhaseType(userPhase);
-        
-        await client.replyMessage(event.replyToken, [
-          {
-            type: 'text',
-            text: `✨ あなたの月相タイプ ✨\n\n${userType.symbol} ${userType.name}\n「${userType.traits}」\n\n${userType.description}`
-          },
-          {
-            type: 'text',
-            text: '次に、気になるお相手の生年月日を教えてください\n（例: 1995/8/15）'
-          }
-        ]);
-        break;
-        
-      case 'partnerBirthDate':
-        // 相手の生年月日をパース
-        const partnerBirthDate = profileManager.parseBirthDate(text);
-        if (!partnerBirthDate) {
-          await client.replyMessage(event.replyToken, {
-            type: 'text',
-            text: '生年月日の形式が正しくありません。\n\n以下の形式で入力してください：\n・1995/8/15\n・1995年8月15日\n・19950815'
-          });
-          return;
-        }
-        
-        await profileManager.saveProfile(userId, {
-          partnerBirthDate: partnerBirthDate,
-          status: 'waitingPartnerGender'
-        });
-        await client.replyMessage(event.replyToken, {
-          type: 'text',
-          text: 'お相手の生年月日を登録しました！📅\n\nお相手の性別を教えてください\n（男性/女性）'
-        });
-        break;
-        
-      case 'partnerGender':
-        // 相手の性別をパース
-        const partnerGender = profileManager.parseGender(text);
-        if (!partnerGender) {
-          await client.replyMessage(event.replyToken, {
-            type: 'text',
-            text: '性別を選択してください：\n・男性（男、M）\n・女性（女、F）'
-          });
-          return;
-        }
-        
-        await profileManager.saveProfile(userId, {
-          partnerGender: partnerGender,
-          status: 'complete'
-        });
-        
-        // 月相占い結果を生成して送信
-        await sendMoonFortuneResult(event.replyToken, userId);
-        break;
-        
-      case 'complete':
-        // プロファイル完成後のメッセージ
-        await client.replyMessage(event.replyToken, {
-          type: 'text',
-          text: '月相占いの結果を確認するには、トーク履歴ファイルを送信してください📁\n\nプロファイルを変更したい場合は「リセット」と送信してください。'
-        });
-        break;
-        
-      default:
-        // プロファイルがない場合は最初から
-        await client.replyMessage(event.replyToken, {
-          type: 'text',
-          text: 'はじめまして！🌙\n\nまず、あなたのお名前を教えてください（ニックネームでOK）'
-        });
-        await profileManager.saveProfile(userId, {
-          createdAt: new Date().toISOString(),
-          status: 'waitingUserName'
-        });
-    }
+    // その他のテキストメッセージ
+    await client.replyMessage(event.replyToken, {
+      type: 'text',
+      text: '月相占いの結果を確認するには、トーク履歴ファイルを送信してください📁\n\nプロフィールを変更したい場合は「リセット」と送信してください。'
+    });
     
   } catch (error) {
     console.error('テキストメッセージ処理エラー:', error);
