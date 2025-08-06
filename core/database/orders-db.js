@@ -8,8 +8,30 @@ class OrdersDB {
     if (this.useDatabase) {
       console.log('✅ Supabase接続成功 - 注文データベース');
       this.initTable();
+      // 接続テスト
+      this.testConnection();
     } else {
       console.log('⚠️ Supabaseが設定されていません - ファイルストレージを使用');
+    }
+  }
+  
+  // Supabase接続テスト
+  async testConnection() {
+    try {
+      console.log('🔌 Supabase接続テスト開始...');
+      const { count, error } = await supabase
+        .from('orders')
+        .select('*', { count: 'exact', head: true });
+      
+      if (error) {
+        console.error('🔌 接続テストエラー:', error);
+        console.error('🔌 テーブルが存在しない可能性があります');
+      } else {
+        console.log('🔌 接続テスト成功 - ordersテーブル存在確認済み');
+        console.log('🔌 現在の注文数:', count);
+      }
+    } catch (err) {
+      console.error('🔌 接続テスト失敗:', err);
     }
   }
 
@@ -36,24 +58,31 @@ class OrdersDB {
 
   // 注文を保存
   async saveOrder(orderId, orderData) {
+    console.log('💾 saveOrder開始:', { orderId, orderData });
+    
     if (!this.useDatabase) {
+      console.log('💾 ファイルストレージに保存');
       // データベースが設定されていない場合はファイルストレージを使用
       return orderStorage.saveOrder(orderId, orderData);
     }
 
     try {
+      const upsertData = {
+        id: orderId,
+        user_id: orderData.userId,
+        amount: orderData.amount,
+        status: orderData.status || 'pending',
+        stripe_session_id: orderData.stripeSessionId,
+        paid_at: orderData.paidAt,
+        report_url: orderData.reportUrl,
+        updated_at: new Date().toISOString()
+      };
+      
+      console.log('💾 Supabaseに保存するデータ:', upsertData);
+      
       const { data, error } = await supabase
         .from('orders')
-        .upsert({
-          id: orderId,
-          user_id: orderData.userId,
-          amount: orderData.amount,
-          status: orderData.status || 'pending',
-          stripe_session_id: orderData.stripeSessionId,
-          paid_at: orderData.paidAt,
-          report_url: orderData.reportUrl,
-          updated_at: new Date().toISOString()
-        })
+        .upsert(upsertData)
         .select()
         .single();
 
@@ -84,12 +113,29 @@ class OrdersDB {
 
     try {
       console.log('📊 Supabaseから注文を取得中...');
-      const { data, error } = await supabase
+      console.log('📊 対象ID:', orderId);
+      
+      // タイムアウト付きでSupabaseから取得
+      const queryPromise = supabase
         .from('orders')
         .select('*')
         .eq('id', orderId)
         .single();
-
+      
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error('Supabase取得タイムアウト (5秒)')), 5000);
+      });
+      
+      let result;
+      try {
+        result = await Promise.race([queryPromise, timeoutPromise]);
+      } catch (timeoutError) {
+        console.error('📊 Supabaseタイムアウト:', timeoutError.message);
+        console.log('📊 フォールバック: ファイルストレージから取得');
+        return orderStorage.getOrder(orderId);
+      }
+      
+      const { data, error } = result;
       console.log('📊 Supabase応答:', { data: !!data, error: !!error });
       
       if (error) {

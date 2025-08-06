@@ -12,9 +12,24 @@ if (supabaseUrl) {
   console.log('🔍 SUPABASE_URL format:', supabaseUrl.substring(0, 30) + '...');
 }
 
-// Supabaseクライアントを作成
+// Supabaseクライアントを作成（タイムアウト設定付き）
 const supabase = supabaseUrl && supabaseKey 
-  ? createClient(supabaseUrl, supabaseKey)
+  ? createClient(supabaseUrl, supabaseKey, {
+      auth: {
+        persistSession: false
+      },
+      global: {
+        fetch: (url, options = {}) => {
+          const controller = new AbortController();
+          const timeout = setTimeout(() => controller.abort(), 10000); // 10秒のタイムアウト
+          
+          return fetch(url, {
+            ...options,
+            signal: controller.signal
+          }).finally(() => clearTimeout(timeout));
+        }
+      }
+    })
   : null;
 
 // データベースが設定されているかチェック
