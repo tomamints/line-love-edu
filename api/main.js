@@ -8,6 +8,10 @@ console.log("✅ SECRET:", !!process.env.CHANNEL_SECRET);
 console.log("✅ TOKEN:", !!process.env.CHANNEL_ACCESS_TOKEN);
 console.log("✅ OPENAI_API_KEY:", !!process.env.OPENAI_API_KEY);
 
+// 環境変数の長さを確認（セキュアにログ出力）
+console.log("📏 SECRET length:", process.env.CHANNEL_SECRET?.length || 0);
+console.log("📏 TOKEN length:", process.env.CHANNEL_ACCESS_TOKEN?.length || 0);
+
 // LINEクライアント設定
 const config = {
   channelSecret: process.env.CHANNEL_SECRET,
@@ -15,6 +19,7 @@ const config = {
 };
 
 const client = new Client(config);
+console.log("🤖 LINE Client initialized");
 
 // 重いモジュールは必要時に遅延ロード
 let profileManager, handleFollowEvent, handleTextMessage, handlePostbackEvent, handleTestReport;
@@ -167,6 +172,23 @@ async function handleFollowEventLocal(event) {
   console.log('📍 Reply Token:', event.replyToken);
   console.log('👤 User ID:', event.source.userId);
   
+  // まずシンプルなテキストメッセージを送信してテスト
+  try {
+    console.log('📤 テキストメッセージ送信開始...');
+    const result = await client.replyMessage(event.replyToken, {
+      type: 'text',
+      text: '🌙 月相恋愛占いへようこそ！\n\n生年月日から二人の相性を占います✨\n\n「占いを始める」と送信してください'
+    });
+    console.log('✅ テキストメッセージ送信成功:', result);
+    return;
+  } catch (error) {
+    console.error('❌ テキストメッセージ送信失敗:', error);
+    console.error('❌ エラー詳細:', error.response?.data || error.message);
+    console.error('❌ エラースタック:', error.stack);
+  }
+  
+  // Flexメッセージは一旦コメントアウト
+  /*
   try {
     // 美しいウェルカムカードを送信
     const result = await client.replyMessage(event.replyToken, {
@@ -293,19 +315,8 @@ async function handleFollowEventLocal(event) {
   } catch (error) {
     console.error('❌ ウェルカムカード送信失敗:', error);
     console.error('❌ エラー詳細:', error.response?.data || error.message);
-    
-    // フォールバック
-    try {
-      const fallbackResult = await client.replyMessage(event.replyToken, {
-        type: 'text', 
-        text: '🌙 月相恋愛占いへようこそ！\n\n生年月日から二人の相性を占います✨\n\n「占いを始める」と送信してください'
-      });
-      console.log('✅ フォールバックメッセージ送信成功:', fallbackResult);
-    } catch (fallbackError) {
-      console.error('❌ フォールバックメッセージも失敗:', fallbackError);
-      console.error('❌ フォールバックエラー詳細:', fallbackError.response?.data || fallbackError.message);
-    }
   }
+  */
 }
 
 // 他のハンドラー関数もindex.jsから動的にインポートされるため、
