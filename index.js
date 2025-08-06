@@ -183,16 +183,141 @@ app.post('/webhook', middleware(config), async (req, res) => {
 async function handleFollowEvent(event) {
   console.log('👋 新しい友達が追加されました');
   
-  // コールドスタート対策：シンプルなメッセージを即座に送信
   try {
+    // 美しいウェルカムカードを送信
     await client.replyMessage(event.replyToken, {
-      type: 'text', 
-      text: '🌙 月相恋愛占いへようこそ！\n\n生年月日から二人の相性を占います✨\n\n「占いを始める」と送信してください'
+      type: 'flex',
+      altText: '🌙 月相恋愛占いへようこそ！',
+      contents: {
+        type: 'bubble',
+        size: 'mega',
+        header: {
+          type: 'box',
+          layout: 'vertical',
+          contents: [
+            {
+              type: 'box',
+              layout: 'vertical',
+              contents: [
+                {
+                  type: 'text',
+                  text: '🌙',
+                  size: '60px',
+                  align: 'center'
+                },
+                {
+                  type: 'text',
+                  text: '月相恋愛占い',
+                  size: 'xl',
+                  color: '#ffffff',
+                  align: 'center',
+                  weight: 'bold'
+                },
+                {
+                  type: 'text',
+                  text: '生年月日から導く運命の相性',
+                  size: 'sm',
+                  color: '#ffffff',
+                  align: 'center',
+                  margin: 'sm'
+                }
+              ]
+            }
+          ],
+          paddingAll: '20px',
+          backgroundColor: '#764ba2',
+          spacing: 'md',
+          paddingTop: '22px'
+        },
+        body: {
+          type: 'box',
+          layout: 'vertical',
+          contents: [
+            {
+              type: 'text',
+              text: 'あなたと大切な人の相性を',
+              size: 'md',
+              wrap: true,
+              align: 'center'
+            },
+            {
+              type: 'text',
+              text: '月の満ち欠けから占います',
+              size: 'md',
+              wrap: true,
+              align: 'center',
+              margin: 'sm'
+            },
+            {
+              type: 'separator',
+              margin: 'lg'
+            },
+            {
+              type: 'box',
+              layout: 'vertical',
+              margin: 'lg',
+              spacing: 'sm',
+              contents: [
+                {
+                  type: 'text',
+                  text: '📝 かんたん3ステップ',
+                  weight: 'bold',
+                  size: 'sm',
+                  color: '#764ba2'
+                },
+                {
+                  type: 'text',
+                  text: '1. あなたの生年月日を入力',
+                  size: 'sm',
+                  margin: 'sm'
+                },
+                {
+                  type: 'text',
+                  text: '2. お相手の生年月日を入力',
+                  size: 'sm'
+                },
+                {
+                  type: 'text',
+                  text: '3. 相性診断結果をチェック！',
+                  size: 'sm'
+                }
+              ]
+            }
+          ]
+        },
+        footer: {
+          type: 'box',
+          layout: 'vertical',
+          spacing: 'sm',
+          contents: [
+            {
+              type: 'button',
+              style: 'primary',
+              height: 'md',
+              action: {
+                type: 'message',
+                label: '🔮 占いを始める',
+                text: '占いを始める'
+              },
+              color: '#764ba2'
+            }
+          ]
+        }
+      }
     });
-    console.log('✅ ウェルカムメッセージ送信成功');
+    console.log('✅ ウェルカムカード送信成功');
     return;
   } catch (error) {
-    console.error('❌ ウェルカムメッセージ送信失敗:', error.message);
+    console.error('❌ ウェルカムカード送信失敗:', error.message);
+    // フォールバック：シンプルなテキストメッセージ
+    try {
+      await client.replyMessage(event.replyToken, {
+        type: 'text', 
+        text: '🌙 月相恋愛占いへようこそ！\n\n生年月日から二人の相性を占います✨\n\n「占いを始める」と送信してください'
+      });
+    } catch (fallbackError) {
+      console.error('❌ フォールバックメッセージも失敗:', fallbackError.message);
+    }
   }
   
   // 以下は実行されない（上でreturn）
