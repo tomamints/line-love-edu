@@ -64,7 +64,13 @@ app.post('/webhook', middleware(config), async (req, res) => {
       
       // テキストメッセージの処理（プロファイル入力）
       if (event.type === 'message' && event.message.type === 'text') {
-        return handleTextMessage(event);
+        return handleTextMessage(event).catch(err => {
+          console.error('テキストメッセージ処理エラー:', err);
+          return client.replyMessage(event.replyToken, {
+            type: 'text',
+            text: `エラーが発生しました:\n${err.message}\n\nもう一度「占いを始める」と送信してください。`
+          });
+        });
       }
       
       // ファイルメッセージ（トーク履歴）の処理
@@ -95,10 +101,10 @@ app.post('/webhook', middleware(config), async (req, res) => {
       if (event.type === 'postback') {
         return handlePostbackEvent(event).catch(err => {
           console.error('=== Postback処理中にエラー ===', err);
-          return client.pushMessage(event.source.userId, {
+          return client.replyMessage(event.replyToken, {
             type: 'text',
-            text: '⚠️ 処理中にエラーが発生しました。しばらく経ってから再度お試しください。'
-          }).catch(pushErr => console.error('Push message error:', pushErr));
+            text: `⚠️ エラーが発生しました:\n${err.message}\n\nもう一度お試しください。`
+          });
         });
       }
       
