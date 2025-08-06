@@ -5,11 +5,10 @@ const orderStorage = require('../premium/order-storage');
 class OrdersDB {
   constructor() {
     this.useDatabase = isDatabaseConfigured();
+    
     if (this.useDatabase) {
-      console.log('✅ Supabase接続成功 - 注文データベース');
+      console.log('✅ Supabase設定検出 - 注文データベース');
       this.initTable();
-      // 接続テスト
-      this.testConnection();
     } else {
       console.log('⚠️ Supabaseが設定されていません - ファイルストレージを使用');
     }
@@ -19,19 +18,30 @@ class OrdersDB {
   async testConnection() {
     try {
       console.log('🔌 Supabase接続テスト開始...');
-      const { count, error } = await supabase
+      
+      // タイムアウト付きで接続テスト
+      const testPromise = supabase
         .from('orders')
         .select('*', { count: 'exact', head: true });
+      
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error('接続テストタイムアウト')), 2000);
+      });
+      
+      const { count, error } = await Promise.race([testPromise, timeoutPromise]);
       
       if (error) {
         console.error('🔌 接続テストエラー:', error);
         console.error('🔌 テーブルが存在しない可能性があります');
+        return false;
       } else {
         console.log('🔌 接続テスト成功 - ordersテーブル存在確認済み');
         console.log('🔌 現在の注文数:', count);
+        return true;
       }
     } catch (err) {
-      console.error('🔌 接続テスト失敗:', err);
+      console.error('🔌 接続テスト失敗:', err.message);
+      return false;
     }
   }
 
@@ -113,54 +123,49 @@ class OrdersDB {
 
     try {
       console.log('📊 Supabaseから注文を取得中...');
-      console.log('📊 対象ID:', orderId);
       
-      // タイムアウト付きでSupabaseから取得
-      const queryPromise = supabase
+      const { data, error } = await supabase
         .from('orders')
         .select('*')
         .eq('id', orderId)
         .single();
       
-      const timeoutPromise = new Promise((_, reject) => {
-        setTimeout(() => reject(new Error('Supabase取得タイムアウト (5秒)')), 5000);
+      console.log('📊 Supabase応答:', { 
+        hasData: !!data, 
+        hasError: !!error,
+        errorMessage: error?.message 
       });
       
-      let result;
-      try {
-        result = await Promise.race([queryPromise, timeoutPromise]);
-      } catch (timeoutError) {
-        console.error('📊 Supabaseタイムアウト:', timeoutError.message);
-        console.log('📊 フォールバック: ファイルストレージから取得');
-        return orderStorage.getOrder(orderId);
-      }
-      
-      const { data, error } = result;
-      console.log('📊 Supabase応答:', { data: !!data, error: !!error });
-      
       if (error) {
-        console.error('注文取得エラー:', error);
-        console.error('エラー詳細:', JSON.stringify(error));
-        // フォールバック：ファイルストレージを試す
-        console.log('📊 フォールバック: ファイルストレージから取得');
-        return orderStorage.getOrder(orderId);
-      }
-
-      if (!data) {
-        console.log('📊 データベースに注文なし、ファイルストレージを確認');
-        // データベースにない場合、ファイルストレージを確認
+        // PGRST116 = Row not found
+        if (error.code === 'PGRST116') {
+          console.log('📊 注文がDBに存在しない、ファイルストレージを確認');
+        } else {
+          console.error('📊 Supabaseエラー:', error);
+        }
+        
+        // ファイルストレージから取得を試みる
         const fileOrder = await orderStorage.getOrder(orderId);
         if (fileOrder) {
-          console.log('📊 ファイルストレージに注文あり、DBに移行');
-          // ファイルにある場合はデータベースに移行
-          await this.saveOrder(orderId, fileOrder);
-          return fileOrder;
+          console.log('📊 ファイルストレージから注文取得成功');
+          // DBが使える場合は保存を試みる（エラーは無視）
+          try {
+            await this.saveOrder(orderId, fileOrder);
+            console.log('📊 注文をDBに移行成功');
+          } catch (saveErr) {
+            console.log('📊 DB移行失敗（続行）:', saveErr.message);
+          }
         }
-        console.log('📊 注文が見つかりません');
+        return fileOrder;
+      }
+      
+      if (!data) {
+        console.log('📊 注文データなし');
         return null;
       }
-
+      
       console.log('📊 注文データ取得成功:', data.id);
+      
       // データベースの形式をアプリケーションの形式に変換
       const formattedOrder = {
         orderId: data.id,
@@ -173,10 +178,13 @@ class OrdersDB {
         createdAt: data.created_at,
         updatedAt: data.updated_at
       };
+      
       console.log('📊 フォーマット済み注文:', formattedOrder);
       return formattedOrder;
+      
     } catch (err) {
-      console.error('データベースエラー:', err);
+      console.error('📊 予期しないエラー:', err.message);
+      console.log('📊 フォールバック: ファイルストレージから取得');
       return orderStorage.getOrder(orderId);
     }
   }
