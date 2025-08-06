@@ -123,8 +123,13 @@ module.exports = async (req, res) => {
       </div>
       
       <script>
-        // レポート生成はサーバーサイドで自動的に実行されています
+        // レポート生成はバックグラウンドで自動的に実行されています
         console.log('決済完了 - レポート生成中...');
+        
+        // ページを即座に表示
+        window.addEventListener('DOMContentLoaded', function() {
+          console.log('決済成功ページ表示完了');
+        });
       </script>
     </body>
     </html>

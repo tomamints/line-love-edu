@@ -49,62 +49,68 @@ module.exports = async (req, res) => {
       return res.status(400).send('Missing metadata');
     }
     
-    try {
-      // 注文情報を取得
-      const order = await orderStorage.getOrder(orderId);
-      if (!order) {
-        console.error('注文が見つかりません:', orderId);
-        return res.status(404).send('Order not found');
-      }
-      
-      // 注文ステータスを更新
-      await orderStorage.updateOrder(orderId, {
-        status: 'paid',
-        stripeSessionId: session.id,
-        paidAt: new Date().toISOString()
-      });
-      
-      console.log('🔮 レポート生成開始...');
-      
-      // テスト用のメッセージ履歴を生成
-      const testMessages = generateTestMessages();
-      
-      // レポートを生成
-      const completionResult = await paymentHandler.handlePaymentSuccess(orderId, testMessages);
-      
-      console.log('📤 LINEでレポート送信...');
-      
-      // LINEでレポート完成通知を送信
-      const completionMessages = paymentHandler.generateCompletionMessage(completionResult);
-      
-      if (Array.isArray(completionMessages)) {
-        for (const message of completionMessages) {
-          await lineClient.pushMessage(userId, message);
-        }
-      } else {
-        await lineClient.pushMessage(userId, completionMessages);
-      }
-      
-      console.log('✅ Stripe Webhook処理完了');
-      
-    } catch (error) {
-      console.error('レポート生成エラー:', error);
-      
-      // エラー通知をLINEで送信
-      try {
-        await lineClient.pushMessage(userId, {
-          type: 'text',
-          text: '決済は完了しましたが、レポート生成中にエラーが発生しました。サポートまでお問い合わせください。'
-        });
-      } catch (lineError) {
-        console.error('LINE通知エラー:', lineError);
-      }
-    }
+    // レポート生成を非同期で実行（レスポンスを待たない）
+    processPaymentAsync(orderId, userId, session.id);
   }
   
-  // Stripeに200を返す
+  // Stripeに即座に200を返す（レポート生成を待たない）
   res.json({ received: true });
 };
+
+// 非同期でレポート生成と送信を処理
+async function processPaymentAsync(orderId, userId, stripeSessionId) {
+  try {
+    // 注文情報を取得
+    const order = await orderStorage.getOrder(orderId);
+    if (!order) {
+      console.error('注文が見つかりません:', orderId);
+      return;
+    }
+    
+    // 注文ステータスを更新
+    await orderStorage.updateOrder(orderId, {
+      status: 'paid',
+      stripeSessionId: stripeSessionId,
+      paidAt: new Date().toISOString()
+    });
+    
+    console.log('🔮 レポート生成開始...');
+    
+    // テスト用のメッセージ履歴を生成
+    const testMessages = generateTestMessages();
+    
+    // レポートを生成
+    const completionResult = await paymentHandler.handlePaymentSuccess(orderId, testMessages);
+    
+    console.log('📤 LINEでレポート送信...');
+    
+    // LINEでレポート完成通知を送信
+    const completionMessages = paymentHandler.generateCompletionMessage(completionResult);
+    
+    if (Array.isArray(completionMessages)) {
+      for (const message of completionMessages) {
+        await lineClient.pushMessage(userId, message);
+      }
+    } else {
+      await lineClient.pushMessage(userId, completionMessages);
+    }
+    
+    console.log('✅ Stripe Webhook処理完了');
+    
+  } catch (error) {
+    console.error('レポート生成エラー:', error);
+    
+    // エラー通知をLINEで送信
+    try {
+      await lineClient.pushMessage(userId, {
+        type: 'text',
+        text: '決済は完了しましたが、レポート生成中にエラーが発生しました。サポートまでお問い合わせください。'
+      });
+    } catch (lineError) {
+      console.error('LINE通知エラー:', lineError);
+    }
+  }
+}
 
 // テスト用メッセージ履歴を生成
 function generateTestMessages() {

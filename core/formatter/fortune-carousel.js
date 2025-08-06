@@ -51,7 +51,8 @@ class FortuneCarouselBuilder {
       const pages = [
         this.addOpeningPage(),          // 1. オープニング
         this.addOverallPage(),          // 2. 総合運勢
-        ...this.addDestinyMomentPages(), // 3-5. 運命の瞬間（最大3ページ）
+        this.addMoonFortunePage(),      // 3. 月相占い
+        ...this.addDestinyMomentPages(), // 4-5. 運命の瞬間（最大2ページ）
         this.addLuckyItemsPage(),       // 6. 開運アイテム
         this.addActionSummaryPage(),    // 7. アクションまとめ
         this.addPremiumInvitePage()     // 8. 課金誘導ページ
@@ -305,14 +306,456 @@ class FortuneCarouselBuilder {
   }
   
   /**
-   * 3-5. 運命の瞬間ページ（最大3ページ）
+   * 3. 月相占いページ
+   */
+  addMoonFortunePage() {
+    if (!this.fortune.moonAnalysis) {
+      // 月相占いがない場合のフォールバック
+      return {
+        type: 'bubble',
+        size: 'mega',
+        header: {
+          type: 'box',
+          layout: 'vertical',
+          backgroundColor: this.styles.deepPurple,
+          paddingAll: '20px',
+          contents: [
+            {
+              type: 'text',
+              text: '🌙 月相恋愛占い 🌙',
+              size: 'xl',
+              color: this.styles.gold,
+              align: 'center',
+              weight: 'bold'
+            }
+          ]
+        },
+        body: {
+          type: 'box',
+          layout: 'vertical',
+          backgroundColor: this.styles.cosmicPurple,
+          paddingAll: '20px',
+          contents: [
+            {
+              type: 'text',
+              text: '月相分析中...',
+              size: 'md',
+              color: this.styles.starlight,
+              align: 'center'
+            }
+          ]
+        }
+      };
+    }
+    
+    const moon = this.fortune.moonAnalysis;
+    
+    return {
+      type: 'bubble',
+      size: 'mega',
+      header: {
+        type: 'box',
+        layout: 'vertical',
+        backgroundColor: this.styles.deepPurple,
+        paddingAll: '20px',
+        contents: [
+          {
+            type: 'text',
+            text: '🌙 月相恋愛占い 🌙',
+            size: 'xl',
+            color: this.styles.gold,
+            align: 'center',
+            weight: 'bold'
+          },
+          {
+            type: 'text',
+            text: 'Moon Phase Love Fortune',
+            size: 'xs',
+            color: this.styles.stardust,
+            align: 'center',
+            margin: 'sm'
+          }
+        ]
+      },
+      body: {
+        type: 'box',
+        layout: 'vertical',
+        backgroundColor: this.styles.cosmicPurple,
+        paddingAll: '20px',
+        contents: [
+          // あなたの月相タイプ
+          {
+            type: 'box',
+            layout: 'vertical',
+            backgroundColor: this.styles.mystical,
+            cornerRadius: '12px',
+            paddingAll: '15px',
+            margin: 'md',
+            contents: [
+              {
+                type: 'text',
+                text: `あなた: ${moon.user.moonPhaseType.symbol} ${moon.user.moonPhaseType.name}`,
+                size: 'sm',
+                color: this.styles.gold,
+                weight: 'bold',
+                wrap: true
+              },
+              {
+                type: 'text',
+                text: moon.user.moonPhaseType.traits,
+                size: 'xs',
+                color: this.styles.starlight,
+                margin: 'sm',
+                wrap: true
+              },
+              {
+                type: 'text',
+                text: `月齢: ${moon.user.moonAge}日`,
+                size: 'xxs',
+                color: this.styles.roseGold,
+                margin: 'sm'
+              }
+            ]
+          },
+          // お相手の月相タイプ
+          {
+            type: 'box',
+            layout: 'vertical',
+            backgroundColor: this.styles.mystical,
+            cornerRadius: '12px',
+            paddingAll: '15px',
+            margin: 'md',
+            contents: [
+              {
+                type: 'text',
+                text: `お相手: ${moon.partner.moonPhaseType.symbol} ${moon.partner.moonPhaseType.name}`,
+                size: 'sm',
+                color: this.styles.gold,
+                weight: 'bold',
+                wrap: true
+              },
+              {
+                type: 'text',
+                text: moon.partner.moonPhaseType.traits,
+                size: 'xs',
+                color: this.styles.starlight,
+                margin: 'sm',
+                wrap: true
+              },
+              {
+                type: 'text',
+                text: `月齢: ${moon.partner.moonAge}日`,
+                size: 'xxs',
+                color: this.styles.roseGold,
+                margin: 'sm'
+              }
+            ]
+          },
+          // 相性度
+          {
+            type: 'box',
+            layout: 'vertical',
+            backgroundColor: this.styles.mystical,
+            cornerRadius: '12px',
+            paddingAll: '15px',
+            margin: 'md',
+            contents: [
+              {
+                type: 'text',
+                text: '💫 月相相性',
+                size: 'sm',
+                color: this.styles.gold,
+                weight: 'bold'
+              },
+              {
+                type: 'text',
+                text: `相性度: ${moon.compatibility.score}%`,
+                size: 'lg',
+                color: this.styles.auroraGreen,
+                margin: 'sm',
+                weight: 'bold'
+              },
+              {
+                type: 'text',
+                text: `【${moon.compatibility.level}】`,
+                size: 'xs',
+                color: this.styles.roseGold,
+                margin: 'sm'
+              },
+              {
+                type: 'text',
+                text: moon.compatibility.description,
+                size: 'xxs',
+                color: this.styles.starlight,
+                margin: 'sm',
+                wrap: true
+              }
+            ]
+          },
+          // 今月の運勢
+          {
+            type: 'box',
+            layout: 'vertical',
+            backgroundColor: this.styles.mystical,
+            cornerRadius: '12px',
+            paddingAll: '15px',
+            margin: 'md',
+            contents: [
+              {
+                type: 'text',
+                text: `📅 今月の運勢: ${moon.monthlyFortune.fortune.level}`,
+                size: 'sm',
+                color: this.styles.gold,
+                weight: 'bold'
+              },
+              {
+                type: 'text',
+                text: `現在の月: ${moon.monthlyFortune.currentMoonSymbol}`,
+                size: 'xs',
+                color: this.styles.starlight,
+                margin: 'sm'
+              },
+              ...(moon.monthlyFortune.luckyDays.length > 0 ? [
+                {
+                  type: 'text',
+                  text: `🌟 ラッキーデー: ${moon.monthlyFortune.luckyDays[0].date}日`,
+                  size: 'xxs',
+                  color: this.styles.auroraGreen,
+                  margin: 'sm'
+                }
+              ] : [])
+            ]
+          }
+        ]
+      }
+    };
+  }
+  
+  /**
+   * 4-5. 運命の瞬間ページ（最大2ページ）
    */
   addDestinyMomentPages() {
     const moments = this.fortune.destinyMoments || [];
     
-    return moments.slice(0, 3).map((moment, index) => {
+    return moments.slice(0, 2).map((moment, index) => {
       return this.createDestinyMomentPage(moment, index + 1);
     });
+  }
+  
+  /**
+   * 5. 波動診断ページ
+   */
+  addWaveAnalysisPage() {
+    if (!this.fortune.waveAnalysis) {
+      // 波動分析がない場合のフォールバック
+      return {
+        type: 'bubble',
+        size: 'mega',
+        header: {
+          type: 'box',
+          layout: 'vertical',
+          backgroundColor: this.styles.deepPurple,
+          paddingAll: '20px',
+          contents: [
+            {
+              type: 'text',
+              text: '💫 波動恋愛診断 💫',
+              size: 'xl',
+              color: this.styles.gold,
+              align: 'center',
+              weight: 'bold'
+            }
+          ]
+        },
+        body: {
+          type: 'box',
+          layout: 'vertical',
+          backgroundColor: this.styles.cosmicPurple,
+          paddingAll: '20px',
+          contents: [
+            {
+              type: 'text',
+              text: '波動分析中...',
+              size: 'md',
+              color: this.styles.starlight,
+              align: 'center'
+            }
+          ]
+        }
+      };
+    }
+    
+    const wave = this.fortune.waveAnalysis;
+    
+    return {
+      type: 'bubble',
+      size: 'mega',
+      header: {
+        type: 'box',
+        layout: 'vertical',
+        backgroundColor: this.styles.deepPurple,
+        paddingAll: '20px',
+        contents: [
+          {
+            type: 'text',
+            text: '💫 波動恋愛診断 💫',
+            size: 'xl',
+            color: this.styles.gold,
+            align: 'center',
+            weight: 'bold'
+          },
+          {
+            type: 'text',
+            text: 'Wave Vibration Analysis',
+            size: 'xs',
+            color: this.styles.stardust,
+            align: 'center',
+            margin: 'sm'
+          }
+        ]
+      },
+      body: {
+        type: 'box',
+        layout: 'vertical',
+        backgroundColor: this.styles.cosmicPurple,
+        paddingAll: '20px',
+        contents: [
+          // オーラカラー
+          {
+            type: 'box',
+            layout: 'vertical',
+            backgroundColor: this.styles.mystical,
+            cornerRadius: '12px',
+            paddingAll: '15px',
+            margin: 'md',
+            contents: [
+              {
+                type: 'text',
+                text: wave.aura.title,
+                size: 'sm',
+                color: this.styles.gold,
+                weight: 'bold'
+              },
+              {
+                type: 'text',
+                text: wave.aura.primary,
+                size: 'xs',
+                color: this.styles.starlight,
+                margin: 'sm',
+                wrap: true
+              },
+              {
+                type: 'text',
+                text: wave.aura.blend,
+                size: 'xxs',
+                color: this.styles.roseGold,
+                margin: 'sm',
+                wrap: true
+              }
+            ]
+          },
+          // チャクラバランス
+          {
+            type: 'box',
+            layout: 'vertical',
+            backgroundColor: this.styles.mystical,
+            cornerRadius: '12px',
+            paddingAll: '15px',
+            margin: 'md',
+            contents: [
+              {
+                type: 'text',
+                text: wave.chakra.title,
+                size: 'sm',
+                color: this.styles.gold,
+                weight: 'bold'
+              },
+              {
+                type: 'text',
+                text: wave.chakra.overall,
+                size: 'xs',
+                color: this.styles.starlight,
+                margin: 'sm'
+              },
+              {
+                type: 'text',
+                text: wave.chakra.strongest,
+                size: 'xxs',
+                color: this.styles.auroraGreen,
+                margin: 'sm',
+                wrap: true
+              }
+            ]
+          },
+          // 愛の周波数
+          {
+            type: 'box',
+            layout: 'vertical',
+            backgroundColor: this.styles.mystical,
+            cornerRadius: '12px',
+            paddingAll: '15px',
+            margin: 'md',
+            contents: [
+              {
+                type: 'text',
+                text: wave.loveFrequency.title,
+                size: 'sm',
+                color: this.styles.gold,
+                weight: 'bold'
+              },
+              {
+                type: 'text',
+                text: wave.loveFrequency.intensity,
+                size: 'xs',
+                color: this.styles.starlight,
+                margin: 'sm'
+              },
+              {
+                type: 'text',
+                text: wave.loveFrequency.healing,
+                size: 'xxs',
+                color: this.styles.roseGold,
+                margin: 'sm'
+              }
+            ]
+          },
+          // 波動相性
+          {
+            type: 'box',
+            layout: 'vertical',
+            backgroundColor: this.styles.mystical,
+            cornerRadius: '12px',
+            paddingAll: '15px',
+            margin: 'md',
+            contents: [
+              {
+                type: 'text',
+                text: wave.compatibility.title,
+                size: 'sm',
+                color: this.styles.gold,
+                weight: 'bold'
+              },
+              {
+                type: 'text',
+                text: wave.compatibility.overall,
+                size: 'md',
+                color: this.styles.auroraGreen,
+                margin: 'sm',
+                weight: 'bold'
+              },
+              {
+                type: 'text',
+                text: wave.compatibility.message,
+                size: 'xxs',
+                color: this.styles.starlight,
+                margin: 'sm',
+                wrap: true
+              }
+            ]
+          }
+        ]
+      }
+    };
   }
   
   /**

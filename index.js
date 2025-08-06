@@ -9,6 +9,9 @@ const parser = require('./metrics/parser');
 const FortuneEngine = require('./core/fortune-engine');
 const { FortuneCarouselBuilder } = require('./core/formatter/fortune-carousel');
 const PaymentHandler = require('./core/premium/payment-handler');
+const WaveFortuneEngine = require('./core/wave-fortune');
+const MoonFortuneEngine = require('./core/moon-fortune');
+const UserProfileManager = require('./core/user-profile');
 
 // ── ① 環境変数チェック
 console.log("✅ SECRET:", !!process.env.CHANNEL_SECRET);
@@ -24,6 +27,7 @@ const config = {
 const app    = express();
 const client = new Client(config);
 const paymentHandler = new PaymentHandler();
+const profileManager = new UserProfileManager();
 app.use('/images', express.static(path.join(__dirname, 'images')));
 
 // ── ③ 重複防止
@@ -39,7 +43,17 @@ app.post('/webhook', middleware(config), async (req, res) => {
 
   // イベント処理は非同期で実行
   try {
-    const promises = req.body.events.map(event => {
+    const promises = req.body.events.map(async event => {
+      // 友達追加イベント
+      if (event.type === 'follow') {
+        return handleFollowEvent(event);
+      }
+      
+      // テキストメッセージの処理（プロファイル入力）
+      if (event.type === 'message' && event.message.type === 'text') {
+        return handleTextMessage(event);
+      }
+      
       // ファイルメッセージ（トーク履歴）の処理
       if (event.type === 'message' && event.message.type === 'file') {
         // 重複チェック
@@ -97,7 +111,239 @@ app.post('/webhook', middleware(config), async (req, res) => {
 });
 
 
-// ── ⑤ お告げ生成イベント処理
+// ── ⑤ 友達追加イベント処理
+async function handleFollowEvent(event) {
+  console.log('👋 新しい友達が追加されました');
+  const userId = event.source.userId;
+  
+  try {
+    // ウェルカムメッセージを送信
+    await client.replyMessage(event.replyToken, [
+      {
+        type: 'text',
+        text: `はじめまして！🌙\n月相恋愛占いへようこそ！\n\nあなたと気になるお相手の相性を、月の満ち欠けから占います。\n\nまず、あなたのお名前を教えてください（ニックネームでOK）`
+      }
+    ]);
+    
+    // 初期プロファイルを作成
+    await profileManager.saveProfile(userId, {
+      createdAt: new Date().toISOString(),
+      status: 'waitingUserName'
+    });
+    
+  } catch (error) {
+    console.error('友達追加処理エラー:', error);
+  }
+}
+
+// ── ⑥ テキストメッセージ処理（プロファイル入力）
+async function handleTextMessage(event) {
+  const userId = event.source.userId;
+  const text = event.message.text;
+  
+  try {
+    // ユーザープロファイルを取得
+    const profile = await profileManager.getProfile(userId) || {};
+    const status = await profileManager.getInputStatus(userId);
+    
+    // リセットコマンド
+    if (text === 'リセット' || text === 'reset') {
+      await profileManager.deleteProfile(userId);
+      await client.replyMessage(event.replyToken, {
+        type: 'text',
+        text: 'プロファイルをリセットしました。\n\nあなたのお名前を教えてください（ニックネームでOK）'
+      });
+      await profileManager.saveProfile(userId, {
+        createdAt: new Date().toISOString(),
+        status: 'waitingUserName'
+      });
+      return;
+    }
+    
+    // 入力ステップに応じた処理
+    switch (status.currentStep) {
+      case 'userName':
+        // 名前を保存
+        await profileManager.saveProfile(userId, {
+          userName: text,
+          status: 'waitingUserBirthDate'
+        });
+        await client.replyMessage(event.replyToken, {
+          type: 'text',
+          text: `${text}さん、よろしくお願いします！✨\n\n次に、あなたの生年月日を教えてください\n（例: 1998/4/30 または 1998年4月30日）`
+        });
+        break;
+        
+      case 'userBirthDate':
+        // 生年月日をパース
+        const userBirthDate = profileManager.parseBirthDate(text);
+        if (!userBirthDate) {
+          await client.replyMessage(event.replyToken, {
+            type: 'text',
+            text: '生年月日の形式が正しくありません。\n\n以下の形式で入力してください：\n・1998/4/30\n・1998年4月30日\n・19980430'
+          });
+          return;
+        }
+        
+        await profileManager.saveProfile(userId, {
+          birthDate: userBirthDate,
+          status: 'waitingUserGender'
+        });
+        await client.replyMessage(event.replyToken, {
+          type: 'text',
+          text: '生年月日を登録しました！📅\n\nあなたの性別を教えてください\n（男性/女性）'
+        });
+        break;
+        
+      case 'userGender':
+        // 性別をパース
+        const userGender = profileManager.parseGender(text);
+        if (!userGender) {
+          await client.replyMessage(event.replyToken, {
+            type: 'text',
+            text: '性別を選択してください：\n・男性（男、M）\n・女性（女、F）'
+          });
+          return;
+        }
+        
+        await profileManager.saveProfile(userId, {
+          gender: userGender,
+          status: 'waitingPartnerBirthDate'
+        });
+        
+        // プロファイルを再取得して月相タイプを計算
+        const updatedProfile = await profileManager.getProfile(userId);
+        const moonEngine = new MoonFortuneEngine();
+        const userPhase = moonEngine.calculateMoonPhase(updatedProfile.birthDate);
+        const userType = moonEngine.getMoonPhaseType(userPhase);
+        
+        await client.replyMessage(event.replyToken, [
+          {
+            type: 'text',
+            text: `✨ あなたの月相タイプ ✨\n\n${userType.symbol} ${userType.name}\n「${userType.traits}」\n\n${userType.description}`
+          },
+          {
+            type: 'text',
+            text: '次に、気になるお相手の生年月日を教えてください\n（例: 1995/8/15）'
+          }
+        ]);
+        break;
+        
+      case 'partnerBirthDate':
+        // 相手の生年月日をパース
+        const partnerBirthDate = profileManager.parseBirthDate(text);
+        if (!partnerBirthDate) {
+          await client.replyMessage(event.replyToken, {
+            type: 'text',
+            text: '生年月日の形式が正しくありません。\n\n以下の形式で入力してください：\n・1995/8/15\n・1995年8月15日\n・19950815'
+          });
+          return;
+        }
+        
+        await profileManager.saveProfile(userId, {
+          partnerBirthDate: partnerBirthDate,
+          status: 'waitingPartnerGender'
+        });
+        await client.replyMessage(event.replyToken, {
+          type: 'text',
+          text: 'お相手の生年月日を登録しました！📅\n\nお相手の性別を教えてください\n（男性/女性）'
+        });
+        break;
+        
+      case 'partnerGender':
+        // 相手の性別をパース
+        const partnerGender = profileManager.parseGender(text);
+        if (!partnerGender) {
+          await client.replyMessage(event.replyToken, {
+            type: 'text',
+            text: '性別を選択してください：\n・男性（男、M）\n・女性（女、F）'
+          });
+          return;
+        }
+        
+        await profileManager.saveProfile(userId, {
+          partnerGender: partnerGender,
+          status: 'complete'
+        });
+        
+        // 月相占い結果を生成して送信
+        await sendMoonFortuneResult(event.replyToken, userId);
+        break;
+        
+      case 'complete':
+        // プロファイル完成後のメッセージ
+        await client.replyMessage(event.replyToken, {
+          type: 'text',
+          text: '月相占いの結果を確認するには、トーク履歴ファイルを送信してください📁\n\nプロファイルを変更したい場合は「リセット」と送信してください。'
+        });
+        break;
+        
+      default:
+        // プロファイルがない場合は最初から
+        await client.replyMessage(event.replyToken, {
+          type: 'text',
+          text: 'はじめまして！🌙\n\nまず、あなたのお名前を教えてください（ニックネームでOK）'
+        });
+        await profileManager.saveProfile(userId, {
+          createdAt: new Date().toISOString(),
+          status: 'waitingUserName'
+        });
+    }
+    
+  } catch (error) {
+    console.error('テキストメッセージ処理エラー:', error);
+    await client.replyMessage(event.replyToken, {
+      type: 'text',
+      text: 'エラーが発生しました。もう一度お試しください。'
+    });
+  }
+}
+
+// 月相占い結果を送信
+async function sendMoonFortuneResult(replyToken, userId) {
+  try {
+    const profile = await profileManager.getProfile(userId);
+    const moonEngine = new MoonFortuneEngine();
+    
+    // 月相占いレポートを生成
+    const moonReport = moonEngine.generateFreeReport(
+      {
+        birthDate: profile.birthDate,
+        birthTime: profile.birthTime || '00:00',
+        gender: profile.gender
+      },
+      {
+        birthDate: profile.partnerBirthDate,
+        birthTime: profile.partnerBirthTime || '00:00',
+        gender: profile.partnerGender
+      }
+    );
+    
+    // フォーマット済みのテキストを取得
+    const reportText = moonEngine.formatReportForLine(moonReport);
+    
+    // 結果を送信
+    await client.replyMessage(replyToken, [
+      {
+        type: 'text',
+        text: reportText
+      },
+      {
+        type: 'text',
+        text: '✨ より詳しい相性分析を見る ✨\n\nトーク履歴ファイルを送信すると、会話パターンから二人の深層心理を分析します！\n\n【プレミアム機能】\n・詳細な月相相性分析\n・今後3ヶ月の関係性予測\n・ベストタイミングカレンダー\n・具体的なアプローチ方法\n\n今なら ¥1,980（通常 ¥2,980）'
+      }
+    ]);
+    
+  } catch (error) {
+    console.error('月相占い結果送信エラー:', error);
+    await client.replyMessage(replyToken, {
+      type: 'text',
+      text: 'エラーが発生しました。もう一度お試しください。'
+    });
+  }
+}
+
+// ── ⑦ お告げ生成イベント処理
 async function handleFortuneEvent(event) {
   console.log('🔮 恋愛お告げ生成開始');
   if (event.type !== 'message' || event.message.type !== 'file') return;
@@ -133,6 +379,53 @@ async function handleFortuneEvent(event) {
     console.log('🔮 運命のお告げを生成中...');
     const fortuneEngine = new FortuneEngine();
     const fortune = await fortuneEngine.generateFortune(messages, userId, profile.displayName);
+    
+    // 波動系占いも生成
+    console.log('💫 波動恋愛診断を実行中...');
+    const waveEngine = new WaveFortuneEngine();
+    const waveAnalysis = waveEngine.analyzeWaveVibration(messages);
+    const waveResult = waveEngine.formatWaveFortuneResult(waveAnalysis);
+    
+    // 占い結果に波動診断を追加
+    fortune.waveAnalysis = waveResult;
+    
+    // 月相占いも生成
+    console.log('🌙 月相占い診断を実行中...');
+    const moonEngine = new MoonFortuneEngine();
+    
+    // ユーザープロファイルを取得
+    const userProfile = await profileManager.getProfile(userId);
+    let moonReport = null;
+    
+    if (userProfile && await profileManager.hasCompleteProfile(userId)) {
+      // プロファイルが完成している場合は実際のデータを使用
+      const userMoonProfile = {
+        birthDate: userProfile.birthDate,
+        birthTime: userProfile.birthTime || '00:00',
+        gender: userProfile.gender
+      };
+      const partnerMoonProfile = {
+        birthDate: userProfile.partnerBirthDate,
+        birthTime: userProfile.partnerBirthTime || '00:00',
+        gender: userProfile.partnerGender
+      };
+      moonReport = moonEngine.generateFreeReport(userMoonProfile, partnerMoonProfile);
+    } else {
+      // プロファイルがない場合はテストデータを使用
+      const testUserProfile = {
+        birthDate: '1998-04-30',
+        birthTime: '08:10',
+        gender: 'female'
+      };
+      const testPartnerProfile = {
+        birthDate: '1995-08-15',
+        birthTime: '12:00',
+        gender: 'male'
+      };
+      moonReport = moonEngine.generateFreeReport(testUserProfile, testPartnerProfile);
+    }
+    
+    fortune.moonAnalysis = moonReport;
     
     // カルーセル作成
     console.log('🎨 お告げカルーセルを作成中...');

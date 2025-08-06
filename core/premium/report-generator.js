@@ -273,7 +273,7 @@ class PremiumReportGenerator {
       return {
         yearlyOverview: analysis.aiInsights?.uniqueInsights || this.generateYearlyOverview(enrichedMonths),
         monthlyDetails: enrichedMonths,
-        seasonalHighlights: this.generateSeasonalHighlights(enrichedMonths),
+        seasonalHighlights: this.generateSeasonalTrends(enrichedMonths),
         yearEndPrediction: analysis.aiInsights?.confessionStrategy?.optimalTiming || this.generateYearEndPrediction(enrichedMonths)
       };
     }
@@ -1233,6 +1233,43 @@ ${recentMessages}
   
   identifyKeyMilestones(milestones) {
     return milestones.slice(0, 3).map(m => m.title);
+  }
+  
+  /**
+   * 年末予測を生成
+   * @param {Array} months - 月別データ
+   * @returns {string} 年末予測
+   */
+  generateYearEndPrediction(months) {
+    const averageScore = months.reduce((sum, month) => sum + month.loveScore, 0) / months.length;
+    const trend = this.calculateTrend(months);
+    
+    if (trend > 0.5 && averageScore > 70) {
+      return '年末までに関係は大きく進展し、恋人関係に発展する可能性が高いでしょう。';
+    } else if (trend > 0 && averageScore > 60) {
+      return '着実に関係が深まり、年末には告白のチャンスが訪れるでしょう。';
+    } else if (averageScore > 50) {
+      return '関係は安定していますが、更なる努力が必要です。年末に向けて積極的にアプローチしましょう。';
+    } else {
+      return '現状のままでは進展が難しいかもしれません。戦略を見直し、新たなアプローチを検討しましょう。';
+    }
+  }
+  
+  /**
+   * トレンドを計算
+   * @param {Array} months - 月別データ
+   * @returns {number} トレンド値
+   */
+  calculateTrend(months) {
+    if (months.length < 2) return 0;
+    
+    const firstHalf = months.slice(0, Math.floor(months.length / 2));
+    const secondHalf = months.slice(Math.floor(months.length / 2));
+    
+    const firstAvg = firstHalf.reduce((sum, m) => sum + m.loveScore, 0) / firstHalf.length;
+    const secondAvg = secondHalf.reduce((sum, m) => sum + m.loveScore, 0) / secondHalf.length;
+    
+    return (secondAvg - firstAvg) / firstAvg;
   }
   
   // その他のヘルパーメソッドも同様に実装...
