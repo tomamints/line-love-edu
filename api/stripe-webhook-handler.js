@@ -90,20 +90,48 @@ async function processPaymentAsync(orderId, userId, stripeSessionId) {
   try {
     // 注文情報を取得（データベースから）
     console.log('🔍 注文を取得中:', orderId);
-    const order = await ordersDB.getOrder(orderId);
-    console.log('📦 取得した注文:', order);
+    
+    let order;
+    try {
+      order = await ordersDB.getOrder(orderId);
+      console.log('📦 取得した注文:', order);
+    } catch (getOrderError) {
+      console.error('❌ 注文取得エラー:', getOrderError);
+      console.error('❌ エラー詳細:', getOrderError.message);
+      console.error('❌ エラースタック:', getOrderError.stack);
+      
+      // フォールバック：注文情報を作成
+      console.log('⚠️ フォールバック：注文情報を作成');
+      order = {
+        orderId,
+        userId,
+        status: 'pending'
+      };
+    }
     
     if (!order) {
       console.error('❌ 注文が見つかりません:', orderId);
-      return;
+      // 注文が見つからない場合も処理を続行
+      order = {
+        orderId,
+        userId,
+        status: 'pending'
+      };
     }
     
     // 注文ステータスを更新（データベースに）
-    await ordersDB.updateOrder(orderId, {
-      status: 'paid',
-      stripeSessionId: stripeSessionId,
-      paidAt: new Date().toISOString()
-    });
+    console.log('📝 注文ステータスを更新中...');
+    try {
+      await ordersDB.updateOrder(orderId, {
+        status: 'paid',
+        stripeSessionId: stripeSessionId,
+        paidAt: new Date().toISOString()
+      });
+      console.log('✅ 注文ステータス更新完了');
+    } catch (updateError) {
+      console.error('⚠️ 注文更新エラー（続行）:', updateError.message);
+      // エラーが発生してもレポート生成は続行
+    }
     
     console.log('🔮 レポート生成開始...');
     
