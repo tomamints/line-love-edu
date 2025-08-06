@@ -83,10 +83,7 @@ app.post('/webhook', middleware(config), async (req, res) => {
     console.log(`⚠️ リトライ検出: ${retryCount}回目のリトライ`);
   }
 
-  // LINEに即座に200を返す（超重要：これを早くしないとリトライされる）
-  res.status(200).json({});
-
-  // イベント処理は非同期で実行
+  // イベント処理を実行
   try {
     const promises = req.body.events.map(async event => {
       // 友達追加イベント
@@ -176,6 +173,9 @@ app.post('/webhook', middleware(config), async (req, res) => {
   } catch (fatal) {
     console.error('🌋 致命的なエラー', fatal);
   }
+
+  // すべての処理が完了してから200を返す
+  res.status(200).json({});
 });
 
 
