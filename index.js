@@ -1872,12 +1872,15 @@ app.get('/api/download-report', async (req, res) => {
 });
 
 // ── ⑩ 起動
-const port = process.env.PORT || 3000;
-app.listen(port, () => {
-  console.log(`🔮 恋愛お告げボット起動: http://localhost:${port}`);
-  console.log('📡 Webhook URL: /webhook');
-  console.log(`💳 決済成功URL: http://localhost:${port}/payment/success`);
-  console.log('✨ 準備完了！トーク履歴を送信してください');
-});
+if (process.env.VERCEL !== '1') {
+  // ローカル環境でのみサーバーを起動
+  const port = process.env.PORT || 3000;
+  app.listen(port, () => {
+    console.log(`🔮 恋愛お告げボット起動: http://localhost:${port}`);
+    console.log('📡 Webhook URL: /webhook');
+    console.log(`💳 決済成功URL: http://localhost:${port}/payment/success`);
+    console.log('✨ 準備完了！トーク履歴を送信してください');
+  });
+}
 
 module.exports = app;
