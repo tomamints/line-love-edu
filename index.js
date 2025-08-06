@@ -601,8 +601,14 @@ async function handleFortuneEvent(event) {
     loadHeavyModules();
     const moonEngine = new MoonFortuneEngine();
     
-    // ユーザープロファイルを取得
-    const userProfile = await getProfileManager().getProfile(userId);
+    // ユーザープロファイルを取得（エラーを防ぐためtry-catch追加）
+    let userProfile = null;
+    try {
+      userProfile = await getProfileManager().getProfile(userId);
+    } catch (profileErr) {
+      console.warn('プロファイル取得エラー（正常）:', profileErr.message);
+    }
+    
     let moonReport = null;
     
     if (userProfile && await getProfileManager().hasCompleteProfile(userId)) {
