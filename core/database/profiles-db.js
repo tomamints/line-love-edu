@@ -1,21 +1,27 @@
 // プロファイルデータベース操作
-const { supabase, isDatabaseConfigured } = require('./supabase');
+const { isDatabaseConfigured } = require('./supabase');
 const UserProfileManager = require('../user-profile');
 
 class ProfilesDB {
   constructor() {
     console.log('🔧 ProfilesDB初期化開始');
-    this.useDatabase = isDatabaseConfigured();
     this.fileManager = new UserProfileManager();
+    this.checkDatabase();
+  }
+  
+  checkDatabase() {
+    this.useDatabase = isDatabaseConfigured();
     
     console.log('🔍 isDatabaseConfigured():', this.useDatabase);
-    console.log('🔍 supabase client exists:', !!supabase);
     
     if (this.useDatabase) {
+      const { supabase } = require('./supabase');
+      this.supabase = supabase;
+      console.log('🔍 supabase client exists:', !!this.supabase);
       console.log('✅ Supabase接続成功 - プロファイルデータベース');
-      this.initTable();
     } else {
       console.log('⚠️ Supabaseが設定されていません - ファイルストレージを使用');
+      this.supabase = null;
     }
   }
 
@@ -40,9 +46,12 @@ class ProfilesDB {
   // プロファイルを保存
   async saveProfile(userId, profileData) {
     console.log('📝 saveProfile呼び出し:', { userId, profileData });
+    
+    // 毎回最新の接続状態を確認
+    this.checkDatabase();
     console.log('🔍 useDatabase:', this.useDatabase);
     
-    if (!this.useDatabase) {
+    if (!this.useDatabase || !this.supabase) {
       console.log('⚠️ データベース未設定、ファイルストレージを使用');
       return this.fileManager.saveProfile(userId, profileData);
     }
@@ -65,7 +74,7 @@ class ProfilesDB {
       
       console.log('📤 Supabaseに送信するデータ:', upsertData);
       
-      const { data, error } = await supabase
+      const { data, error } = await this.supabase
         .from('profiles')
         .upsert(upsertData)
         .select()
@@ -93,7 +102,7 @@ class ProfilesDB {
     }
 
     try {
-      const { data, error } = await supabase
+      const { data, error } = await this.supabase
         .from('profiles')
         .select('*')
         .eq('user_id', userId)
@@ -174,7 +183,7 @@ class ProfilesDB {
     }
 
     try {
-      const { error } = await supabase
+      const { error } = await this.supabase
         .from('profiles')
         .delete()
         .eq('user_id', userId);

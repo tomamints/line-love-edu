@@ -1,16 +1,24 @@
 // 注文データベース操作
-const { supabase, isDatabaseConfigured } = require('./supabase');
+const { isDatabaseConfigured } = require('./supabase');
 const orderStorage = require('../premium/order-storage');
 
 class OrdersDB {
   constructor() {
+    // Vercel環境で毎回チェック
+    this.checkDatabase();
+  }
+  
+  checkDatabase() {
     this.useDatabase = isDatabaseConfigured();
     
     if (this.useDatabase) {
+      // 毎回新しいクライアントを取得
+      const { supabase } = require('./supabase');
+      this.supabase = supabase;
       console.log('✅ Supabase設定検出 - 注文データベース');
-      this.initTable();
     } else {
       console.log('⚠️ Supabaseが設定されていません - ファイルストレージを使用');
+      this.supabase = null;
     }
   }
   
@@ -20,7 +28,7 @@ class OrdersDB {
       console.log('🔌 Supabase接続テスト開始...');
       
       // タイムアウト付きで接続テスト
-      const testPromise = supabase
+      const testPromise = this.supabase
         .from('orders')
         .select('*', { count: 'exact', head: true });
       
@@ -45,26 +53,6 @@ class OrdersDB {
     }
   }
 
-  // テーブルの初期化（存在しない場合は作成）
-  async initTable() {
-    // Supabaseのダッシュボードで以下のSQLを実行してください：
-    /*
-    CREATE TABLE IF NOT EXISTS orders (
-      id TEXT PRIMARY KEY,
-      user_id TEXT NOT NULL,
-      amount INTEGER NOT NULL,
-      status TEXT DEFAULT 'pending',
-      stripe_session_id TEXT,
-      paid_at TIMESTAMP,
-      report_url TEXT,
-      created_at TIMESTAMP DEFAULT NOW(),
-      updated_at TIMESTAMP DEFAULT NOW()
-    );
-    
-    CREATE INDEX IF NOT EXISTS idx_orders_user_id ON orders(user_id);
-    CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status);
-    */
-  }
 
   // 注文を保存
   async saveOrder(orderId, orderData) {
@@ -90,7 +78,7 @@ class OrdersDB {
       
       console.log('💾 Supabaseに保存するデータ:', upsertData);
       
-      const { data, error } = await supabase
+      const { data, error } = await this.supabase
         .from('orders')
         .upsert(upsertData)
         .select()
@@ -122,9 +110,17 @@ class OrdersDB {
     }
 
     try {
+      // 毎回最新の接続状態を確認
+      this.checkDatabase();
+      
+      if (!this.useDatabase || !this.supabase) {
+        console.log('📊 Supabase未設定、ファイルストレージから取得');
+        return orderStorage.getOrder(orderId);
+      }
+      
       console.log('📊 Supabaseから注文を取得中...');
       
-      const { data, error } = await supabase
+      const { data, error } = await this.supabase
         .from('orders')
         .select('*')
         .eq('id', orderId)
@@ -214,7 +210,7 @@ class OrdersDB {
       if (updates.paidAt !== undefined) updateData.paid_at = updates.paidAt;
       if (updates.reportUrl !== undefined) updateData.report_url = updates.reportUrl;
 
-      const { data, error } = await supabase
+      const { data, error } = await this.supabase
         .from('orders')
         .update(updateData)
         .eq('id', orderId)
@@ -242,7 +238,7 @@ class OrdersDB {
     }
 
     try {
-      const { data, error } = await supabase
+      const { data, error } = await this.supabase
         .from('orders')
         .select('*')
         .eq('user_id', userId)

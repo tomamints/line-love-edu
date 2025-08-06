@@ -89,17 +89,15 @@ async function processPaymentAsync(orderId, userId, stripeSessionId) {
   
   try {
     // 注文情報を取得（データベースから）
-    console.log('🔍 注文を取得中:', orderId);
+    console.log('🔍 注文を取得開始:', orderId);
+    console.log('🔍 ordersDB存在確認:', !!ordersDB);
+    console.log('🔍 getOrder関数存在確認:', typeof ordersDB.getOrder);
     
     let order;
     try {
-      // タイムアウト付きで注文を取得（5秒）
-      const getOrderPromise = ordersDB.getOrder(orderId);
-      const timeoutPromise = new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('注文取得タイムアウト (5秒)')), 5000)
-      );
-      
-      order = await Promise.race([getOrderPromise, timeoutPromise]);
+      console.log('🔍 getOrder呼び出し前');
+      order = await ordersDB.getOrder(orderId);
+      console.log('🔍 getOrder呼び出し後');
       console.log('📦 取得した注文:', order);
     } catch (getOrderError) {
       console.error('❌ 注文取得エラー:', getOrderError);
