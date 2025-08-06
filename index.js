@@ -18,7 +18,7 @@ function loadHeavyModules() {
   if (!PaymentHandler) PaymentHandler = require('./core/premium/payment-handler');
   if (!WaveFortuneEngine) WaveFortuneEngine = require('./core/wave-fortune');
   if (!MoonFortuneEngine) MoonFortuneEngine = require('./core/moon-fortune');
-  if (!UserProfileManager) UserProfileManager = require('./core/user-profile');
+  if (!UserProfileManager) UserProfileManager = require('./core/database/profiles-db');
 }
 
 // ── ① 環境変数チェック
@@ -49,7 +49,7 @@ function getPaymentHandler() {
 function getProfileManager() {
   if (!profileManager) {
     loadHeavyModules();
-    profileManager = new UserProfileManager();
+    profileManager = UserProfileManager; // ProfilesDBはすでにインスタンス
   }
   return profileManager;
 }

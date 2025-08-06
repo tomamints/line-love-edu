@@ -205,4 +205,4 @@ class ProfilesDB {
   }
 }
 
-module.exports = ProfilesDB;
+module.exports = new ProfilesDB();
