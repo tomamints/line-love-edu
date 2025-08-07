@@ -68,13 +68,24 @@ module.exports = async (req, res) => {
     if (order.pdf_data) {
       console.log('📄 PDFデータがデータベースに存在');
       
-      // Base64エンコードされたPDFをデコード
-      const pdfBuffer = Buffer.from(order.pdf_data, 'base64');
+      // Base64エンコードされたデータをデコード
+      const dataBuffer = Buffer.from(order.pdf_data, 'base64');
       
-      // PDFファイルとして返す
-      res.setHeader('Content-Type', 'application/pdf');
-      res.setHeader('Content-Disposition', `inline; filename="report_${orderId}.pdf"`);
-      return res.send(pdfBuffer);
+      // データの最初の部分をチェックしてHTMLかPDFか判定
+      const dataStr = dataBuffer.toString('utf8', 0, 100); // 最初の100バイトをチェック
+      
+      if (dataStr.includes('<!DOCTYPE html') || dataStr.includes('<html')) {
+        // HTMLデータの場合はHTMLとして返す
+        console.log('📄 HTMLコンテンツとして表示');
+        res.setHeader('Content-Type', 'text/html; charset=utf-8');
+        return res.send(dataBuffer);
+      } else {
+        // PDFデータの場合はPDFとして返す
+        console.log('📄 PDFコンテンツとして表示');
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `inline; filename="report_${orderId}.pdf"`);
+        return res.send(dataBuffer);
+      }
     }
     
     // データベースにない場合はファイルシステムを確認（後方互換性）
@@ -83,12 +94,23 @@ module.exports = async (req, res) => {
       : path.join(process.cwd(), 'orders', `${orderId}.pdf`);
     
     try {
-      const pdfBuffer = await fs.readFile(pdfPath);
+      const dataBuffer = await fs.readFile(pdfPath);
       
-      // PDFファイルとして返す
-      res.setHeader('Content-Type', 'application/pdf');
-      res.setHeader('Content-Disposition', `inline; filename="report_${orderId}.pdf"`);
-      return res.send(pdfBuffer);
+      // データの最初の部分をチェックしてHTMLかPDFか判定
+      const dataStr = dataBuffer.toString('utf8', 0, 100);
+      
+      if (dataStr.includes('<!DOCTYPE html') || dataStr.includes('<html')) {
+        // HTMLデータの場合はHTMLとして返す
+        console.log('📄 ファイルシステムからHTMLコンテンツとして表示');
+        res.setHeader('Content-Type', 'text/html; charset=utf-8');
+        return res.send(dataBuffer);
+      } else {
+        // PDFデータの場合はPDFとして返す
+        console.log('📄 ファイルシステムからPDFコンテンツとして表示');
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `inline; filename="report_${orderId}.pdf"`);
+        return res.send(dataBuffer);
+      }
       
     } catch (err) {
       console.error('レポートファイル読み込みエラー:', err);
