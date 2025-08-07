@@ -10,10 +10,6 @@
       "destination": "/api/stripe-webhook-simple"
     },
     {
-      "source": "/api/stripe/webhook-old",
-      "destination": "/api/stripe-webhook-handler"
-    },
-    {
       "source": "/payment/success",
       "destination": "/api/payment-success"
     },
@@ -31,13 +27,9 @@
       "maxDuration": 60,
       "memory": 1024
     },
-    "api/stripe-webhook.js": {
-      "maxDuration": 60,
-      "memory": 1024
-    },
-    "api/stripe-webhook-handler.js": {
-      "maxDuration": 60,
-      "memory": 1024
+    "api/stripe-webhook-simple.js": {
+      "maxDuration": 30,
+      "memory": 512
     },
     "api/*.js": {
       "maxDuration": 60
