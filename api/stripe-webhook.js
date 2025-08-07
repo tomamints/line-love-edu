@@ -89,6 +89,21 @@ module.exports = async (req, res) => {
     // Vercel環境ではawaitしないと関数が終了してしまう
     // ただし、タイムアウトを防ぐため、最小限の処理のみ同期的に実行
     try {
+      // まず注文が存在するか確認
+      const existingOrder = await ordersDB.getOrder(orderId);
+      if (!existingOrder) {
+        console.error('❌ 注文が見つかりません。スキップします:', orderId);
+        res.json({ received: true, error: 'Order not found' });
+        return;
+      }
+      
+      // 既に処理済みの場合はスキップ
+      if (existingOrder.status !== 'pending') {
+        console.log('⚠️ 既に処理済みの注文:', existingOrder.status);
+        res.json({ received: true, status: existingOrder.status });
+        return;
+      }
+      
       // 注文ステータスをpaidに更新（これは同期的に実行）
       await ordersDB.updateOrder(orderId, {
         status: 'paid',
@@ -104,7 +119,7 @@ module.exports = async (req, res) => {
       });
       
       // 少し待ってから200を返す（processPaymentAsyncが開始されることを保証）
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise(resolve => setTimeout(resolve, 500));
       
     } catch (error) {
       console.error('❌ Webhook処理エラー:', error);
@@ -127,7 +142,7 @@ async function processPaymentAsync(orderId, userId, stripeSessionId) {
   console.log('👤 LINE APIプロファイル取得開始...');
   console.log('👤 CHANNEL_ACCESS_TOKEN exists:', !!process.env.CHANNEL_ACCESS_TOKEN);
   
-  // LINE APIからユーザープロフィールを取得
+  // LINE APIからユーザープロフィールを取得（タイムアウト付き）
   let userProfile = null;
   try {
     if (!process.env.CHANNEL_ACCESS_TOKEN) {
@@ -135,15 +150,22 @@ async function processPaymentAsync(orderId, userId, stripeSessionId) {
     }
     
     const lineClient = new line.Client({
-      channelAccessToken: process.env.CHANNEL_ACCESS_TOKEN
+      channelAccessToken: process.env.CHANNEL_ACCESS_TOKEN,
+      channelSecret: process.env.CHANNEL_SECRET
     });
     console.log('👤 LINE Client作成成功');
     
-    userProfile = await lineClient.getProfile(userId);
+    // タイムアウト付きでプロファイル取得
+    const profilePromise = lineClient.getProfile(userId);
+    const timeoutPromise = new Promise((_, reject) => 
+      setTimeout(() => reject(new Error('Profile fetch timeout')), 3000)
+    );
+    
+    userProfile = await Promise.race([profilePromise, timeoutPromise]);
     console.log('👤 ユーザープロフィール取得成功:', userProfile.displayName);
   } catch (err) {
     console.error('👤 プロフィール取得エラー:', err.message);
-    console.error('  詳細:', err);
+    // TLSエラーやタイムアウトの場合はデフォルト値を使用
     userProfile = {
       displayName: 'ユーザー',
       userId: userId
@@ -153,13 +175,27 @@ async function processPaymentAsync(orderId, userId, stripeSessionId) {
   try {
     // 注文情報を取得（データベースから）
     console.log('🔍 注文を取得開始:', orderId);
+    console.log('🔍 ordersDB存在確認:', !!ordersDB);
+    console.log('🔍 getOrder関数存在確認:', typeof ordersDB.getOrder);
+    
     let order = null;
     try {
-      order = await ordersDB.getOrder(orderId);
+      console.log('🔍 getOrder呼び出し前');
+      
+      // タイムアウト付きで注文を取得
+      const orderPromise = ordersDB.getOrder(orderId);
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Order fetch timeout')), 5000)
+      );
+      
+      order = await Promise.race([orderPromise, timeoutPromise]);
       console.log('🔍 注文取得結果:', order ? '成功' : 'null');
     } catch (getOrderError) {
-      console.error('❌ getOrderエラー:', getOrderError);
-      console.error('❌ エラースタック:', getOrderError.stack);
+      console.error('❌ getOrderエラー:', getOrderError.message);
+      // タイムアウトの場合は処理を中断
+      if (getOrderError.message.includes('timeout')) {
+        throw new Error('Database timeout - please retry');
+      }
     }
     
     if (!order) {
