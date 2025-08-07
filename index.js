@@ -969,19 +969,21 @@ async function handlePostbackEvent(event) {
     
     // ユーザーの生年月日選択
     if (action === 'userBirthDate') {
-      // 即座にレスポンスを返す（重要）
-      await client.replyMessage(event.replyToken, [
+      // 即座にレスポンスを返す（最優先・awaitしない）
+      client.replyMessage(event.replyToken, [
         {
           type: 'text',
           text: '✅ 生年月日を選択しました\n\n次に、上のカードから性別を選んでください'
         }
-      ]);
+      ]).catch(err => {
+        logger.log('メッセージ送信エラー:', err);
+      });
       
-      // プロファイル保存は非同期で実行（エラーが出ても無視）
+      // プロファイル保存は後で実行（awaitしない）
       getProfileManager().saveProfile(userId, {
         birthDate: selectedDate
       }).catch(err => {
-        console.error('生年月日保存エラー（無視）:', err);
+        logger.log('生年月日保存エラー:', err);
       });
       
       return;
