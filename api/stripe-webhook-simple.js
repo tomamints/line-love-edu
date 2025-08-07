@@ -65,7 +65,22 @@ module.exports = async (req, res) => {
     }
     
     try {
-      // 注文ステータスをpaidに更新するだけ
+      // まず注文が存在するか確認
+      const existingOrder = await ordersDB.getOrder(orderId);
+      
+      if (!existingOrder) {
+        console.error('❌ Order not found:', orderId);
+        // 注文が存在しない場合でもStripeには成功を返す（重複処理を防ぐ）
+        return res.json({ received: true, error: 'Order not found' });
+      }
+      
+      // 既に処理済みの場合はスキップ
+      if (existingOrder.status !== 'pending') {
+        console.log('⚠️ Order already processed:', existingOrder.status);
+        return res.json({ received: true, status: existingOrder.status });
+      }
+      
+      // 注文ステータスをpaidに更新
       await ordersDB.updateOrder(orderId, {
         status: 'paid',
         stripeSessionId: session.id,
