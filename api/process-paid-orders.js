@@ -8,8 +8,11 @@ const line = require('@line/bot-sdk');
 const paymentHandler = new PaymentHandler();
 
 module.exports = async (req, res) => {
-  console.log('\n========== PROCESS PAID ORDERS ==========');
+  console.log('\n========== PROCESS PAID ORDERS START ==========');
   console.log('📍 Time:', new Date().toISOString());
+  console.log('📍 Method:', req.method);
+  console.log('📍 Query:', req.query);
+  console.log('📍 Body:', req.body);
   
   try {
     let orders = [];
@@ -19,11 +22,13 @@ module.exports = async (req, res) => {
       const orderId = req.body?.orderId || req.query?.orderId;
       console.log(`📋 Processing specific order: ${orderId}`);
       const order = await ordersDB.getOrder(orderId);
-      if (order && order.status === 'paid') {
+      console.log(`📋 Order found:`, order ? `${order.status}` : 'null');
+      if (order && (order.status === 'paid' || order.status === 'generating')) {
         orders = [order];
       }
     } else {
       // 支払い済みでレポート未生成の注文を取得
+      console.log('📋 Getting all paid orders...');
       orders = await ordersDB.getPaidOrders();
     }
     

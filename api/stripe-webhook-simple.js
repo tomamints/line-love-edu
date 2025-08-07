@@ -77,18 +77,19 @@ module.exports = async (req, res) => {
       // レポート生成をトリガー（非同期で実行）
       console.log('🚀 Triggering report generation...');
       
-      // fetch APIを使って自身のエンドポイントを呼び出す
+      // Node.js環境でfetchを使用
+      const https = require('https');
       const baseUrl = process.env.VERCEL_URL 
         ? `https://${process.env.VERCEL_URL}`
         : 'https://line-love-edu.vercel.app';
       
-      fetch(`${baseUrl}/api/process-paid-orders`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ orderId })
-      }).then(() => {
-        console.log('✅ Report generation triggered');
-      }).catch((err) => {
+      const reportUrl = `${baseUrl}/api/process-paid-orders?orderId=${orderId}`;
+      console.log('📍 Calling:', reportUrl);
+      
+      // HTTPSリクエストで呼び出す（fireして忘れる）
+      https.get(reportUrl, (resp) => {
+        console.log('✅ Report generation triggered, status:', resp.statusCode);
+      }).on('error', (err) => {
         console.error('❌ Failed to trigger report generation:', err.message);
       });
       
