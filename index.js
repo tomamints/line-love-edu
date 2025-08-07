@@ -52,12 +52,18 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Stripe Webhook（raw bodyが必要なので、他のミドルウェアの前に配置）
 app.post('/api/stripe/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
-  const stripeWebhook = require('./api/stripe-webhook');
+  const stripeWebhook = require('./api/stripe-webhook-simple');
   await stripeWebhook(req, res);
 });
 
 // JSONボディパーサー（API用） - Stripe Webhookの後に配置
 app.use('/api', express.json());
+
+// レポート生成エンドポイント
+app.all('/api/process-paid-orders', async (req, res) => {
+  const processPaidOrders = require('./api/process-paid-orders');
+  await processPaidOrders(req, res);
+});
 
 
 // ── ③ 重複防止
