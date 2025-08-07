@@ -41,7 +41,7 @@ class OrdersDB {
         .select('*', { count: 'exact', head: true });
       
       const timeoutPromise = new Promise((_, reject) => {
-        setTimeout(() => reject(new Error('接続テストタイムアウト')), 2000);
+        setTimeout(() => reject(new Error('接続テストタイムアウト')), 5000);
       });
       
       const { count, error } = await Promise.race([testPromise, timeoutPromise]);
@@ -107,7 +107,7 @@ class OrdersDB {
         .single();
       
       const timeoutPromise = new Promise((_, reject) => {
-        setTimeout(() => reject(new Error('保存タイムアウト')), 2000);
+        setTimeout(() => reject(new Error('保存タイムアウト')), 5000);
       });
       
       let data, error;
@@ -174,7 +174,7 @@ class OrdersDB {
         .single();
       
       const timeoutPromise = new Promise((_, reject) => {
-        setTimeout(() => reject(new Error('Supabaseクエリタイムアウト')), 2000);
+        setTimeout(() => reject(new Error('Supabaseクエリタイムアウト')), 5000);
       });
       
       let data, error;
@@ -253,35 +253,68 @@ class OrdersDB {
 
   // 注文を更新
   async updateOrder(orderId, updates) {
+    console.log('\n🔄 [OrdersDB.updateOrder] START');
+    console.log('🔄 Order ID:', orderId);
+    console.log('🔄 Updates:', JSON.stringify(updates, null, 2));
+    console.log('🔄 useDatabase:', this.useDatabase);
+    
     if (!this.useDatabase) {
+      console.log('🔄 Using file storage for update');
       return orderStorage.updateOrder(orderId, updates);
     }
 
     try {
       // まず既存の注文を取得
+      console.log('🔄 Fetching existing order...');
       const existingOrder = await this.getOrder(orderId);
+      console.log('🔄 Existing order:', existingOrder ? {
+        id: existingOrder.id || existingOrder.orderId,
+        status: existingOrder.status
+      } : 'null');
+      
       if (!existingOrder) {
-        throw new Error(`注文が見つかりません: ${orderId}`);
+        const errorMsg = `注文が見つかりません: ${orderId}`;
+        console.error('🔄 ERROR:', errorMsg);
+        throw new Error(errorMsg);
       }
 
       // 更新データを準備
+      console.log('🔄 Preparing update data...');
       const updateData = {
         id: orderId,
         updated_at: new Date().toISOString()
       };
 
       // 更新可能なフィールドをマップ（Supabaseに存在するカラムのみ）
-      if (updates.status !== undefined) updateData.status = updates.status;
-      if (updates.stripeSessionId !== undefined) updateData.stripe_session_id = updates.stripeSessionId;
-      if (updates.paidAt !== undefined) updateData.paid_at = updates.paidAt;
-      if (updates.reportUrl !== undefined) updateData.report_url = updates.reportUrl;
-      if (updates.report_url !== undefined) updateData.report_url = updates.report_url;
+      if (updates.status !== undefined) {
+        console.log('🔄 Updating status:', updates.status);
+        updateData.status = updates.status;
+      }
+      if (updates.stripeSessionId !== undefined) {
+        console.log('🔄 Updating stripe_session_id:', updates.stripeSessionId);
+        updateData.stripe_session_id = updates.stripeSessionId;
+      }
+      if (updates.paidAt !== undefined) {
+        console.log('🔄 Updating paid_at:', updates.paidAt);
+        updateData.paid_at = updates.paidAt;
+      }
+      if (updates.reportUrl !== undefined) {
+        console.log('🔄 Updating report_url (from reportUrl):', updates.reportUrl);
+        updateData.report_url = updates.reportUrl;
+      }
+      if (updates.report_url !== undefined) {
+        console.log('🔄 Updating report_url (direct):', updates.report_url);
+        updateData.report_url = updates.report_url;
+      }
       // pdf_data, notified, completed_atカラムは存在しないのでコメントアウト
       // if (updates.pdf_data !== undefined) updateData.pdf_data = updates.pdf_data;
       // if (updates.notified !== undefined) updateData.notified = updates.notified;
       // if (updates.completedAt !== undefined) updateData.completed_at = updates.completedAt;
 
       // タイムアウト付きで更新
+      console.log('🔄 Final updateData:', JSON.stringify(updateData, null, 2));
+      console.log('🔄 Executing Supabase update...');
+      
       const updatePromise = this.supabase
         .from('orders')
         .update(updateData)
@@ -289,8 +322,10 @@ class OrdersDB {
         .select()
         .single();
       
+      console.log('🔄 Update query created, executing...');
+      
       const timeoutPromise = new Promise((_, reject) => {
-        setTimeout(() => reject(new Error('更新タイムアウト')), 2000);
+        setTimeout(() => reject(new Error('更新タイムアウト')), 5000);
       });
       
       let data, error;
@@ -304,14 +339,25 @@ class OrdersDB {
       }
 
       if (error) {
-        console.error('注文更新エラー:', error);
+        console.error('🔄 注文更新エラー:', error);
+        console.error('🔄 Error details:', {
+          message: error.message,
+          code: error.code,
+          details: error.details,
+          hint: error.hint
+        });
+        console.log('🔄 Falling back to file storage');
         return orderStorage.updateOrder(orderId, updates);
       }
 
-      console.log('✅ 注文を更新:', orderId);
+      console.log('✅ [OrdersDB.updateOrder] SUCCESS');
+      console.log('✅ Updated order ID:', orderId);
+      console.log('✅ Update result:', data);
       return data;
     } catch (err) {
-      console.error('データベースエラー:', err);
+      console.error('🔄 データベースエラー:', err.message);
+      console.error('🔄 Stack:', err.stack);
+      console.log('🔄 Falling back to file storage due to error');
       return orderStorage.updateOrder(orderId, updates);
     }
   }

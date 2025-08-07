@@ -24,7 +24,13 @@ module.exports.config = {
 };
 
 module.exports = async (req, res) => {
+  console.log('\n========== STRIPE WEBHOOK START ==========');
+  console.log('🔥 Webhook呼び出し開始:', new Date().toISOString());
+  console.log('🔥 Request method:', req.method);
+  console.log('🔥 Headers:', Object.keys(req.headers));
+  
   const sig = req.headers['stripe-signature'];
+  console.log('🔥 Stripe signature exists:', !!sig);
   let event;
 
   try {
@@ -71,26 +77,41 @@ module.exports = async (req, res) => {
     return res.status(400).send(`Webhook Error: ${err.message}`);
   }
 
+  console.log('🎆 Event type:', event.type);
+  console.log('🎆 Event ID:', event.id);
+  
   // checkout.session.completedイベントを処理
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object;
     
+    console.log('\n========== PAYMENT COMPLETED ==========');
     console.log('💳 Stripe決済完了:', session.id);
-    console.log('📦 メタデータ:', session.metadata);
+    console.log('📦 メタデータ:', JSON.stringify(session.metadata, null, 2));
+    console.log('📦 Session status:', session.payment_status);
+    console.log('📦 Amount total:', session.amount_total);
     
     const orderId = session.metadata?.orderId;
     const userId = session.metadata?.userId;
+    console.log('🆔 Order ID:', orderId);
+    console.log('🆔 User ID:', userId);
     
     if (!orderId || !userId) {
       console.error('必要なメタデータがありません');
       return res.status(400).send('Missing metadata');
     }
     
+    console.log('\n========== PROCESSING ORDER ==========');
     // Vercel環境ではawaitしないと関数が終了してしまう
     // ただし、タイムアウトを防ぐため、最小限の処理のみ同期的に実行
     try {
       // まず注文が存在するか確認
+      console.log('🔍 注文を取得開始...', orderId);
       const existingOrder = await ordersDB.getOrder(orderId);
+      console.log('🔍 注文取得結果:', existingOrder ? {
+        id: existingOrder.id || existingOrder.orderId,
+        status: existingOrder.status,
+        userId: existingOrder.user_id || existingOrder.userId
+      } : 'null');
       if (!existingOrder) {
         console.error('❌ 注文が見つかりません。スキップします:', orderId);
         res.json({ received: true, error: 'Order not found' });
@@ -105,52 +126,82 @@ module.exports = async (req, res) => {
       }
       
       // 注文ステータスをpaidに更新（これは同期的に実行）
-      await ordersDB.updateOrder(orderId, {
+      console.log('🔄 ステータス更新開始...');
+      console.log('🔄 更新データ:', {
         status: 'paid',
         stripeSessionId: session.id,
         paidAt: new Date().toISOString()
       });
+      
+      const updateResult = await ordersDB.updateOrder(orderId, {
+        status: 'paid',
+        stripeSessionId: session.id,
+        paidAt: new Date().toISOString()
+      });
+      
       console.log('✅ 注文ステータスをpaidに更新');
+      console.log('✅ 更新結果:', updateResult);
       
       // Vercel環境では必ずawaitする必要がある
       // ただし、Stripeのタイムアウト（10秒）を考慮して、基本処理のみ同期実行
-      console.log('🚀 レポート生成を開始します...');
+      console.log('\n========== STARTING REPORT GENERATION ==========');
+      console.log('🚀 processPaymentAsyncを呼び出します...');
+      console.log('🚀 引数:', { orderId, userId, sessionId: session.id });
       
-      // レポート生成を実行（awaitで待つ）
-      await processPaymentAsync(orderId, userId, session.id).catch(error => {
-        console.error('❌ processPaymentAsyncエラー:', error);
-        console.error('❌ エラースタック:', error.stack);
-      });
-      
-      console.log('✅ processPaymentAsync完了');
+      // レポート生成を実行（必ずawaitで待つ）
+      try {
+        console.log('🚀 processPaymentAsyncを実行開始');
+        // Vercel環境でも必ずawaitして完了を待つ
+        await processPaymentAsync(orderId, userId, session.id);
+        console.log('✅ processPaymentAsync正常完了');
+      } catch (asyncError) {
+        console.error('❌ processPaymentAsyncエラー:', asyncError.message);
+        console.error('❌ エラースタック:', asyncError.stack);
+        // エラーが発生してもStripeには成功を返す
+      }
       
     } catch (error) {
-      console.error('❌ Webhook処理エラー:', error);
+      console.error('❌ Webhook処理エラー:', error.message);
+      console.error('❌ エラースタック:', error.stack);
     }
   }
   
   // Stripeに200を返す
+  console.log('\n========== SENDING RESPONSE ==========');
+  console.log('🎯 Stripeに200を返します');
+  console.log('🎯 現在時刻:', new Date().toISOString());
+  console.log('========== STRIPE WEBHOOK END ==========\n');
   res.json({ received: true });
 };
 
 // 非同期でレポート生成と送信を処理
 async function processPaymentAsync(orderId, userId, stripeSessionId) {
+  console.log('\n========== PROCESS PAYMENT ASYNC START ==========');
   console.log('📋 processPaymentAsync実行開始');
   console.log('📋 引数:', { orderId, userId, stripeSessionId });
+  console.log('📋 現在時刻:', new Date().toISOString());
   
   try {
     // Vercel環境でのタイムアウトを防ぐため、最初にステータスのみ更新
-    console.log('📝 注文ステータスをgeneratingに更新...');
-    await ordersDB.updateOrder(orderId, {
+    console.log('\n--- UPDATING STATUS TO GENERATING ---');
+    console.log('📝 注文ステータスをgeneratingに更新開始...');
+    
+    const genUpdateResult = await ordersDB.updateOrder(orderId, {
       status: 'generating'
     });
-    console.log('✅ ステータス更新完了');
+    
+    console.log('✅ generatingステータス更新完了');
+    console.log('✅ 更新結果:', genUpdateResult);
     
     // OrdersDBを再初期化して環境変数を確実に反映
+    console.log('\n--- REINITIALIZING DATABASE ---');
     ordersDB.reinitialize();
+    console.log('✅ DB再初期化完了');
   
+  console.log('\n--- FETCHING LINE PROFILE ---');
   console.log('👤 LINE APIプロファイル取得開始...');
   console.log('👤 CHANNEL_ACCESS_TOKEN exists:', !!process.env.CHANNEL_ACCESS_TOKEN);
+  console.log('👤 userId:', userId);
   
   // LINE APIからユーザープロフィールを取得（タイムアウト付き）
   let userProfile = null;
@@ -165,10 +216,10 @@ async function processPaymentAsync(orderId, userId, stripeSessionId) {
     });
     console.log('👤 LINE Client作成成功');
     
-    // タイムアウト付きでプロファイル取得
+    // タイムアウト付きでプロファイル取得（タイムアウトを延長）
     const profilePromise = lineClient.getProfile(userId);
     const timeoutPromise = new Promise((_, reject) => 
-      setTimeout(() => reject(new Error('Profile fetch timeout')), 3000)
+      setTimeout(() => reject(new Error('Profile fetch timeout')), 8000)
     );
     
     userProfile = await Promise.race([profilePromise, timeoutPromise]);
@@ -183,6 +234,7 @@ async function processPaymentAsync(orderId, userId, stripeSessionId) {
   }
   
   try {
+    console.log('\n--- FETCHING ORDER FOR PROCESSING ---');
     // 注文情報を取得（データベースから）
     console.log('🔍 注文を取得開始:', orderId);
     console.log('🔍 ordersDB存在確認:', !!ordersDB);
@@ -192,10 +244,10 @@ async function processPaymentAsync(orderId, userId, stripeSessionId) {
     try {
       console.log('🔍 getOrder呼び出し前');
       
-      // タイムアウト付きで注文を取得
+      // タイムアウト付きで注文を取得（タイムアウトを延長）
       const orderPromise = ordersDB.getOrder(orderId);
       const timeoutPromise = new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('Order fetch timeout')), 5000)
+        setTimeout(() => reject(new Error('Order fetch timeout')), 10000)
       );
       
       order = await Promise.race([orderPromise, timeoutPromise]);
@@ -230,6 +282,7 @@ async function processPaymentAsync(orderId, userId, stripeSessionId) {
     // 決済完了通知は送らない（決済ページで確認できるため）
     console.log('📝 決済完了処理済み');
     
+    console.log('\n--- GENERATING REPORT ---');
     console.log('🔮 レポート生成開始...');
     
     // テスト用のメッセージ履歴を生成
@@ -238,15 +291,25 @@ async function processPaymentAsync(orderId, userId, stripeSessionId) {
     // レポートを生成（userProfileを渡す）
     const completionResult = await paymentHandler.handlePaymentSuccess(orderId, testMessages, userProfile);
     
+    console.log('\n--- SAVING REPORT URL ---');
     console.log('📤 レポート情報をデータベースに保存...');
+    console.log('📤 completionResult:', completionResult ? {
+      success: completionResult.success,
+      reportUrl: completionResult.reportUrl,
+      orderId: completionResult.orderId
+    } : 'null');
     
     // レポートURLをデータベースに保存
     if (completionResult && completionResult.reportUrl) {
-      await ordersDB.updateOrder(orderId, {
+      console.log('📤 ステータスをcompletedに更新中...');
+      const finalUpdate = await ordersDB.updateOrder(orderId, {
         status: 'completed',
         reportUrl: completionResult.reportUrl  // camelCaseに統一
       });
       console.log('✅ レポートURL保存完了');
+      console.log('✅ 最終更新結果:', finalUpdate);
+    } else {
+      console.error('❌ completionResultまたはreportUrlが存在しません');
     }
     
     // レポート完成通知を次回メッセージ時に送信予定
@@ -261,12 +324,18 @@ async function processPaymentAsync(orderId, userId, stripeSessionId) {
       timestamp: Date.now()
     });
     
+    console.log('\n--- SETTING UP PENDING NOTIFICATION ---');
     console.log('📝 レポート完成通知を次回メッセージ時に送信予定');
     
-    console.log('✅ Stripe Webhook処理完了');
+    console.log('\n========== PROCESS PAYMENT ASYNC COMPLETE ==========');
+    console.log('✅ processPaymentAsync完全終了');
+    console.log('✅ 終了時刻:', new Date().toISOString());
     
   } catch (error) {
-    console.error('レポート生成エラー:', error);
+    console.error('\n========== PROCESS PAYMENT ASYNC ERROR ==========');
+    console.error('❌ レポート生成エラー:', error.message);
+    console.error('❌ エラータイプ:', error.constructor.name);
+    console.error('❌ スタック:', error.stack);
     
     // エラー情報をデータベースに保存
     try {
@@ -280,8 +349,11 @@ async function processPaymentAsync(orderId, userId, stripeSessionId) {
     }
   }
   } catch (outerError) {
-    console.error('❌ processPaymentAsync全体エラー:', outerError);
+    console.error('\n========== CRITICAL ERROR ==========');
+    console.error('❌ processPaymentAsync全体エラー:', outerError.message);
+    console.error('❌ エラータイプ:', outerError.constructor.name);
     console.error('❌ エラースタック:', outerError.stack);
+    console.error('========== CRITICAL ERROR END ==========\n');
   }
 }
 
