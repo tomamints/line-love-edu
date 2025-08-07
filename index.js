@@ -726,12 +726,12 @@ async function handleFortuneEvent(event) {
   }, 25000);
   
   try {
-    console.log('📢 Step 1: 分析開始メッセージ送信');
-    // 分析開始メッセージを送信（レート制限対策付き）
-    await rateLimiter.sendMessage(client, userId, {
-      type: 'text',
-      text: '📥 トーク履歴を受信しました！\n\n🔍 会話パターンを分析中...\n\nしばらくお待ちください（約30秒〜1分）'
-    });
+    console.log('📢 Step 1: 分析開始メッセージ送信スキップ（レート制限対策）');
+    // 分析開始メッセージは送信しない（レート制限対策）
+    // await rateLimiter.sendMessage(client, userId, {
+    //   type: 'text',
+    //   text: '📥 トーク履歴を受信しました！\n\n🔍 会話パターンを分析中...\n\nしばらくお待ちください（約30秒〜1分）'
+    // });
     console.log('✅ メッセージ送信完了');
     
     // ファイルダウンロード
@@ -846,7 +846,14 @@ async function handleFortuneEvent(event) {
     console.log('📊 カルーセル構造:', JSON.stringify(carousel, null, 2));
     
     try {
-      await client.pushMessage(userId, carousel);
+      // replyTokenが有効な場合はreplyMessageを使用（無料・無制限）
+      if (event.replyToken && !event.replyToken.startsWith('00000000')) {
+        console.log('📮 replyMessageを使用（無料・無制限）');
+        await client.replyMessage(event.replyToken, carousel);
+      } else {
+        console.log('📮 pushMessageを使用（月間1000通制限）');
+        await client.pushMessage(userId, carousel);
+      }
     } catch (apiError) {
       console.error('🔥 LINE API エラー詳細:');
       console.error('  - Status:', apiError.statusCode);
