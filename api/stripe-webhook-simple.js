@@ -83,7 +83,7 @@ module.exports = async (req, res) => {
         ? `https://${process.env.VERCEL_URL}`
         : 'https://line-love-edu.vercel.app';
       
-      const reportUrl = `${baseUrl}/api/process-paid-orders?orderId=${orderId}`;
+      const reportUrl = `${baseUrl}/api/process-paid-orders-fast?orderId=${orderId}`;
       console.log('📍 Calling:', reportUrl);
       
       // HTTPSリクエストで呼び出す（fireして忘れる）

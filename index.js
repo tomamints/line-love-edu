@@ -7,6 +7,30 @@ const fs      = require('fs');
 const { Client, middleware } = require('@line/bot-sdk');
 const logger = require('./utils/logger');
 
+// テスト用メッセージ生成関数
+function generateTestMessages() {
+  const messages = [];
+  const now = new Date();
+  
+  for (let i = 30; i >= 0; i--) {
+    const date = new Date(now.getTime() - i * 24 * 60 * 60 * 1000);
+    
+    messages.push({
+      text: 'こんにちは！今日も元気です',
+      timestamp: new Date(date.getTime() + Math.random() * 8 * 60 * 60 * 1000).toISOString(),
+      isUser: true
+    });
+    
+    messages.push({
+      text: 'こちらこそ！良い一日を',
+      timestamp: new Date(date.getTime() + Math.random() * 8 * 60 * 60 * 1000 + 1000).toISOString(),
+      isUser: false
+    });
+  }
+  
+  return messages;
+}
+
 // すべてのモジュールを初期化時にロード（高速化）
 const parser = require('./metrics/parser');
 const FortuneEngine = require('./core/fortune-engine');
@@ -65,6 +89,12 @@ app.all('/api/process-paid-orders', async (req, res) => {
   await processPaidOrders(req, res);
 });
 
+// 高速版レポート生成（ステータス更新のみ）
+app.all('/api/process-paid-orders-fast', async (req, res) => {
+  const processPaidOrdersFast = require('./api/process-paid-orders-fast');
+  await processPaidOrdersFast(req, res);
+});
+
 
 // ── ③ 重複防止
 const recentMessageIds = new Set();
@@ -97,6 +127,46 @@ app.post('/webhook', middleware(config), async (req, res) => {
         const userId = event.source.userId;
         const messageText = event.message.text;
         loadHeavyModules();
+        
+        // 生成中の注文があるかチェック
+        try {
+          const userOrders = await ordersDB.getUserOrders(userId);
+          const generatingOrder = userOrders.find(order => order.status === 'generating');
+          
+          if (generatingOrder) {
+            console.log(`🔮 レポート生成中の注文を検出: ${generatingOrder.id}`);
+            
+            // バックグラウンドでレポート生成を開始（応答は待たない）
+            const PaymentHandler = require('./core/premium/payment-handler');
+            const paymentHandler = new PaymentHandler();
+            
+            setTimeout(async () => {
+              try {
+                console.log(`🚀 レポート生成開始: ${generatingOrder.id}`);
+                const testMessages = generateTestMessages();
+                const userProfile = await client.getProfile(userId).catch(() => ({ displayName: 'ユーザー' }));
+                
+                const result = await paymentHandler.handlePaymentSuccess(
+                  generatingOrder.id,
+                  testMessages,
+                  userProfile
+                );
+                
+                if (result.success) {
+                  console.log(`✅ レポート生成完了: ${generatingOrder.id}`);
+                  
+                  // 完了通知を送信
+                  const completionMessage = paymentHandler.generateCompletionMessage(result);
+                  await client.pushMessage(userId, completionMessage);
+                }
+              } catch (err) {
+                console.error('❌ レポート生成エラー:', err);
+              }
+            }, 1000); // 1秒後に実行
+          }
+        } catch (err) {
+          console.error('⚠️ 注文チェックエラー:', err);
+        }
         
         // 「レポート履歴」コマンドの処理
         if (messageText === 'レポート履歴' || messageText === '購入履歴') {
