@@ -42,6 +42,7 @@
   "env": {
     "NODE_ENV": "production"
   },
+  "buildCommand": "echo 'Build timestamp:' && date",
   "headers": [
     {
       "source": "/api/(.*)",

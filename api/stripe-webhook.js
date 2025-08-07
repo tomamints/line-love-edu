@@ -1,5 +1,6 @@
 // api/stripe-webhook.js
 // Stripeからの決済完了通知を受け取る正式なWebhook
+// Version: 2025-01-08-v2 - Force redeploy
 
 // 環境変数を確実に読み込む（Vercel以外の環境用）
 if (!process.env.VERCEL) {
@@ -176,6 +177,9 @@ module.exports = async (req, res) => {
 
 // 非同期でレポート生成と送信を処理
 async function processPaymentAsync(orderId, userId, stripeSessionId) {
+  // デプロイバージョン確認
+  console.log('🚀 === DEPLOY VERSION: 2025-01-08-v2 ===');
+  
   try {
     console.log('\n========== PROCESS PAYMENT ASYNC START ==========');
     console.log('📋 processPaymentAsync実行開始');
