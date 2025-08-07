@@ -182,33 +182,25 @@ async function processPaymentAsync(orderId, userId, stripeSessionId) {
   console.log('📋 現在時刻:', new Date().toISOString());
   
   try {
+    // 最初にOrdersDBを再初期化して環境変数を確実に反映
+    console.log('\n--- REINITIALIZING DATABASE ---');
+    ordersDB.reinitialize();
+    console.log('✅ DB再初期化完了');
+    console.log('✅ 現在時刻:', new Date().toISOString());
     // Vercel環境でのタイムアウトを防ぐため、最初にステータスのみ更新
     console.log('\n--- UPDATING STATUS TO GENERATING ---');
     console.log('📝 注文ステータスをgeneratingに更新開始...');
     console.log('📝 orderId:', orderId);
     console.log('📝 現在時刻:', new Date().toISOString());
     
-    try {
-      console.log('📝 updateOrder呼び出し前');
-      const genUpdateResult = await ordersDB.updateOrder(orderId, {
-        status: 'generating'
-      });
-      console.log('📝 updateOrder呼び出し後');
-      
-      console.log('✅ generatingステータス更新完了');
-      console.log('✅ 更新結果:', genUpdateResult);
-    } catch (updateErr) {
-      console.error('❌ ステータス更新エラー:', updateErr.message);
-      console.error('❌ エラータイプ:', updateErr.constructor.name);
-      console.error('❌ スタック:', updateErr.stack);
-      // エラーが発生しても処理を継続
-    }
+    console.log('📝 updateOrder呼び出し前');
+    const genUpdateResult = await ordersDB.updateOrder(orderId, {
+      status: 'generating'
+    });
+    console.log('📝 updateOrder呼び出し後');
     
-    // OrdersDBを再初期化して環境変数を確実に反映
-    console.log('\n--- REINITIALIZING DATABASE ---');
-    ordersDB.reinitialize();
-    console.log('✅ DB再初期化完了');
-    console.log('✅ 現在時刻:', new Date().toISOString());
+    console.log('✅ generatingステータス更新完了');
+    console.log('✅ 更新結果:', genUpdateResult);
   
   console.log('\n--- FETCHING LINE PROFILE ---');
   console.log('👤 LINE APIプロファイル取得開始...');
@@ -360,19 +352,19 @@ async function processPaymentAsync(orderId, userId, stripeSessionId) {
       console.error('DB保存エラー:', dbError);
     }
   }
-  } catch (outerError) {
-    console.error('\n========== CRITICAL ERROR ==========');
-    console.error('❌ processPaymentAsync全体エラー:', outerError.message);
-    console.error('❌ エラータイプ:', outerError.constructor.name);
-    console.error('❌ エラースタック:', outerError.stack);
-    console.error('❌ エラー詳細:', JSON.stringify(outerError, null, 2));
-    console.error('========== CRITICAL ERROR END ==========\n');
+  } catch (error) {
+    console.error('\n========== PROCESS PAYMENT ASYNC ERROR ==========');
+    console.error('❌ processPaymentAsyncエラー:', error.message);
+    console.error('❌ エラータイプ:', error.constructor.name);
+    console.error('❌ エラースタック:', error.stack);
+    console.error('❌ エラー詳細:', JSON.stringify(error, null, 2));
+    console.error('========== ERROR END ==========\n');
     
     // エラー情報をデータベースに保存を試みる
     try {
       await ordersDB.updateOrder(orderId, {
         status: 'error',
-        error_message: `Critical error: ${outerError.message}`
+        error_message: `Process error: ${error.message}`
       });
     } catch (dbErr) {
       console.error('❌ エラー情報保存失敗:', dbErr.message);
