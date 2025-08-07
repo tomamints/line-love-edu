@@ -368,7 +368,7 @@ class PDFReportGenerator {
     return `
     <div class="page cover-page">
         <div class="cover-title">🔮 プレミアム恋愛レポート</div>
-        <div class="cover-subtitle">月相占いが分析した超詳細恋愛診断書</div>
+        <div class="cover-subtitle">おつきさま診断が分析した超詳細恋愛診断書</div>
         <div class="user-name">${data.metadata.userName}さん専用</div>
         <div class="report-date">生成日: ${date}</div>
         <div style="margin-top: 50px; font-size: 1.2em;">
@@ -740,7 +740,7 @@ class PDFReportGenerator {
         </table>
         
         <div class="footer">
-            <p>🔮 このレポートは月相占いによる分析結果です。参考情報としてご活用ください。</p>
+            <p>🔮 このレポートはおつきさま診断による分析結果です。参考情報としてご活用ください。</p>
             <p>生成日時: ${new Date(data.metadata.generatedAt).toLocaleString('ja-JP')}</p>
             <p>レポートID: ${data.metadata.reportId}</p>
         </div>

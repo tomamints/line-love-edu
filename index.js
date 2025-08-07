@@ -265,7 +265,7 @@ async function handleFollowEvent(event) {
     // 美しいウェルカムカードを送信
     const result = await client.replyMessage(event.replyToken, {
       type: 'flex',
-      altText: '🌙 月相恋愛占いへようこそ！',
+      altText: '🌙 おつきさま診断へようこそ！',
       contents: {
         type: 'bubble',
         size: 'mega',
@@ -285,7 +285,7 @@ async function handleFollowEvent(event) {
                 },
                 {
                   type: 'text',
-                  text: '月相恋愛占い',
+                  text: 'おつきさま診断',
                   size: 'xl',
                   color: '#ffffff',
                   align: 'center',
@@ -395,7 +395,7 @@ async function handleFollowEvent(event) {
       console.log('📤 フォールバックメッセージ送信開始...');
       const fallbackResult = await client.replyMessage(event.replyToken, {
         type: 'text', 
-        text: '🌙 月相恋愛占いへようこそ！\n\n生年月日から二人の相性を占います✨\n\n「占いを始める」と送信してください'
+        text: '🌙 おつきさま診断へようこそ！\n\n生年月日から二人の相性を診断します✨\n\n「診断を始める」と送信してください'
       });
       console.log('✅ フォールバックメッセージ送信成功:', fallbackResult);
     } catch (fallbackError) {
@@ -413,7 +413,7 @@ async function handleFollowEvent(event) {
     const result = await client.replyMessage(event.replyToken, [
       {
         type: 'flex',
-        altText: '🌙 月相恋愛占いへようこそ！',
+        altText: '🌙 おつきさま診断へようこそ！',
         contents: {
           type: 'bubble',
           size: 'mega',
@@ -433,7 +433,7 @@ async function handleFollowEvent(event) {
                   },
                   {
                     type: 'text',
-                    text: '月相恋愛占い',
+                    text: 'おつきさま診断',
                     size: 'xl',
                     color: '#ffffff',
                     align: 'center',
@@ -542,7 +542,7 @@ async function handleFollowEvent(event) {
     try {
       await client.replyMessage(event.replyToken, {
         type: 'text',
-        text: '🌙 月相恋愛占いへようこそ！\n\n「占いを始める」と送信して、あなたとお相手の相性を占いましょう✨'
+        text: '🌙 おつきさま診断へようこそ！\n\n「診断を始める」と送信して、あなたとお相手の相性を診断しましょう✨'
       });
       console.log('✅ フォールバックメッセージ送信成功');
     } catch (fallbackError) {
@@ -699,7 +699,7 @@ async function handleTextMessage(event) {
     if (!hasComplete) {
       await client.replyMessage(event.replyToken, {
         type: 'text',
-        text: '月相恋愛占いを始めるには「占いを始める」と送信してください🌙',
+        text: 'おつきさま診断を始めるには「診断を始める」と送信してください🌙',
         quickReply: {
           items: [
             {
@@ -731,14 +731,14 @@ async function handleTextMessage(event) {
   }
 }
 
-// 月相占い結果を送信
+// おつきさま診断結果を送信
 async function sendMoonFortuneResult(replyToken, userId) {
   try {
     const profile = await getProfileManager().getProfile(userId);
     loadHeavyModules();
     const moonEngine = new MoonFortuneEngine();
     
-    // 月相占いレポートを生成
+    // おつきさま診断レポートを生成
     const moonReport = moonEngine.generateFreeReport(
       {
         birthDate: profile.birthDate,
@@ -763,12 +763,12 @@ async function sendMoonFortuneResult(replyToken, userId) {
       },
       {
         type: 'text',
-        text: '✨ より詳しい相性分析を見る ✨\n\nトーク履歴ファイルを送信すると、会話パターンから二人の深層心理を分析します！\n\n【プレミアム機能】\n・詳細な月相相性分析\n・今後3ヶ月の関係性予測\n・ベストタイミングカレンダー\n・具体的なアプローチ方法\n\n今なら ¥1,980（通常 ¥2,980）'
+        text: '✨ より詳しい相性分析を見る ✨\n\nトーク履歴ファイルを送信すると、会話パターンから二人の深層心理を分析します！\n\n【プレミアム機能】\n・詳細なおつきさま相性分析\n・今後3ヶ月の関係性予測\n・ベストタイミングカレンダー\n・具体的なアプローチ方法\n\n今なら ¥1,980（通常 ¥2,980）'
       }
     ]);
     
   } catch (error) {
-    console.error('月相占い結果送信エラー:', error);
+    console.error('おつきさま診断結果送信エラー:', error);
     await client.replyMessage(replyToken, {
       type: 'text',
       text: 'エラーが発生しました。もう一度お試しください。'
@@ -855,8 +855,8 @@ async function handleFortuneEvent(event) {
     // 占い結果に波動診断を追加
     fortune.waveAnalysis = waveResult;
     
-    // 月相占いも生成
-    console.log('🌙 月相占い診断を実行中...');
+    // おつきさま診断も生成
+    console.log('🌙 おつきさま診断を実行中...');
     loadHeavyModules();
     const moonEngine = new MoonFortuneEngine();
     
@@ -1333,7 +1333,7 @@ async function handlePostbackEvent(event) {
         status: 'complete'
       });
       
-      // 月相占い結果を生成
+      // おつきさま診断結果を生成
       loadHeavyModules();
     const moonEngine = new MoonFortuneEngine();
       const moonReport = moonEngine.generateFreeReport(
@@ -1357,7 +1357,7 @@ async function handlePostbackEvent(event) {
       await client.replyMessage(event.replyToken, [
         {
           type: 'flex',
-          altText: '🌙 月相恋愛占いの結果',
+          altText: '🌙 おつきさま診断の結果',
           contents: {
             type: 'carousel',
             contents: [
@@ -1371,7 +1371,7 @@ async function handlePostbackEvent(event) {
                   contents: [
                     {
                       type: 'text',
-                      text: '🌙 月相恋愛占い',
+                      text: '🌙 おつきさま診断',
                       size: 'xl',
                       color: '#ffffff',
                       weight: 'bold',
@@ -1452,7 +1452,7 @@ async function handlePostbackEvent(event) {
                   contents: [
                     {
                       type: 'text',
-                      text: 'あなたの月相',
+                      text: 'あなたのおつきさま',
                       size: 'lg',
                       color: '#ffffff',
                       weight: 'bold',
@@ -1577,7 +1577,7 @@ async function handlePostbackEvent(event) {
                   contents: [
                     {
                       type: 'text',
-                      text: 'お相手の月相',
+                      text: 'お相手のおつきさま',
                       size: 'lg',
                       color: '#ffffff',
                       weight: 'bold',
@@ -1728,7 +1728,7 @@ async function handlePostbackEvent(event) {
                   contents: [
                     {
                       type: 'text',
-                      text: '🌙 現在の月相',
+                      text: '🌙 現在のおつきさま',
                       weight: 'bold',
                       size: 'md',
                       color: '#ff6b6b'
@@ -2206,7 +2206,7 @@ ${roadmap.roadmap.slice(0, 2).map(milestone =>
 
 ━━━━━━━━━━━━━━━━━━
 
-🔮 このレポートは月相占いによる詳細分析結果です
+🔮 このレポートはおつきさま診断による詳細分析結果です
 生成日時: ${new Date().toLocaleString('ja-JP')}
 レポートID: ${reportData.metadata.reportId}
 
