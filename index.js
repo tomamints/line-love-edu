@@ -128,45 +128,8 @@ app.post('/webhook', middleware(config), async (req, res) => {
         const messageText = event.message.text;
         loadHeavyModules();
         
-        // 生成中の注文があるかチェック
-        try {
-          const userOrders = await ordersDB.getUserOrders(userId);
-          const generatingOrder = userOrders.find(order => order.status === 'generating');
-          
-          if (generatingOrder) {
-            console.log(`🔮 レポート生成中の注文を検出: ${generatingOrder.id}`);
-            
-            // バックグラウンドでレポート生成を開始（応答は待たない）
-            const PaymentHandler = require('./core/premium/payment-handler');
-            const paymentHandler = new PaymentHandler();
-            
-            setTimeout(async () => {
-              try {
-                console.log(`🚀 レポート生成開始: ${generatingOrder.id}`);
-                const testMessages = generateTestMessages();
-                const userProfile = await client.getProfile(userId).catch(() => ({ displayName: 'ユーザー' }));
-                
-                const result = await paymentHandler.handlePaymentSuccess(
-                  generatingOrder.id,
-                  testMessages,
-                  userProfile
-                );
-                
-                if (result.success) {
-                  console.log(`✅ レポート生成完了: ${generatingOrder.id}`);
-                  
-                  // 完了通知を送信
-                  const completionMessage = paymentHandler.generateCompletionMessage(result);
-                  await client.pushMessage(userId, completionMessage);
-                }
-              } catch (err) {
-                console.error('❌ レポート生成エラー:', err);
-              }
-            }, 1000); // 1秒後に実行
-          }
-        } catch (err) {
-          console.error('⚠️ 注文チェックエラー:', err);
-        }
+        // 生成中の注文がある場合の処理を削除
+        // 「レポート状況」コマンドで適切に処理される
         
         // 「レポート履歴」コマンドの処理
         if (messageText === 'レポート履歴' || messageText === '購入履歴') {
