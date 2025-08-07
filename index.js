@@ -5,27 +5,25 @@ const express = require('express');
 const path    = require('path');
 const fs      = require('fs');
 const { Client, middleware } = require('@line/bot-sdk');
+const logger = require('./utils/logger');
 
-// 重いモジュールは必要時に遅延ロード
-let parser, FortuneEngine, FortuneCarouselBuilder, PaymentHandler;
-let WaveFortuneEngine, MoonFortuneEngine, UserProfileManager, ordersDB;
+// すべてのモジュールを初期化時にロード（高速化）
+const parser = require('./metrics/parser');
+const FortuneEngine = require('./core/fortune-engine');
+const { FortuneCarouselBuilder } = require('./core/formatter/fortune-carousel');
+const PaymentHandler = require('./core/premium/payment-handler');
+const WaveFortuneEngine = require('./core/wave-fortune');
+const MoonFortuneEngine = require('./core/moon-fortune');
+const UserProfileManager = require('./core/database/profiles-db');
+const ordersDB = require('./core/database/orders-db');
 
-// 必要時に初期化
-function loadHeavyModules() {
-  if (!parser) parser = require('./metrics/parser');
-  if (!FortuneEngine) FortuneEngine = require('./core/fortune-engine');
-  if (!FortuneCarouselBuilder) ({ FortuneCarouselBuilder } = require('./core/formatter/fortune-carousel'));
-  if (!PaymentHandler) PaymentHandler = require('./core/premium/payment-handler');
-  if (!WaveFortuneEngine) WaveFortuneEngine = require('./core/wave-fortune');
-  if (!MoonFortuneEngine) MoonFortuneEngine = require('./core/moon-fortune');
-  if (!UserProfileManager) UserProfileManager = require('./core/database/profiles-db');
-  if (!ordersDB) ordersDB = require('./core/database/orders-db');
-}
+// loadHeavyModulesは互換性のために空関数として残す
+function loadHeavyModules() {}
 
 // ── ① 環境変数チェック
-console.log("✅ SECRET:", !!process.env.CHANNEL_SECRET);
-console.log("✅ TOKEN:", !!process.env.CHANNEL_ACCESS_TOKEN);
-console.log("✅ OPENAI_API_KEY:", !!process.env.OPENAI_API_KEY);
+logger.log("✅ SECRET:", !!process.env.CHANNEL_SECRET);
+logger.log("✅ TOKEN:", !!process.env.CHANNEL_ACCESS_TOKEN);
+logger.log("✅ OPENAI_API_KEY:", !!process.env.OPENAI_API_KEY);
 
 // ── ② LINEクライアント初期化
 const config = {
@@ -36,22 +34,15 @@ const config = {
 const app    = express();
 const client = new Client(config);
 
-// インスタンスも遅延初期化
-let paymentHandler, profileManager;
+// インスタンスを事前に作成（高速化）
+const paymentHandler = new PaymentHandler();
+const profileManager = UserProfileManager; // ProfilesDBはすでにインスタンス
 
 function getPaymentHandler() {
-  if (!paymentHandler) {
-    loadHeavyModules();
-    paymentHandler = new PaymentHandler();
-  }
   return paymentHandler;
 }
 
 function getProfileManager() {
-  if (!profileManager) {
-    loadHeavyModules();
-    profileManager = UserProfileManager; // ProfilesDBはすでにインスタンス
-  }
   return profileManager;
 }
 
@@ -75,13 +66,13 @@ const recentPostbackIds = new Set();
 
 // ── ④ Webhook
 app.post('/webhook', middleware(config), async (req, res) => {
-  console.log("🔮 恋愛お告げボット - リクエスト受信");
-  console.log("📝 イベント数:", req.body.events?.length || 0);
+  logger.log("🔮 恋愛お告げボット - リクエスト受信");
+  logger.log("📝 イベント数:", req.body.events?.length || 0);
   
   // X-Line-Retryヘッダーをチェック（リトライ回数）
   const retryCount = req.headers['x-line-retry'] || 0;
   if (retryCount > 0) {
-    console.log(`⚠️ リトライ検出: ${retryCount}回目のリトライ`);
+    logger.log(`⚠️ リトライ検出: ${retryCount}回目のリトライ`);
   }
 
   // イベント処理を実行
@@ -117,7 +108,7 @@ app.post('/webhook', middleware(config), async (req, res) => {
           // ステータスに応じた返信
           if (latestOrder.status === 'completed' && latestOrder.report_url) {
             // 完成済み - カードを送信
-            const paymentHandler = new PaymentHandler();
+            // paymentHandlerは既にインスタンス化済み
             const completionMessage = paymentHandler.generateCompletionMessage({
               reportUrl: latestOrder.report_url,
               orderId: latestOrder.id,
@@ -153,9 +144,9 @@ app.post('/webhook', middleware(config), async (req, res) => {
         const notification = pendingNotifications.get(userId);
         
         if (notification && notification.type === 'report_complete') {
-          console.log('🔔 保留中のレポート完成通知を発見');
+          logger.log('🔔 保留中のレポート完成通知を発見');
           
-          const paymentHandler = new PaymentHandler();
+          // paymentHandlerは既にインスタンス化済み
           const completionMessage = paymentHandler.generateCompletionMessage({
             reportUrl: notification.reportUrl,
             orderId: notification.orderId,
@@ -163,7 +154,7 @@ app.post('/webhook', middleware(config), async (req, res) => {
           });
           
           await client.replyMessage(event.replyToken, completionMessage);
-          console.log('✅ レポート完成通知を送信しました');
+          logger.log('✅ レポート完成通知を送信しました');
           
           // 通知を削除
           pendingNotifications.delete(userId);
@@ -184,7 +175,7 @@ app.post('/webhook', middleware(config), async (req, res) => {
       if (event.type === 'message' && event.message.type === 'file') {
         // 重複チェック
         if (recentMessageIds.has(event.message.id)) {
-          console.log("⏭️ 重複メッセージをスキップ:", event.message.id);
+          logger.log("⏭️ 重複メッセージをスキップ:", event.message.id);
           return Promise.resolve();
         }
         recentMessageIds.add(event.message.id);
@@ -206,7 +197,7 @@ app.post('/webhook', middleware(config), async (req, res) => {
         // postbackの重複チェック
         const postbackId = `${event.source.userId}_${event.postback.data}_${event.timestamp}`;
         if (recentPostbackIds.has(postbackId)) {
-          console.log("⏭️ 重複postbackをスキップ:", postbackId);
+          logger.log("⏭️ 重複postbackをスキップ:", postbackId);
           return Promise.resolve();
         }
         recentPostbackIds.add(postbackId);
@@ -254,14 +245,14 @@ app.post('/webhook', middleware(config), async (req, res) => {
 
 // ── ⑤ 友達追加イベント処理
 async function handleFollowEvent(event) {
-  console.log('👋 新しい友達が追加されました');
-  console.log('📍 Reply Token:', event.replyToken);
-  console.log('👤 User ID:', event.source.userId);
-  console.log('🔑 Client exists:', !!client);
-  console.log('🔑 Access Token exists:', !!config.channelAccessToken);
+  logger.log('👋 新しい友達が追加されました');
+  logger.log('📍 Reply Token:', event.replyToken);
+  logger.log('👤 User ID:', event.source.userId);
+  logger.log('🔑 Client exists:', !!client);
+  logger.log('🔑 Access Token exists:', !!config.channelAccessToken);
   
   try {
-    console.log('📤 Flexメッセージ送信開始...');
+    logger.log('📤 Flexメッセージ送信開始...');
     // 美しいウェルカムカードを送信
     const result = await client.replyMessage(event.replyToken, {
       type: 'flex',
@@ -383,7 +374,7 @@ async function handleFollowEvent(event) {
         }
       }
     });
-    console.log('✅ ウェルカムカード送信成功:', result);
+    logger.log('✅ ウェルカムカード送信成功:', result);
     return;
   } catch (error) {
     console.error('❌ ウェルカムカード送信失敗:', error);
@@ -392,12 +383,12 @@ async function handleFollowEvent(event) {
     
     // フォールバック：シンプルなテキストメッセージ
     try {
-      console.log('📤 フォールバックメッセージ送信開始...');
+      logger.log('📤 フォールバックメッセージ送信開始...');
       const fallbackResult = await client.replyMessage(event.replyToken, {
         type: 'text', 
         text: '🌙 おつきさま診断へようこそ！\n\n生年月日から二人の相性を診断します✨\n\n「診断を始める」と送信してください'
       });
-      console.log('✅ フォールバックメッセージ送信成功:', fallbackResult);
+      logger.log('✅ フォールバックメッセージ送信成功:', fallbackResult);
     } catch (fallbackError) {
       console.error('❌ フォールバックメッセージも失敗:', fallbackError);
       console.error('❌ フォールバックエラー詳細:', fallbackError.message);
@@ -408,7 +399,7 @@ async function handleFollowEvent(event) {
   const userId = event.source.userId;
   
   try {
-    console.log('📮 リッチカード送信開始...');
+    logger.log('📮 リッチカード送信開始...');
     // 美しいウェルカムカードを送信
     const result = await client.replyMessage(event.replyToken, [
       {
@@ -532,7 +523,7 @@ async function handleFollowEvent(event) {
         }
       }
     ]);
-    console.log('✅ ウェルカムメッセージ送信完了:', result);
+    logger.log('✅ ウェルカムメッセージ送信完了:', result);
     
   } catch (error) {
     console.error('❌ 友達追加処理エラー:', error);
@@ -544,7 +535,7 @@ async function handleFollowEvent(event) {
         type: 'text',
         text: '🌙 おつきさま診断へようこそ！\n\n「診断を始める」と送信して、あなたとお相手の相性を診断しましょう✨'
       });
-      console.log('✅ フォールバックメッセージ送信成功');
+      logger.log('✅ フォールバックメッセージ送信成功');
     } catch (fallbackError) {
       console.error('❌ フォールバックも失敗:', fallbackError);
     }
@@ -778,14 +769,14 @@ async function sendMoonFortuneResult(replyToken, userId) {
 
 // ── ⑦ お告げ生成イベント処理
 async function handleFortuneEvent(event) {
-  console.log('🔮 恋愛お告げ生成開始');
-  console.log('📱 イベントタイプ:', event.type);
-  console.log('📱 メッセージタイプ:', event.message?.type);
+  logger.log('🔮 恋愛お告げ生成開始');
+  logger.log('📱 イベントタイプ:', event.type);
+  logger.log('📱 メッセージタイプ:', event.message?.type);
   
   const rateLimiter = require('./utils/rate-limiter');
   
   if (event.type !== 'message' || event.message.type !== 'file') {
-    console.log('⏭️ ファイルメッセージではないためスキップ');
+    logger.log('⏭️ ファイルメッセージではないためスキップ');
     return;
   }
 
@@ -802,14 +793,14 @@ async function handleFortuneEvent(event) {
   }, 25000);
   
   try {
-    console.log('📢 Step 1: 分析開始（メッセージは最後にまとめて送信）');
+    logger.log('📢 Step 1: 分析開始（メッセージは最後にまとめて送信）');
     // replyTokenは1回しか使えないので、分析開始メッセージはスキップし、
     // 最後の結果送信時にreplyTokenを使用する
     
     // ファイルダウンロード
-    console.log('📥 Step 2: トーク履歴を読み込み中...');
+    logger.log('📥 Step 2: トーク履歴を読み込み中...');
     const stream = await client.getMessageContent(event.message.id);
-    console.log('📥 Stream取得完了');
+    logger.log('📥 Stream取得完了');
     
     const chunks = [];
     let chunkCount = 0;
@@ -817,18 +808,18 @@ async function handleFortuneEvent(event) {
       chunks.push(c);
       chunkCount++;
       if (chunkCount % 100 === 0) {
-        console.log(`📥 チャンク読み込み中: ${chunkCount}`);
+        logger.log(`📥 チャンク読み込み中: ${chunkCount}`);
       }
     }
-    console.log(`📥 総チャンク数: ${chunkCount}`);
+    logger.log(`📥 総チャンク数: ${chunkCount}`);
     const rawText = Buffer.concat(chunks).toString('utf8');
-    console.log(`📥 テキストサイズ: ${rawText.length} 文字`);
+    logger.log(`📥 テキストサイズ: ${rawText.length} 文字`);
 
     // メッセージ解析
-    console.log('📊 トーク履歴を分析中...');
+    logger.log('📊 トーク履歴を分析中...');
     loadHeavyModules();
     const messages = parser.parseTLText(rawText);
-    console.log(`💬 メッセージ数: ${messages.length}`);
+    logger.log(`💬 メッセージ数: ${messages.length}`);
     
     // プロフィール取得
     let profile;
@@ -840,13 +831,13 @@ async function handleFortuneEvent(event) {
     }
     
     // お告げ生成
-    console.log('🔮 運命のお告げを生成中...');
+    logger.log('🔮 運命のお告げを生成中...');
     loadHeavyModules();
     const fortuneEngine = new FortuneEngine();
     const fortune = await fortuneEngine.generateFortune(messages, userId, profile.displayName);
     
     // 波動系占いも生成
-    console.log('💫 波動恋愛診断を実行中...');
+    logger.log('💫 波動恋愛診断を実行中...');
     loadHeavyModules();
     const waveEngine = new WaveFortuneEngine();
     const waveAnalysis = waveEngine.analyzeWaveVibration(messages);
@@ -856,7 +847,7 @@ async function handleFortuneEvent(event) {
     fortune.waveAnalysis = waveResult;
     
     // おつきさま診断も生成
-    console.log('🌙 おつきさま診断を実行中...');
+    logger.log('🌙 おつきさま診断を実行中...');
     loadHeavyModules();
     const moonEngine = new MoonFortuneEngine();
     
@@ -901,29 +892,29 @@ async function handleFortuneEvent(event) {
     fortune.moonAnalysis = moonReport;
     
     // カルーセル作成
-    console.log('🎨 お告げカルーセルを作成中...');
+    logger.log('🎨 お告げカルーセルを作成中...');
     loadHeavyModules();
     const builder = new FortuneCarouselBuilder(fortune, profile);
     const carousel = builder.build();
     
     // サイズチェック
     const totalSize = Buffer.byteLength(JSON.stringify(carousel), 'utf8');
-    console.log(`📦 カルーセルサイズ: ${totalSize} bytes`);
+    logger.log(`📦 カルーセルサイズ: ${totalSize} bytes`);
     if (totalSize > 25000) {
       console.warn('⚠️ Flex Message が 25KB を超えています！');
     }
     
     // 送信
-    console.log('📮 お告げを送信中...');
-    console.log('📊 カルーセル構造:', JSON.stringify(carousel, null, 2));
+    logger.log('📮 お告げを送信中...');
+    logger.log('📊 カルーセル構造:', JSON.stringify(carousel, null, 2));
     
     try {
       // replyTokenが有効な場合はreplyMessageを使用（無料・無制限）
       if (event.replyToken && !event.replyToken.startsWith('00000000')) {
-        console.log('📮 replyMessageを使用（無料・無制限）');
+        logger.log('📮 replyMessageを使用（無料・無制限）');
         await client.replyMessage(event.replyToken, carousel);
       } else {
-        console.log('📮 pushMessageを使用（月間1000通制限）');
+        logger.log('📮 pushMessageを使用（月間1000通制限）');
         await client.pushMessage(userId, carousel);
       }
     } catch (apiError) {
@@ -939,7 +930,7 @@ async function handleFortuneEvent(event) {
     // 完了ログ
     clearTimeout(timeout); // タイムアウトをクリア
     const endTime = Date.now();
-    console.log(`✨ お告げ生成完了！ (処理時間: ${endTime - startTime}ms)`);
+    logger.log(`✨ お告げ生成完了！ (処理時間: ${endTime - startTime}ms)`);
     
   } catch (error) {
     clearTimeout(timeout); // タイムアウトをクリア
@@ -957,15 +948,15 @@ async function handleFortuneEvent(event) {
         console.error('プッシュメッセージエラー:', pushErr);
       }
     } else {
-      console.log('⚠️ LINE APIレート制限に到達。エラーメッセージ送信をスキップ');
+      logger.log('⚠️ LINE APIレート制限に到達。エラーメッセージ送信をスキップ');
     }
   }
 }
 
 // ── ⑥ Postbackイベント処理
 async function handlePostbackEvent(event) {
-  console.log('💳 Postback処理開始:', event.postback.data);
-  console.log('📅 Postback params:', event.postback.params);
+  logger.log('💳 Postback処理開始:', event.postback.data);
+  logger.log('📅 Postback params:', event.postback.params);
   
   const userId = event.source.userId;
   
@@ -1854,7 +1845,7 @@ async function handlePostbackEvent(event) {
         return await handlePaymentSuccess(postbackData.orderId, userId);
         
       default:
-        console.log('未知のpostbackアクション:', postbackData.action);
+        logger.log('未知のpostbackアクション:', postbackData.action);
         return;
     }
     
@@ -1872,14 +1863,14 @@ async function handlePostbackEvent(event) {
         console.error('エラーメッセージ送信失敗:', msgError.statusCode);
       }
     } else {
-      console.log('⚠️ LINE APIレート制限に到達。メッセージ送信をスキップ');
+      logger.log('⚠️ LINE APIレート制限に到達。メッセージ送信をスキップ');
     }
   }
 }
 
 // ── ⑦ プレミアムレポート注文処理
 async function handlePremiumReportOrder(event, userId, profile) {
-  console.log('📋 プレミアムレポート注文処理開始');
+  logger.log('📋 プレミアムレポート注文処理開始');
   
   try {
     // 注文を処理
@@ -1890,15 +1881,15 @@ async function handlePremiumReportOrder(event, userId, profile) {
     
     // replyTokenが有効な場合はreplyMessageを使用（無料・無制限）
     if (event.replyToken && !event.replyToken.startsWith('00000000')) {
-      console.log('📮 replyMessageを使用（Postback応答・無料）');
+      logger.log('📮 replyMessageを使用（Postback応答・無料）');
       await client.replyMessage(event.replyToken, paymentMessage);
     } else {
-      console.log('📮 pushMessageを使用（月間制限あり）');
+      logger.log('📮 pushMessageを使用（月間制限あり）');
       const rateLimiter = require('./utils/rate-limiter');
       await rateLimiter.sendMessage(client, userId, paymentMessage);
     }
     
-    console.log('✅ 決済案内送信完了');
+    logger.log('✅ 決済案内送信完了');
     
   } catch (error) {
     console.error('プレミアムレポート注文エラー:', error);
@@ -1914,14 +1905,14 @@ async function handlePremiumReportOrder(event, userId, profile) {
         console.error('エラーメッセージ送信失敗:', msgError.statusCode);
       }
     } else {
-      console.log('⚠️ LINE APIレート制限に到達。メッセージ送信をスキップ');
+      logger.log('⚠️ LINE APIレート制限に到達。メッセージ送信をスキップ');
     }
   }
 }
 
 // ── ⑧ 決済完了処理
 async function handlePaymentSuccess(orderId, userId) {
-  console.log('💰 決済完了処理開始:', orderId);
+  logger.log('💰 決済完了処理開始:', orderId);
   
   try {
     // まず購入完了メッセージを送信
@@ -1955,7 +1946,7 @@ async function handlePaymentSuccess(orderId, userId) {
       await client.pushMessage(userId, completionMessages);
     }
     
-    console.log('✅ レポート完成通知送信完了');
+    logger.log('✅ レポート完成通知送信完了');
     
   } catch (error) {
     console.error('決済完了処理エラー:', error);
@@ -1969,7 +1960,7 @@ async function handlePaymentSuccess(orderId, userId) {
 
 // ── テスト用：レポート生成テスト
 async function handleTestReport(event) {
-  console.log('🧪 テストレポート生成開始');
+  logger.log('🧪 テストレポート生成開始');
   
   const userId = event.source.userId;
   
@@ -2002,7 +1993,7 @@ async function handleTestReport(event) {
     // レポート内容をテキストで送信（PDF生成の代わり）
     await sendReportAsText(userId, reportData, profile.displayName);
     
-    console.log('✅ テストレポート送信完了');
+    logger.log('✅ テストレポート送信完了');
     
   } catch (error) {
     console.error('テストレポート生成エラー:', error);
@@ -2255,10 +2246,10 @@ if (process.env.VERCEL !== '1') {
   // ローカル環境でのみサーバーを起動
   const port = process.env.PORT || 3000;
   app.listen(port, () => {
-    console.log(`🔮 恋愛お告げボット起動: http://localhost:${port}`);
-    console.log('📡 Webhook URL: /webhook');
-    console.log(`💳 決済成功URL: http://localhost:${port}/payment/success`);
-    console.log('✨ 準備完了！トーク履歴を送信してください');
+    logger.log(`🔮 恋愛お告げボット起動: http://localhost:${port}`);
+    logger.log('📡 Webhook URL: /webhook');
+    logger.log(`💳 決済成功URL: http://localhost:${port}/payment/success`);
+    logger.log('✨ 準備完了！トーク履歴を送信してください');
   });
 }
 
