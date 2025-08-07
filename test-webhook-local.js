@@ -4,6 +4,9 @@
 // 環境変数を読み込む
 require('dotenv').config();
 
+// テスト環境ではLINE通知を無効化するオプション
+const SKIP_LINE_NOTIFICATION = process.env.SKIP_LINE_NOTIFICATION === 'true' || process.argv.includes('--skip-line');
+
 const https = require('https');
 const http = require('http');
 
@@ -38,6 +41,13 @@ async function testWebhook() {
     
     // ローカルテスト用の環境変数を設定
     process.env.STRIPE_WEBHOOK_SECRET = '';  // 署名検証をスキップ
+    
+    if (SKIP_LINE_NOTIFICATION) {
+      console.log('⚠️ LINE notifications disabled for testing');
+      // LINE APIのトークンを一時的に無効化
+      process.env.CHANNEL_ACCESS_TOKEN_BACKUP = process.env.CHANNEL_ACCESS_TOKEN;
+      process.env.CHANNEL_ACCESS_TOKEN = '';
+    }
     
     const webhookHandler = require('./api/stripe-webhook-simple');
     

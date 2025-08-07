@@ -133,24 +133,44 @@ module.exports = async (req, res) => {
           channelSecret: process.env.CHANNEL_SECRET
         });
         
-        // ユーザーに通知
-        try {
-          await lineClient.pushMessage(userId, {
-            type: 'text',
-            text: '✅ 決済完了しました！\n\nレポートを生成中です...\nしばらくお待ちください。'
-          });
-          console.log('✅ User notified about payment completion');
-        } catch (err) {
-          console.error('❌ Failed to notify user:', err.message);
+        // ユーザーに通知（レート制限対策付き）
+        async function sendLineNotification(retryCount = 0) {
+          try {
+            await lineClient.pushMessage(userId, {
+              type: 'text',
+              text: '✅ 決済完了しました！\n\nレポートを生成中です...\nしばらくお待ちください。'
+            });
+            console.log('✅ User notified about payment completion');
+            return true;
+          } catch (err) {
+            if (err.statusCode === 429 && retryCount < 3) {
+              // レート制限エラーの場合、待機してリトライ
+              const waitTime = Math.pow(2, retryCount) * 1000; // 指数バックオフ: 1秒, 2秒, 4秒
+              console.log(`⏳ Rate limited, retrying after ${waitTime}ms... (attempt ${retryCount + 1}/3)`);
+              await new Promise(resolve => setTimeout(resolve, waitTime));
+              return sendLineNotification(retryCount + 1);
+            }
+            console.error('❌ Failed to notify user:', err.message);
+            if (err.statusCode === 429) {
+              console.log('💡 Hint: Too many LINE API requests. Notification will be skipped but report generation continues.');
+            }
+            return false;
+          }
         }
         
-        // ユーザープロフィールを取得
+        await sendLineNotification();
+        
+        // ユーザープロフィールを取得（レート制限対策付き）
         let userProfile = { displayName: 'ユーザー' };
         try {
           userProfile = await lineClient.getProfile(userId);
           console.log(`👤 User profile: ${userProfile.displayName}`);
         } catch (err) {
-          console.log('⚠️ LINE profile fetch failed, using default');
+          if (err.statusCode === 429) {
+            console.log('⚠️ LINE API rate limited, using default profile');
+          } else {
+            console.log('⚠️ LINE profile fetch failed, using default');
+          }
         }
         
         // 保存されたトーク履歴を取得
