@@ -105,10 +105,14 @@ async function processPaymentAsync(orderId, userId, stripeSessionId) {
   // LINE APIからユーザープロフィールを取得
   let userProfile = null;
   try {
+    const lineClient = new line.Client({
+      channelAccessToken: process.env.CHANNEL_ACCESS_TOKEN
+    });
     userProfile = await lineClient.getProfile(userId);
     console.log('👤 ユーザープロフィール取得成功:', userProfile.displayName);
   } catch (err) {
     console.error('👤 プロフィール取得エラー:', err.message);
+    console.error('  詳細:', err);
     userProfile = {
       displayName: 'ユーザー',
       userId: userId
