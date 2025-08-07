@@ -172,11 +172,15 @@ class PaymentHandler {
       const fileName = `premium_report_${orderId}.pdf`;
       const fileUrl = await this.saveReportFile(fileName, pdfBuffer);
       
-      // 注文情報を更新（Supabaseに存在するカラムのみ）
+      // PDFをBase64エンコード
+      const pdfBase64 = pdfBuffer.toString('base64');
+      console.log('📄 PDF size (Base64):', Math.round(pdfBase64.length / 1024), 'KB');
+      
+      // 注文情報を更新（PDFデータも保存）
       await ordersDB.updateOrder(orderId, {
         status: 'completed',
-        reportUrl: fileUrl
-        // completedAtとpdf_dataカラムは存在しないので除外
+        reportUrl: fileUrl,
+        pdf_data: pdfBase64
       });
       
       return {

@@ -64,17 +64,31 @@ module.exports = async (req, res) => {
       `);
     }
     
-    // ファイルシステムからHTMLを読み込む
-    const htmlPath = process.env.VERCEL 
-      ? path.join('/tmp', 'orders', `${orderId}.pdf`)  // 実際はHTML
+    // まずデータベースからPDFデータを取得
+    if (order.pdf_data) {
+      console.log('📄 PDFデータがデータベースに存在');
+      
+      // Base64エンコードされたPDFをデコード
+      const pdfBuffer = Buffer.from(order.pdf_data, 'base64');
+      
+      // PDFファイルとして返す
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', `inline; filename="report_${orderId}.pdf"`);
+      return res.send(pdfBuffer);
+    }
+    
+    // データベースにない場合はファイルシステムを確認（後方互換性）
+    const pdfPath = process.env.VERCEL 
+      ? path.join('/tmp', 'orders', `${orderId}.pdf`)
       : path.join(process.cwd(), 'orders', `${orderId}.pdf`);
     
     try {
-      const htmlContent = await fs.readFile(htmlPath, 'utf8');
+      const pdfBuffer = await fs.readFile(pdfPath);
       
-      // HTMLをそのまま返す（ブラウザで表示）
-      res.setHeader('Content-Type', 'text/html; charset=utf-8');
-      return res.send(htmlContent);
+      // PDFファイルとして返す
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', `inline; filename="report_${orderId}.pdf"`);
+      return res.send(pdfBuffer);
       
     } catch (err) {
       console.error('レポートファイル読み込みエラー:', err);
