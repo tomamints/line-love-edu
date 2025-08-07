@@ -122,10 +122,7 @@ app.post('/webhook', middleware(config), async (req, res) => {
         
         return handleFortuneEvent(event).catch(err => {
           console.error('=== お告げ生成中にエラー ===', err);
-          return client.pushMessage(event.source.userId, {
-            type: 'text',
-            text: '⚠️ お告げの生成中にエラーが発生しました。もう一度お試しください🔮'
-          }).catch(pushErr => console.error('Push message error:', pushErr));
+          // エラーハンドリングはhandleFortuneEvent内で行うので、ここでは何もしない
         });
       }
       
@@ -709,6 +706,8 @@ async function handleFortuneEvent(event) {
   console.log('📱 イベントタイプ:', event.type);
   console.log('📱 メッセージタイプ:', event.message?.type);
   
+  const rateLimiter = require('./utils/rate-limiter');
+  
   if (event.type !== 'message' || event.message.type !== 'file') {
     console.log('⏭️ ファイルメッセージではないためスキップ');
     return;
@@ -720,7 +719,7 @@ async function handleFortuneEvent(event) {
   // タイムアウト設定（25秒）
   const timeout = setTimeout(() => {
     console.error('⏱️ タイムアウト: 処理が25秒を超えました');
-    client.pushMessage(userId, {
+    rateLimiter.sendMessage(client, userId, {
       type: 'text',
       text: '⏱️ 処理がタイムアウトしました。\nファイルサイズが大きすぎる可能性があります。\n\nもう一度お試しください。'
     }).catch(err => console.error('タイムアウトメッセージ送信エラー:', err));
@@ -728,8 +727,8 @@ async function handleFortuneEvent(event) {
   
   try {
     console.log('📢 Step 1: 分析開始メッセージ送信');
-    // 分析開始メッセージを送信
-    await client.pushMessage(userId, {
+    // 分析開始メッセージを送信（レート制限対策付き）
+    await rateLimiter.sendMessage(client, userId, {
       type: 'text',
       text: '📥 トーク履歴を受信しました！\n\n🔍 会話パターンを分析中...\n\nしばらくお待ちください（約30秒〜1分）'
     });
@@ -868,14 +867,18 @@ async function handleFortuneEvent(event) {
     console.error('❌ エラー発生:', error);
     console.error('❌ エラースタック:', error.stack);
     
-    // エラー時のフォールバック
-    try {
-      await client.pushMessage(userId, {
-        type: 'text',
-        text: '🔮 申し訳ございません。星々からのメッセージを受信できませんでした。\n\nもう一度お試しいただくか、しばらく時間をおいてからお試しください。'
-      });
-    } catch (pushErr) {
-      console.error('プッシュメッセージエラー:', pushErr);
+    // エラー時のフォールバック（429エラーの場合は送信しない）
+    if (error.statusCode !== 429) {
+      try {
+        await rateLimiter.sendMessage(client, userId, {
+          type: 'text',
+          text: '🔮 申し訳ございません。星々からのメッセージを受信できませんでした。\n\nもう一度お試しいただくか、しばらく時間をおいてからお試しください。'
+        });
+      } catch (pushErr) {
+        console.error('プッシュメッセージエラー:', pushErr);
+      }
+    } else {
+      console.log('⚠️ LINE APIレート制限に到達。エラーメッセージ送信をスキップ');
     }
   }
 }
