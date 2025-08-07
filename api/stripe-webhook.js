@@ -87,7 +87,10 @@ module.exports = async (req, res) => {
     }
     
     // レポート生成を非同期で実行（レスポンスを待たない）
-    processPaymentAsync(orderId, userId, session.id);
+    processPaymentAsync(orderId, userId, session.id).catch(error => {
+      console.error('❌ processPaymentAsyncエラー:', error);
+      console.error('❌ エラースタック:', error.stack);
+    });
   }
   
   // Stripeに即座に200を返す（レポート生成を待たない）
@@ -122,7 +125,14 @@ async function processPaymentAsync(orderId, userId, stripeSessionId) {
   try {
     // 注文情報を取得（データベースから）
     console.log('🔍 注文を取得開始:', orderId);
-    let order = await ordersDB.getOrder(orderId);
+    let order = null;
+    try {
+      order = await ordersDB.getOrder(orderId);
+      console.log('🔍 注文取得結果:', order ? '成功' : 'null');
+    } catch (getOrderError) {
+      console.error('❌ getOrderエラー:', getOrderError);
+      console.error('❌ エラースタック:', getOrderError.stack);
+    }
     
     if (!order) {
       console.error('❌ 注文が見つかりません:', orderId);
