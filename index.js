@@ -1868,9 +1868,24 @@ async function handlePostbackEvent(event) {
   }
 }
 
+// 注文処理中のユーザーを記録（連打防止）
+const processingOrders = new Set();
+
 // ── ⑦ プレミアムレポート注文処理
 async function handlePremiumReportOrder(event, userId, profile) {
   logger.log('📋 プレミアムレポート注文処理開始');
+  
+  // 連打防止チェック
+  if (processingOrders.has(userId)) {
+    logger.log('⚠️ 注文処理中のため無視:', userId);
+    return client.replyMessage(event.replyToken, {
+      type: 'text',
+      text: '⏳ 処理中です...\n\n現在注文を処理しています。\nしばらくお待ちください。'
+    });
+  }
+  
+  // 処理中フラグを立てる
+  processingOrders.add(userId);
   
   try {
     // 注文を処理
@@ -1907,6 +1922,12 @@ async function handlePremiumReportOrder(event, userId, profile) {
     } else {
       logger.log('⚠️ LINE APIレート制限に到達。メッセージ送信をスキップ');
     }
+  } finally {
+    // 処理中フラグをクリア（10秒後）
+    setTimeout(() => {
+      processingOrders.delete(userId);
+      logger.log('🔓 注文処理フラグをクリア:', userId);
+    }, 10000); // 10秒後にクリア
   }
 }
 

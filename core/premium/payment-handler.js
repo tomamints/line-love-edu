@@ -25,7 +25,37 @@ class PaymentHandler {
    */
   async handlePremiumOrderRequest(userId, userProfile) {
     try {
-      // 注文IDを生成
+      // 既存の未決済注文をチェック
+      const existingOrders = await ordersDB.getUserOrders(userId);
+      const pendingOrder = existingOrders.find(order => 
+        order.status === 'pending' && 
+        new Date(order.expires_at || order.expiresAt) > new Date()
+      );
+      
+      // 有効な未決済注文がある場合は、その決済URLを返す
+      if (pendingOrder) {
+        console.log('📋 既存の未決済注文を再利用:', pendingOrder.id);
+        
+        // 既存の決済URLを再生成または取得
+        const orderInfo = {
+          orderId: pendingOrder.id,
+          userId: pendingOrder.user_id,
+          amount: pendingOrder.amount || 1980
+        };
+        
+        const paymentUrl = await this.generatePaymentUrl(orderInfo);
+        
+        return {
+          success: true,
+          orderId: pendingOrder.id,
+          paymentUrl,
+          message: '既存の注文があります。下記のリンクから決済をお願いします。',
+          expiresAt: pendingOrder.expires_at || pendingOrder.expiresAt,
+          reused: true // 既存注文の再利用フラグ
+        };
+      }
+      
+      // 新規注文を作成
       const orderId = this.generateOrderId(userId);
       
       // 注文情報を作成
