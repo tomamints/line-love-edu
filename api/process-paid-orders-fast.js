@@ -27,19 +27,34 @@ module.exports = async (req, res) => {
     
     console.log(`📋 Order status: ${order.status}`);
     
-    // paidの場合はgeneratingに更新
+    // paidの場合はgeneratingに更新して、実際の生成も開始
     if (order.status === 'paid') {
       await ordersDB.updateOrder(orderId, {
         status: 'generating'
       });
       console.log('✅ Status updated to generating');
       
-      // ここで実際のレポート生成は行わない
-      // 後で別のプロセスかユーザーのメッセージ時に生成
+      // バックグラウンドでレポート生成を開始（レスポンスは待たない）
+      const https = require('https');
+      const baseUrl = process.env.VERCEL_URL 
+        ? `https://${process.env.VERCEL_URL}`
+        : 'https://line-love-edu.vercel.app';
+      
+      // 少し遅延を入れて、本体のレポート生成を呼び出す
+      setTimeout(() => {
+        const fullProcessUrl = `${baseUrl}/api/process-paid-orders?orderId=${orderId}`;
+        console.log('🚀 Starting full report generation:', fullProcessUrl);
+        
+        https.get(fullProcessUrl, (resp) => {
+          console.log('📊 Full generation started, status:', resp.statusCode);
+        }).on('error', (err) => {
+          console.error('❌ Failed to start full generation:', err.message);
+        });
+      }, 2000); // 2秒後に実行
       
       return res.json({ 
         success: true, 
-        message: 'Report generation queued',
+        message: 'Report generation started',
         orderId 
       });
     }
