@@ -171,7 +171,7 @@ async function processPaymentAsync(orderId, userId, stripeSessionId) {
     if (completionResult && completionResult.reportUrl) {
       await ordersDB.updateOrder(orderId, {
         status: 'completed',
-        report_url: completionResult.reportUrl
+        reportUrl: completionResult.reportUrl  // camelCaseに統一
       });
       console.log('✅ レポートURL保存完了');
     }
