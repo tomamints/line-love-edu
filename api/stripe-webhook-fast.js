@@ -93,7 +93,7 @@ module.exports = async (req, res) => {
       
       console.log('✅ Order marked as paid:', orderId);
       
-      // バックグラウンドでレポート生成をトリガー（待たない）
+      // バックグラウンドでレポート生成をトリガー
       const https = require('https');
       const baseUrl = process.env.VERCEL_URL 
         ? `https://${process.env.VERCEL_URL}`
@@ -102,12 +102,26 @@ module.exports = async (req, res) => {
       const reportUrl = `${baseUrl}/api/generate-report-async?orderId=${orderId}`;
       console.log('🚀 Triggering async report generation:', reportUrl);
       
-      // 非同期でレポート生成を開始（レスポンスを待たない）
-      https.get(reportUrl, (resp) => {
-        console.log('✅ Report generation triggered');
-      }).on('error', (err) => {
-        console.error('❌ Failed to trigger:', err.message);
+      // 非同期でレポート生成を開始
+      const triggerPromise = new Promise((resolve) => {
+        https.get(reportUrl, (resp) => {
+          let data = '';
+          resp.on('data', chunk => data += chunk);
+          resp.on('end', () => {
+            console.log('✅ Report trigger response:', resp.statusCode);
+            resolve();
+          });
+        }).on('error', (err) => {
+          console.error('❌ Failed to trigger:', err.message);
+          resolve(); // エラーでも続行
+        });
       });
+      
+      // 最大2秒待つ
+      await Promise.race([
+        triggerPromise,
+        new Promise(resolve => setTimeout(resolve, 2000))
+      ]);
       
     } catch (error) {
       console.error('❌ Error:', error.message);
