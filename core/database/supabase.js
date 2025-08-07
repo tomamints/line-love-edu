@@ -1,7 +1,7 @@
 // Supabaseクライアントの設定
-// ローカル環境では.env.localから環境変数を読み込む
+// ローカル環境では.envから環境変数を読み込む
 if (!process.env.VERCEL && !process.env.SUPABASE_URL) {
-  require('dotenv').config({ path: '.env.local' });
+  require('dotenv').config();
 }
 
 const { createClient } = require('@supabase/supabase-js');

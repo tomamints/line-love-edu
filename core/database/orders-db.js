@@ -135,6 +135,45 @@ class OrdersDB {
     }
   }
 
+  // 注文作成
+  async createOrder(orderData) {
+    console.log('📊 createOrder開始:', orderData.id || orderData.orderId);
+    
+    if (!this.useDatabase) {
+      console.log('📊 ファイルストレージに保存');
+      return orderStorage.saveOrder(orderData.id || orderData.orderId, orderData);
+    }
+    
+    try {
+      const insertData = {
+        id: orderData.id || orderData.orderId,
+        user_id: orderData.userId || orderData.user_id,
+        amount: orderData.amount || 1980,
+        status: orderData.status || 'pending',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      };
+      
+      console.log('📊 Supabaseに注文を作成:', insertData);
+      const { data, error } = await this.supabase
+        .from('orders')
+        .insert(insertData)
+        .select()
+        .single();
+      
+      if (error) {
+        console.error('📊 注文作成エラー:', error);
+        return orderStorage.saveOrder(orderData.id || orderData.orderId, orderData);
+      }
+      
+      console.log('✅ 注文作成成功:', data.id);
+      return data;
+    } catch (err) {
+      console.error('📊 データベースエラー:', err);
+      return orderStorage.saveOrder(orderData.id || orderData.orderId, orderData);
+    }
+  }
+  
   // 注文を取得
   async getOrder(orderId) {
     console.log('📊 getOrder開始:', orderId);

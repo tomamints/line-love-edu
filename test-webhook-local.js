@@ -2,7 +2,7 @@
 
 // ローカル環境でStripe Webhookをテストするスクリプト
 // 環境変数を読み込む
-require('dotenv').config({ path: '.env.local' });
+require('dotenv').config();
 
 const https = require('https');
 const http = require('http');
@@ -35,25 +35,31 @@ async function testWebhook() {
 
     // 2. Webhook処理を直接実行
     console.log('\n2️⃣ Executing webhook handler...');
+    
+    // ローカルテスト用の環境変数を設定
+    process.env.STRIPE_WEBHOOK_SECRET = '';  // 署名検証をスキップ
+    
     const webhookHandler = require('./api/stripe-webhook-simple');
     
     // リクエストとレスポンスのモック
+    const mockBody = {
+      type: 'checkout.session.completed',
+      data: {
+        object: {
+          id: 'cs_test_' + Date.now(),
+          metadata: {
+            orderId: orderId,
+            userId: userId
+          }
+        }
+      }
+    };
+    
     const mockReq = {
       headers: {
         'stripe-signature': 'test-signature'
       },
-      body: JSON.stringify({
-        type: 'checkout.session.completed',
-        data: {
-          object: {
-            id: 'cs_test_' + Date.now(),
-            metadata: {
-              orderId: orderId,
-              userId: userId
-            }
-          }
-        }
-      }),
+      body: Buffer.from(JSON.stringify(mockBody)),
       on: (event, handler) => {
         if (event === 'end') handler();
       }
