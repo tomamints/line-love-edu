@@ -25,14 +25,46 @@ class PaymentHandler {
    */
   async handlePremiumOrderRequest(userId, userProfile) {
     try {
-      // 既存の未決済注文をチェック
+      // 既存の注文をチェック
       const existingOrders = await ordersDB.getUserOrders(userId);
+      
+      // 完了済みの注文がある場合
+      const completedOrder = existingOrders.find(order => 
+        order.status === 'completed' && order.report_url
+      );
+      
+      if (completedOrder) {
+        console.log('📋 既にレポート完成済み:', completedOrder.id);
+        return {
+          success: false,
+          message: '既にプレミアムレポートをご購入いただいています。\n「レポート状況」と送信してレポートをご確認ください。',
+          hasCompleted: true,
+          orderId: completedOrder.id,
+          reportUrl: completedOrder.report_url
+        };
+      }
+      
+      // 生成中の注文がある場合
+      const generatingOrder = existingOrders.find(order => 
+        order.status === 'generating' || order.status === 'paid'
+      );
+      
+      if (generatingOrder) {
+        console.log('📋 レポート生成中の注文あり:', generatingOrder.id);
+        return {
+          success: false,
+          message: '⏳ 現在レポートを生成中です。\n\n完成まで少々お待ちください（約2-3分）\n完成したら自動的に通知いたします。',
+          isGenerating: true,
+          orderId: generatingOrder.id
+        };
+      }
+      
+      // 有効な未決済注文がある場合
       const pendingOrder = existingOrders.find(order => 
         order.status === 'pending' && 
         new Date(order.expires_at || order.expiresAt) > new Date()
       );
       
-      // 有効な未決済注文がある場合は、その決済URLを返す
       if (pendingOrder) {
         console.log('📋 既存の未決済注文を再利用:', pendingOrder.id);
         

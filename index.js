@@ -1891,6 +1891,28 @@ async function handlePremiumReportOrder(event, userId, profile) {
     // 注文を処理
     const orderResult = await getPaymentHandler().handlePremiumOrderRequest(userId, profile);
     
+    // 注文が作成できない場合（既に購入済みまたは生成中）
+    if (!orderResult.success) {
+      // 処理中フラグを即座にクリア
+      processingOrders.delete(userId);
+      
+      // 完了済みの場合
+      if (orderResult.hasCompleted) {
+        const completionMessage = getPaymentHandler().generateCompletionMessage({
+          success: true,
+          orderId: orderResult.orderId,
+          reportUrl: orderResult.reportUrl
+        });
+        return client.replyMessage(event.replyToken, completionMessage);
+      }
+      
+      // 生成中またはその他のメッセージ
+      return client.replyMessage(event.replyToken, {
+        type: 'text',
+        text: orderResult.message
+      });
+    }
+    
     // 決済案内メッセージを送信
     const paymentMessage = getPaymentHandler().generatePaymentMessage(orderResult);
     
