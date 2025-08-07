@@ -1776,7 +1776,7 @@ async function handlePostbackEvent(event) {
     // アクションに応じて処理を分岐
     switch (postbackData.action) {
       case 'order_premium_report':
-        return await handlePremiumReportOrder(userId, profile);
+        return await handlePremiumReportOrder(event, userId, profile);
         
       case 'payment_success':
         return await handlePaymentSuccess(postbackData.orderId, userId);
@@ -1806,18 +1806,25 @@ async function handlePostbackEvent(event) {
 }
 
 // ── ⑦ プレミアムレポート注文処理
-async function handlePremiumReportOrder(userId, profile) {
+async function handlePremiumReportOrder(event, userId, profile) {
   console.log('📋 プレミアムレポート注文処理開始');
-  
-  const rateLimiter = require('./utils/rate-limiter');
   
   try {
     // 注文を処理
     const orderResult = await getPaymentHandler().handlePremiumOrderRequest(userId, profile);
     
-    // 決済案内メッセージを送信（レート制限対策付き）
+    // 決済案内メッセージを送信
     const paymentMessage = getPaymentHandler().generatePaymentMessage(orderResult);
-    await rateLimiter.sendMessage(client, userId, paymentMessage);
+    
+    // replyTokenが有効な場合はreplyMessageを使用（無料・無制限）
+    if (event.replyToken && !event.replyToken.startsWith('00000000')) {
+      console.log('📮 replyMessageを使用（Postback応答・無料）');
+      await client.replyMessage(event.replyToken, paymentMessage);
+    } else {
+      console.log('📮 pushMessageを使用（月間制限あり）');
+      const rateLimiter = require('./utils/rate-limiter');
+      await rateLimiter.sendMessage(client, userId, paymentMessage);
+    }
     
     console.log('✅ 決済案内送信完了');
     
