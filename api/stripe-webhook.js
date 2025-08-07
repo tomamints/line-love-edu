@@ -176,21 +176,33 @@ module.exports = async (req, res) => {
 
 // 非同期でレポート生成と送信を処理
 async function processPaymentAsync(orderId, userId, stripeSessionId) {
-  console.log('\n========== PROCESS PAYMENT ASYNC START ==========');
-  console.log('📋 processPaymentAsync実行開始');
-  console.log('📋 引数:', { orderId, userId, stripeSessionId });
-  console.log('📋 現在時刻:', new Date().toISOString());
-  
   try {
+    console.log('\n========== PROCESS PAYMENT ASYNC START ==========');
+    console.log('📋 processPaymentAsync実行開始');
+    console.log('📋 引数:', { orderId, userId, stripeSessionId });
+    console.log('📋 現在時刻:', new Date().toISOString());
     // 最初にOrdersDBを再初期化して環境変数を確実に反映
     console.log('\n--- REINITIALIZING DATABASE ---');
-    ordersDB.reinitialize();
-    console.log('✅ DB再初期化完了');
+    console.log('🔄 ordersDB exists:', !!ordersDB);
+    console.log('🔄 reinitialize exists:', typeof ordersDB?.reinitialize);
+    
+    if (ordersDB && typeof ordersDB.reinitialize === 'function') {
+      ordersDB.reinitialize();
+      console.log('✅ DB再初期化完了');
+    } else {
+      console.error('❌ ordersDB.reinitializeが利用できません');
+    }
+    
     console.log('✅ 現在時刻:', new Date().toISOString());
+    
+    // ここでコンソールログを強制的に出力
+    console.log('🔍 デバッグ: 次はステータス更新処理です');
+    
     // Vercel環境でのタイムアウトを防ぐため、最初にステータスのみ更新
     console.log('\n--- UPDATING STATUS TO GENERATING ---');
     console.log('📝 注文ステータスをgeneratingに更新開始...');
     console.log('📝 orderId:', orderId);
+    console.log('📝 orderId type:', typeof orderId);
     console.log('📝 現在時刻:', new Date().toISOString());
     
     console.log('📝 updateOrder呼び出し前');
@@ -354,10 +366,17 @@ async function processPaymentAsync(orderId, userId, stripeSessionId) {
   }
   } catch (error) {
     console.error('\n========== PROCESS PAYMENT ASYNC ERROR ==========');
-    console.error('❌ processPaymentAsyncエラー:', error.message);
-    console.error('❌ エラータイプ:', error.constructor.name);
-    console.error('❌ エラースタック:', error.stack);
-    console.error('❌ エラー詳細:', JSON.stringify(error, null, 2));
+    console.error('❌ エラーが発生しました');
+    console.error('❌ エラーメッセージ:', error?.message || 'メッセージなし');
+    console.error('❌ エラータイプ:', error?.constructor?.name || 'タイプ不明');
+    console.error('❌ エラースタック:', error?.stack || 'スタックなし');
+    
+    try {
+      console.error('❌ エラー詳細:', JSON.stringify(error, null, 2));
+    } catch (jsonErr) {
+      console.error('❌ エラーをJSON化できません:', jsonErr.message);
+    }
+    
     console.error('========== ERROR END ==========\n');
     
     // エラー情報をデータベースに保存を試みる
