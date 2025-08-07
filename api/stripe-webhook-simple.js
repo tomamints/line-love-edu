@@ -228,8 +228,39 @@ module.exports = async (req, res) => {
               text: '📝 レポート生成中...\n\n処理に時間がかかっています。\n完成次第お知らせします。'
             });
           } catch (err) {
-            console.log('⚠️ Notification failed');
+            console.log('⚠️ Notification failed:', err.message);
           }
+          
+          // バックグラウンドで処理を継続（Promiseを破棄しない）
+          reportPromise.then(async (bgResult) => {
+            console.log('🔄 Background processing completed');
+            if (bgResult.success) {
+              console.log('✅ Background report generated successfully');
+              console.log('📊 Report URL:', bgResult.reportUrl);
+              
+              // 完了通知を送信
+              try {
+                const completionMessage = paymentHandler.generateCompletionMessage(bgResult);
+                await lineClient.pushMessage(userId, completionMessage);
+                console.log('✅ Background completion notification sent');
+              } catch (err) {
+                console.log('⚠️ Background notification failed:', err.message);
+              }
+            } else {
+              console.error('❌ Background report generation failed:', bgResult.message);
+              // エラーステータスに更新
+              await ordersDB.updateOrder(orderId, {
+                status: 'error',
+                error_message: bgResult.message
+              });
+            }
+          }).catch(async (bgError) => {
+            console.error('❌ Background processing error:', bgError.message);
+            await ordersDB.updateOrder(orderId, {
+              status: 'error',
+              error_message: bgError.message
+            });
+          });
           
           return res.json({ received: true, status: 'generating' });
         }
