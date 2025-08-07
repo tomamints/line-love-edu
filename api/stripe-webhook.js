@@ -86,14 +86,32 @@ module.exports = async (req, res) => {
       return res.status(400).send('Missing metadata');
     }
     
-    // レポート生成を非同期で実行（レスポンスを待たない）
-    processPaymentAsync(orderId, userId, session.id).catch(error => {
-      console.error('❌ processPaymentAsyncエラー:', error);
-      console.error('❌ エラースタック:', error.stack);
-    });
+    // Vercel環境ではawaitしないと関数が終了してしまう
+    // ただし、タイムアウトを防ぐため、最小限の処理のみ同期的に実行
+    try {
+      // 注文ステータスをpaidに更新（これは同期的に実行）
+      await ordersDB.updateOrder(orderId, {
+        status: 'paid',
+        stripeSessionId: session.id,
+        paidAt: new Date().toISOString()
+      });
+      console.log('✅ 注文ステータスをpaidに更新');
+      
+      // レポート生成は非同期で実行（ただしVercelでも実行されるようにPromiseを作成）
+      processPaymentAsync(orderId, userId, session.id).catch(error => {
+        console.error('❌ processPaymentAsyncエラー:', error);
+        console.error('❌ エラースタック:', error.stack);
+      });
+      
+      // 少し待ってから200を返す（processPaymentAsyncが開始されることを保証）
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+    } catch (error) {
+      console.error('❌ Webhook処理エラー:', error);
+    }
   }
   
-  // Stripeに即座に200を返す（レポート生成を待たない）
+  // Stripeに200を返す
   res.json({ received: true });
 };
 
@@ -146,32 +164,21 @@ async function processPaymentAsync(orderId, userId, stripeSessionId) {
     
     if (!order) {
       console.error('❌ 注文が見つかりません:', orderId);
-      console.log('🔄 新規注文として作成します');
-      
-      // 注文が見つからない場合は新規作成
-      const newOrder = {
-        orderId,
-        userId,
-        status: 'paid',
-        amount: 1980,
-        stripeSessionId: stripeSessionId,
-        paidAt: new Date().toISOString(),
-        createdAt: new Date().toISOString()
-      };
-      
-      // 新規注文として保存
-      await ordersDB.saveOrder(orderId, newOrder);
-      order = newOrder;
-      console.log('✅ 新規注文作成完了');
-    } else {
-      console.log('📦 取得した注文:', order);
-      
-      // 注文ステータスを更新（データベースに）
-      await ordersDB.updateOrder(orderId, {
-        status: 'paid',
-        stripeSessionId: stripeSessionId,
-        paidAt: new Date().toISOString()
-      });
+      // 注文が見つからない場合はエラーとして終了
+      throw new Error(`Order not found: ${orderId}`);
+    }
+    
+    console.log('📦 取得した注文:', order);
+    
+    // 注文ステータスを確認（既にpaid以上の場合は処理をスキップ）
+    if (order.status === 'completed') {
+      console.log('⚠️ 既に完了済みの注文です');
+      return;
+    }
+    
+    if (order.status === 'generating') {
+      console.log('⚠️ 既に生成中の注文です');
+      return;
     }
     
     // 決済完了通知は送らない（決済ページで確認できるため）
