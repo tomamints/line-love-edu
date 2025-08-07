@@ -76,8 +76,9 @@ module.exports = async (req, res) => {
       
       if (!existingOrder) {
         console.error('❌ Order not found:', orderId);
+        console.log('⚠️ This might be an old order or duplicate webhook');
         // 注文が存在しない場合でもStripeには成功を返す（重複処理を防ぐ）
-        return res.json({ received: true, error: 'Order not found' });
+        return res.json({ received: true, error: 'Order not found', note: 'Old or duplicate webhook - safely ignored' });
       }
       
       // 既に処理済みの場合はスキップ
