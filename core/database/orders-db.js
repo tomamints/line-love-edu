@@ -210,7 +210,7 @@ class OrdersDB {
         .from('orders')
         .select('*')
         .eq('id', orderId)
-        .single();
+        .limit(1);
       
       const timeoutPromise = new Promise((_, reject) => {
         setTimeout(() => reject(new Error('Supabaseクエリタイムアウト')), 5000);
@@ -233,16 +233,17 @@ class OrdersDB {
       });
       
       if (error) {
-        // PGRST116 = Row not found
-        if (error.code === 'PGRST116') {
+        console.error('📊 Supabaseエラー:', error);
+        return null;
+      }
+      
+      // 配列の場合は最初の要素を取得
+      if (Array.isArray(data)) {
+        if (data.length === 0) {
           console.log('📊 注文がDBに存在しません');
-          // Supabaseを使用している場合はファイルストレージは探さない
-          return null;
-        } else {
-          console.error('📊 Supabaseエラー:', error);
-          // その他のエラーの場合もnullを返す（フォールバックしない）
           return null;
         }
+        data = data[0];
       }
       
       if (!data) {
