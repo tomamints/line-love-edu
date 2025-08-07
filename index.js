@@ -726,13 +726,9 @@ async function handleFortuneEvent(event) {
   }, 25000);
   
   try {
-    console.log('📢 Step 1: 分析開始メッセージ送信スキップ（レート制限対策）');
-    // 分析開始メッセージは送信しない（レート制限対策）
-    // await rateLimiter.sendMessage(client, userId, {
-    //   type: 'text',
-    //   text: '📥 トーク履歴を受信しました！\n\n🔍 会話パターンを分析中...\n\nしばらくお待ちください（約30秒〜1分）'
-    // });
-    console.log('✅ メッセージ送信完了');
+    console.log('📢 Step 1: 分析開始（メッセージは最後にまとめて送信）');
+    // replyTokenは1回しか使えないので、分析開始メッセージはスキップし、
+    // 最後の結果送信時にreplyTokenを使用する
     
     // ファイルダウンロード
     console.log('📥 Step 2: トーク履歴を読み込み中...');
