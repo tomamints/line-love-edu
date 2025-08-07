@@ -186,12 +186,18 @@ async function processPaymentAsync(orderId, userId, stripeSessionId) {
     console.log('\n--- UPDATING STATUS TO GENERATING ---');
     console.log('📝 注文ステータスをgeneratingに更新開始...');
     
-    const genUpdateResult = await ordersDB.updateOrder(orderId, {
-      status: 'generating'
-    });
-    
-    console.log('✅ generatingステータス更新完了');
-    console.log('✅ 更新結果:', genUpdateResult);
+    try {
+      const genUpdateResult = await ordersDB.updateOrder(orderId, {
+        status: 'generating'
+      });
+      
+      console.log('✅ generatingステータス更新完了');
+      console.log('✅ 更新結果:', genUpdateResult);
+    } catch (updateErr) {
+      console.error('❌ ステータス更新エラー:', updateErr.message);
+      console.error('❌ スタック:', updateErr.stack);
+      // エラーが発生しても処理を継続
+    }
     
     // OrdersDBを再初期化して環境変数を確実に反映
     console.log('\n--- REINITIALIZING DATABASE ---');
@@ -353,7 +359,18 @@ async function processPaymentAsync(orderId, userId, stripeSessionId) {
     console.error('❌ processPaymentAsync全体エラー:', outerError.message);
     console.error('❌ エラータイプ:', outerError.constructor.name);
     console.error('❌ エラースタック:', outerError.stack);
+    console.error('❌ エラー詳細:', JSON.stringify(outerError, null, 2));
     console.error('========== CRITICAL ERROR END ==========\n');
+    
+    // エラー情報をデータベースに保存を試みる
+    try {
+      await ordersDB.updateOrder(orderId, {
+        status: 'error',
+        error_message: `Critical error: ${outerError.message}`
+      });
+    } catch (dbErr) {
+      console.error('❌ エラー情報保存失敗:', dbErr.message);
+    }
   }
 }
 

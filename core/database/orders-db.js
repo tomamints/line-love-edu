@@ -257,6 +257,9 @@ class OrdersDB {
     console.log('🔄 Order ID:', orderId);
     console.log('🔄 Updates:', JSON.stringify(updates, null, 2));
     console.log('🔄 useDatabase:', this.useDatabase);
+    console.log('🔄 supabase client:', this.supabase ? 'EXISTS' : 'NULL');
+    console.log('🔄 SUPABASE_URL:', process.env.SUPABASE_URL ? 'SET' : 'NOT SET');
+    console.log('🔄 SUPABASE_ANON_KEY:', process.env.SUPABASE_ANON_KEY ? 'SET' : 'NOT SET');
     
     if (!this.useDatabase) {
       console.log('🔄 Using file storage for update');
