@@ -95,6 +95,12 @@ app.all('/api/process-paid-orders-fast', async (req, res) => {
   await processPaidOrdersFast(req, res);
 });
 
+// 保存されたトーク履歴からレポート生成
+app.all('/api/generate-report-from-saved', async (req, res) => {
+  const generateReportFromSaved = require('./api/generate-report-from-saved');
+  await generateReportFromSaved(req, res);
+});
+
 
 // ── ③ 重複防止
 const recentMessageIds = new Set();

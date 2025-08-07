@@ -34,11 +34,27 @@ module.exports = async (req, res) => {
       });
       console.log('✅ Status updated to generating');
       
-      // 自動レポート生成は無効化
-      // ユーザーが「レポート状況」を送信した時に正しいトーク履歴で生成される
-      console.log('📝 Note: レポート生成は「レポート状況」コマンドで実行されます');
+      // レポート生成を開始
+      console.log('🚀 Starting report generation...');
       
-      // LINEでユーザーに通知
+      // バックグラウンドでレポート生成
+      const https = require('https');
+      const baseUrl = process.env.VERCEL_URL 
+        ? `https://${process.env.VERCEL_URL}`
+        : 'https://line-love-edu.vercel.app';
+      
+      setTimeout(() => {
+        const fullProcessUrl = `${baseUrl}/api/generate-report-from-saved?orderId=${orderId}`;
+        console.log('📊 Calling report generator:', fullProcessUrl);
+        
+        https.get(fullProcessUrl, (resp) => {
+          console.log('✅ Report generation started, status:', resp.statusCode);
+        }).on('error', (err) => {
+          console.error('❌ Failed to start generation:', err.message);
+        });
+      }, 2000);
+      
+      // ユーザーに通知
       try {
         const line = require('@line/bot-sdk');
         const lineClient = new line.Client({
@@ -48,7 +64,7 @@ module.exports = async (req, res) => {
         
         await lineClient.pushMessage(order.user_id || order.userId, {
           type: 'text',
-          text: '✅ 決済完了しました！\n\nレポート生成の準備ができました。\n\n以下の手順でレポートを生成してください：\n\n1️⃣ トーク履歴をエクスポート\n2️⃣ このチャットに送信\n3️⃣ 「レポート状況」と送信\n\nトーク履歴の取り方が分からない場合は「使い方」と送信してください。'
+          text: '✅ 決済完了しました！\n\n🔮 レポートを生成中です...\n\n完成まで2-3分お待ちください。\n完成したら自動的に通知いたします。'
         });
         console.log('✅ User notified');
       } catch (err) {
