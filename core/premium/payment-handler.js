@@ -134,19 +134,18 @@ class PaymentHandler {
       // userProfileが渡されていない場合はデフォルト値を使用
       const displayName = userProfile?.displayName || 'ユーザー';
       
-      // タイムアウト対策：簡略版レポートを生成
-      console.log('⚡ 高速モードでレポート生成開始');
-      const startTime = Date.now();
+      // プレミアムレポートを生成
+      const reportData = await this.reportGenerator.generatePremiumReport(
+        messages,
+        orderInfo.userId,
+        displayName
+      );
       
-      // 簡略版レポートデータを生成（重い処理を省略）
-      const reportData = await this.generateQuickReport(messages, orderInfo.userId, displayName);
-      
-      console.log(`📝 レポートデータ生成完了 (${Date.now() - startTime}ms)`);
+      console.log('📝 レポートデータ生成完了');
       
       // PDFを生成して保存
-      const pdfStartTime = Date.now();
       const pdfBuffer = await this.pdfGenerator.generatePDF(reportData);
-      console.log(`📄 PDF生成完了 (${Date.now() - pdfStartTime}ms)`);
+      console.log('📄 PDF生成完了');
       
       // PDFをファイルシステムに保存
       const fs = require('fs').promises;
@@ -208,61 +207,6 @@ class PaymentHandler {
         message: 'レポートの生成中にエラーが発生しました。サポートまでお問い合わせください。'
       };
     }
-  }
-  
-  /**
-   * 高速版レポート生成（タイムアウト対策）
-   * @param {array} messages - メッセージ履歴
-   * @param {string} userId - ユーザーID
-   * @param {string} displayName - ユーザー名
-   * @returns {object} レポートデータ
-   */
-  async generateQuickReport(messages, userId, displayName) {
-    const fortune = require('../fortune-telling');
-    
-    // 基本的な運勢データのみ生成（AI分析を省略）
-    const basicFortune = fortune.analyzeLoveFortune(messages);
-    
-    // 簡略版レポート
-    return {
-      metadata: {
-        userId,
-        userName: displayName,
-        generatedAt: new Date().toISOString(),
-        reportType: 'premium-quick',
-        version: '1.0'
-      },
-      
-      // 基本情報のみ
-      executiveSummary: {
-        title: 'プレミアム恋愛レポート',
-        overview: '恋愛運勢の分析結果をお届けします',
-        score: basicFortune.totalScore || 85,
-        message: basicFortune.advice || '素晴らしい相性です！'
-      },
-      
-      // 相性分析（簡略版）
-      compatibilityAnalysis: {
-        overallScore: basicFortune.totalScore || 85,
-        categories: [
-          { name: '感情的な繋がり', score: 88 },
-          { name: 'コミュニケーション', score: 82 },
-          { name: '価値観の一致', score: 79 },
-          { name: '将来性', score: 85 }
-        ]
-      },
-      
-      // アクションプラン（固定内容）
-      actionPlan: {
-        immediate: ['今日中に感謝の気持ちを伝える', '笑顔で接する'],
-        weekly: ['デートの計画を立てる', '共通の趣味を見つける'],
-        monthly: ['将来について話し合う', '特別なサプライズを用意']
-      },
-      
-      // 基本データ
-      fortune: basicFortune,
-      messagesCount: messages.length
-    };
   }
   
   /**
