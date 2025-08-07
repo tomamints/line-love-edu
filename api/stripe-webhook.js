@@ -112,14 +112,17 @@ module.exports = async (req, res) => {
       });
       console.log('✅ 注文ステータスをpaidに更新');
       
-      // レポート生成は非同期で実行（ただしVercelでも実行されるようにPromiseを作成）
-      processPaymentAsync(orderId, userId, session.id).catch(error => {
+      // Vercel環境では必ずawaitする必要がある
+      // ただし、Stripeのタイムアウト（10秒）を考慮して、基本処理のみ同期実行
+      console.log('🚀 レポート生成を開始します...');
+      
+      // レポート生成を実行（awaitで待つ）
+      await processPaymentAsync(orderId, userId, session.id).catch(error => {
         console.error('❌ processPaymentAsyncエラー:', error);
         console.error('❌ エラースタック:', error.stack);
       });
       
-      // 少し待ってから200を返す（processPaymentAsyncが開始されることを保証）
-      await new Promise(resolve => setTimeout(resolve, 500));
+      console.log('✅ processPaymentAsync完了');
       
     } catch (error) {
       console.error('❌ Webhook処理エラー:', error);
@@ -136,6 +139,13 @@ async function processPaymentAsync(orderId, userId, stripeSessionId) {
   console.log('📋 引数:', { orderId, userId, stripeSessionId });
   
   try {
+    // Vercel環境でのタイムアウトを防ぐため、最初にステータスのみ更新
+    console.log('📝 注文ステータスをgeneratingに更新...');
+    await ordersDB.updateOrder(orderId, {
+      status: 'generating'
+    });
+    console.log('✅ ステータス更新完了');
+    
     // OrdersDBを再初期化して環境変数を確実に反映
     ordersDB.reinitialize();
   
