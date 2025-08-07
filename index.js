@@ -991,26 +991,25 @@ async function handlePostbackEvent(event) {
     
     // ユーザーの性別選択（生年月日入力後）
     if (action === 'userGenderWithBirthDate') {
-      const profile = await getProfileManager().getProfile(userId);
-      
-      // 生年月日が入力されているか確認
-      if (!profile || !profile.birthDate) {
-        await client.replyMessage(event.replyToken, [
-          {
+      // プロファイル確認を非同期で開始
+      getProfileManager().getProfile(userId).then(profile => {
+        // 生年月日が入力されているか確認
+        if (!profile || !profile.birthDate) {
+          client.pushMessage(userId, {
             type: 'text',
             text: '⚠️ まず生年月日を選択してください'
-          }
-        ]);
-        return;
-      }
+          }).catch(err => logger.log('エラーメッセージ送信失敗:', err));
+          return;
+        }
+        
+        // 性別を保存（非同期）
+        getProfileManager().saveProfile(userId, {
+          gender: value
+        }).catch(err => logger.log('性別保存エラー:', err));
+      }).catch(err => logger.log('プロファイル取得エラー:', err));
       
-      // 性別を保存
-      await getProfileManager().saveProfile(userId, {
-        gender: value
-      });
-      
-      // お相手の情報入力カード
-      await client.replyMessage(event.replyToken, [
+      // お相手の情報入力カードを即座に送信（最優先）
+      client.replyMessage(event.replyToken, [
         {
           type: 'flex',
           altText: 'お相手の情報を入力',
@@ -1113,24 +1112,32 @@ async function handlePostbackEvent(event) {
             }
           }
         }
-      ]);
+      ]).catch(err => {
+        logger.log('お相手情報カード送信エラー:', err);
+      });
+      
       return;
     }
     
     // お相手の生年月日選択
     if (action === 'partnerBirthDate') {
-      // 生年月日を一時保存
-      await getProfileManager().saveProfile(userId, {
-        partnerBirthDate: selectedDate
-      });
-      
-      // 生年月日選択後のメッセージ
-      await client.replyMessage(event.replyToken, [
+      // 即座にレスポンスを返す（最優先・awaitしない）
+      client.replyMessage(event.replyToken, [
         {
           type: 'text',
           text: '✅ お相手の生年月日を選択しました\n\n次に、上のカードからお相手の性別を選んでください'
         }
-      ]);
+      ]).catch(err => {
+        logger.log('メッセージ送信エラー:', err);
+      });
+      
+      // プロファイル保存は後で実行（awaitしない）
+      getProfileManager().saveProfile(userId, {
+        partnerBirthDate: selectedDate
+      }).catch(err => {
+        logger.log('お相手生年月日保存エラー:', err);
+      });
+      
       return;
     }
     
@@ -1307,29 +1314,40 @@ async function handlePostbackEvent(event) {
     
     // お相手の性別選択（生年月日入力後）
     if (action === 'partnerGenderWithBirthDate') {
-      const profile = await getProfileManager().getProfile(userId);
-      
-      // お相手の生年月日が入力されているか確認
-      if (!profile || !profile.partnerBirthDate) {
-        await client.replyMessage(event.replyToken, [
-          {
-            type: 'text',
-            text: '⚠️ まずお相手の生年月日を選択してください'
-          }
-        ]);
-        return;
-      }
-      
-      // 性別を保存してプロフィールを完成
-      await getProfileManager().saveProfile(userId, {
-        partnerGender: value,
-        status: 'complete'
+      // 即座に「診断中」メッセージを送信（最優先）
+      client.replyMessage(event.replyToken, [
+        {
+          type: 'text',
+          text: '🌟 診断中...\n\nあなたとお相手の相性を分析しています'
+        }
+      ]).catch(err => {
+        logger.log('診断中メッセージ送信エラー:', err);
       });
       
-      // おつきさま診断結果を生成
-      loadHeavyModules();
-    const moonEngine = new MoonFortuneEngine();
-      const moonReport = moonEngine.generateFreeReport(
+      // 重い処理は非同期で実行
+      (async () => {
+        try {
+          const profile = await getProfileManager().getProfile(userId);
+          
+          // お相手の生年月日が入力されているか確認
+          if (!profile || !profile.partnerBirthDate) {
+            await client.pushMessage(userId, {
+              type: 'text',
+              text: '⚠️ まずお相手の生年月日を選択してください'
+            });
+            return;
+          }
+          
+          // 性別を保存してプロフィールを完成
+          await getProfileManager().saveProfile(userId, {
+            partnerGender: value,
+            status: 'complete'
+          });
+          
+          // おつきさま診断結果を生成
+          loadHeavyModules();
+          const moonEngine = new MoonFortuneEngine();
+          const moonReport = moonEngine.generateFreeReport(
         {
           birthDate: profile.birthDate,
           birthTime: '00:00',
@@ -1340,14 +1358,14 @@ async function handlePostbackEvent(event) {
           birthTime: '00:00',
           gender: value
         }
-      );
-      
-      // 複数カードで充実した結果を送信
-      const compatScore = parseFloat(moonReport.compatibility.score);
-      const starCount = Math.floor(compatScore / 20);
-      
-      // カルーセルで複数カードを送信
-      await client.replyMessage(event.replyToken, [
+          );
+          
+          // 複数カードで充実した結果を送信
+          const compatScore = parseFloat(moonReport.compatibility.score);
+          const starCount = Math.floor(compatScore / 20);
+          
+          // カルーセルで複数カードを送信（pushMessageを使用）
+          await client.pushMessage(userId, [
         {
           type: 'flex',
           altText: '🌙 おつきさま診断の結果',
@@ -1820,7 +1838,12 @@ async function handlePostbackEvent(event) {
             ]
           }
         }
-      ]);
+          ]);
+        } catch (err) {
+          logger.log('診断結果送信エラー:', err);
+        }
+      })();
+      
       return;
     }
   }
