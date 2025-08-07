@@ -1,12 +1,13 @@
-// 本番環境でconsole.logを無効化するユーティリティ
-const isDevelopment = process.env.NODE_ENV !== 'production' && !process.env.VERCEL;
+// console.logを完全に無効化するユーティリティ
+// 必要な時だけDEBUG=trueで有効化
+const isDebugMode = process.env.DEBUG === 'true';
 
 const logger = {
-  log: isDevelopment ? console.log.bind(console) : () => {},
+  log: isDebugMode ? console.log.bind(console) : () => {},
   error: console.error.bind(console), // エラーは常に出力
-  warn: isDevelopment ? console.warn.bind(console) : () => {},
-  info: isDevelopment ? console.info.bind(console) : () => {},
-  debug: isDevelopment ? console.debug.bind(console) : () => {},
+  warn: isDebugMode ? console.warn.bind(console) : () => {},
+  info: isDebugMode ? console.info.bind(console) : () => {},
+  debug: isDebugMode ? console.debug.bind(console) : () => {},
 };
 
 module.exports = logger;
