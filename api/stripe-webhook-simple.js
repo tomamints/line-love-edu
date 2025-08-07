@@ -62,8 +62,15 @@ module.exports = async (req, res) => {
     const session = event.data.object;
     const orderId = session.metadata?.orderId;
     const userId = session.metadata?.userId;
+    const sessionId = session.id;
     
-    console.log('💰 Payment completed:', { orderId, userId });
+    console.log('💰 Payment completed:', { 
+      orderId, 
+      userId,
+      sessionId,
+      eventId: event.id,
+      created: new Date(session.created * 1000).toISOString()
+    });
     
     if (!orderId || !userId) {
       console.error('❌ Missing metadata');
@@ -81,10 +88,24 @@ module.exports = async (req, res) => {
         return res.json({ received: true, error: 'Order not found', note: 'Old or duplicate webhook - safely ignored' });
       }
       
-      // 既に処理済みの場合はスキップ
+      // 既に処理済みの場合はスキップ（冪等性チェック）
       if (existingOrder.status !== 'pending') {
-        console.log('⚠️ Order already processed:', existingOrder.status);
-        return res.json({ received: true, status: existingOrder.status });
+        console.log('⚠️ Order already processed:', {
+          orderId: orderId,
+          currentStatus: existingOrder.status,
+          existingSessionId: existingOrder.stripeSessionId || existingOrder.stripe_session_id,
+          newSessionId: sessionId
+        });
+        
+        // 同じセッションIDの場合は正常（重複Webhook）
+        if ((existingOrder.stripeSessionId || existingOrder.stripe_session_id) === sessionId) {
+          console.log('✅ Duplicate webhook for same session - safely ignored');
+          return res.json({ received: true, duplicate: true });
+        }
+        
+        // 異なるセッションIDの場合は警告
+        console.warn('⚠️ Different session ID for same order!');
+        return res.json({ received: true, status: existingOrder.status, warning: 'Different session' });
       }
       
       // 注文ステータスをpaidに更新
