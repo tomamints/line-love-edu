@@ -1,4 +1,9 @@
 // Supabaseクライアントの設定
+// ローカル環境では.env.localから環境変数を読み込む
+if (!process.env.VERCEL && !process.env.SUPABASE_URL) {
+  require('dotenv').config({ path: '.env.local' });
+}
+
 const { createClient } = require('@supabase/supabase-js');
 
 // 環境変数から接続情報を取得
