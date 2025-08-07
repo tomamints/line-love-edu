@@ -340,8 +340,12 @@ class OrdersDB {
         console.log('🔄 Updating report_url (direct):', updates.report_url);
         updateData.report_url = updates.report_url;
       }
-      // pdf_data, notified, completed_atカラムは存在しないのでコメントアウト
-      // if (updates.pdf_data !== undefined) updateData.pdf_data = updates.pdf_data;
+      // pdf_dataカラムが追加されたので有効化
+      if (updates.pdf_data !== undefined) {
+        console.log('🔄 Updating pdf_data:', updates.pdf_data ? `${updates.pdf_data.length} bytes` : 'null');
+        updateData.pdf_data = updates.pdf_data;
+      }
+      // notified, completed_atカラムは存在しないのでコメントアウト
       // if (updates.notified !== undefined) updateData.notified = updates.notified;
       // if (updates.completedAt !== undefined) updateData.completed_at = updates.completedAt;
 
