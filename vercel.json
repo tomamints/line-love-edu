@@ -7,7 +7,7 @@
     },
     {
       "source": "/api/stripe/webhook",
-      "destination": "/api/stripe-webhook-fast"
+      "destination": "/api/stripe-webhook-simple"
     },
     {
       "source": "/payment/success",
@@ -27,11 +27,7 @@
       "maxDuration": 60,
       "memory": 1024
     },
-    "api/stripe-webhook-fast.js": {
-      "maxDuration": 10,
-      "memory": 512
-    },
-    "api/generate-report-async.js": {
+    "api/stripe-webhook-simple.js": {
       "maxDuration": 60,
       "memory": 1024
     },
