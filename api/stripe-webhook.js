@@ -122,24 +122,27 @@ async function processPaymentAsync(orderId, userId, stripeSessionId) {
   try {
     // 注文情報を取得（データベースから）
     console.log('🔍 注文を取得開始:', orderId);
-    const order = await ordersDB.getOrder(orderId);
+    let order = await ordersDB.getOrder(orderId);
     
     if (!order) {
       console.error('❌ 注文が見つかりません:', orderId);
-      // 注文が見つからない場合も処理を続行
-      const fallbackOrder = {
+      console.log('🔄 新規注文として作成します');
+      
+      // 注文が見つからない場合は新規作成
+      const newOrder = {
         orderId,
         userId,
-        status: 'pending',
-        amount: 4980
+        status: 'paid',
+        amount: 1980,
+        stripeSessionId: stripeSessionId,
+        paidAt: new Date().toISOString(),
+        createdAt: new Date().toISOString()
       };
       
-      // 注文ステータスを更新（データベースに）
-      await ordersDB.updateOrder(orderId, {
-        status: 'paid',
-        stripeSessionId: stripeSessionId,
-        paidAt: new Date().toISOString()
-      });
+      // 新規注文として保存
+      await ordersDB.saveOrder(orderId, newOrder);
+      order = newOrder;
+      console.log('✅ 新規注文作成完了');
     } else {
       console.log('📦 取得した注文:', order);
       
