@@ -396,6 +396,32 @@ class OrdersDB {
       return [];
     }
   }
+  
+  // 支払い済みでレポート未生成の注文を取得
+  async getPaidOrders() {
+    if (!this.useDatabase) {
+      return [];
+    }
+
+    try {
+      const { data, error } = await this.supabase
+        .from('orders')
+        .select('*')
+        .eq('status', 'paid')
+        .order('created_at', { ascending: true })
+        .limit(10); // 一度に処理する最大数
+
+      if (error) {
+        console.error('支払い済み注文取得エラー:', error);
+        return [];
+      }
+
+      return data || [];
+    } catch (err) {
+      console.error('データベースエラー:', err);
+      return [];
+    }
+  }
 }
 
 // シングルトンインスタンスを作成
