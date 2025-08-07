@@ -43,17 +43,19 @@ module.exports = async (req, res) => {
         ? `https://${process.env.VERCEL_URL}`
         : 'https://line-love-edu.vercel.app';
       
-      // 2秒後に実際のレポート生成処理を呼び出す
-      setTimeout(() => {
-        const fullProcessUrl = `${baseUrl}/api/process-paid-orders?orderId=${orderId}`;
-        console.log('📊 Calling full report generator:', fullProcessUrl);
-        
-        https.get(fullProcessUrl, (resp) => {
-          console.log('✅ Report generation started, status:', resp.statusCode);
-        }).on('error', (err) => {
-          console.error('❌ Failed to start generation:', err.message);
+      // 即座にレポート生成処理を呼び出す（非同期で実行）
+      const fullProcessUrl = `${baseUrl}/api/process-paid-orders?orderId=${orderId}`;
+      console.log('📊 Calling full report generator:', fullProcessUrl);
+      
+      https.get(fullProcessUrl, (resp) => {
+        let data = '';
+        resp.on('data', (chunk) => { data += chunk; });
+        resp.on('end', () => {
+          console.log('✅ Report generation response:', resp.statusCode, data);
         });
-      }, 2000);
+      }).on('error', (err) => {
+        console.error('❌ Failed to start generation:', err.message);
+      });
       
       // ユーザーに通知
       try {
