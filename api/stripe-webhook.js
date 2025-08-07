@@ -102,15 +102,25 @@ async function processPaymentAsync(orderId, userId, stripeSessionId) {
   console.log('📋 processPaymentAsync実行開始');
   console.log('📋 引数:', { orderId, userId, stripeSessionId });
   
-  // OrdersDBを再初期化して環境変数を確実に反映
-  ordersDB.reinitialize();
+  try {
+    // OrdersDBを再初期化して環境変数を確実に反映
+    ordersDB.reinitialize();
+  
+  console.log('👤 LINE APIプロファイル取得開始...');
+  console.log('👤 CHANNEL_ACCESS_TOKEN exists:', !!process.env.CHANNEL_ACCESS_TOKEN);
   
   // LINE APIからユーザープロフィールを取得
   let userProfile = null;
   try {
+    if (!process.env.CHANNEL_ACCESS_TOKEN) {
+      throw new Error('CHANNEL_ACCESS_TOKEN is not set');
+    }
+    
     const lineClient = new line.Client({
       channelAccessToken: process.env.CHANNEL_ACCESS_TOKEN
     });
+    console.log('👤 LINE Client作成成功');
+    
     userProfile = await lineClient.getProfile(userId);
     console.log('👤 ユーザープロフィール取得成功:', userProfile.displayName);
   } catch (err) {
@@ -215,6 +225,10 @@ async function processPaymentAsync(orderId, userId, stripeSessionId) {
     } catch (dbError) {
       console.error('DB保存エラー:', dbError);
     }
+  }
+  } catch (outerError) {
+    console.error('❌ processPaymentAsync全体エラー:', outerError);
+    console.error('❌ エラースタック:', outerError.stack);
   }
 }
 
