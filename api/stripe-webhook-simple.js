@@ -190,17 +190,49 @@ module.exports = async (req, res) => {
           }
         }
         
-        // レポートを生成（タイムアウト対策）
+        // レポートを生成（50秒でタイムアウト）
         console.log('🔮 Generating report...');
-        console.log('⏱️ Start time:', new Date().toISOString());
+        const startTime = Date.now();
+        const timeout = 50000; // 50秒
         
-        const result = await paymentHandler.handlePaymentSuccess(
+        // タイムアウトPromise
+        const timeoutPromise = new Promise((resolve) => {
+          setTimeout(() => {
+            resolve({
+              success: false,
+              timeout: true
+            });
+          }, timeout);
+        });
+        
+        // レポート生成Promise
+        const reportPromise = paymentHandler.handlePaymentSuccess(
           orderId,
           messages,
           userProfile
         );
         
-        console.log('⏱️ End time:', new Date().toISOString());
+        // どちらか早い方を採用
+        const result = await Promise.race([reportPromise, timeoutPromise]);
+        
+        console.log(`⏱️ Execution time: ${Date.now() - startTime}ms`);
+        
+        // タイムアウトした場合
+        if (result.timeout) {
+          console.log('⚠️ Timeout - continuing in background');
+          
+          // ユーザーに通知
+          try {
+            await lineClient.pushMessage(userId, {
+              type: 'text',
+              text: '📝 レポート生成中...\n\n処理に時間がかかっています。\n完成次第お知らせします。'
+            });
+          } catch (err) {
+            console.log('⚠️ Notification failed');
+          }
+          
+          return res.json({ received: true, status: 'generating' });
+        }
         
         if (result.success) {
           console.log('✅ Report generated successfully');
