@@ -185,16 +185,21 @@ async function processPaymentAsync(orderId, userId, stripeSessionId) {
     // Vercel環境でのタイムアウトを防ぐため、最初にステータスのみ更新
     console.log('\n--- UPDATING STATUS TO GENERATING ---');
     console.log('📝 注文ステータスをgeneratingに更新開始...');
+    console.log('📝 orderId:', orderId);
+    console.log('📝 現在時刻:', new Date().toISOString());
     
     try {
+      console.log('📝 updateOrder呼び出し前');
       const genUpdateResult = await ordersDB.updateOrder(orderId, {
         status: 'generating'
       });
+      console.log('📝 updateOrder呼び出し後');
       
       console.log('✅ generatingステータス更新完了');
       console.log('✅ 更新結果:', genUpdateResult);
     } catch (updateErr) {
       console.error('❌ ステータス更新エラー:', updateErr.message);
+      console.error('❌ エラータイプ:', updateErr.constructor.name);
       console.error('❌ スタック:', updateErr.stack);
       // エラーが発生しても処理を継続
     }
@@ -203,6 +208,7 @@ async function processPaymentAsync(orderId, userId, stripeSessionId) {
     console.log('\n--- REINITIALIZING DATABASE ---');
     ordersDB.reinitialize();
     console.log('✅ DB再初期化完了');
+    console.log('✅ 現在時刻:', new Date().toISOString());
   
   console.log('\n--- FETCHING LINE PROFILE ---');
   console.log('👤 LINE APIプロファイル取得開始...');

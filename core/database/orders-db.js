@@ -269,7 +269,9 @@ class OrdersDB {
     try {
       // まず既存の注文を取得
       console.log('🔄 Fetching existing order...');
+      console.log('🔄 getOrder呼び出し前:', new Date().toISOString());
       const existingOrder = await this.getOrder(orderId);
+      console.log('🔄 getOrder呼び出し後:', new Date().toISOString());
       console.log('🔄 Existing order:', existingOrder ? {
         id: existingOrder.id || existingOrder.orderId,
         status: existingOrder.status
@@ -317,6 +319,7 @@ class OrdersDB {
       // タイムアウト付きで更新
       console.log('🔄 Final updateData:', JSON.stringify(updateData, null, 2));
       console.log('🔄 Executing Supabase update...');
+      console.log('🔄 Update開始時刻:', new Date().toISOString());
       
       const updatePromise = this.supabase
         .from('orders')
@@ -328,7 +331,10 @@ class OrdersDB {
       console.log('🔄 Update query created, executing...');
       
       const timeoutPromise = new Promise((_, reject) => {
-        setTimeout(() => reject(new Error('更新タイムアウト')), 5000);
+        setTimeout(() => {
+          console.log('🔄 Update timeout triggered at:', new Date().toISOString());
+          reject(new Error('更新タイムアウト'));
+        }, 5000);
       });
       
       let data, error;
