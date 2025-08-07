@@ -34,9 +34,26 @@ module.exports = async (req, res) => {
       });
       console.log('✅ Status updated to generating');
       
-      // 自動レポート生成は一時的に無効化
-      // トーク履歴が保存されていないため、正しく動作しない
-      console.log('📝 Note: トーク履歴が必要です');
+      // レポート生成を開始
+      console.log('🚀 Starting report generation...');
+      
+      // バックグラウンドでレポート生成を実行
+      const https = require('https');
+      const baseUrl = process.env.VERCEL_URL 
+        ? `https://${process.env.VERCEL_URL}`
+        : 'https://line-love-edu.vercel.app';
+      
+      // 2秒後に実際のレポート生成処理を呼び出す
+      setTimeout(() => {
+        const fullProcessUrl = `${baseUrl}/api/process-paid-orders?orderId=${orderId}`;
+        console.log('📊 Calling full report generator:', fullProcessUrl);
+        
+        https.get(fullProcessUrl, (resp) => {
+          console.log('✅ Report generation started, status:', resp.statusCode);
+        }).on('error', (err) => {
+          console.error('❌ Failed to start generation:', err.message);
+        });
+      }, 2000);
       
       // ユーザーに通知
       try {
@@ -48,7 +65,7 @@ module.exports = async (req, res) => {
         
         await lineClient.pushMessage(order.user_id || order.userId, {
           type: 'text',
-          text: '✅ 決済完了しました！\n\nレポート生成の準備ができました。\n\n「レポート状況」と送信してレポートを生成してください。'
+          text: '✅ 決済完了しました！\n\nレポートを生成中です...\nしばらくお待ちください。'
         });
         console.log('✅ User notified');
       } catch (err) {

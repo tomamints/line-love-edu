@@ -4,8 +4,10 @@
 const ordersDB = require('../core/database/orders-db');
 const PaymentHandler = require('../core/premium/payment-handler');
 const line = require('@line/bot-sdk');
+const UserProfileManager = require('../core/user-profile');
 
 const paymentHandler = new PaymentHandler();
+const profileManager = new UserProfileManager();
 
 module.exports = async (req, res) => {
   console.log('\n========== PROCESS PAID ORDERS START ==========');
@@ -64,13 +66,30 @@ module.exports = async (req, res) => {
           console.log('⚠️ LINE profile fetch failed, using default');
         }
         
-        // テスト用メッセージを生成
-        const testMessages = generateTestMessages();
+        // 保存されたトーク履歴を取得
+        let messages = [];
+        const userId = order.user_id || order.userId;
+        
+        try {
+          const profile = await profileManager.getProfile(userId);
+          if (profile && profile.messages && profile.messages.length > 0) {
+            messages = profile.messages;
+            console.log(`📊 Using ${messages.length} saved messages from profile`);
+          }
+        } catch (err) {
+          console.log('⚠️ Could not load saved messages:', err.message);
+        }
+        
+        // メッセージが見つからない場合はデフォルトを使用
+        if (messages.length === 0) {
+          console.log('⚠️ No saved messages found, using default messages');
+          messages = generateTestMessages();
+        }
         
         // レポートを生成
         const result = await paymentHandler.handlePaymentSuccess(
           order.id || order.orderId, 
-          testMessages, 
+          messages, 
           userProfile
         );
         
