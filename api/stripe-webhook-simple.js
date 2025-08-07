@@ -190,13 +190,17 @@ module.exports = async (req, res) => {
           }
         }
         
-        // レポートを生成
+        // レポートを生成（タイムアウト対策）
         console.log('🔮 Generating report...');
+        console.log('⏱️ Start time:', new Date().toISOString());
+        
         const result = await paymentHandler.handlePaymentSuccess(
           orderId,
           messages,
           userProfile
         );
+        
+        console.log('⏱️ End time:', new Date().toISOString());
         
         if (result.success) {
           console.log('✅ Report generated successfully');
