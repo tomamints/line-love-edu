@@ -39,10 +39,6 @@
     "NODE_ENV": "production"
   },
   "buildCommand": "echo 'Build timestamp:' && date",
-  "crons": [{
-    "path": "/api/process-paid-orders",
-    "schedule": "*/5 * * * *"
-  }],
   "headers": [
     {
       "source": "/api/(.*)",
