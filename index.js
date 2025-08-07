@@ -8,7 +8,7 @@ const { Client, middleware } = require('@line/bot-sdk');
 
 // 重いモジュールは必要時に遅延ロード
 let parser, FortuneEngine, FortuneCarouselBuilder, PaymentHandler;
-let WaveFortuneEngine, MoonFortuneEngine, UserProfileManager;
+let WaveFortuneEngine, MoonFortuneEngine, UserProfileManager, ordersDB;
 
 // 必要時に初期化
 function loadHeavyModules() {
@@ -19,6 +19,7 @@ function loadHeavyModules() {
   if (!WaveFortuneEngine) WaveFortuneEngine = require('./core/wave-fortune');
   if (!MoonFortuneEngine) MoonFortuneEngine = require('./core/moon-fortune');
   if (!UserProfileManager) UserProfileManager = require('./core/database/profiles-db');
+  if (!ordersDB) ordersDB = require('./core/database/orders-db');
 }
 
 // ── ① 環境変数チェック
@@ -96,6 +97,80 @@ app.post('/webhook', middleware(config), async (req, res) => {
       
       // テキストメッセージの処理（プロファイル入力）
       if (event.type === 'message' && event.message.type === 'text') {
+        const userId = event.source.userId;
+        const messageText = event.message.text;
+        loadHeavyModules();
+        
+        // 「レポート状況」コマンドの処理
+        if (messageText === 'レポート状況') {
+          const orders = await ordersDB.getUserOrders(userId);
+          const latestOrder = orders[0];
+          
+          if (!latestOrder) {
+            // 未購入
+            return client.replyMessage(event.replyToken, {
+              type: 'text',
+              text: '📢 レポート未購入\n\nプレミアム恋愛レポートをご希望の場合は、まず「占いを始める」と送信してください🌙'
+            });
+          }
+          
+          // ステータスに応じた返信
+          if (latestOrder.status === 'completed' && latestOrder.report_url) {
+            // 完成済み - カードを送信
+            const paymentHandler = new PaymentHandler();
+            const completionMessage = paymentHandler.generateCompletionMessage({
+              reportUrl: latestOrder.report_url,
+              orderId: latestOrder.id,
+              success: true
+            });
+            return client.replyMessage(event.replyToken, completionMessage);
+            
+          } else if (latestOrder.status === 'generating' || latestOrder.status === 'paid') {
+            // 生成中
+            return client.replyMessage(event.replyToken, {
+              type: 'text',
+              text: '⏳ レポート生成中...\n\n現在AIがあなた専用のレポートを作成しています。\nもう少しお待ちください（約2-3分）📝✨'
+            });
+            
+          } else if (latestOrder.status === 'pending') {
+            // 決済待ち
+            return client.replyMessage(event.replyToken, {
+              type: 'text',
+              text: '💳 決済待ち\n\n決済が完了していません。\n決済ページをご確認ください。'
+            });
+            
+          } else if (latestOrder.status === 'error') {
+            // エラー
+            return client.replyMessage(event.replyToken, {
+              type: 'text',
+              text: '❌ エラーが発生しました\n\nレポートの生成に失敗しました。\nサポートまでお問い合わせください。'
+            });
+          }
+        }
+        
+        // 保留中のレポート完成通知をチェック
+        const pendingNotifications = global.pendingNotifications || new Map();
+        const notification = pendingNotifications.get(userId);
+        
+        if (notification && notification.type === 'report_complete') {
+          console.log('🔔 保留中のレポート完成通知を発見');
+          
+          const paymentHandler = new PaymentHandler();
+          const completionMessage = paymentHandler.generateCompletionMessage({
+            reportUrl: notification.reportUrl,
+            orderId: notification.orderId,
+            success: true
+          });
+          
+          await client.replyMessage(event.replyToken, completionMessage);
+          console.log('✅ レポート完成通知を送信しました');
+          
+          // 通知を削除
+          pendingNotifications.delete(userId);
+          return;
+        }
+        
+        // 通常のメッセージ処理
         return handleTextMessage(event).catch(err => {
           console.error('テキストメッセージ処理エラー:', err);
           return client.replyMessage(event.replyToken, {
@@ -162,6 +237,7 @@ app.post('/webhook', middleware(config), async (req, res) => {
           }).catch(pushErr => console.error('Push message error:', pushErr));
         });
       }
+      
       
       return Promise.resolve();
     });
@@ -2167,6 +2243,11 @@ app.post('/api/payment-webhook', express.json(), async (req, res) => {
 app.get('/api/download-report', async (req, res) => {
   const downloadReport = require('./api/download-report');
   await downloadReport(req, res);
+});
+
+app.get('/api/view-report', async (req, res) => {
+  const viewReport = require('./api/view-report');
+  await viewReport(req, res);
 });
 
 // ── ⑩ 起動

@@ -1,6 +1,11 @@
 // api/stripe-webhook-handler.js
 // Stripeからの決済完了通知を受け取る正式なWebhook（Vercel対応版）
 
+// 環境変数を確実に読み込む（Vercel以外の環境用）
+if (!process.env.VERCEL) {
+  require('dotenv').config();
+}
+
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const { Client } = require('@line/bot-sdk');
 const PaymentHandler = require('../core/premium/payment-handler');
@@ -87,6 +92,22 @@ async function processPaymentAsync(orderId, userId, stripeSessionId) {
   console.log('📋 processPaymentAsync実行開始');
   console.log('📋 引数:', { orderId, userId, stripeSessionId });
   
+  // OrdersDBを再初期化して環境変数を確実に反映
+  ordersDB.reinitialize();
+  
+  // LINE APIからユーザープロフィールを取得
+  let userProfile = null;
+  try {
+    userProfile = await lineClient.getProfile(userId);
+    console.log('👤 ユーザープロフィール取得成功:', userProfile.displayName);
+  } catch (err) {
+    console.error('👤 プロフィール取得エラー:', err.message);
+    userProfile = {
+      displayName: 'ユーザー',
+      userId: userId
+    };
+  }
+  
   try {
     // 注文情報を取得（データベースから）
     console.log('🔍 注文を取得開始:', orderId);
@@ -153,33 +174,27 @@ async function processPaymentAsync(orderId, userId, stripeSessionId) {
     console.log('📝 最初のメッセージ:', testMessages[0]);
     console.log('📝 最後のメッセージ:', testMessages[testMessages.length - 1]);
     
-    // レポートを生成
+    // レポートを生成（userProfileを渡す）
     console.log('⚙️ handlePaymentSuccess呼び出し中...');
-    console.log('⚙️ 引数:', { orderId, messageCount: testMessages.length });
-    const completionResult = await paymentHandler.handlePaymentSuccess(orderId, testMessages);
+    console.log('⚙️ 引数:', { orderId, messageCount: testMessages.length, userProfile: userProfile?.displayName });
+    const completionResult = await paymentHandler.handlePaymentSuccess(orderId, testMessages, userProfile);
     console.log('📊 レポート生成結果:', completionResult);
     console.log('📊 レポートURL:', completionResult?.reportUrl);
     
-    console.log('📤 LINEでレポート送信準備...');
+    console.log('📤 レポート情報をデータベースに保存...');
     
-    // LINEでレポート完成通知を送信
-    console.log('💬 完成メッセージ生成中...');
-    const completionMessages = paymentHandler.generateCompletionMessage(completionResult);
-    console.log('💬 送信メッセージタイプ:', typeof completionMessages);
-    console.log('💬 送信メッセージ詳細:', JSON.stringify(completionMessages, null, 2));
-    
-    if (Array.isArray(completionMessages)) {
-      console.log('📨 複数メッセージを送信:', completionMessages.length, '件');
-      for (let i = 0; i < completionMessages.length; i++) {
-        console.log(`📨 メッセージ ${i+1}/${completionMessages.length} 送信中...`);
-        const result = await lineClient.pushMessage(userId, completionMessages[i]);
-        console.log(`📤 メッセージ ${i+1} 送信結果:`, result);
-      }
-    } else {
-      console.log('📨 単一メッセージを送信');
-      const result = await lineClient.pushMessage(userId, completionMessages);
-      console.log('📤 メッセージ送信結果:', result);
+    // レポートURLをデータベースに保存
+    if (completionResult && completionResult.reportUrl) {
+      await ordersDB.updateOrder(orderId, {
+        status: 'completed',
+        report_url: completionResult.reportUrl
+      });
+      console.log('✅ レポートURL保存完了');
     }
+    
+    // pushMessageは使わない（429エラー回避）
+    // ユーザーが次回メッセージを送った時に通知する
+    console.log('📝 次回ユーザーアクセス時に通知予定');
     
     console.log('✅ Stripe Webhook処理完了');
     console.log('✅ 処理時間:', new Date().toISOString());
@@ -187,14 +202,15 @@ async function processPaymentAsync(orderId, userId, stripeSessionId) {
   } catch (error) {
     console.error('レポート生成エラー:', error);
     
-    // エラー通知をLINEで送信
+    // エラー情報をデータベースに保存
     try {
-      await lineClient.pushMessage(userId, {
-        type: 'text',
-        text: '決済は完了しましたが、レポート生成中にエラーが発生しました。サポートまでお問い合わせください。'
+      await ordersDB.updateOrder(orderId, {
+        status: 'error',
+        error_message: error.message
       });
-    } catch (lineError) {
-      console.error('LINE通知エラー:', lineError);
+      console.log('❌ エラー情報をデータベースに保存');
+    } catch (dbError) {
+      console.error('DB保存エラー:', dbError);
     }
   }
 }

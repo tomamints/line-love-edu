@@ -65,6 +65,16 @@ class OrdersDB {
   // 注文を保存
   async saveOrder(orderId, orderData) {
     console.log('💾 saveOrder開始:', { orderId, orderData });
+    console.log('💾 useDatabase:', this.useDatabase);
+    console.log('💾 SUPABASE_URL:', process.env.SUPABASE_URL ? 'SET' : 'NOT SET');
+    console.log('💾 SUPABASE_ANON_KEY:', process.env.SUPABASE_ANON_KEY ? 'SET' : 'NOT SET');
+    
+    // 環境変数が設定されている場合は再チェック
+    if (!this.useDatabase && process.env.SUPABASE_URL && process.env.SUPABASE_ANON_KEY) {
+      console.log('💾 環境変数が見つかったため、データベース設定を再チェック');
+      this.checkDatabase();
+      console.log('💾 再チェック後のuseDatabase:', this.useDatabase);
+    }
     
     if (!this.useDatabase) {
       console.log('💾 ファイルストレージに保存');
@@ -81,8 +91,11 @@ class OrdersDB {
         stripe_session_id: orderData.stripeSessionId,
         paid_at: orderData.paidAt,
         report_url: orderData.reportUrl,
+        // user_profileはファイルストレージに保存
         updated_at: new Date().toISOString()
       };
+      
+      // userProfileはSupabaseには保存しない（LINE APIから取得）
       
       console.log('💾 Supabaseに保存するデータ:', upsertData);
       
@@ -126,6 +139,16 @@ class OrdersDB {
   async getOrder(orderId) {
     console.log('📊 getOrder開始:', orderId);
     console.log('📊 useDatabase:', this.useDatabase);
+    console.log('📊 SUPABASE_URL:', process.env.SUPABASE_URL ? 'SET' : 'NOT SET');
+    console.log('📊 SUPABASE_ANON_KEY:', process.env.SUPABASE_ANON_KEY ? 'SET' : 'NOT SET');
+    console.log('📊 supabase client:', this.supabase ? 'EXISTS' : 'NULL');
+    
+    // 環境変数が設定されている場合は再チェック
+    if (!this.useDatabase && process.env.SUPABASE_URL && process.env.SUPABASE_ANON_KEY) {
+      console.log('📊 環境変数が見つかったため、データベース設定を再チェック');
+      this.checkDatabase();
+      console.log('📊 再チェック後のuseDatabase:', this.useDatabase);
+    }
     
     if (!this.useDatabase) {
       console.log('📊 ファイルストレージから取得');
@@ -201,7 +224,7 @@ class OrdersDB {
       console.log('📊 注文データ取得成功:', data.id);
       
       // データベースの形式をアプリケーションの形式に変換
-      const formattedOrder = {
+      let formattedOrder = {
         orderId: data.id,
         userId: data.user_id,
         amount: data.amount,
@@ -209,9 +232,14 @@ class OrdersDB {
         stripeSessionId: data.stripe_session_id,
         paidAt: data.paid_at,
         reportUrl: data.report_url,
+        userProfile: null,
+        pdf_data: data.pdf_data,
+        notified: data.notified,
         createdAt: data.created_at,
         updatedAt: data.updated_at
       };
+      
+      // userProfileはLINE APIから取得するため、ここではnullのまま
       
       console.log('📊 フォーマット済み注文:', formattedOrder);
       return formattedOrder;
@@ -242,11 +270,16 @@ class OrdersDB {
         updated_at: new Date().toISOString()
       };
 
-      // 更新可能なフィールドをマップ
+      // 更新可能なフィールドをマップ（Supabaseに存在するカラムのみ）
       if (updates.status !== undefined) updateData.status = updates.status;
       if (updates.stripeSessionId !== undefined) updateData.stripe_session_id = updates.stripeSessionId;
       if (updates.paidAt !== undefined) updateData.paid_at = updates.paidAt;
       if (updates.reportUrl !== undefined) updateData.report_url = updates.reportUrl;
+      if (updates.report_url !== undefined) updateData.report_url = updates.report_url;
+      // pdf_data, notified, completed_atカラムは存在しないのでコメントアウト
+      // if (updates.pdf_data !== undefined) updateData.pdf_data = updates.pdf_data;
+      // if (updates.notified !== undefined) updateData.notified = updates.notified;
+      // if (updates.completedAt !== undefined) updateData.completed_at = updates.completedAt;
 
       // タイムアウト付きで更新
       const updatePromise = this.supabase
@@ -310,4 +343,14 @@ class OrdersDB {
   }
 }
 
-module.exports = new OrdersDB();
+// シングルトンインスタンスを作成
+const instance = new OrdersDB();
+
+// 環境変数が後から設定される場合に備えて再初期化メソッドを追加
+instance.reinitialize = function() {
+  console.log('🔄 OrdersDB再初期化');
+  this.checkDatabase();
+  console.log('🔄 再初期化後のuseDatabase:', this.useDatabase);
+};
+
+module.exports = instance;

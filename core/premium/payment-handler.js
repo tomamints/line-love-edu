@@ -69,7 +69,7 @@ class PaymentHandler {
    * @param {array} messages - メッセージ履歴
    * @returns {object} 処理結果
    */
-  async handlePaymentSuccess(orderId, messages) {
+  async handlePaymentSuccess(orderId, messages, userProfile = null) {
     try {
       // 注文情報を取得
       const orderInfo = await ordersDB.getOrder(orderId);
@@ -85,11 +85,14 @@ class PaymentHandler {
       
       console.log('🔮 プレミアムレポート生成開始...');
       
+      // userProfileが渡されていない場合はデフォルト値を使用
+      const displayName = userProfile?.displayName || 'ユーザー';
+      
       // プレミアムレポートを生成
       const reportData = await this.reportGenerator.generatePremiumReport(
         messages,
         orderInfo.userId,
-        orderInfo.userProfile.displayName
+        displayName
       );
       
       console.log('📝 レポートデータ生成完了');
@@ -105,27 +108,29 @@ class PaymentHandler {
         ? '/tmp/orders'
         : path.join(process.cwd(), 'orders');
       
-      // ディレクトリが存在しない場合は作成
       try {
         await fs.mkdir(ordersDir, { recursive: true });
       } catch (err) {
         // ディレクトリが既に存在する場合は無視
       }
       
-      // PDFファイルを保存
       const pdfPath = path.join(ordersDir, `${orderId}.pdf`);
       await fs.writeFile(pdfPath, pdfBuffer);
       console.log('💾 PDFファイル保存完了:', pdfPath);
+      
+      if (process.env.VERCEL) {
+        console.log('⚠️ 注意: Vercel環境では一時保存のため、時間経過でファイルが削除されます');
+      }
       
       // ダウンロードURLを生成
       const fileName = `premium_report_${orderId}.pdf`;
       const fileUrl = await this.saveReportFile(fileName, pdfBuffer);
       
-      // 注文情報を更新
+      // 注文情報を更新（Supabaseに存在するカラムのみ）
       await ordersDB.updateOrder(orderId, {
         status: 'completed',
-        reportUrl: fileUrl,
-        completedAt: new Date().toISOString()
+        reportUrl: fileUrl
+        // completedAtとpdf_dataカラムは存在しないので除外
       });
       
       return {
@@ -232,10 +237,10 @@ class PaymentHandler {
     // }).promise();
     // return result.Location;
     
-    // ローカル実装：注文IDからダウンロードURLを生成
+    // ローカル実装：注文IDから表示用URLを生成（view-reportに変更）
     const orderId = fileName.replace('premium_report_', '').replace('.pdf', '');
     const baseUrl = process.env.BASE_URL || 'http://localhost:3000';
-    return `${baseUrl}/api/download-report?orderId=${orderId}`;
+    return `${baseUrl}/api/view-report?orderId=${orderId}`;
   }
   
   /**

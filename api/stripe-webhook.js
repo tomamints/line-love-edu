@@ -1,17 +1,16 @@
 // api/stripe-webhook.js
 // Stripeからの決済完了通知を受け取る正式なWebhook
 
+// 環境変数を確実に読み込む（Vercel以外の環境用）
+if (!process.env.VERCEL) {
+  require('dotenv').config();
+}
+
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-const { Client } = require('@line/bot-sdk');
+const line = require('@line/bot-sdk');
 const PaymentHandler = require('../core/premium/payment-handler');
-const orderStorage = require('../core/premium/order-storage');
+const ordersDB = require('../core/database/orders-db');
 
-const lineConfig = {
-  channelSecret: process.env.CHANNEL_SECRET,
-  channelAccessToken: process.env.CHANNEL_ACCESS_TOKEN,
-};
-
-const lineClient = new Client(lineConfig);
 const paymentHandler = new PaymentHandler();
 
 // Stripe Webhookの署名検証用
@@ -97,55 +96,107 @@ module.exports = async (req, res) => {
 
 // 非同期でレポート生成と送信を処理
 async function processPaymentAsync(orderId, userId, stripeSessionId) {
+  console.log('📋 processPaymentAsync実行開始');
+  console.log('📋 引数:', { orderId, userId, stripeSessionId });
+  
+  // OrdersDBを再初期化して環境変数を確実に反映
+  ordersDB.reinitialize();
+  
+  // LINE APIからユーザープロフィールを取得
+  let userProfile = null;
   try {
-    // 注文情報を取得
-    const order = await orderStorage.getOrder(orderId);
+    userProfile = await lineClient.getProfile(userId);
+    console.log('👤 ユーザープロフィール取得成功:', userProfile.displayName);
+  } catch (err) {
+    console.error('👤 プロフィール取得エラー:', err.message);
+    userProfile = {
+      displayName: 'ユーザー',
+      userId: userId
+    };
+  }
+  
+  try {
+    // 注文情報を取得（データベースから）
+    console.log('🔍 注文を取得開始:', orderId);
+    const order = await ordersDB.getOrder(orderId);
+    
     if (!order) {
-      console.error('注文が見つかりません:', orderId);
-      return;
+      console.error('❌ 注文が見つかりません:', orderId);
+      // 注文が見つからない場合も処理を続行
+      const fallbackOrder = {
+        orderId,
+        userId,
+        status: 'pending',
+        amount: 4980
+      };
+      
+      // 注文ステータスを更新（データベースに）
+      await ordersDB.updateOrder(orderId, {
+        status: 'paid',
+        stripeSessionId: stripeSessionId,
+        paidAt: new Date().toISOString()
+      });
+    } else {
+      console.log('📦 取得した注文:', order);
+      
+      // 注文ステータスを更新（データベースに）
+      await ordersDB.updateOrder(orderId, {
+        status: 'paid',
+        stripeSessionId: stripeSessionId,
+        paidAt: new Date().toISOString()
+      });
     }
     
-    // 注文ステータスを更新
-    await orderStorage.updateOrder(orderId, {
-      status: 'paid',
-      stripeSessionId: stripeSessionId,
-      paidAt: new Date().toISOString()
-    });
+    // 決済完了通知は送らない（決済ページで確認できるため）
+    console.log('📝 決済完了処理済み');
     
     console.log('🔮 レポート生成開始...');
     
     // テスト用のメッセージ履歴を生成
     const testMessages = generateTestMessages();
     
-    // レポートを生成
-    const completionResult = await paymentHandler.handlePaymentSuccess(orderId, testMessages);
+    // レポートを生成（userProfileを渡す）
+    const completionResult = await paymentHandler.handlePaymentSuccess(orderId, testMessages, userProfile);
     
-    console.log('📤 LINEでレポート送信...');
+    console.log('📤 レポート情報をデータベースに保存...');
     
-    // LINEでレポート完成通知を送信
-    const completionMessages = paymentHandler.generateCompletionMessage(completionResult);
-    
-    if (Array.isArray(completionMessages)) {
-      for (const message of completionMessages) {
-        await lineClient.pushMessage(userId, message);
-      }
-    } else {
-      await lineClient.pushMessage(userId, completionMessages);
+    // レポートURLをデータベースに保存
+    if (completionResult && completionResult.reportUrl) {
+      await ordersDB.updateOrder(orderId, {
+        status: 'completed',
+        report_url: completionResult.reportUrl
+      });
+      console.log('✅ レポートURL保存完了');
     }
+    
+    // レポート完成通知を次回メッセージ時に送信予定
+    const pendingNotifications = global.pendingNotifications || new Map();
+    global.pendingNotifications = pendingNotifications;
+    
+    // レポート完成通知を保存（上書き）
+    pendingNotifications.set(userId, {
+      type: 'report_complete',
+      orderId: orderId,
+      reportUrl: completionResult.reportUrl,
+      timestamp: Date.now()
+    });
+    
+    console.log('📝 レポート完成通知を次回メッセージ時に送信予定');
     
     console.log('✅ Stripe Webhook処理完了');
     
   } catch (error) {
     console.error('レポート生成エラー:', error);
     
-    // エラー通知をLINEで送信
+    // エラー情報をデータベースに保存
     try {
-      await lineClient.pushMessage(userId, {
-        type: 'text',
-        text: '決済は完了しましたが、レポート生成中にエラーが発生しました。サポートまでお問い合わせください。'
+      await ordersDB.updateOrder(orderId, {
+        status: 'error',
+        error_message: error.message
       });
-    } catch (lineError) {
-      console.error('LINE通知エラー:', lineError);
+      console.log('❌ エラー情報をデータベースに保存');
+    } catch (dbError) {
+      console.error('DB保存エラー:', dbError);
     }
   }
 }
