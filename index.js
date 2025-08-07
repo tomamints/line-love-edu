@@ -92,6 +92,32 @@ app.post('/webhook', middleware(config), async (req, res) => {
         const messageText = event.message.text;
         loadHeavyModules();
         
+        // 「レポート履歴」コマンドの処理
+        if (messageText === 'レポート履歴' || messageText === '購入履歴') {
+          const orders = await ordersDB.getUserOrders(userId);
+          const completedOrders = orders.filter(order => 
+            order.status === 'completed' && order.report_url
+          );
+          
+          if (completedOrders.length === 0) {
+            return client.replyMessage(event.replyToken, {
+              type: 'text',
+              text: '📚 購入履歴はありません\n\nプレミアムレポートを購入すると、ここに履歴が表示されます。'
+            });
+          }
+          
+          // 履歴リストを作成
+          const historyText = completedOrders.slice(0, 5).map((order, index) => {
+            const date = new Date(order.created_at).toLocaleDateString('ja-JP');
+            return `${index + 1}. ${date} - 完成済み`;
+          }).join('\n');
+          
+          return client.replyMessage(event.replyToken, {
+            type: 'text',
+            text: `📚 購入履歴（最新5件）\n\n${historyText}\n\n最新のレポートを見るには「レポート状況」と送信してください。`
+          });
+        }
+        
         // 「レポート状況」コマンドの処理
         if (messageText === 'レポート状況') {
           const orders = await ordersDB.getUserOrders(userId);
@@ -659,7 +685,33 @@ async function handleTextMessage(event) {
       return;
     }
     
-    // リセットコマンド
+    // 新しい診断コマンド（プロファイルリセットして新規開始）
+    if (text === '新しい診断' || text === '新規診断') {
+      await getProfileManager().deleteProfile(userId);
+      
+      // 新しい診断を開始
+      await client.replyMessage(event.replyToken, [
+        {
+          type: 'text',
+          text: '🌟 新しい診断を始めます！\n\n前回の診断データをクリアしました。\n「診断を始める」をタップして、新たな相手との相性診断を開始してください。',
+          quickReply: {
+            items: [
+              {
+                type: 'action',
+                action: {
+                  type: 'message',
+                  label: '🔮 診断を始める',
+                  text: '診断を始める'
+                }
+              }
+            ]
+          }
+        }
+      ]);
+      return;
+    }
+    
+    // リセットコマンド（互換性のため残す）
     if (text === 'リセット' || text === 'reset') {
       await getProfileManager().deleteProfile(userId);
       
@@ -1891,20 +1943,10 @@ async function handlePremiumReportOrder(event, userId, profile) {
     // 注文を処理
     const orderResult = await getPaymentHandler().handlePremiumOrderRequest(userId, profile);
     
-    // 注文が作成できない場合（既に購入済みまたは生成中）
+    // 注文が作成できない場合（生成中のみ）
     if (!orderResult.success) {
       // 処理中フラグを即座にクリア
       processingOrders.delete(userId);
-      
-      // 完了済みの場合
-      if (orderResult.hasCompleted) {
-        const completionMessage = getPaymentHandler().generateCompletionMessage({
-          success: true,
-          orderId: orderResult.orderId,
-          reportUrl: orderResult.reportUrl
-        });
-        return client.replyMessage(event.replyToken, completionMessage);
-      }
       
       // 生成中またはその他のメッセージ
       return client.replyMessage(event.replyToken, {

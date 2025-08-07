@@ -28,23 +28,7 @@ class PaymentHandler {
       // 既存の注文をチェック
       const existingOrders = await ordersDB.getUserOrders(userId);
       
-      // 完了済みの注文がある場合
-      const completedOrder = existingOrders.find(order => 
-        order.status === 'completed' && order.report_url
-      );
-      
-      if (completedOrder) {
-        console.log('📋 既にレポート完成済み:', completedOrder.id);
-        return {
-          success: false,
-          message: '既にプレミアムレポートをご購入いただいています。\n「レポート状況」と送信してレポートをご確認ください。',
-          hasCompleted: true,
-          orderId: completedOrder.id,
-          reportUrl: completedOrder.report_url
-        };
-      }
-      
-      // 生成中の注文がある場合
+      // 生成中の注文がある場合（完了済みより先にチェック）
       const generatingOrder = existingOrders.find(order => 
         order.status === 'generating' || order.status === 'paid'
       );
