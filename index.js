@@ -1779,10 +1779,19 @@ async function handlePostbackEvent(event) {
   } catch (error) {
     console.error('Postbackイベント処理エラー:', error);
     
-    await client.pushMessage(userId, {
-      type: 'text',
-      text: '申し訳ございません。処理中にエラーが発生しました。サポートまでお問い合わせください。'
-    });
+    // 429エラー（レート制限）の場合はエラーメッセージを送信しない
+    if (error.statusCode !== 429) {
+      try {
+        await client.pushMessage(userId, {
+          type: 'text',
+          text: '申し訳ございません。処理中にエラーが発生しました。サポートまでお問い合わせください。'
+        });
+      } catch (msgError) {
+        console.error('エラーメッセージ送信失敗:', msgError.statusCode);
+      }
+    } else {
+      console.log('⚠️ LINE APIレート制限に到達。メッセージ送信をスキップ');
+    }
   }
 }
 
@@ -1790,23 +1799,34 @@ async function handlePostbackEvent(event) {
 async function handlePremiumReportOrder(userId, profile) {
   console.log('📋 プレミアムレポート注文処理開始');
   
+  const rateLimiter = require('./utils/rate-limiter');
+  
   try {
     // 注文を処理
     const orderResult = await getPaymentHandler().handlePremiumOrderRequest(userId, profile);
     
-    // 決済案内メッセージを送信
+    // 決済案内メッセージを送信（レート制限対策付き）
     const paymentMessage = getPaymentHandler().generatePaymentMessage(orderResult);
-    await client.pushMessage(userId, paymentMessage);
+    await rateLimiter.sendMessage(client, userId, paymentMessage);
     
     console.log('✅ 決済案内送信完了');
     
   } catch (error) {
     console.error('プレミアムレポート注文エラー:', error);
     
-    await client.pushMessage(userId, {
-      type: 'text',
-      text: '申し訳ございません。注文処理中にエラーが発生しました。しばらく経ってから再度お試しください。'
-    });
+    // 429エラー（レート制限）の場合はエラーメッセージを送信しない
+    if (error.statusCode !== 429) {
+      try {
+        await client.pushMessage(userId, {
+          type: 'text',
+          text: '申し訳ございません。注文処理中にエラーが発生しました。しばらく経ってから再度お試しください。'
+        });
+      } catch (msgError) {
+        console.error('エラーメッセージ送信失敗:', msgError.statusCode);
+      }
+    } else {
+      console.log('⚠️ LINE APIレート制限に到達。メッセージ送信をスキップ');
+    }
   }
 }
 
