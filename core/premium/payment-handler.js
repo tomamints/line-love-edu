@@ -188,7 +188,7 @@ class PaymentHandler {
               currency: 'jpy',
               product_data: {
                 name: 'プレミアム恋愛レポート',
-                description: 'AIが分析した超詳細な恋愛診断書（PDF形式・約20ページ）',
+                description: '月相占いが分析した超詳細な恋愛診断書（PDF形式・約20ページ）',
                 images: ['https://your-app.vercel.app/images/premium-report.png']
               },
               unit_amount: orderInfo.amount

@@ -129,7 +129,7 @@ app.post('/webhook', middleware(config), async (req, res) => {
             // 生成中
             return client.replyMessage(event.replyToken, {
               type: 'text',
-              text: '⏳ レポート生成中...\n\n現在AIがあなた専用のレポートを作成しています。\nもう少しお待ちください（約2-3分）📝✨'
+              text: '⏳ レポート生成中...\n\n現在あなた専用のレポートを作成しています。\nもう少しお待ちください（約2-3分）📝✨'
             });
             
           } else if (latestOrder.status === 'pending') {
@@ -2206,7 +2206,7 @@ ${roadmap.roadmap.slice(0, 2).map(milestone =>
 
 ━━━━━━━━━━━━━━━━━━
 
-🔮 このレポートはAIによる詳細分析結果です
+🔮 このレポートは月相占いによる詳細分析結果です
 生成日時: ${new Date().toLocaleString('ja-JP')}
 レポートID: ${reportData.metadata.reportId}
 
