@@ -53,7 +53,12 @@ class OrderStorage {
       console.log(`📁 注文を読込: ${orderId}`);
       return JSON.parse(data);
     } catch (error) {
-      console.error(`注文取得エラー (${orderId}):`, error.message);
+      // ファイルが存在しない場合は通常の動作なのでログレベルを下げる
+      if (error.code === 'ENOENT') {
+        console.log(`📁 注文ファイルなし: ${orderId}`);
+      } else {
+        console.error(`注文取得エラー (${orderId}):`, error.message);
+      }
       return null;
     }
   }

@@ -235,24 +235,14 @@ class OrdersDB {
       if (error) {
         // PGRST116 = Row not found
         if (error.code === 'PGRST116') {
-          console.log('📊 注文がDBに存在しない、ファイルストレージを確認');
+          console.log('📊 注文がDBに存在しません');
+          // Supabaseを使用している場合はファイルストレージは探さない
+          return null;
         } else {
           console.error('📊 Supabaseエラー:', error);
+          // その他のエラーの場合もnullを返す（フォールバックしない）
+          return null;
         }
-        
-        // ファイルストレージから取得を試みる
-        const fileOrder = await orderStorage.getOrder(orderId);
-        if (fileOrder) {
-          console.log('📊 ファイルストレージから注文取得成功');
-          // DBが使える場合は保存を試みる（エラーは無視）
-          try {
-            await this.saveOrder(orderId, fileOrder);
-            console.log('📊 注文をDBに移行成功');
-          } catch (saveErr) {
-            console.log('📊 DB移行失敗（続行）:', saveErr.message);
-          }
-        }
-        return fileOrder;
       }
       
       if (!data) {
