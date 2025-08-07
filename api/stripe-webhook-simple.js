@@ -74,8 +74,25 @@ module.exports = async (req, res) => {
       
       console.log('✅ Order marked as paid:', orderId);
       
-      // レポート生成は別のエンドポイントかcronジョブで処理
-      // または、次回のユーザーメッセージ時に処理
+      // レポート生成をトリガー（非同期で実行）
+      console.log('🚀 Triggering report generation...');
+      
+      // fetch APIを使って自身のエンドポイントを呼び出す
+      const baseUrl = process.env.VERCEL_URL 
+        ? `https://${process.env.VERCEL_URL}`
+        : 'https://line-love-edu.vercel.app';
+      
+      fetch(`${baseUrl}/api/process-paid-orders`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ orderId })
+      }).then(() => {
+        console.log('✅ Report generation triggered');
+      }).catch((err) => {
+        console.error('❌ Failed to trigger report generation:', err.message);
+      });
+      
+      // Stripeにはすぐに応答を返す（レポート生成を待たない）
       
     } catch (error) {
       console.error('❌ Error updating order:', error.message);

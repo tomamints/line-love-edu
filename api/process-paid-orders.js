@@ -12,8 +12,20 @@ module.exports = async (req, res) => {
   console.log('📍 Time:', new Date().toISOString());
   
   try {
-    // 支払い済みでレポート未生成の注文を取得
-    const orders = await ordersDB.getPaidOrders();
+    let orders = [];
+    
+    // 特定の注文IDが指定されている場合
+    if (req.body?.orderId || req.query?.orderId) {
+      const orderId = req.body?.orderId || req.query?.orderId;
+      console.log(`📋 Processing specific order: ${orderId}`);
+      const order = await ordersDB.getOrder(orderId);
+      if (order && order.status === 'paid') {
+        orders = [order];
+      }
+    } else {
+      // 支払い済みでレポート未生成の注文を取得
+      orders = await ordersDB.getPaidOrders();
+    }
     
     if (!orders || orders.length === 0) {
       console.log('✅ No paid orders to process');
