@@ -456,6 +456,125 @@ class OrdersDB {
       return [];
     }
   }
+  
+  // レポート生成の進捗を保存
+  async saveReportProgress(orderId, progress) {
+    console.log('📊 [saveReportProgress] 開始:', { orderId, progress });
+    
+    if (!this.useDatabase) {
+      // ファイルストレージの場合
+      const fs = require('fs').promises;
+      const path = require('path');
+      const progressDir = path.join(process.cwd(), 'progress');
+      
+      try {
+        await fs.mkdir(progressDir, { recursive: true });
+        const progressFile = path.join(progressDir, `${orderId}.json`);
+        await fs.writeFile(progressFile, JSON.stringify({
+          ...progress,
+          updatedAt: new Date().toISOString()
+        }, null, 2));
+        console.log('✅ 進捗をファイルに保存:', progressFile);
+        return true;
+      } catch (err) {
+        console.error('❌ 進捗保存エラー:', err);
+        return false;
+      }
+    }
+    
+    // Supabaseの場合はordersテーブルのreport_progressカラムを使用
+    try {
+      const { error } = await this.supabase
+        .from('orders')
+        .update({
+          report_progress: progress,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', orderId);
+      
+      if (error) {
+        console.error('❌ 進捗保存エラー:', error);
+        return false;
+      }
+      
+      console.log('✅ 進捗をDBに保存');
+      return true;
+    } catch (err) {
+      console.error('❌ 進捗保存エラー:', err);
+      return false;
+    }
+  }
+  
+  // レポート生成の進捗を取得
+  async getReportProgress(orderId) {
+    console.log('📊 [getReportProgress] 開始:', orderId);
+    
+    if (!this.useDatabase) {
+      // ファイルストレージの場合
+      const fs = require('fs').promises;
+      const path = require('path');
+      const progressFile = path.join(process.cwd(), 'progress', `${orderId}.json`);
+      
+      try {
+        const data = await fs.readFile(progressFile, 'utf8');
+        const progress = JSON.parse(data);
+        console.log('✅ 進捗をファイルから取得:', progress);
+        return progress;
+      } catch (err) {
+        console.log('⚠️ 進捗ファイルなし（初回実行）');
+        return null;
+      }
+    }
+    
+    // Supabaseの場合
+    try {
+      const order = await this.getOrder(orderId);
+      if (order && order.report_progress) {
+        console.log('✅ 進捗をDBから取得:', order.report_progress);
+        return order.report_progress;
+      }
+      console.log('⚠️ 進捗データなし（初回実行）');
+      return null;
+    } catch (err) {
+      console.error('❌ 進捗取得エラー:', err);
+      return null;
+    }
+  }
+  
+  // 進捗をクリア
+  async clearReportProgress(orderId) {
+    console.log('🧹 [clearReportProgress] 進捗をクリア:', orderId);
+    
+    if (!this.useDatabase) {
+      const fs = require('fs').promises;
+      const path = require('path');
+      const progressFile = path.join(process.cwd(), 'progress', `${orderId}.json`);
+      
+      try {
+        await fs.unlink(progressFile);
+        console.log('✅ 進捗ファイルを削除');
+      } catch (err) {
+        console.log('⚠️ 進捗ファイル削除エラー（既に削除済み？）');
+      }
+      return true;
+    }
+    
+    try {
+      await this.supabase
+        .from('orders')
+        .update({
+          report_progress: null,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', orderId);
+      
+      console.log('✅ DB進捗をクリア');
+      return true;
+    } catch (err) {
+      console.error('❌ 進捗クリアエラー:', err);
+      return false;
+    }
+  }
 }
 
 // シングルトンインスタンスを作成

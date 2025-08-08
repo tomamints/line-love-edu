@@ -231,36 +231,61 @@ module.exports = async (req, res) => {
             console.log('⚠️ Notification failed:', err.message);
           }
           
-          // バックグラウンドで処理を継続（Promiseを破棄しない）
-          reportPromise.then(async (bgResult) => {
-            console.log('🔄 Background processing completed');
-            if (bgResult.success) {
-              console.log('✅ Background report generated successfully');
-              console.log('📊 Report URL:', bgResult.reportUrl);
-              
-              // 完了通知を送信
-              try {
-                const completionMessage = paymentHandler.generateCompletionMessage(bgResult);
-                await lineClient.pushMessage(userId, completionMessage);
-                console.log('✅ Background completion notification sent');
-              } catch (err) {
-                console.log('⚠️ Background notification failed:', err.message);
-              }
-            } else {
-              console.error('❌ Background report generation failed:', bgResult.message);
-              // エラーステータスに更新
-              await ordersDB.updateOrder(orderId, {
-                status: 'error',
-                error_message: bgResult.message
+          // チャンク処理を開始（新しい方式）
+          console.log('🔄 Starting chunked processing...');
+          setTimeout(async () => {
+            try {
+              const chunkedUrl = `${process.env.BASE_URL || 'http://localhost:3000'}/api/generate-report-chunked`;
+              const response = await fetch(chunkedUrl, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                  orderId: orderId,
+                  continueFrom: 'start'
+                })
               });
+              
+              if (response.ok) {
+                console.log('✅ Chunked processing started successfully');
+              } else {
+                console.error('❌ Failed to start chunked processing:', response.status);
+                
+                // フォールバック：元のバックグラウンド処理
+                reportPromise.then(async (bgResult) => {
+                  console.log('🔄 Fallback: Background processing completed');
+                  if (bgResult.success) {
+                    console.log('✅ Background report generated successfully');
+                    console.log('📊 Report URL:', bgResult.reportUrl);
+                    
+                    // 完了通知を送信
+                    try {
+                      const completionMessage = paymentHandler.generateCompletionMessage(bgResult);
+                      await lineClient.pushMessage(userId, completionMessage);
+                      console.log('✅ Background completion notification sent');
+                    } catch (err) {
+                      console.log('⚠️ Background notification failed:', err.message);
+                    }
+                  } else {
+                    console.error('❌ Background report generation failed:', bgResult.message);
+                    await ordersDB.updateOrder(orderId, {
+                      status: 'error',
+                      error_message: bgResult.message
+                    });
+                  }
+                }).catch(async (bgError) => {
+                  console.error('❌ Background processing error:', bgError.message);
+                  await ordersDB.updateOrder(orderId, {
+                    status: 'error',
+                    error_message: bgError.message
+                  });
+                });
+              }
+            } catch (err) {
+              console.error('❌ Error starting chunked processing:', err.message);
             }
-          }).catch(async (bgError) => {
-            console.error('❌ Background processing error:', bgError.message);
-            await ordersDB.updateOrder(orderId, {
-              status: 'error',
-              error_message: bgError.message
-            });
-          });
+          }, 3000); // 3秒後に開始
           
           return res.json({ received: true, status: 'generating' });
         }
