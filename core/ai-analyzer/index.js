@@ -22,9 +22,10 @@ class AIAnalyzer {
    * 会話を包括的に分析
    * @param {array} messages - メッセージ配列
    * @param {string} userId - ユーザーID（キャッシュ用）
+   * @param {object} personalInfo - プロフィール情報（オプション）
    * @returns {object} 分析結果
    */
-  async analyzeConversation(messages, userId = null) {
+  async analyzeConversation(messages, userId = null, personalInfo = null) {
     try {
       // レート制限チェック
       if (!this.checkRateLimit(userId)) {
@@ -48,8 +49,8 @@ class AIAnalyzer {
       // 会話の盛り上がり分析
       const peaksAnalysis = this.peaksAnalyzer.analyzeConversationPeaks(messages);
       
-      // プロンプト構築（盛り上がり情報を含む）
-      const prompt = this.buildAnalysisPrompt(processedMessages, peaksAnalysis);
+      // プロンプト構築（盛り上がり情報とプロフィール情報を含む）
+      const prompt = this.buildAnalysisPrompt(processedMessages, peaksAnalysis, personalInfo);
       
       // OpenAI API呼び出し
       const response = await this.callOpenAI(prompt);
@@ -101,7 +102,7 @@ class AIAnalyzer {
    * @param {object} peaksAnalysis - 盛り上がり分析結果
    * @returns {array} プロンプトメッセージ配列
    */
-  buildAnalysisPrompt(messages, peaksAnalysis = null) {
+  buildAnalysisPrompt(messages, peaksAnalysis = null, personalInfo = null) {
     const conversationText = messages
       .map(msg => `${msg.isUser ? 'ユーザー' : '相手'}: ${msg.text}`)
       .join('\\n');
@@ -121,9 +122,22 @@ class AIAnalyzer {
 
 この情報を考慮して、より具体的で実用的な分析を行ってください。`;
     }
+    
+    // プロフィール情報を含むコンテキスト
+    let profileContext = '';
+    if (personalInfo) {
+      const ageDiff = Math.abs((personalInfo.userAge || 0) - (personalInfo.partnerAge || 0));
+      profileContext = `\n\n【プロフィール情報】
+- ユーザー年齢: ${personalInfo.userAge}歳
+- 相手の年齢: ${personalInfo.partnerAge}歳
+- 年齢差: ${ageDiff}歳
+- 相手の性別: ${personalInfo.partnerGender === 'male' ? '男性' : personalInfo.partnerGender === 'female' ? '女性' : 'その他'}
+
+年齢差や性別を考慮した具体的なアドバイスを含めてください。`;
+    }
 
     const userPrompt = `会話:
-${conversationText.substring(0, 1000)}
+${conversationText.substring(0, 1000)}${peaksContext}${profileContext}
 
 短いJSON形式で分析:
 {

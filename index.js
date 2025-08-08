@@ -82,6 +82,8 @@ app.post('/api/stripe/webhook', express.raw({ type: 'application/json' }), async
 
 // JSONボディパーサー（API用） - Stripe Webhookの後に配置
 app.use('/api', express.json());
+// URLエンコードされたフォームデータ用
+app.use('/api', express.urlencoded({ extended: true }));
 
 // レポート生成エンドポイント
 app.all('/api/process-paid-orders', async (req, res) => {
@@ -101,6 +103,17 @@ app.all('/api/generate-report-from-saved', async (req, res) => {
   await generateReportFromSaved(req, res);
 });
 
+// プロフィールフォーム
+app.all('/api/profile-form', async (req, res) => {
+  const profileForm = require('./api/profile-form');
+  await profileForm(req, res);
+});
+
+// プロフィール保存成功ページ
+app.get('/api/profile-form-success', async (req, res) => {
+  const successPage = require('./api/profile-form-success');
+  await successPage(req, res);
+});
 
 // ── ③ 重複防止
 const recentMessageIds = new Set();
@@ -134,53 +147,272 @@ app.post('/webhook', middleware(config), async (req, res) => {
         const messageText = event.message.text;
         loadHeavyModules();
         
-        // プロフィール設定
+        // プロフィール保存完了通知を受け取った場合
+        if (messageText === '診断開始' || messageText === '保存完了') {
+          const profile = await profileManager.getProfile(userId);
+          let result = profile?.lastFortuneResult;
+          
+          // データベースにない場合はファイルから読み込み
+          if (!result) {
+            try {
+              const fs = require('fs').promises;
+              const path = require('path');
+              const tempDir = process.env.VERCEL ? '/tmp' : path.join(__dirname, '../data/temp');
+              const fortuneData = await fs.readFile(
+                path.join(tempDir, `${userId}_fortune.json`),
+                'utf8'
+              );
+              result = JSON.parse(fortuneData);
+            } catch (err) {
+              console.log('診断結果ファイルが見つかりません:', err.message);
+            }
+          }
+          
+          if (result) {
+            const message = {
+              type: 'flex',
+              altText: '🌙 月の相性診断結果',
+              contents: {
+                type: 'bubble',
+                size: 'mega',
+                header: {
+                  type: 'box',
+                  layout: 'vertical',
+                  backgroundColor: '#764ba2',
+                  contents: [
+                    {
+                      type: 'text',
+                      text: '🌙 月の相性診断結果',
+                      color: '#ffffff',
+                      size: 'xl',
+                      weight: 'bold'
+                    }
+                  ]
+                },
+                body: {
+                  type: 'box',
+                  layout: 'vertical',
+                  spacing: 'md',
+                  contents: [
+                    {
+                      type: 'box',
+                      layout: 'vertical',
+                      spacing: 'sm',
+                      contents: [
+                        {
+                          type: 'text',
+                          text: `あなた: ${result.user.moonPhaseType.symbol} ${result.user.moonPhaseType.name}`,
+                          size: 'lg',
+                          weight: 'bold',
+                          color: '#667eea'
+                        },
+                        {
+                          type: 'text',
+                          text: `お相手: ${result.partner.moonPhaseType.symbol} ${result.partner.moonPhaseType.name}`,
+                          size: 'lg',
+                          weight: 'bold',
+                          color: '#667eea'
+                        }
+                      ]
+                    },
+                    {
+                      type: 'separator'
+                    },
+                    {
+                      type: 'box',
+                      layout: 'vertical',
+                      spacing: 'sm',
+                      contents: [
+                        {
+                          type: 'text',
+                          text: '相性スコア',
+                          size: 'sm',
+                          color: '#aaaaaa'
+                        },
+                        {
+                          type: 'text',
+                          text: `${result.compatibility.score}%`,
+                          size: 'xxl',
+                          weight: 'bold',
+                          align: 'center',
+                          color: '#764ba2'
+                        },
+                        {
+                          type: 'text',
+                          text: result.compatibility.level,
+                          size: 'md',
+                          align: 'center',
+                          color: '#667eea'
+                        }
+                      ]
+                    },
+                    {
+                      type: 'separator'
+                    },
+                    {
+                      type: 'text',
+                      text: result.compatibility.description,
+                      wrap: true,
+                      size: 'sm',
+                      color: '#666666'
+                    },
+                    {
+                      type: 'text',
+                      text: '💫 アドバイス',
+                      margin: 'lg',
+                      size: 'md',
+                      weight: 'bold',
+                      color: '#667eea'
+                    },
+                    {
+                      type: 'text',
+                      text: Array.isArray(result.compatibility.advice) 
+                        ? result.compatibility.advice.join(' ') 
+                        : result.compatibility.advice,
+                      wrap: true,
+                      size: 'sm',
+                      color: '#666666'
+                    }
+                  ]
+                }
+              }
+            };
+            
+            return client.replyMessage(event.replyToken, message);
+          } else {
+            return client.replyMessage(event.replyToken, {
+              type: 'text',
+              text: 'プロフィール設定が完了していません。\n「プロフィール設定」と送信してください。'
+            });
+          }
+        }
+        
+        // プロフィール設定（友だち登録時と同じデザイン）
         if (messageText === 'プロフィール設定' || messageText === 'プロフィール') {
           const formUrl = `${process.env.BASE_URL || 'https://line-love-edu.vercel.app'}/api/profile-form?userId=${userId}`;
           
           return client.replyMessage(event.replyToken, {
             type: 'flex',
-            altText: 'プロフィール設定',
+            altText: '🌙 おつきさま診断',
             contents: {
               type: 'bubble',
+              size: 'mega',
+              header: {
+                type: 'box',
+                layout: 'vertical',
+                contents: [
+                  {
+                    type: 'box',
+                    layout: 'vertical',
+                    contents: [
+                      {
+                        type: 'text',
+                        text: '🌙',
+                        size: '80px',
+                        align: 'center'
+                      },
+                      {
+                        type: 'text',
+                        text: 'おつきさま診断',
+                        weight: 'bold',
+                        size: 'xxl',
+                        margin: 'md',
+                        align: 'center',
+                        color: '#ffffff'
+                      },
+                      {
+                        type: 'text',
+                        text: '〜月の満ち欠けが導く二人の運命〜',
+                        size: 'sm',
+                        color: '#e0e0e0',
+                        align: 'center',
+                        margin: 'sm'
+                      }
+                    ]
+                  }
+                ],
+                paddingAll: '20px',
+                backgroundColor: '#764ba2',
+                spacing: 'md',
+                paddingTop: '22px'
+              },
               body: {
                 type: 'box',
                 layout: 'vertical',
-                backgroundColor: '#f0f0f0',
-                paddingAll: '20px',
                 contents: [
                   {
                     type: 'text',
-                    text: '📝 プロフィール設定',
-                    size: 'xl',
-                    weight: 'bold',
-                    color: '#1a0033'
+                    text: 'あなたと大切な人の相性を',
+                    size: 'md',
+                    wrap: true,
+                    align: 'center'
                   },
                   {
                     type: 'text',
-                    text: '生年月日や年齢を入力して、より正確な診断を受けましょう',
-                    margin: 'md',
+                    text: '月の満ち欠けから占います',
+                    size: 'md',
                     wrap: true,
-                    color: '#666666'
+                    align: 'center',
+                    margin: 'sm'
+                  },
+                  {
+                    type: 'separator',
+                    margin: 'lg'
+                  },
+                  {
+                    type: 'box',
+                    layout: 'vertical',
+                    margin: 'lg',
+                    spacing: 'sm',
+                    contents: [
+                      {
+                        type: 'text',
+                        text: '📝 二人の情報を入力',
+                        weight: 'bold',
+                        size: 'sm',
+                        color: '#764ba2'
+                      },
+                      {
+                        type: 'text',
+                        text: 'より正確な診断のために',
+                        size: 'sm',
+                        margin: 'sm'
+                      },
+                      {
+                        type: 'text',
+                        text: '生年月日をお教えください',
+                        size: 'sm'
+                      }
+                    ]
                   }
                 ]
               },
               footer: {
                 type: 'box',
                 layout: 'vertical',
-                backgroundColor: '#ffffff',
-                paddingAll: '15px',
+                spacing: 'sm',
                 contents: [
                   {
                     type: 'button',
+                    style: 'primary',
+                    height: 'md',
                     action: {
                       type: 'uri',
-                      label: '入力フォームを開く',
+                      label: '🔮 情報を入力する',
                       uri: formUrl
                     },
+                    color: '#764ba2'
+                  },
+                  {
+                    type: 'button',
                     style: 'primary',
-                    color: '#667eea',
-                    height: 'md'
+                    height: 'md',
+                    action: {
+                      type: 'message',
+                      label: '診断結果を見る',
+                      text: '診断結果'
+                    },
+                    color: '#667eea'
                   }
                 ]
               }
@@ -376,9 +608,12 @@ async function handleFollowEvent(event) {
   logger.log('🔑 Client exists:', !!client);
   logger.log('🔑 Access Token exists:', !!config.channelAccessToken);
   
+  const userId = event.source.userId;
+  const formUrl = `${process.env.BASE_URL || 'https://line-love-edu.vercel.app'}/api/profile-form?userId=${userId}`;
+  
   try {
-    logger.log('📤 Flexメッセージ送信開始...');
-    // 美しいウェルカムカードを送信
+    logger.log('📤 プロフィール設定カード送信開始...');
+    // プロフィール設定カードを送信
     const result = await client.replyMessage(event.replyToken, {
       type: 'flex',
       altText: '🌙 おつきさま診断へようこそ！',
@@ -489,11 +724,22 @@ async function handleFollowEvent(event) {
               style: 'primary',
               height: 'md',
               action: {
-                type: 'message',
-                label: '🔮 占いを始める',
-                text: '占いを始める'
+                type: 'uri',
+                label: '🔮 情報を入力する',
+                uri: formUrl
               },
               color: '#764ba2'
+            },
+            {
+              type: 'button',
+              style: 'primary',
+              height: 'md',
+              action: {
+                type: 'message',
+                label: '診断結果を見る',
+                text: '診断結果'
+              },
+              color: '#667eea'
             }
           ]
         }
@@ -517,152 +763,6 @@ async function handleFollowEvent(event) {
     } catch (fallbackError) {
       console.error('❌ フォールバックメッセージも失敗:', fallbackError);
       console.error('❌ フォールバックエラー詳細:', fallbackError.message);
-    }
-  }
-  
-  // 以下は実行されない（上でreturn）
-  const userId = event.source.userId;
-  
-  try {
-    logger.log('📮 リッチカード送信開始...');
-    // 美しいウェルカムカードを送信
-    const result = await client.replyMessage(event.replyToken, [
-      {
-        type: 'flex',
-        altText: '🌙 おつきさま診断へようこそ！',
-        contents: {
-          type: 'bubble',
-          size: 'mega',
-          header: {
-            type: 'box',
-            layout: 'vertical',
-            contents: [
-              {
-                type: 'box',
-                layout: 'vertical',
-                contents: [
-                  {
-                    type: 'text',
-                    text: '🌙',
-                    size: '60px',
-                    align: 'center'
-                  },
-                  {
-                    type: 'text',
-                    text: 'おつきさま診断',
-                    size: 'xl',
-                    color: '#ffffff',
-                    align: 'center',
-                    weight: 'bold'
-                  },
-                  {
-                    type: 'text',
-                    text: '生年月日から導く運命の相性',
-                    size: 'sm',
-                    color: '#ffffff',
-                    align: 'center',
-                    margin: 'sm'
-                  }
-                ]
-              }
-            ],
-            paddingAll: '20px',
-            backgroundColor: '#764ba2',
-            spacing: 'md',
-            paddingTop: '22px'
-          },
-          body: {
-            type: 'box',
-            layout: 'vertical',
-            contents: [
-              {
-                type: 'text',
-                text: 'あなたと大切な人の相性を',
-                size: 'md',
-                wrap: true,
-                align: 'center'
-              },
-              {
-                type: 'text',
-                text: '月の満ち欠けから占います',
-                size: 'md',
-                wrap: true,
-                align: 'center',
-                margin: 'sm'
-              },
-              {
-                type: 'separator',
-                margin: 'lg'
-              },
-              {
-                type: 'box',
-                layout: 'vertical',
-                margin: 'lg',
-                spacing: 'sm',
-                contents: [
-                  {
-                    type: 'text',
-                    text: '📝 かんたん3ステップ',
-                    weight: 'bold',
-                    size: 'sm',
-                    color: '#764ba2'
-                  },
-                  {
-                    type: 'text',
-                    text: '1. あなたの生年月日を入力',
-                    size: 'sm',
-                    margin: 'sm'
-                  },
-                  {
-                    type: 'text',
-                    text: '2. お相手の生年月日を入力',
-                    size: 'sm'
-                  },
-                  {
-                    type: 'text',
-                    text: '3. 相性診断結果をチェック！',
-                    size: 'sm'
-                  }
-                ]
-              }
-            ]
-          },
-          footer: {
-            type: 'box',
-            layout: 'vertical',
-            spacing: 'sm',
-            contents: [
-              {
-                type: 'button',
-                style: 'primary',
-                height: 'md',
-                action: {
-                  type: 'message',
-                  label: '🔮 占いを始める',
-                  text: '占いを始める'
-                },
-                color: '#764ba2'
-              }
-            ]
-          }
-        }
-      }
-    ]);
-    logger.log('✅ ウェルカムメッセージ送信完了:', result);
-    
-  } catch (error) {
-    console.error('❌ 友達追加処理エラー:', error);
-    console.error('❌ エラー詳細:', error.response?.data || error.message);
-    
-    // シンプルなテキストメッセージでリトライ
-    try {
-      await client.replyMessage(event.replyToken, {
-        type: 'text',
-        text: '🌙 おつきさま診断へようこそ！\n\n「診断を始める」と送信して、あなたとお相手の相性を診断しましょう✨'
-      });
-      logger.log('✅ フォールバックメッセージ送信成功');
-    } catch (fallbackError) {
-      console.error('❌ フォールバックも失敗:', fallbackError);
     }
   }
 }
@@ -810,6 +910,13 @@ async function handleTextMessage(event) {
       return;
     }
     
+    // 診断結果コマンド
+    if (text === '診断結果' || text === '結果') {
+      // 既存のおつきさま診断結果送信を使用
+      await sendMoonFortuneResult(event.replyToken, userId);
+      return;
+    }
+    
     // リセットコマンド（互換性のため残す）
     if (text === 'リセット' || text === 'reset') {
       await getProfileManager().deleteProfile(userId);
@@ -876,38 +983,546 @@ async function handleTextMessage(event) {
 // おつきさま診断結果を送信
 async function sendMoonFortuneResult(replyToken, userId) {
   try {
-    const profile = await getProfileManager().getProfile(userId);
-    loadHeavyModules();
-    const moonEngine = new MoonFortuneEngine();
+    // まずファイルから診断結果を読み込み
+    let result = null;
+    try {
+      const fs = require('fs').promises;
+      const path = require('path');
+      const dataDir = path.join(__dirname, 'data/profiles');
+      const profileFile = path.join(dataDir, `${userId}.json`);
+      
+      const profileData = await fs.readFile(profileFile, 'utf8');
+      const fullProfile = JSON.parse(profileData);
+      result = fullProfile.lastFortuneResult;
+      console.log('🌙 ファイルから診断結果取得');
+    } catch (err) {
+      console.log('診断結果ファイルが見つかりません:', err.message);
+    }
     
-    // おつきさま診断レポートを生成
-    const moonReport = moonEngine.generateFreeReport(
-      {
-        birthDate: profile.birthDate,
-        birthTime: profile.birthTime || '00:00',
-        gender: profile.gender
-      },
-      {
-        birthDate: profile.partnerBirthDate,
-        birthTime: profile.partnerBirthTime || '00:00',
-        gender: profile.partnerGender
+    // 診断結果がない場合は新規生成
+    if (!result) {
+      const profile = await getProfileManager().getProfile(userId);
+      if (!profile || !profile.birthDate || !profile.partnerBirthDate) {
+        await client.replyMessage(replyToken, {
+          type: 'text',
+          text: '診断結果がありません。\n\nまず「プロフィール設定」から始めてください。'
+        });
+        return;
       }
-    );
+      
+      loadHeavyModules();
+      const moonEngine = new MoonFortuneEngine();
+      
+      // おつきさま診断レポートを生成
+      result = moonEngine.generateFreeReport(
+        {
+          birthDate: profile.birthDate,
+          birthTime: profile.birthTime || '00:00',
+          gender: profile.gender
+        },
+        {
+          birthDate: profile.partnerBirthDate,
+          birthTime: profile.partnerBirthTime || '00:00',
+          gender: profile.partnerGender
+        }
+      );
+      
+      // 結果をファイルに保存
+      const fs = require('fs').promises;
+      const path = require('path');
+      const dataDir = path.join(__dirname, 'data/profiles');
+      await fs.mkdir(dataDir, { recursive: true });
+      
+      const profileData = {
+        ...profile,
+        lastFortuneResult: result
+      };
+      
+      await fs.writeFile(
+        path.join(dataDir, `${userId}.json`),
+        JSON.stringify(profileData, null, 2)
+      );
+    }
     
-    // フォーマット済みのテキストを取得
-    const reportText = moonEngine.formatReportForLine(moonReport);
+    // 既存のカルーセル形式診断結果カードを使用（動作確認済みのもの・4枚版）
+    const compatScore = parseFloat(result.compatibility.score);
+    const starCount = Math.floor(compatScore / 20);
+    
+    const message = {
+      type: 'flex',
+      altText: '🌙 おつきさま診断の結果',
+      contents: {
+        type: 'carousel',
+        contents: [
+          // カード1: 総合相性
+          {
+            type: 'bubble',
+            size: 'mega',
+            header: {
+              type: 'box',
+              layout: 'vertical',
+              contents: [
+                {
+                  type: 'text',
+                  text: '🌙 おつきさま診断',
+                  size: 'xl',
+                  color: '#ffffff',
+                  weight: 'bold',
+                  align: 'center'
+                },
+                {
+                  type: 'text',
+                  text: `総合相性: ${compatScore}%`,
+                  size: 'xxl',
+                  color: '#ffd700',
+                  align: 'center',
+                  margin: 'md',
+                  weight: 'bold'
+                },
+                {
+                  type: 'text',
+                  text: '★'.repeat(starCount) + '☆'.repeat(5 - starCount),
+                  size: 'xxl',
+                  color: '#ffd700',
+                  align: 'center',
+                  margin: 'sm'
+                }
+              ],
+              backgroundColor: '#764ba2',
+              paddingAll: '20px'
+            },
+            body: {
+              type: 'box',
+              layout: 'vertical',
+              spacing: 'md',
+              contents: [
+                {
+                  type: 'text',
+                  text: `【${result.compatibility.level}】`,
+                  weight: 'bold',
+                  size: 'xl',
+                  color: '#764ba2',
+                  align: 'center'
+                },
+                {
+                  type: 'text',
+                  text: result.compatibility.description,
+                  wrap: true,
+                  size: 'md',
+                  margin: 'md'
+                },
+                {
+                  type: 'separator',
+                  margin: 'xl'
+                },
+                {
+                  type: 'text',
+                  text: '🔮 相性のポイント',
+                  weight: 'bold',
+                  size: 'lg',
+                  color: '#764ba2',
+                  margin: 'xl'
+                },
+                {
+                  type: 'text',
+                  text: result.compatibility.advice.slice(0, 2).join('\n\n'),
+                  wrap: true,
+                  size: 'sm',
+                  margin: 'md',
+                  color: '#555555'
+                }
+              ],
+              paddingAll: '20px'
+            }
+          },
+          // カード2: あなたの月相タイプ
+          {
+            type: 'bubble',
+            size: 'mega',
+            header: {
+              type: 'box',
+              layout: 'vertical',
+              contents: [
+                {
+                  type: 'text',
+                  text: 'あなたのおつきさま',
+                  size: 'lg',
+                  color: '#ffffff',
+                  weight: 'bold',
+                  align: 'center'
+                },
+                {
+                  type: 'text',
+                  text: `${result.user.moonPhaseType.symbol}`,
+                  size: '80px',
+                  align: 'center',
+                  margin: 'md'
+                },
+                {
+                  type: 'text',
+                  text: result.user.moonPhaseType.name,
+                  size: 'xl',
+                  color: '#ffd700',
+                  align: 'center',
+                  weight: 'bold'
+                }
+              ],
+              backgroundColor: '#667eea',
+              paddingAll: '20px'
+            },
+            body: {
+              type: 'box',
+              layout: 'vertical',
+              spacing: 'md',
+              contents: [
+                {
+                  type: 'text',
+                  text: result.user.moonPhaseType.traits,
+                  weight: 'bold',
+                  size: 'md',
+                  color: '#667eea',
+                  align: 'center'
+                },
+                {
+                  type: 'separator',
+                  margin: 'lg'
+                },
+                {
+                  type: 'text',
+                  text: result.user.moonPhaseType.description,
+                  wrap: true,
+                  size: 'sm',
+                  margin: 'md'
+                },
+                {
+                  type: 'separator',
+                  margin: 'lg'
+                },
+                {
+                  type: 'text',
+                  text: '🌟 特徴キーワード',
+                  weight: 'bold',
+                  size: 'md',
+                  color: '#667eea',
+                  margin: 'lg'
+                },
+                {
+                  type: 'text',
+                  text: result.user.moonPhaseType.keywords.join(' / '),
+                  wrap: true,
+                  size: 'sm',
+                  margin: 'sm',
+                  align: 'center',
+                  color: '#555555'
+                },
+                {
+                  type: 'box',
+                  layout: 'horizontal',
+                  margin: 'lg',
+                  spacing: 'sm',
+                  contents: [
+                    {
+                      type: 'text',
+                      text: '月齢:',
+                      size: 'sm',
+                      flex: 1
+                    },
+                    {
+                      type: 'text',
+                      text: `${result.user.moonAge}日`,
+                      size: 'sm',
+                      align: 'end',
+                      color: '#667eea'
+                    }
+                  ]
+                },
+                {
+                  type: 'box',
+                  layout: 'horizontal',
+                  spacing: 'sm',
+                  contents: [
+                    {
+                      type: 'text',
+                      text: '輝面比:',
+                      size: 'sm',
+                      flex: 1
+                    },
+                    {
+                      type: 'text',
+                      text: `${result.user.illumination}%`,
+                      size: 'sm',
+                      align: 'end',
+                      color: '#667eea'
+                    }
+                  ]
+                }
+              ],
+              paddingAll: '20px'
+            }
+          },
+          // カード3: お相手の月相タイプ
+          {
+            type: 'bubble',
+            size: 'mega',
+            header: {
+              type: 'box',
+              layout: 'vertical',
+              contents: [
+                {
+                  type: 'text',
+                  text: 'お相手のおつきさま',
+                  size: 'lg',
+                  color: '#ffffff',
+                  weight: 'bold',
+                  align: 'center'
+                },
+                {
+                  type: 'text',
+                  text: `${result.partner.moonPhaseType.symbol}`,
+                  size: '80px',
+                  align: 'center',
+                  margin: 'md'
+                },
+                {
+                  type: 'text',
+                  text: result.partner.moonPhaseType.name,
+                  size: 'xl',
+                  color: '#ffd700',
+                  align: 'center',
+                  weight: 'bold'
+                }
+              ],
+              backgroundColor: '#e91e63',
+              paddingAll: '20px'
+            },
+            body: {
+              type: 'box',
+              layout: 'vertical',
+              spacing: 'md',
+              contents: [
+                {
+                  type: 'text',
+                  text: result.partner.moonPhaseType.traits,
+                  weight: 'bold',
+                  size: 'md',
+                  color: '#e91e63',
+                  align: 'center'
+                },
+                {
+                  type: 'separator',
+                  margin: 'lg'
+                },
+                {
+                  type: 'text',
+                  text: result.partner.moonPhaseType.description,
+                  wrap: true,
+                  size: 'sm',
+                  margin: 'md'
+                },
+                {
+                  type: 'separator',
+                  margin: 'lg'
+                },
+                {
+                  type: 'text',
+                  text: '🌟 特徴キーワード',
+                  weight: 'bold',
+                  size: 'md',
+                  color: '#e91e63',
+                  margin: 'lg'
+                },
+                {
+                  type: 'text',
+                  text: result.partner.moonPhaseType.keywords.join(' / '),
+                  wrap: true,
+                  size: 'sm',
+                  margin: 'sm',
+                  align: 'center',
+                  color: '#555555'
+                },
+                {
+                  type: 'box',
+                  layout: 'horizontal',
+                  margin: 'lg',
+                  spacing: 'sm',
+                  contents: [
+                    {
+                      type: 'text',
+                      text: '月齢:',
+                      size: 'sm',
+                      flex: 1
+                    },
+                    {
+                      type: 'text',
+                      text: `${result.partner.moonAge}日`,
+                      size: 'sm',
+                      align: 'end',
+                      color: '#e91e63'
+                    }
+                  ]
+                },
+                {
+                  type: 'box',
+                  layout: 'horizontal',
+                  spacing: 'sm',
+                  contents: [
+                    {
+                      type: 'text',
+                      text: '輝面比:',
+                      size: 'sm',
+                      flex: 1
+                    },
+                    {
+                      type: 'text',
+                      text: `${result.partner.illumination}%`,
+                      size: 'sm',
+                      align: 'end',
+                      color: '#e91e63'
+                    }
+                  ]
+                }
+              ],
+              paddingAll: '20px'
+            }
+          },
+          // カード4: 今月の運勢
+          {
+            type: 'bubble',
+            size: 'mega',
+            header: {
+              type: 'box',
+              layout: 'vertical',
+              contents: [
+                {
+                  type: 'text',
+                  text: '🌃 今月の恋愛運',
+                  size: 'xl',
+                  color: '#ffffff',
+                  weight: 'bold',
+                  align: 'center'
+                },
+                {
+                  type: 'text',
+                  text: `【${result.monthlyFortune.fortune.level}】`,
+                  size: 'lg',
+                  color: '#ffd700',
+                  align: 'center',
+                  margin: 'md',
+                  weight: 'bold'
+                }
+              ],
+              backgroundColor: '#ff6b6b',
+              paddingAll: '20px'
+            },
+            body: {
+              type: 'box',
+              layout: 'vertical',
+              spacing: 'md',
+              contents: [
+                {
+                  type: 'text',
+                  text: '🌙 現在のおつきさま',
+                  weight: 'bold',
+                  size: 'md',
+                  color: '#ff6b6b'
+                },
+                {
+                  type: 'text',
+                  text: `${result.monthlyFortune.currentMoonSymbol} ${result.monthlyFortune.currentMoonPhase}`,
+                  size: 'sm',
+                  margin: 'sm',
+                  align: 'center'
+                },
+                {
+                  type: 'separator',
+                  margin: 'lg'
+                },
+                {
+                  type: 'text',
+                  text: '💫 月からのメッセージ',
+                  weight: 'bold',
+                  size: 'md',
+                  color: '#ff6b6b',
+                  margin: 'lg'
+                },
+                {
+                  type: 'text',
+                  text: result.monthlyFortune.fortune.message,
+                  wrap: true,
+                  size: 'sm',
+                  margin: 'md'
+                },
+                {
+                  type: 'separator',
+                  margin: 'lg'
+                },
+                {
+                  type: 'text',
+                  text: '🌟 ラッキーデー',
+                  weight: 'bold',
+                  size: 'md',
+                  color: '#ff6b6b',
+                  margin: 'lg'
+                },
+                {
+                  type: 'text',
+                  text: result.monthlyFortune.luckyDays.length > 0 
+                    ? result.monthlyFortune.luckyDays.slice(0, 3).map(day => 
+                        `${day.date}日 ${day.moonPhase}`
+                      ).join('\n')
+                    : '今月は内面を充実させる時期です',
+                  wrap: true,
+                  size: 'sm',
+                  margin: 'md'
+                }
+              ],
+              paddingAll: '20px'
+            },
+            footer: {
+              type: 'box',
+              layout: 'vertical',
+              spacing: 'md',
+              backgroundColor: '#f0f0f0',
+              paddingAll: '15px',
+              contents: [
+                {
+                  type: 'text',
+                  text: '🔮 もっと詳しく二人の相性を知りたいですか？',
+                  wrap: true,
+                  size: 'sm',
+                  weight: 'bold',
+                  color: '#333333',
+                  align: 'center'
+                },
+                {
+                  type: 'text',
+                  text: '会話パターンから深層心理を分析します',
+                  wrap: true,
+                  size: 'xs',
+                  color: '#666666',
+                  align: 'center',
+                  margin: 'sm'
+                },
+                {
+                  type: 'button',
+                  action: {
+                    type: 'postback',
+                    label: '💕 知りたい！',
+                    data: 'action=want_more_analysis'
+                  },
+                  style: 'primary',
+                  color: '#ff6b6b',
+                  height: 'sm'
+                }
+              ]
+            }
+          }
+        ]
+      }
+    };
     
     // 結果を送信
-    await client.replyMessage(replyToken, [
-      {
-        type: 'text',
-        text: reportText
-      },
-      {
-        type: 'text',
-        text: '✨ より詳しい相性分析を見る ✨\n\nトーク履歴ファイルを送信すると、会話パターンから二人の深層心理を分析します！\n\n【プレミアム機能】\n・詳細なおつきさま相性分析\n・今後3ヶ月の関係性予測\n・ベストタイミングカレンダー\n・具体的なアプローチ方法\n\n今なら ¥1,980（通常 ¥2,980）'
-      }
-    ]);
+    await client.replyMessage(replyToken, message);
     
   } catch (error) {
     console.error('おつきさま診断結果送信エラー:', error);

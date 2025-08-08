@@ -23,14 +23,33 @@ class FortuneEngine {
    * @param {array} messages - メッセージ履歴
    * @param {string} userId - ユーザーID
    * @param {string} userName - ユーザー名（オプション）
+   * @param {object} personalInfo - プロフィール情報（オプション）
    * @returns {object} 完全なお告げ
    */
-  async generateFortune(messages, userId, userName = null) {
+  async generateFortune(messages, userId, userName = null, personalInfo = null) {
     try {
-      // 各種分析を並行実行
+      // ユーザープロフィール情報を取得
+      if (!personalInfo) {
+        const ProfilesDB = require('../database/profiles-db');
+        const profile = await ProfilesDB.getProfile(userId);
+        personalInfo = profile?.personalInfo || null;
+      }
+      
+      // プロフィール情報をログ出力
+      if (personalInfo) {
+        console.log('📋 プロフィール情報を診断に使用:', {
+          userAge: personalInfo.userAge,
+          partnerAge: personalInfo.partnerAge,
+          ageDiff: Math.abs((personalInfo.userAge || 0) - (personalInfo.partnerAge || 0)),
+          userBirthdate: personalInfo.userBirthdate,
+          partnerBirthdate: personalInfo.partnerBirthdate
+        });
+      }
+      
+      // 各種分析を並行実行（プロフィール情報を渡す）
       const [aiAnalysis, numerologyAnalysis] = await Promise.all([
-        this.aiAnalyzer.analyzeConversation(messages, userId),
-        Promise.resolve(this.numerology.performFullAnalysis(messages, userId))
+        this.aiAnalyzer.analyzeConversation(messages, userId, personalInfo),
+        Promise.resolve(this.numerology.performFullAnalysis(messages, userId, personalInfo))
       ]);
       
       // タイミング分析はAI分析後に実行

@@ -61,6 +61,16 @@ class ProfilesDB {
       const existingProfile = await this.getProfile(userId) || {};
       const mergedData = { ...existingProfile, ...profileData };
       
+      // personalInfoがある場合は個別フィールドにマップ（新しいデータを優先）
+      if (profileData.personalInfo) {
+        const info = profileData.personalInfo;
+        // 新しいデータで上書き
+        mergedData.birthDate = info.userBirthdate;
+        mergedData.gender = info.userGender;
+        mergedData.partnerBirthDate = info.partnerBirthdate;
+        mergedData.partnerGender = info.partnerGender;
+      }
+      
       const upsertData = {
         user_id: userId,
         user_name: mergedData.userName || null,
@@ -209,7 +219,8 @@ class ProfilesDB {
   formatProfile(data) {
     if (!data) return null;
     
-    return {
+    // データベースの形式をアプリケーションの形式に変換
+    const profile = {
       userId: data.user_id,
       userName: data.user_name,
       birthDate: data.birth_date,
@@ -218,8 +229,37 @@ class ProfilesDB {
       partnerBirthDate: data.partner_birth_date,
       partnerGender: data.partner_gender,
       createdAt: data.created_at,
-      updatedAt: data.updated_at
+      updatedAt: data.updated_at,
+      // lastFortuneResultなどの追加データは元のprofileDataから継承
+      ...data.profile_data
     };
+    
+    // personalInfo形式も追加（FortuneEngineで使用）
+    if (data.birth_date || data.partner_birth_date) {
+      profile.personalInfo = {
+        userBirthdate: data.birth_date,
+        userAge: data.birth_date ? this.calculateAge(data.birth_date) : null,
+        userGender: data.gender,
+        partnerBirthdate: data.partner_birth_date,
+        partnerAge: data.partner_birth_date ? this.calculateAge(data.partner_birth_date) : null,
+        partnerGender: data.partner_gender
+      };
+    }
+    
+    return profile;
+  }
+  
+  // 生年月日から年齢を計算
+  calculateAge(birthDate) {
+    if (!birthDate) return null;
+    const birth = new Date(birthDate);
+    const today = new Date();
+    let age = today.getFullYear() - birth.getFullYear();
+    const monthDiff = today.getMonth() - birth.getMonth();
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+      age--;
+    }
+    return age;
   }
 
   // ユーティリティメソッド（UserProfileManagerから継承）

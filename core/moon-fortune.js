@@ -412,6 +412,297 @@ class MoonFortuneEngine {
     return advices;
   }
 
+  // FlexメッセージカードF生成（LINE表示用）
+  createFlexMessageCard(report) {
+    return {
+      type: 'flex',
+      altText: '🌙 月の相性診断結果',
+      contents: {
+        type: 'bubble',
+        size: 'mega',
+        header: {
+          type: 'box',
+          layout: 'vertical',
+          backgroundColor: '#1a0033',
+          paddingAll: '20px',
+          contents: [
+            {
+              type: 'text',
+              text: '🌙 おつきさま相性診断',
+              color: '#ffffff',
+              size: 'xl',
+              weight: 'bold',
+              align: 'center'
+            },
+            {
+              type: 'text',
+              text: '〜 月の満ち欠けが導く二人の運命 〜',
+              color: '#e0e0e0',
+              size: 'xs',
+              align: 'center',
+              margin: 'sm'
+            }
+          ]
+        },
+        body: {
+          type: 'box',
+          layout: 'vertical',
+          spacing: 'lg',
+          paddingAll: '20px',
+          contents: [
+            // 月相の表示
+            {
+              type: 'box',
+              layout: 'vertical',
+              spacing: 'md',
+              backgroundColor: '#f8f4ff',
+              cornerRadius: '12px',
+              paddingAll: '15px',
+              contents: [
+                {
+                  type: 'text',
+                  text: '✨ 二人の月相',
+                  color: '#764ba2',
+                  size: 'md',
+                  weight: 'bold'
+                },
+                {
+                  type: 'box',
+                  layout: 'vertical',
+                  spacing: 'sm',
+                  margin: 'md',
+                  contents: [
+                    {
+                      type: 'box',
+                      layout: 'horizontal',
+                      contents: [
+                        {
+                          type: 'text',
+                          text: report.user.moonPhaseType.symbol,
+                          size: 'xxl',
+                          flex: 0
+                        },
+                        {
+                          type: 'box',
+                          layout: 'vertical',
+                          margin: 'md',
+                          flex: 1,
+                          contents: [
+                            {
+                              type: 'text',
+                              text: 'あなた',
+                              size: 'xs',
+                              color: '#888888'
+                            },
+                            {
+                              type: 'text',
+                              text: report.user.moonPhaseType.name,
+                              size: 'sm',
+                              weight: 'bold',
+                              color: '#333333'
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      type: 'box',
+                      layout: 'horizontal',
+                      contents: [
+                        {
+                          type: 'text',
+                          text: report.partner.moonPhaseType.symbol,
+                          size: 'xxl',
+                          flex: 0
+                        },
+                        {
+                          type: 'box',
+                          layout: 'vertical',
+                          margin: 'md',
+                          flex: 1,
+                          contents: [
+                            {
+                              type: 'text',
+                              text: 'お相手',
+                              size: 'xs',
+                              color: '#888888'
+                            },
+                            {
+                              type: 'text',
+                              text: report.partner.moonPhaseType.name,
+                              size: 'sm',
+                              weight: 'bold',
+                              color: '#333333'
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            // 相性スコア
+            {
+              type: 'box',
+              layout: 'vertical',
+              spacing: 'sm',
+              contents: [
+                {
+                  type: 'text',
+                  text: '💕 相性診断結果',
+                  size: 'md',
+                  weight: 'bold',
+                  color: '#764ba2'
+                },
+                {
+                  type: 'box',
+                  layout: 'vertical',
+                  margin: 'md',
+                  spacing: 'xs',
+                  contents: [
+                    {
+                      type: 'box',
+                      layout: 'horizontal',
+                      contents: [
+                        {
+                          type: 'text',
+                          text: '相性スコア',
+                          size: 'sm',
+                          color: '#888888',
+                          flex: 0
+                        },
+                        {
+                          type: 'text',
+                          text: `${report.compatibility.score}%`,
+                          size: 'xl',
+                          weight: 'bold',
+                          color: '#ff69b4',
+                          align: 'end',
+                          flex: 1
+                        }
+                      ]
+                    },
+                    {
+                      type: 'box',
+                      layout: 'horizontal',
+                      margin: 'sm',
+                      contents: [
+                        {
+                          type: 'box',
+                          layout: 'vertical',
+                          backgroundColor: '#ffc0cb',
+                          height: '8px',
+                          cornerRadius: '4px',
+                          width: `${report.compatibility.score}%`
+                        },
+                        {
+                          type: 'box',
+                          layout: 'vertical',
+                          backgroundColor: '#f0f0f0',
+                          height: '8px',
+                          width: `${100 - report.compatibility.score}%`
+                        }
+                      ]
+                    },
+                    {
+                      type: 'text',
+                      text: report.compatibility.level,
+                      size: 'lg',
+                      weight: 'bold',
+                      color: '#667eea',
+                      align: 'center',
+                      margin: 'md'
+                    }
+                  ]
+                }
+              ]
+            },
+            // 診断メッセージ
+            {
+              type: 'box',
+              layout: 'vertical',
+              backgroundColor: '#fff4f4',
+              cornerRadius: '8px',
+              paddingAll: '12px',
+              contents: [
+                {
+                  type: 'text',
+                  text: report.compatibility.description,
+                  wrap: true,
+                  size: 'sm',
+                  color: '#666666'
+                }
+              ]
+            },
+            // アドバイス
+            {
+              type: 'box',
+              layout: 'vertical',
+              spacing: 'sm',
+              contents: [
+                {
+                  type: 'text',
+                  text: '💫 恋愛アドバイス',
+                  size: 'md',
+                  weight: 'bold',
+                  color: '#764ba2'
+                },
+                ...report.compatibility.advice.map(advice => ({
+                  type: 'box',
+                  layout: 'horizontal',
+                  margin: 'sm',
+                  contents: [
+                    {
+                      type: 'text',
+                      text: '•',
+                      size: 'sm',
+                      color: '#ff69b4',
+                      flex: 0
+                    },
+                    {
+                      type: 'text',
+                      text: advice,
+                      wrap: true,
+                      size: 'sm',
+                      color: '#666666',
+                      margin: 'sm',
+                      flex: 1
+                    }
+                  ]
+                }))
+              ]
+            }
+          ]
+        },
+        footer: {
+          type: 'box',
+          layout: 'vertical',
+          backgroundColor: '#f8f4ff',
+          paddingAll: '15px',
+          contents: [
+            {
+              type: 'text',
+              text: '✨ もっと詳しい分析を見る',
+              size: 'sm',
+              color: '#764ba2',
+              weight: 'bold',
+              align: 'center'
+            },
+            {
+              type: 'text',
+              text: 'トーク履歴を送信でプレミアム診断',
+              size: 'xs',
+              color: '#888888',
+              align: 'center',
+              margin: 'xs'
+            }
+          ]
+        }
+      }
+    };
+  }
+
   // フォーマット済みレポート生成（LINE表示用）
   formatReportForLine(report) {
     const lines = [];

@@ -2,10 +2,9 @@
 // プロフィール入力用Webフォーム
 
 const ordersDB = require('../core/database/orders-db');
-const UserProfileManager = require('../core/user-profile');
+const ProfilesDB = require('../core/database/profiles-db');
 
 module.exports = async (req, res) => {
-  const profileManager = new UserProfileManager();
   
   // GETリクエスト: フォーム表示
   if (req.method === 'GET') {
@@ -16,7 +15,7 @@ module.exports = async (req, res) => {
     }
     
     // 既存のプロフィールを取得
-    const profile = await profileManager.getProfile(userId);
+    const profile = await ProfilesDB.getProfile(userId);
     const existing = profile?.personalInfo || {};
     
     const html = `
@@ -24,7 +23,9 @@ module.exports = async (req, res) => {
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="format-detection" content="telephone=no">
   <title>🔮 おつきさま診断 - プロフィール設定</title>
   <style>
     * {
@@ -48,6 +49,7 @@ module.exports = async (req, res) => {
       box-shadow: 0 20px 60px rgba(0,0,0,0.3);
       overflow: hidden;
     }
+    
     
     .header {
       background: linear-gradient(135deg, #1a0033, #24243e);
@@ -176,16 +178,23 @@ module.exports = async (req, res) => {
     
     .success-message {
       display: none;
-      background: #4caf50;
+      background: linear-gradient(135deg, #667eea, #764ba2);
       color: white;
-      padding: 15px;
-      border-radius: 10px;
+      padding: 40px 20px;
+      border-radius: 20px;
       text-align: center;
-      margin-bottom: 20px;
+      margin: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
     }
     
     .success-message.show {
       display: block;
+      animation: fadeIn 0.5s ease-in;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
     }
     
     .optional-tag {
@@ -211,7 +220,7 @@ module.exports = async (req, res) => {
         ✅ 保存しました！
       </div>
       
-      <form id="profileForm">
+      <form id="profileForm" action="/api/profile-form" method="POST">
         <input type="hidden" name="userId" value="${userId}">
         
         <div class="section">
@@ -219,33 +228,46 @@ module.exports = async (req, res) => {
           
           <div class="form-group">
             <label for="userBirthdate">生年月日</label>
-            <input 
-              type="date" 
-              id="userBirthdate" 
-              name="userBirthdate" 
-              value="${existing.userBirthdate || ''}"
-              required
-              max="${new Date().toISOString().split('T')[0]}"
-              onchange="calculateAge('user')"
-            >
+            <div style="display: flex; gap: 5px;">
+              <select id="userYear" style="flex: 1;" required>
+                <option value="">年</option>
+                ${(() => {
+                  let options = '';
+                  const currentYear = new Date().getFullYear();
+                  for (let y = currentYear - 15; y >= 1950; y--) {
+                    const selected = existing.userBirthdate && new Date(existing.userBirthdate).getFullYear() === y ? 'selected' : '';
+                    options += '<option value="' + y + '" ' + selected + '>' + y + '年</option>';
+                  }
+                  return options;
+                })()}
+              </select>
+              <select id="userMonth" style="flex: 1;" required>
+                <option value="">月</option>
+                ${(() => {
+                  let options = '';
+                  for (let m = 1; m <= 12; m++) {
+                    const selected = existing.userBirthdate && new Date(existing.userBirthdate).getMonth() + 1 === m ? 'selected' : '';
+                    options += '<option value="' + m + '" ' + selected + '>' + m + '月</option>';
+                  }
+                  return options;
+                })()}
+              </select>
+              <select id="userDay" style="flex: 1;" required>
+                <option value="">日</option>
+                ${(() => {
+                  let options = '';
+                  for (let d = 1; d <= 31; d++) {
+                    const selected = existing.userBirthdate && new Date(existing.userBirthdate).getDate() === d ? 'selected' : '';
+                    options += '<option value="' + d + '" ' + selected + '>' + d + '日</option>';
+                  }
+                  return options;
+                })()}
+              </select>
+            </div>
+            <input type="hidden" id="userBirthdate" name="userBirthdate" value="${existing.userBirthdate || ''}" required>
           </div>
           
-          <div class="form-group">
-            <label for="userAge">年齢</label>
-            <div class="age-calc">
-              <input 
-                type="number" 
-                id="userAge" 
-                name="userAge" 
-                value="${existing.userAge || ''}"
-                min="15" 
-                max="100" 
-                required
-                readonly
-              >
-              <span class="age-display" id="userAgeDisplay">自動計算されます</span>
-            </div>
-          </div>
+          <input type="hidden" id="userAge" name="userAge" value="${existing.userAge || ''}">
           
           <div class="form-group">
             <label for="userGender">
@@ -266,33 +288,46 @@ module.exports = async (req, res) => {
           
           <div class="form-group">
             <label for="partnerBirthdate">生年月日</label>
-            <input 
-              type="date" 
-              id="partnerBirthdate" 
-              name="partnerBirthdate" 
-              value="${existing.partnerBirthdate || ''}"
-              required
-              max="${new Date().toISOString().split('T')[0]}"
-              onchange="calculateAge('partner')"
-            >
+            <div style="display: flex; gap: 5px;">
+              <select id="partnerYear" style="flex: 1;" required>
+                <option value="">年</option>
+                ${(() => {
+                  let options = '';
+                  const currentYear = new Date().getFullYear();
+                  for (let y = currentYear - 15; y >= 1950; y--) {
+                    const selected = existing.partnerBirthdate && new Date(existing.partnerBirthdate).getFullYear() === y ? 'selected' : '';
+                    options += `<option value="${y}" ${selected}>${y}年</option>`;
+                  }
+                  return options;
+                })()}
+              </select>
+              <select id="partnerMonth" style="flex: 1;" required>
+                <option value="">月</option>
+                ${(() => {
+                  let options = '';
+                  for (let m = 1; m <= 12; m++) {
+                    const selected = existing.partnerBirthdate && new Date(existing.partnerBirthdate).getMonth() + 1 === m ? 'selected' : '';
+                    options += `<option value="${m}" ${selected}>${m}月</option>`;
+                  }
+                  return options;
+                })()}
+              </select>
+              <select id="partnerDay" style="flex: 1;" required>
+                <option value="">日</option>
+                ${(() => {
+                  let options = '';
+                  for (let d = 1; d <= 31; d++) {
+                    const selected = existing.partnerBirthdate && new Date(existing.partnerBirthdate).getDate() === d ? 'selected' : '';
+                    options += `<option value="${d}" ${selected}>${d}日</option>`;
+                  }
+                  return options;
+                })()}
+              </select>
+            </div>
+            <input type="hidden" id="partnerBirthdate" name="partnerBirthdate" value="${existing.partnerBirthdate || ''}" required>
           </div>
           
-          <div class="form-group">
-            <label for="partnerAge">年齢</label>
-            <div class="age-calc">
-              <input 
-                type="number" 
-                id="partnerAge" 
-                name="partnerAge" 
-                value="${existing.partnerAge || ''}"
-                min="15" 
-                max="100" 
-                required
-                readonly
-              >
-              <span class="age-display" id="partnerAgeDisplay">自動計算されます</span>
-            </div>
-          </div>
+          <input type="hidden" id="partnerAge" name="partnerAge" value="${existing.partnerAge || ''}">
           
           <div class="form-group">
             <label for="partnerGender">性別</label>
@@ -306,7 +341,7 @@ module.exports = async (req, res) => {
         </div>
         
         <button type="submit" class="submit-btn">
-          保存してLINEに戻る
+          保存する
         </button>
       </form>
       
@@ -322,7 +357,6 @@ module.exports = async (req, res) => {
     function calculateAge(type) {
       const birthdateInput = document.getElementById(type + 'Birthdate');
       const ageInput = document.getElementById(type + 'Age');
-      const ageDisplay = document.getElementById(type + 'AgeDisplay');
       
       if (birthdateInput.value) {
         const birthDate = new Date(birthdateInput.value);
@@ -335,7 +369,6 @@ module.exports = async (req, res) => {
         }
         
         ageInput.value = age;
-        ageDisplay.textContent = age + '歳';
       }
     }
     
@@ -344,56 +377,27 @@ module.exports = async (req, res) => {
       calculateAge('user');
       calculateAge('partner');
     };
-    
-    // フォーム送信処理
-    document.getElementById('profileForm').onsubmit = async function(e) {
-      e.preventDefault();
+  </script>
+  <script>
+    // 年月日セレクトから日付を組み立てる
+    function updateBirthdate(type) {
+      const year = document.getElementById(type + 'Year').value;
+      const month = document.getElementById(type + 'Month').value;
+      const day = document.getElementById(type + 'Day').value;
       
-      const formData = new FormData(e.target);
-      const data = Object.fromEntries(formData);
-      
-      // ローディング表示
-      document.getElementById('profileForm').style.display = 'none';
-      document.getElementById('loading').classList.add('show');
-      
-      try {
-        // データを保存
-        const response = await fetch('/api/profile-form', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(data)
-        });
-        
-        if (response.ok) {
-          // 成功メッセージ
-          document.getElementById('loading').classList.remove('show');
-          document.getElementById('successMessage').classList.add('show');
-          
-          // 2秒後にLINEに戻る
-          setTimeout(() => {
-            // LINEアプリに戻る
-            if (window.liff && window.liff.isInClient()) {
-              window.liff.closeWindow();
-            } else {
-              // 通常のブラウザの場合
-              window.location.href = 'line://';
-              // またはウィンドウを閉じる
-              setTimeout(() => {
-                window.close();
-              }, 100);
-            }
-          }, 2000);
-        } else {
-          throw new Error('保存に失敗しました');
-        }
-      } catch (error) {
-        alert('エラーが発生しました: ' + error.message);
-        document.getElementById('loading').classList.remove('show');
-        document.getElementById('profileForm').style.display = 'block';
+      if (year && month && day) {
+        const dateStr = year + '-' + String(month).padStart(2, '0') + '-' + String(day).padStart(2, '0');
+        document.getElementById(type + 'Birthdate').value = dateStr;
+        calculateAge(type);
       }
-    };
+    }
+    
+    // イベントリスナーを設定
+    ['user', 'partner'].forEach(type => {
+      ['Year', 'Month', 'Day'].forEach(part => {
+        document.getElementById(type + part).addEventListener('change', () => updateBirthdate(type));
+      });
+    });
   </script>
 </body>
 </html>
@@ -404,6 +408,20 @@ module.exports = async (req, res) => {
     
   // POSTリクエスト: データ保存
   } else if (req.method === 'POST') {
+    // フォームデータをパース
+    if (!req.body || !req.body.userId) {
+      // URLエンコードされたフォームデータの場合
+      await new Promise((resolve) => {
+        let body = '';
+        req.on('data', chunk => body += chunk);
+        req.on('end', () => {
+          const params = new URLSearchParams(body);
+          req.body = Object.fromEntries(params);
+          resolve();
+        });
+      });
+    }
+    
     const { userId, userBirthdate, userAge, userGender, partnerBirthdate, partnerAge, partnerGender } = req.body;
     
     if (!userId) {
@@ -412,7 +430,7 @@ module.exports = async (req, res) => {
     
     try {
       // プロフィールを保存
-      const profile = await profileManager.getProfile(userId) || {};
+      const profile = await ProfilesDB.getProfile(userId) || {};
       
       profile.personalInfo = {
         ...profile.personalInfo,
@@ -425,10 +443,181 @@ module.exports = async (req, res) => {
         updatedAt: new Date().toISOString()
       };
       
-      await profileManager.saveProfile(userId, profile);
+      // データベースのカラムに合わせたデータも設定
+      profile.birthDate = userBirthdate;
+      profile.gender = userGender;
+      profile.partnerBirthDate = partnerBirthdate;
+      profile.partnerGender = partnerGender;
+      
+      await ProfilesDB.saveProfile(userId, profile);
       
       console.log('✅ Profile saved for user:', userId);
-      res.json({ success: true, message: 'Profile saved successfully' });
+      
+      // 相性診断を実行
+      console.log('📊 相性診断開始 for user:', userId);
+      let fortuneResult = null;
+      try {
+        const MoonFortuneEngine = require('../core/moon-fortune');
+        
+        console.log('🌙 月の相性診断生成開始');
+        // 月の相性診断を生成
+        const moonEngine = new MoonFortuneEngine();
+        
+        // プロファイルオブジェクトを作成
+        const userProfile = {
+          birthDate: userBirthdate,
+          gender: userGender
+        };
+        const partnerProfile = {
+          birthDate: partnerBirthdate,
+          gender: partnerGender
+        };
+        
+        fortuneResult = moonEngine.generateFreeReport(userProfile, partnerProfile);
+        console.log('🌙 診断結果生成完了');
+        
+        // 診断結果をファイルに保存（データベースには対応カラムがないため）
+        const fs = require('fs').promises;
+        const path = require('path');
+        const dataDir = path.join(__dirname, '../data/profiles');
+        await fs.mkdir(dataDir, { recursive: true });
+        
+        const profileData = {
+          ...profile,
+          lastFortuneResult: fortuneResult
+        };
+        
+        await fs.writeFile(
+          path.join(dataDir, `${userId}.json`),
+          JSON.stringify(profileData, null, 2)
+        );
+        
+        console.log('✅ 診断結果をファイルに保存:', path.join(dataDir, `${userId}.json`));
+        
+        // プッシュメッセージは送らない（レート制限回避）
+        // 代わりに成功ページで診断結果を表示
+        
+        /* コメントアウト：レート制限対策
+        const message = {
+          type: 'flex',
+          altText: '🌙 月の相性診断結果',
+          contents: {
+            type: 'bubble',
+            size: 'mega',
+            header: {
+              type: 'box',
+              layout: 'vertical',
+              backgroundColor: '#764ba2',
+              contents: [
+                {
+                  type: 'text',
+                  text: '🌙 月の相性診断結果',
+                  color: '#ffffff',
+                  size: 'xl',
+                  weight: 'bold'
+                }
+              ]
+            },
+            body: {
+              type: 'box',
+              layout: 'vertical',
+              spacing: 'md',
+              contents: [
+                {
+                  type: 'box',
+                  layout: 'vertical',
+                  spacing: 'sm',
+                  contents: [
+                    {
+                      type: 'text',
+                      text: `あなた: ${result.user.moonPhaseType.symbol} ${result.user.moonPhaseType.name}`,
+                      size: 'lg',
+                      weight: 'bold',
+                      color: '#667eea'
+                    },
+                    {
+                      type: 'text',
+                      text: `お相手: ${result.partner.moonPhaseType.symbol} ${result.partner.moonPhaseType.name}`,
+                      size: 'lg',
+                      weight: 'bold',
+                      color: '#667eea'
+                    }
+                  ]
+                },
+                {
+                  type: 'separator'
+                },
+                {
+                  type: 'box',
+                  layout: 'vertical',
+                  spacing: 'sm',
+                  contents: [
+                    {
+                      type: 'text',
+                      text: '相性スコア',
+                      size: 'sm',
+                      color: '#aaaaaa'
+                    },
+                    {
+                      type: 'text',
+                      text: `${result.compatibility.score}%`,
+                      size: 'xxl',
+                      weight: 'bold',
+                      align: 'center',
+                      color: '#764ba2'
+                    },
+                    {
+                      type: 'text',
+                      text: result.compatibility.level,
+                      size: 'md',
+                      align: 'center',
+                      color: '#667eea'
+                    }
+                  ]
+                },
+                {
+                  type: 'separator'
+                },
+                {
+                  type: 'text',
+                  text: result.compatibility.description,
+                  wrap: true,
+                  size: 'sm',
+                  color: '#666666'
+                },
+                {
+                  type: 'text',
+                  text: '💫 アドバイス',
+                  margin: 'lg',
+                  size: 'md',
+                  weight: 'bold',
+                  color: '#667eea'
+                },
+                {
+                  type: 'text',
+                  text: Array.isArray(result.compatibility.advice) 
+                    ? result.compatibility.advice.join(' ') 
+                    : result.compatibility.advice,
+                  wrap: true,
+                  size: 'sm',
+                  color: '#666666'
+                }
+              ]
+            }
+          }
+        };
+        
+        */
+        
+      } catch (sendError) {
+        console.error('❌ 診断生成エラー:', sendError);
+        console.error('❌ エラー詳細:', sendError.stack);
+        // エラーがあっても保存は成功として扱う
+      }
+      
+      // 成功ページにリダイレクト（診断結果をクエリパラメータで渡す）
+      const successUrl = `/api/profile-form-success?userId=${userId}${fortuneResult ? '&fortune=1' : ''}`;
+      res.redirect(successUrl);
       
     } catch (error) {
       console.error('Profile save error:', error);
