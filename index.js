@@ -134,6 +134,60 @@ app.post('/webhook', middleware(config), async (req, res) => {
         const messageText = event.message.text;
         loadHeavyModules();
         
+        // プロフィール設定
+        if (messageText === 'プロフィール設定' || messageText === 'プロフィール') {
+          const formUrl = `${process.env.BASE_URL || 'https://line-love-edu.vercel.app'}/api/profile-form?userId=${userId}`;
+          
+          return client.replyMessage(event.replyToken, {
+            type: 'flex',
+            altText: 'プロフィール設定',
+            contents: {
+              type: 'bubble',
+              body: {
+                type: 'box',
+                layout: 'vertical',
+                backgroundColor: '#f0f0f0',
+                paddingAll: '20px',
+                contents: [
+                  {
+                    type: 'text',
+                    text: '📝 プロフィール設定',
+                    size: 'xl',
+                    weight: 'bold',
+                    color: '#1a0033'
+                  },
+                  {
+                    type: 'text',
+                    text: '生年月日や年齢を入力して、より正確な診断を受けましょう',
+                    margin: 'md',
+                    wrap: true,
+                    color: '#666666'
+                  }
+                ]
+              },
+              footer: {
+                type: 'box',
+                layout: 'vertical',
+                backgroundColor: '#ffffff',
+                paddingAll: '15px',
+                contents: [
+                  {
+                    type: 'button',
+                    action: {
+                      type: 'uri',
+                      label: '入力フォームを開く',
+                      uri: formUrl
+                    },
+                    style: 'primary',
+                    color: '#667eea',
+                    height: 'md'
+                  }
+                ]
+              }
+            }
+          });
+        }
+        
         // 生成中の注文がある場合の処理を削除
         // 「レポート状況」コマンドで適切に処理される
         
