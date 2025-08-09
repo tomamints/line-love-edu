@@ -231,29 +231,32 @@ module.exports = async (req, res) => {
             console.log('⚠️ Notification failed:', err.message);
           }
           
-          // チャンク処理を即座に開始
-          console.log('🔄 Starting chunked report generation...');
+          // ループ処理を開始（完了まで自動的に処理）
+          console.log('🔄 Starting report processing loop...');
           
-          // 即座にgenerate-report-chunkedを呼び出し（1回だけ）
-          const startChunkedGeneration = async () => {
+          // process-report-loopを呼び出し（完了まで自動的にループ）
+          const startProcessingLoop = async () => {
             try {
-              const chunkedUrl = `${process.env.BASE_URL || 'http://localhost:3000'}/api/generate-report-chunked`;
-              const response = await fetch(chunkedUrl, {
+              const loopUrl = `${process.env.BASE_URL || 'http://localhost:3000'}/api/process-report-loop`;
+              const response = await fetch(loopUrl, {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
                   orderId: orderId,
-                  continueFrom: 'start'
+                  iteration: 1
                 })
               });
               
               if (response.ok) {
                 const result = await response.json();
-                console.log('✅ Chunked generation started:', result.status);
+                console.log('✅ Processing loop result:', result.status);
+                if (result.success) {
+                  console.log('🎉 Report completed via loop processing');
+                }
               } else {
-                console.error('❌ Failed to start chunked generation:', response.status);
+                console.error('❌ Failed to start processing loop:', response.status);
                 
                 // フォールバック：元のバックグラウンド処理
                 reportPromise.then(async (bgResult) => {
@@ -290,16 +293,16 @@ module.exports = async (req, res) => {
             }
           };
           
-          // 10秒以内にチャンク処理を開始してからレスポンスを返す
+          // 10秒以内にループ処理を開始してからレスポンスを返す
           try {
             await Promise.race([
-              startChunkedGeneration(),
+              startProcessingLoop(),
               new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 10000))
             ]);
-            console.log('✅ Chunked generation triggered successfully');
+            console.log('✅ Processing loop triggered successfully');
           } catch (err) {
-            console.log('⚠️ Chunked generation trigger error/timeout:', err.message);
-            // エラーでも処理は継続
+            console.log('⚠️ Processing loop trigger error/timeout:', err.message);
+            // エラーでも処理は継続（バックグラウンドで動く）
           }
           
           return res.json({ received: true, status: 'generating' });
