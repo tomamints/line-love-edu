@@ -110,13 +110,20 @@ module.exports = async (req, res) => {
       const elapsed = Date.now() - startTime;
       const stepTimeout = STEP_TIMEOUTS[progress.currentStep] || 10000;
       
-      // 時間チェック（次のステップが完了できるか確認）
-      if (elapsed + stepTimeout > TIME_LIMIT) {
-        console.log('⏸️ Pausing before step', progress.currentStep);
-        console.log('⏱️ Elapsed:', elapsed, 'ms');
-        console.log('⏱️ Next step needs:', stepTimeout, 'ms');
-        console.log('⏰ Will continue in next invocation to avoid timeout');
-        break;
+      // Step 3は特別扱い - 新しいリクエストで始まるので時間チェックをスキップ
+      if (progress.currentStep === 3) {
+        console.log('📍 Step 3 - AI Analysis (special handling)');
+        console.log('⏱️ Starting with full time available');
+        // Step 3は必ず実行する
+      } else {
+        // 他のステップは時間チェック
+        if (elapsed + stepTimeout > TIME_LIMIT) {
+          console.log('⏸️ Pausing before step', progress.currentStep);
+          console.log('⏱️ Elapsed:', elapsed, 'ms');
+          console.log('⏱️ Next step needs:', stepTimeout, 'ms');
+          console.log('⏰ Will continue in next invocation to avoid timeout');
+          break;
+        }
       }
       
       // Step 3（AI分析）の前は必ず中断して、新しいリクエストで実行
