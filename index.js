@@ -1032,7 +1032,10 @@ async function sendMoonFortuneResult(replyToken, userId) {
     try {
       const fs = require('fs').promises;
       const path = require('path');
-      const dataDir = path.join(__dirname, 'data/profiles');
+      // Vercel環境では/tmpを使用
+      const dataDir = process.env.VERCEL 
+        ? '/tmp/profiles'
+        : path.join(__dirname, 'data/profiles');
       const profileFile = path.join(dataDir, `${userId}.json`);
       
       const profileData = await fs.readFile(profileFile, 'utf8');
@@ -1071,21 +1074,30 @@ async function sendMoonFortuneResult(replyToken, userId) {
         }
       );
       
-      // 結果をファイルに保存
-      const fs = require('fs').promises;
-      const path = require('path');
-      const dataDir = path.join(__dirname, 'data/profiles');
-      await fs.mkdir(dataDir, { recursive: true });
-      
-      const profileData = {
-        ...profile,
-        lastFortuneResult: result
-      };
-      
-      await fs.writeFile(
-        path.join(dataDir, `${userId}.json`),
-        JSON.stringify(profileData, null, 2)
-      );
+      // 結果をファイルに保存（エラーを無視）
+      try {
+        const fs = require('fs').promises;
+        const path = require('path');
+        // Vercel環境では/tmpを使用
+        const dataDir = process.env.VERCEL 
+          ? '/tmp/profiles'
+          : path.join(__dirname, 'data/profiles');
+        await fs.mkdir(dataDir, { recursive: true });
+        
+        const profileData = {
+          ...profile,
+          lastFortuneResult: result
+        };
+        
+        await fs.writeFile(
+          path.join(dataDir, `${userId}.json`),
+          JSON.stringify(profileData, null, 2)
+        );
+        console.log('🌙 診断結果を保存');
+      } catch (saveErr) {
+        // ファイル保存エラーは無視（診断結果は既に生成済み）
+        console.log('⚠️ 診断結果の保存をスキップ:', saveErr.message);
+      }
     }
     
     // 既存のカルーセル形式診断結果カードを使用（動作確認済みのもの・4枚版）
