@@ -190,130 +190,38 @@ module.exports = async (req, res) => {
           }
         }
         
-        // レポートを生成（50秒でタイムアウト）
-        console.log('🔮 Generating report...');
-        const startTime = Date.now();
-        const timeout = 50000; // 50秒
+        // 即座にレスポンスを返す（Stripeの要求）
+        console.log('🔮 Starting report generation in background...');
         
-        // タイムアウトPromise
-        const timeoutPromise = new Promise((resolve) => {
-          setTimeout(() => {
-            resolve({
-              success: false,
-              timeout: true
-            });
-          }, timeout);
+        // Webhookに即座に成功レスポンスを返す
+        res.json({
+          received: true,
+          orderId,
+          status: 'processing'
         });
         
-        // レポート生成Promise
-        const reportPromise = paymentHandler.handlePaymentSuccess(
-          orderId,
-          messages,
-          userProfile
-        );
+        // バックグラウンドでチャンク処理を開始
+        const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://line-love-edu.vercel.app';
         
-        // どちらか早い方を採用
-        const result = await Promise.race([reportPromise, timeoutPromise]);
-        
-        console.log(`⏱️ Execution time: ${Date.now() - startTime}ms`);
-        
-        // タイムアウトした場合
-        if (result.timeout) {
-          console.log('⚠️ Timeout - continuing in background');
-          
-          // ユーザーに通知
-          try {
-            await lineClient.pushMessage(userId, {
-              type: 'text',
-              text: '📝 レポート生成中...\n\n処理に時間がかかっています。\n完成次第お知らせします。'
-            });
-          } catch (err) {
-            console.log('⚠️ Notification failed:', err.message);
+        // 非同期でチャンク処理を呼び出し（エラーをキャッチ）
+        fetch(`${baseUrl}/api/generate-report-chunked`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            orderId,
+            continueFrom: 'start'
+          })
+        }).then(response => {
+          if (response.ok) {
+            console.log('✅ Chunked processing started successfully');
+          } else {
+            console.error('❌ Failed to start chunked processing:', response.status);
           }
-          
-          // ループ処理を開始（完了まで自動的に処理）
-          console.log('🔄 Starting report processing loop...');
-          
-          // process-report-loopを呼び出し（完了まで自動的にループ）
-          const startProcessingLoop = async () => {
-            try {
-              const loopUrl = `${process.env.BASE_URL || 'http://localhost:3000'}/api/process-report-loop`;
-              const response = await fetch(loopUrl, {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                  orderId: orderId,
-                  iteration: 1
-                })
-              });
-              
-              if (response.ok) {
-                const result = await response.json();
-                console.log('✅ Processing loop result:', result.status);
-                if (result.success) {
-                  console.log('🎉 Report completed via loop processing');
-                }
-              } else {
-                console.error('❌ Failed to start processing loop:', response.status);
-                
-                // フォールバック：元のバックグラウンド処理
-                reportPromise.then(async (bgResult) => {
-                  console.log('🔄 Fallback: Background processing completed');
-                  if (bgResult.success) {
-                    console.log('✅ Background report generated successfully');
-                    console.log('📊 Report URL:', bgResult.reportUrl);
-                    
-                    // 完了通知を送信
-                    try {
-                      const completionMessage = paymentHandler.generateCompletionMessage(bgResult);
-                      await lineClient.pushMessage(userId, completionMessage);
-                      console.log('✅ Background completion notification sent');
-                    } catch (err) {
-                      console.log('⚠️ Background notification failed:', err.message);
-                    }
-                  } else {
-                    console.error('❌ Background report generation failed:', bgResult.message);
-                    await ordersDB.updateOrder(orderId, {
-                      status: 'error',
-                      error_message: bgResult.message
-                    });
-                  }
-                }).catch(async (bgError) => {
-                  console.error('❌ Background processing error:', bgError.message);
-                  await ordersDB.updateOrder(orderId, {
-                    status: 'error',
-                    error_message: bgError.message
-                  });
-                });
-              }
-            } catch (err) {
-              console.error('❌ Error starting chunked processing:', err.message);
-            }
-          };
-          
-          // 10秒以内にループ処理を開始してからレスポンスを返す
-          try {
-            await Promise.race([
-              startProcessingLoop(),
-              new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 10000))
-            ]);
-            console.log('✅ Processing loop triggered successfully');
-          } catch (err) {
-            console.log('⚠️ Processing loop trigger error/timeout:', err.message);
-            // エラーでも処理は継続（バックグラウンドで動く）
-          }
-          
-          return res.json({ received: true, status: 'generating' });
-        }
-        
-        if (result.success) {
-          console.log('✅ Report generated successfully');
-          console.log('📊 Report URL:', result.reportUrl);
-        } else {
-          console.error('❌ Report generation failed:', result.message);
-        }
+        }).catch(err => {
+          console.error('❌ Error starting chunked processing:', err);
+        });
       } catch (error) {
         console.error('❌ Error in report generation:', error.message);
         console.error('❌ Stack:', error.stack);
@@ -328,9 +236,9 @@ module.exports = async (req, res) => {
     } catch (error) {
       console.error('❌ Error updating order:', error.message);
     }
+  } else {
+    // その他のイベントタイプの場合も200を返す
+    console.log('✅ Returning 200 to Stripe (other event type)');
+    res.json({ received: true });
   }
-  
-  // Stripeに即座に200を返す
-  console.log('✅ Returning 200 to Stripe');
-  res.json({ received: true });
 };
