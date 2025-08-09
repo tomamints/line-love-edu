@@ -190,37 +190,74 @@ module.exports = async (req, res) => {
           }
         }
         
-        // 即座にレスポンスを返す（Stripeの要求）
+        // バックグラウンドでチャンク処理を開始
         console.log('🔮 Starting report generation in background...');
+        const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://line-love-edu.vercel.app';
+        
+        // 非同期で処理を開始（レスポンスを待たずに実行）
+        const startBackgroundProcessing = async () => {
+          console.log('🔄 Starting background processing...');
+          
+          try {
+            // 少し待ってからチャンク処理を開始
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            console.log('📡 Calling generate-report-chunked...');
+            const response = await fetch(`${baseUrl}/api/generate-report-chunked`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                orderId,
+                continueFrom: 'start'
+              })
+            });
+            
+            if (response.ok) {
+              const result = await response.json();
+              console.log('✅ Chunked processing started:', result.status);
+              
+              // 継続が必要な場合はprocess-report-loopを呼び出し
+              if (result.status === 'continuing') {
+                console.log('🔄 Calling process-report-loop...');
+                const loopResponse = await fetch(`${baseUrl}/api/process-report-loop`, {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify({
+                    orderId,
+                    iteration: 1
+                  })
+                });
+                
+                if (loopResponse.ok) {
+                  const loopResult = await loopResponse.json();
+                  console.log('✅ Loop processing started:', loopResult.status);
+                } else {
+                  console.error('❌ Loop processing failed:', loopResponse.status);
+                }
+              }
+            } else {
+              console.error('❌ Failed to start chunked processing:', response.status);
+              const errorText = await response.text();
+              console.error('❌ Error details:', errorText);
+            }
+          } catch (err) {
+            console.error('❌ Error in background processing:', err.message);
+          }
+        };
+        
+        // バックグラウンド処理を開始（レスポンスを待たない）
+        startBackgroundProcessing();
         
         // Webhookに即座に成功レスポンスを返す
+        console.log('✅ Returning success to Stripe...');
         res.json({
           received: true,
           orderId,
           status: 'processing'
-        });
-        
-        // バックグラウンドでチャンク処理を開始
-        const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://line-love-edu.vercel.app';
-        
-        // 非同期でチャンク処理を呼び出し（エラーをキャッチ）
-        fetch(`${baseUrl}/api/generate-report-chunked`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            orderId,
-            continueFrom: 'start'
-          })
-        }).then(response => {
-          if (response.ok) {
-            console.log('✅ Chunked processing started successfully');
-          } else {
-            console.error('❌ Failed to start chunked processing:', response.status);
-          }
-        }).catch(err => {
-          console.error('❌ Error starting chunked processing:', err);
         });
       } catch (error) {
         console.error('❌ Error in report generation:', error.message);
