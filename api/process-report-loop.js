@@ -73,7 +73,9 @@ async function processReportWithLoop(orderId, iteration = 1) {
         });
         
         if (!response.ok) {
-          throw new Error(`HTTP ${response.status}`);
+          const errorText = await response.text();
+          console.error(`❌ Chunked API error: ${errorText}`);
+          throw new Error(`HTTP ${response.status}: ${errorText}`);
         }
         
         const result = await response.json();

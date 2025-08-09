@@ -3,11 +3,10 @@
 
 const ordersDB = require('../core/database/orders-db');
 const PaymentHandler = require('../core/premium/payment-handler');
-const UserProfileManager = require('../core/user-profile');
+const profileManager = require('../core/database/profiles-db');
 const line = require('@line/bot-sdk');
 
 const paymentHandler = new PaymentHandler();
-const profileManager = new UserProfileManager();
 
 // 各ステップの処理時間目安（ミリ秒）
 const STEP_TIMEOUTS = {
