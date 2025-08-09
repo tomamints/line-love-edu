@@ -276,10 +276,10 @@ module.exports = async (req, res) => {
             // HTML/PDF生成
             const PDFGenerator = require('../core/premium/pdf-generator');
             const pdfGenerator = new PDFGenerator();
-            const pdfBuffer = await pdfGenerator.generatePDF(progress.data.reportData);
+            const generatedPdfBuffer = await pdfGenerator.generatePDF(progress.data.reportData);
             // BufferをBase64として保存（JSONシリアライズ可能）
-            progress.data.pdfBuffer = pdfBuffer.toString('base64');
-            console.log('✅ Report generated, PDF size:', Math.round(pdfBuffer.length / 1024), 'KB');
+            progress.data.pdfBuffer = generatedPdfBuffer.toString('base64');
+            console.log('✅ Report generated, PDF size:', Math.round(generatedPdfBuffer.length / 1024), 'KB');
             break;
             
           case 5:
