@@ -477,22 +477,31 @@ module.exports = async (req, res) => {
         console.log('🌙 診断結果生成完了');
         
         // 診断結果をファイルに保存（データベースには対応カラムがないため）
-        const fs = require('fs').promises;
-        const path = require('path');
-        const dataDir = path.join(__dirname, '../data/profiles');
-        await fs.mkdir(dataDir, { recursive: true });
-        
-        const profileData = {
-          ...profile,
-          lastFortuneResult: fortuneResult
-        };
-        
-        await fs.writeFile(
-          path.join(dataDir, `${userId}.json`),
-          JSON.stringify(profileData, null, 2)
-        );
-        
-        console.log('✅ 診断結果をファイルに保存:', path.join(dataDir, `${userId}.json`));
+        // Vercel環境では/tmpに保存（一時的）
+        try {
+          const fs = require('fs').promises;
+          const path = require('path');
+          const dataDir = process.env.VERCEL 
+            ? '/tmp/profiles'
+            : path.join(__dirname, '../data/profiles');
+          
+          await fs.mkdir(dataDir, { recursive: true });
+          
+          const profileData = {
+            ...profile,
+            lastFortuneResult: fortuneResult
+          };
+          
+          await fs.writeFile(
+            path.join(dataDir, `${userId}.json`),
+            JSON.stringify(profileData, null, 2)
+          );
+          
+          console.log('✅ 診断結果をファイルに保存:', path.join(dataDir, `${userId}.json`));
+        } catch (fileError) {
+          // ファイル保存エラーは無視（データベースに保存済み）
+          console.log('⚠️ ファイル保存スキップ:', fileError.message);
+        }
         
         // プッシュメッセージは送らない（レート制限回避）
         // 代わりに成功ページで診断結果を表示
