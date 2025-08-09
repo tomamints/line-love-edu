@@ -465,7 +465,8 @@ class OrdersDB {
     // 常にファイルストレージを使用（Supabaseのreport_progressカラムが存在しない可能性があるため）
     const fs = require('fs').promises;
     const path = require('path');
-    const progressDir = path.join(process.cwd(), 'progress');
+    // Vercel環境では/tmpディレクトリを使用
+    const progressDir = path.join('/tmp', 'progress');
     
     try {
       await fs.mkdir(progressDir, { recursive: true });
@@ -511,7 +512,8 @@ class OrdersDB {
     // まずファイルストレージから取得を試みる
     const fs = require('fs').promises;
     const path = require('path');
-    const progressFile = path.join(process.cwd(), 'progress', `${orderId}.json`);
+    // Vercel環境では/tmpディレクトリを使用
+    const progressFile = path.join('/tmp', 'progress', `${orderId}.json`);
     
     try {
       const data = await fs.readFile(progressFile, 'utf8');
@@ -552,7 +554,8 @@ class OrdersDB {
     // ファイルストレージをクリア
     const fs = require('fs').promises;
     const path = require('path');
-    const progressFile = path.join(process.cwd(), 'progress', `${orderId}.json`);
+    // Vercel環境では/tmpディレクトリを使用
+    const progressFile = path.join('/tmp', 'progress', `${orderId}.json`);
     
     try {
       await fs.unlink(progressFile);
