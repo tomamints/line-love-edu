@@ -11,11 +11,11 @@ const profileManager = new UserProfileManager();
 
 // 各ステップの処理時間目安（ミリ秒）
 const STEP_TIMEOUTS = {
-  1: 3000,   // メッセージ取得
-  2: 8000,   // 基本分析
-  3: 30000,  // AI分析（最も時間がかかる）
-  4: 8000,   // HTML生成
-  5: 3000,   // 保存と通知
+  1: 5000,   // メッセージ取得
+  2: 15000,  // 基本分析
+  3: 35000,  // AI分析（最も時間がかかる - 実際は20秒程度だが余裕を持つ）
+  4: 10000,  // HTML生成
+  5: 5000,   // 保存と通知
 };
 
 module.exports = async (req, res) => {
@@ -31,7 +31,7 @@ module.exports = async (req, res) => {
   console.log('📍 Continue From:', continueFrom || 'start');
   
   const startTime = Date.now();
-  const TIME_LIMIT = 35000; // 35秒でタイムアウト（60秒制限に対して大きく余裕を持つ）
+  const TIME_LIMIT = 40000; // 40秒でタイムアウト（Vercelの60秒制限に対して余裕を持つ）
   
   try {
     // 注文情報を取得
@@ -104,15 +104,11 @@ module.exports = async (req, res) => {
     
     // 現在のステップに応じて実行可能なステップ数を決定
     if (progress.currentStep === 1) {
-      maxStepsThisRun = 2; // Step 1,2を実行（速いのでまとめて実行）
+      maxStepsThisRun = 2; // Step 1,2を実行
     } else if (progress.currentStep === 3) {
-      maxStepsThisRun = 1; // Step 3のみ（AI分析は30秒かかるので単独実行）
+      maxStepsThisRun = 1; // Step 3のみ（AI分析は単独で実行）
     } else if (progress.currentStep === 4) {
-      maxStepsThisRun = 2; // Step 4,5を実行（両方合わせても速い）
-    } else if (progress.currentStep === 2) {
-      maxStepsThisRun = 1; // Step 2のみ実行して次のStep 3は別リクエストで
-    } else if (progress.currentStep === 5) {
-      maxStepsThisRun = 1; // Step 5のみ
+      maxStepsThisRun = 2; // Step 4,5を実行
     }
     
     let stepsExecuted = 0;
@@ -121,26 +117,27 @@ module.exports = async (req, res) => {
       const elapsed = Date.now() - startTime;
       const stepTimeout = STEP_TIMEOUTS[progress.currentStep] || 10000;
       
-      // 時間チェック（すべてのステップに適用）
-      if (elapsed + stepTimeout > TIME_LIMIT) {
-        console.log('⏸️ Pausing before step', progress.currentStep);
-        console.log('⏱️ Elapsed:', elapsed, 'ms');
-        console.log('⏱️ Next step needs:', stepTimeout, 'ms');
-        console.log('⏰ Will continue in next invocation to avoid timeout');
-        break;
+      // Step 3は特別扱い - 新しいリクエストで始まるので時間チェックをスキップ
+      if (progress.currentStep === 3) {
+        console.log('📍 Step 3 - AI Analysis (special handling)');
+        console.log('⏱️ Starting with full time available');
+        // Step 3は必ず実行する
+      } else {
+        // 他のステップは時間チェック
+        if (elapsed + stepTimeout > TIME_LIMIT) {
+          console.log('⏸️ Pausing before step', progress.currentStep);
+          console.log('⏱️ Elapsed:', elapsed, 'ms');
+          console.log('⏱️ Next step needs:', stepTimeout, 'ms');
+          console.log('⏰ Will continue in next invocation to avoid timeout');
+          break;
+        }
       }
       
       // Step 3（AI分析）の前は必ず中断して、新しいリクエストで実行
       if (progress.currentStep === 3 && stepsExecuted > 0) {
         console.log('⏸️ Pausing before AI analysis (Step 3)');
-        console.log('⏰ AI analysis needs fresh 35-second window');
+        console.log('⏰ AI analysis will run in a fresh invocation');
         break;
-      }
-      
-      // Step 2の後も中断（Step 3を新しいリクエストで実行するため）
-      if (progress.currentStep === 2 && progress.currentStep + 1 === 3) {
-        // Step 2を実行後、Step 3の前に中断
-        // これはStep 2実行後にチェックされる
       }
       
       console.log(`\n📍 Step ${progress.currentStep}/${progress.totalSteps}`);

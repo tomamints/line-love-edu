@@ -60,7 +60,7 @@ async function processReportWithLoop(orderId, iteration = 1) {
       console.log(`\n📞 Calling generate-report-chunked (call ${callCount + 1}/${maxCallsPerIteration})`);
       
       try {
-        const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || process.env.BASE_URL || 'https://line-love-edu.vercel.app';
+        const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://line-love-edu.vercel.app';
         const response = await fetch(`${baseUrl}/api/generate-report-chunked`, {
           method: 'POST',
           headers: {
@@ -134,7 +134,7 @@ async function processReportWithLoop(orderId, iteration = 1) {
       console.log('🔄 Self-invoking for next iteration...');
       
       try {
-        const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || process.env.BASE_URL || 'https://line-love-edu.vercel.app';
+        const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://line-love-edu.vercel.app';
         const response = await fetch(`${baseUrl}/api/process-report-loop`, {
           method: 'POST',
           headers: {
