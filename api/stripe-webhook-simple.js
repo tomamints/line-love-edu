@@ -231,9 +231,11 @@ module.exports = async (req, res) => {
             console.log('⚠️ Notification failed:', err.message);
           }
           
-          // チャンク処理を開始（新しい方式）
-          console.log('🔄 Starting chunked processing...');
-          setTimeout(async () => {
+          // チャンク処理を即座に開始（Vercel対応）
+          console.log('🔄 Starting chunked processing immediately...');
+          
+          // 即座にチャンク処理を開始（setTimeoutを使わない）
+          const startChunkedProcessing = async () => {
             try {
               const chunkedUrl = `${process.env.BASE_URL || 'http://localhost:3000'}/api/generate-report-chunked`;
               const response = await fetch(chunkedUrl, {
@@ -285,7 +287,10 @@ module.exports = async (req, res) => {
             } catch (err) {
               console.error('❌ Error starting chunked processing:', err.message);
             }
-          }, 3000); // 3秒後に開始
+          };
+          
+          // 非同期で即座に実行（awaitしない）
+          startChunkedProcessing();
           
           return res.json({ received: true, status: 'generating' });
         }

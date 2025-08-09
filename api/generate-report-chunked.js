@@ -261,9 +261,9 @@ module.exports = async (req, res) => {
       console.log('🔄 Auto-continuing from step', progress.currentStep);
       console.log('⏱️ Total elapsed:', Date.now() - startTime, 'ms');
       
-      // 自分自身を再度呼び出す（5秒後）
-      setTimeout(async () => {
-        console.log('🚀 Triggering next chunk...');
+      // Vercel対応: 即座に自分自身を呼び出す（setTimeoutを使わない）
+      const triggerNextChunk = async () => {
+        console.log('🚀 Triggering next chunk immediately...');
         try {
           const continueUrl = `${process.env.BASE_URL || 'http://localhost:3000'}/api/generate-report-chunked`;
           const response = await fetch(continueUrl, {
@@ -285,14 +285,17 @@ module.exports = async (req, res) => {
         } catch (err) {
           console.error('❌ Error triggering next chunk:', err.message);
         }
-      }, 5000);
+      };
+      
+      // 非同期で即座に実行（awaitしない）
+      triggerNextChunk();
       
       return res.json({
         status: 'continuing',
         message: `Completed steps 1-${lastCompletedStep}, continuing from step ${progress.currentStep}`,
         nextStep: progress.currentStep,
         totalSteps: progress.totalSteps,
-        willContinueIn: '5 seconds',
+        willContinueNow: true, // 即座に継続することを示す
         elapsed: Date.now() - startTime
       });
     }
