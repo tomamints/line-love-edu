@@ -286,46 +286,17 @@ module.exports = async (req, res) => {
       });
     }
     
-    // まだステップが残っている場合は自動継続
+    // まだステップが残っている場合
     if (progress.currentStep <= progress.totalSteps) {
-      console.log('🔄 Auto-continuing from step', progress.currentStep);
+      console.log('🔄 Need to continue from step', progress.currentStep);
       console.log('⏱️ Total elapsed:', Date.now() - startTime, 'ms');
       
-      // Vercel対応: 即座に自分自身を呼び出す（setTimeoutを使わない）
-      const triggerNextChunk = async () => {
-        console.log('🚀 Triggering next chunk immediately...');
-        try {
-          const continueUrl = `${process.env.BASE_URL || 'http://localhost:3000'}/api/generate-report-chunked`;
-          const response = await fetch(continueUrl, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              orderId: orderId,
-              continueFrom: progress.currentStep
-            })
-          });
-          
-          if (response.ok) {
-            console.log('✅ Next chunk triggered successfully');
-          } else {
-            console.error('❌ Failed to trigger next chunk:', response.status);
-          }
-        } catch (err) {
-          console.error('❌ Error triggering next chunk:', err.message);
-        }
-      };
-      
-      // 非同期で即座に実行（awaitしない）
-      triggerNextChunk();
-      
+      // 継続が必要なことを返す（continue-reportエンドポイントが処理を引き継ぐ）
       return res.json({
         status: 'continuing',
         message: `Completed steps 1-${lastCompletedStep}, continuing from step ${progress.currentStep}`,
         nextStep: progress.currentStep,
         totalSteps: progress.totalSteps,
-        willContinueNow: true, // 即座に継続することを示す
         elapsed: Date.now() - startTime
       });
     }

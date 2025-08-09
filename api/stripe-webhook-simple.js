@@ -232,27 +232,42 @@ module.exports = async (req, res) => {
           }
           
           // チャンク処理を即座に開始（Vercel対応）
-          console.log('🔄 Starting chunked processing immediately...');
+          console.log('🔄 Starting report processing with process-report...');
           
-          // 即座にチャンク処理を開始（setTimeoutを使わない）
-          const startChunkedProcessing = async () => {
+          // process-reportエンドポイントを呼び出し（完了まで自動的に処理）
+          const startProcessing = async () => {
             try {
-              const chunkedUrl = `${process.env.BASE_URL || 'http://localhost:3000'}/api/generate-report-chunked`;
-              const response = await fetch(chunkedUrl, {
+              const processUrl = `${process.env.BASE_URL || 'http://localhost:3000'}/api/process-report`;
+              const response = await fetch(processUrl, {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                  orderId: orderId,
-                  continueFrom: 'start'
+                  orderId: orderId
                 })
               });
               
               if (response.ok) {
-                console.log('✅ Chunked processing started successfully');
+                const result = await response.json();
+                console.log('✅ Report processing result:', result.status);
+                
+                // 完了した場合、通知を送信
+                if (result.status === 'completed') {
+                  try {
+                    const completionMessage = paymentHandler.generateCompletionMessage({
+                      success: true,
+                      reportUrl: result.reportUrl,
+                      orderId: orderId
+                    });
+                    await lineClient.pushMessage(userId, completionMessage);
+                    console.log('✅ Completion notification sent');
+                  } catch (err) {
+                    console.log('⚠️ Notification failed:', err.message);
+                  }
+                }
               } else {
-                console.error('❌ Failed to start chunked processing:', response.status);
+                console.error('❌ Failed to start processing:', response.status);
                 
                 // フォールバック：元のバックグラウンド処理
                 reportPromise.then(async (bgResult) => {
@@ -290,7 +305,7 @@ module.exports = async (req, res) => {
           };
           
           // 非同期で即座に実行（awaitしない）
-          startChunkedProcessing();
+          startProcessing();
           
           return res.json({ received: true, status: 'generating' });
         }
