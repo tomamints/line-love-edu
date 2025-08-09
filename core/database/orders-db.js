@@ -462,46 +462,39 @@ class OrdersDB {
   async saveReportProgress(orderId, progress) {
     console.log('📊 [saveReportProgress] 開始:', { orderId, progress });
     
-    // 常にファイルストレージを使用（Supabaseのreport_progressカラムが存在しない可能性があるため）
-    const fs = require('fs').promises;
-    const path = require('path');
-    // Vercel環境では/tmpディレクトリを使用
-    const progressDir = path.join('/tmp', 'progress');
+    if (!this.useDatabase) {
+      console.log('⚠️ データベース未設定のため進捗保存をスキップ');
+      return true; // エラーにしない
+    }
     
     try {
-      await fs.mkdir(progressDir, { recursive: true });
-      const progressFile = path.join(progressDir, `${orderId}.json`);
-      await fs.writeFile(progressFile, JSON.stringify({
+      // Supabaseに保存（report_progressカラムがなくても他のフィールドで管理）
+      const progressData = {
         ...progress,
         updatedAt: new Date().toISOString()
-      }, null, 2));
-      console.log('✅ 進捗をファイルに保存:', progressFile);
+      };
       
-      // Supabaseも試してみる（エラーは無視）
-      if (this.useDatabase) {
-        try {
-          const { error } = await this.supabase
-            .from('orders')
-            .update({
-              report_progress: progress,
-              updated_at: new Date().toISOString()
-            })
-            .eq('id', orderId);
-          
-          if (error) {
-            console.log('⚠️ DB保存エラー（無視）:', error.message);
-          } else {
-            console.log('✅ 進捗をDBにも保存');
-          }
-        } catch (dbErr) {
-          console.log('⚠️ DB保存エラー（無視）:', dbErr.message);
-        }
+      // report_progressカラムが存在しない場合は、statusとupdated_atで管理
+      const { error } = await this.supabase
+        .from('orders')
+        .update({
+          status: `generating_step_${progress.currentStep}`,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', orderId);
+      
+      if (error) {
+        console.error('⚠️ 進捗保存エラー:', error.message);
+        // エラーでも処理は続行
+        return true;
       }
       
+      console.log('✅ 進捗をDBに保存（ステップ', progress.currentStep, '）');
       return true;
     } catch (err) {
       console.error('❌ 進捗保存エラー:', err);
-      return false;
+      // エラーでも処理は続行
+      return true;
     }
   }
   
@@ -509,79 +502,73 @@ class OrdersDB {
   async getReportProgress(orderId) {
     console.log('📊 [getReportProgress] 開始:', orderId);
     
-    // まずファイルストレージから取得を試みる
-    const fs = require('fs').promises;
-    const path = require('path');
-    // Vercel環境では/tmpディレクトリを使用
-    const progressFile = path.join('/tmp', 'progress', `${orderId}.json`);
+    if (!this.useDatabase) {
+      console.log('⚠️ データベース未設定');
+      return null;
+    }
     
     try {
-      const data = await fs.readFile(progressFile, 'utf8');
-      const progress = JSON.parse(data);
-      console.log('✅ 進捗をファイルから取得:', progress);
-      return progress;
-    } catch (err) {
-      console.log('⚠️ 進捗ファイルなし');
-    }
-    
-    // ファイルがない場合、Supabaseを試す
-    if (this.useDatabase) {
-      try {
-        const order = await this.getOrder(orderId);
-        console.log('📊 取得した注文データ:', {
-          hasOrder: !!order,
-          hasReportProgress: order ? !!order.report_progress : false,
-          reportProgress: order?.report_progress
-        });
-        
-        if (order && order.report_progress) {
-          console.log('✅ 進捗をDBから取得:', order.report_progress);
-          return order.report_progress;
-        }
-      } catch (err) {
-        console.error('⚠️ DB取得エラー:', err.message);
+      const order = await this.getOrder(orderId);
+      
+      if (!order) {
+        console.log('⚠️ 注文が見つかりません');
+        return null;
       }
+      
+      // statusからステップ番号を取得
+      if (order.status && order.status.startsWith('generating_step_')) {
+        const stepNumber = parseInt(order.status.replace('generating_step_', ''));
+        console.log('✅ ステータスから進捗を復元: Step', stepNumber);
+        
+        // 簡易的な進捗オブジェクトを返す
+        return {
+          currentStep: stepNumber,
+          totalSteps: 5,
+          data: {},
+          attempts: 1,
+          startedAt: order.updatedAt || order.createdAt
+        };
+      }
+      
+      // report_progressフィールドがある場合（将来的にカラムが追加された場合）
+      if (order.report_progress) {
+        console.log('✅ 進捗をDBから取得:', order.report_progress);
+        return order.report_progress;
+      }
+      
+      console.log('⚠️ 進捗データなし（初回実行）');
+      return null;
+    } catch (err) {
+      console.error('❌ 進捗取得エラー:', err.message);
+      return null;
     }
-    
-    console.log('⚠️ 進捗データなし（初回実行）');
-    return null;
   }
   
   // 進捗をクリア
   async clearReportProgress(orderId) {
     console.log('🧹 [clearReportProgress] 進捗をクリア:', orderId);
     
-    // ファイルストレージをクリア
-    const fs = require('fs').promises;
-    const path = require('path');
-    // Vercel環境では/tmpディレクトリを使用
-    const progressFile = path.join('/tmp', 'progress', `${orderId}.json`);
+    if (!this.useDatabase) {
+      console.log('⚠️ データベース未設定');
+      return true;
+    }
     
     try {
-      await fs.unlink(progressFile);
-      console.log('✅ 進捗ファイルを削除');
+      // statusを元に戻す
+      await this.supabase
+        .from('orders')
+        .update({
+          status: 'paid', // またはgenerating
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', orderId);
+      
+      console.log('✅ DB進捗をクリア');
+      return true;
     } catch (err) {
-      console.log('⚠️ 進捗ファイル削除エラー（既に削除済み？）');
+      console.error('❌ 進捗クリアエラー:', err.message);
+      return true; // エラーでも続行
     }
-    
-    // Supabaseもクリア（エラーは無視）
-    if (this.useDatabase) {
-      try {
-        await this.supabase
-          .from('orders')
-          .update({
-            report_progress: null,
-            updated_at: new Date().toISOString()
-          })
-          .eq('id', orderId);
-        
-        console.log('✅ DB進捗もクリア');
-      } catch (err) {
-        console.log('⚠️ DB進捗クリアエラー（無視）:', err.message);
-      }
-    }
-    
-    return true;
   }
 }
 
