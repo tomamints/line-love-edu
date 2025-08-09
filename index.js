@@ -1027,8 +1027,21 @@ async function handleTextMessage(event) {
 // おつきさま診断結果を送信
 async function sendMoonFortuneResult(replyToken, userId) {
   try {
-    // まずファイルから診断結果を読み込み
+    // プロフィールを取得
+    const profile = await getProfileManager().getProfile(userId);
+    if (!profile || !profile.birthDate || !profile.partnerBirthDate) {
+      await client.replyMessage(replyToken, {
+        type: 'text',
+        text: '診断結果がありません。\n\nまず「プロフィール設定」から始めてください。'
+      });
+      return;
+    }
+    
+    // ファイルから診断結果を読み込み
     let result = null;
+    let savedProfile = null;
+    let shouldRegenerate = false;
+    
     try {
       const fs = require('fs').promises;
       const path = require('path');
@@ -1039,23 +1052,29 @@ async function sendMoonFortuneResult(replyToken, userId) {
       const profileFile = path.join(dataDir, `${userId}.json`);
       
       const profileData = await fs.readFile(profileFile, 'utf8');
-      const fullProfile = JSON.parse(profileData);
-      result = fullProfile.lastFortuneResult;
-      console.log('🌙 ファイルから診断結果取得');
+      savedProfile = JSON.parse(profileData);
+      result = savedProfile.lastFortuneResult;
+      
+      // プロフィールが更新されているかチェック
+      if (savedProfile.birthDate !== profile.birthDate ||
+          savedProfile.partnerBirthDate !== profile.partnerBirthDate ||
+          savedProfile.gender !== profile.gender ||
+          savedProfile.partnerGender !== profile.partnerGender ||
+          savedProfile.birthTime !== profile.birthTime ||
+          savedProfile.partnerBirthTime !== profile.partnerBirthTime) {
+        console.log('🔄 プロフィールが更新されているため再生成');
+        shouldRegenerate = true;
+        result = null;
+      } else {
+        console.log('🌙 保存済み診断結果を使用');
+      }
     } catch (err) {
       console.log('診断結果ファイルが見つかりません:', err.message);
+      shouldRegenerate = true;
     }
     
-    // 診断結果がない場合は新規生成
+    // 診断結果がないか、再生成が必要な場合
     if (!result) {
-      const profile = await getProfileManager().getProfile(userId);
-      if (!profile || !profile.birthDate || !profile.partnerBirthDate) {
-        await client.replyMessage(replyToken, {
-          type: 'text',
-          text: '診断結果がありません。\n\nまず「プロフィール設定」から始めてください。'
-        });
-        return;
-      }
       
       loadHeavyModules();
       const moonEngine = new MoonFortuneEngine();
