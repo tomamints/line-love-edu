@@ -30,7 +30,7 @@ module.exports = async (req, res) => {
   console.log('📍 Continue From:', continueFrom || 'start');
   
   const startTime = Date.now();
-  const TIME_LIMIT = 40000; // 40秒でタイムアウト（Vercelの60秒制限に対して余裕を持つ）
+  const TIME_LIMIT = 50000; // 50秒でタイムアウト（Vercelの60秒制限に対して余裕を持つ）
   
   try {
     // 注文情報を取得
@@ -99,43 +99,85 @@ module.exports = async (req, res) => {
     // 各ステップを実行
     let completed = false;
     let lastCompletedStep = progress.currentStep - 1;
-    let maxStepsThisRun = 2; // デフォルトは最大2ステップ実行
+    let shouldContinue = false; // 継続が必要かどうか
     
-    // 現在のステップに応じて実行可能なステップ数を決定
-    if (progress.currentStep === 1) {
-      maxStepsThisRun = 2; // Step 1,2を実行
-    } else if (progress.currentStep === 3) {
-      maxStepsThisRun = 1; // Step 3のみ（AI分析は単独で実行）
-    } else if (progress.currentStep === 4) {
-      maxStepsThisRun = 2; // Step 4,5を実行
+    // Step 3でAI分析が進行中の場合のチェック
+    if (progress.currentStep === 3 && progress.data?.aiAnalysisInProgress) {
+      console.log('🔍 Checking AI analysis status...');
+      
+      // AI分析が完了しているか確認
+      if (progress.data.aiInsights !== undefined) {
+        console.log('✅ AI analysis completed, moving to next step');
+        progress.data.aiAnalysisInProgress = false;
+        progress.currentStep++;
+        await ordersDB.saveReportProgress(orderId, progress);
+      } else {
+        // まだ完了していない場合は待機
+        const waitTime = Date.now() - new Date(progress.data.aiAnalysisStartTime).getTime();
+        const waitMinutes = Math.floor(waitTime / 60000);
+        const waitSeconds = Math.floor((waitTime % 60000) / 1000);
+        console.log(`⏳ AI analysis still in progress (${waitMinutes}m ${waitSeconds}s elapsed)`);
+        
+        // 5分（300秒）以上待っても完了しない場合はnullで続行
+        if (waitTime > 300000) { // 300秒 = 5分
+          console.log('⚠️ AI analysis timeout after 5 minutes, continuing without insights');
+          progress.data.aiInsights = null;
+          progress.data.aiAnalysisInProgress = false;
+          progress.currentStep++;
+          await ordersDB.saveReportProgress(orderId, progress);
+        } else {
+          // まだ待つ - 次の処理を自動トリガー
+          const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://line-love-edu.vercel.app';
+          
+          // 待機時間に応じてリトライ間隔を調整
+          let retryDelay = 5000; // デフォルト 5秒
+          if (waitTime > 60000) {
+            retryDelay = 10000; // 1分経過後は10秒ごと
+          }
+          if (waitTime > 180000) {
+            retryDelay = 15000; // 3分経過後は15秒ごと
+          }
+          
+          console.log(`🔄 Will check again in ${retryDelay/1000} seconds`);
+          
+          // 次のチェックをスケジュール
+          setTimeout(() => {
+            fetch(`${baseUrl}/api/generate-report-chunked`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ orderId: orderId })
+            }).then(() => {
+              console.log(`✅ Retry triggered after ${retryDelay/1000}s`);
+            }).catch(err => {
+              console.error('⚠️ Retry trigger failed:', err);
+            });
+          }, retryDelay);
+          
+          return res.json({
+            status: 'continuing',
+            message: `AI analysis in progress (${waitMinutes}m ${waitSeconds}s), checking every ${retryDelay/1000}s`,
+            nextStep: progress.currentStep,
+            totalSteps: progress.totalSteps,
+            elapsed: Date.now() - startTime,
+            aiAnalysisInProgress: true,
+            aiWaitTime: waitTime,
+            retryDelay: retryDelay
+          });
+        }
+      }
     }
     
-    let stepsExecuted = 0;
-    
-    while (progress.currentStep <= progress.totalSteps && stepsExecuted < maxStepsThisRun) {
+    // タイムアウトまで可能な限りステップを実行
+    while (progress.currentStep <= progress.totalSteps) {
       const elapsed = Date.now() - startTime;
       const stepTimeout = STEP_TIMEOUTS[progress.currentStep] || 10000;
       
-      // Step 3は特別扱い - 新しいリクエストで始まるので時間チェックをスキップ
-      if (progress.currentStep === 3) {
-        console.log('📍 Step 3 - AI Analysis (special handling)');
-        console.log('⏱️ Starting with full time available');
-        // Step 3は必ず実行する
-      } else {
-        // 他のステップは時間チェック
-        if (elapsed + stepTimeout > TIME_LIMIT) {
-          console.log('⏸️ Pausing before step', progress.currentStep);
-          console.log('⏱️ Elapsed:', elapsed, 'ms');
-          console.log('⏱️ Next step needs:', stepTimeout, 'ms');
-          console.log('⏰ Will continue in next invocation to avoid timeout');
-          break;
-        }
-      }
-      
-      // Step 3（AI分析）の前は必ず中断して、新しいリクエストで実行
-      if (progress.currentStep === 3 && stepsExecuted > 0) {
-        console.log('⏸️ Pausing before AI analysis (Step 3)');
-        console.log('⏰ AI analysis will run in a fresh invocation');
+      // 時間チェック（全ステップ共通）
+      if (elapsed + stepTimeout > TIME_LIMIT) {
+        console.log('⏸️ Pausing before step', progress.currentStep);
+        console.log('⏱️ Elapsed:', elapsed, 'ms');
+        console.log('⏱️ Next step needs:', stepTimeout, 'ms');
+        console.log('⏰ Will continue in next invocation to avoid timeout');
         break;
       }
       
@@ -175,8 +217,8 @@ module.exports = async (req, res) => {
           case 2:
             console.log('🔍 Step 2: Basic analysis...');
             // 基本分析は高速なのでここで実行
-            const fortuneEngine = require('../core/fortune-engine');
-            const engine = new fortuneEngine();
+            const FortuneEngine = require('../core/fortune-engine/index');
+            const engine = new FortuneEngine();
             progress.data.fortune = await engine.generateFortune(
               progress.data.messages,
               order.userId,
@@ -192,15 +234,30 @@ module.exports = async (req, res) => {
             
             // AI分析（最も時間がかかる）
             try {
-              const reportGenerator = new (require('../core/premium/report-generator'))();
+              const ReportGenerator = require('../core/premium/report-generator');
+              const reportGenerator = new ReportGenerator();
               progress.data.aiInsights = await reportGenerator.getAIInsights(
                 progress.data.messages,
                 progress.data.fortune
               );
               console.log('✅ AI analysis complete');
             } catch (aiError) {
-              console.error('⚠️ AI analysis error (will retry):', aiError.message);
-              // エラーでも次回リトライできるように進捗は保存
+              console.error('⚠️ AI analysis error:', aiError.message);
+              // AI分析エラーの場合はリトライするため、ステップを進めない
+              if (progress.attempts < 3) {
+                console.log('🔄 Will retry AI analysis on next attempt');
+                // ステップを進めずに終了（次回同じステップから再開）
+                await ordersDB.saveReportProgress(orderId, progress);
+                return res.json({
+                  status: 'continuing',
+                  message: `AI analysis failed, will retry (attempt ${progress.attempts}/3)`,
+                  nextStep: progress.currentStep,
+                  totalSteps: progress.totalSteps,
+                  elapsed: Date.now() - startTime
+                });
+              }
+              // 3回失敗したら空のAI洞察で続行
+              console.log('⚠️ AI analysis failed 3 times, continuing without AI insights');
               progress.data.aiInsights = null;
             }
             break;
@@ -208,7 +265,8 @@ module.exports = async (req, res) => {
           case 4:
             console.log('📝 Step 4: Generating report...');
             // レポート生成
-            const fullReportGenerator = new (require('../core/premium/report-generator'))();
+            const ReportGenerator = require('../core/premium/report-generator');
+            const fullReportGenerator = new ReportGenerator();
             progress.data.reportData = await fullReportGenerator.generatePremiumReport(
               progress.data.messages,
               order.userId,
@@ -216,7 +274,8 @@ module.exports = async (req, res) => {
             );
             
             // HTML/PDF生成
-            const pdfGenerator = new (require('../core/premium/pdf-generator'))();
+            const PDFGenerator = require('../core/premium/pdf-generator');
+            const pdfGenerator = new PDFGenerator();
             const pdfBuffer = await pdfGenerator.generatePDF(progress.data.reportData);
             // BufferをBase64として保存（JSONシリアライズ可能）
             progress.data.pdfBuffer = pdfBuffer.toString('base64');
@@ -285,7 +344,6 @@ module.exports = async (req, res) => {
         
         lastCompletedStep = progress.currentStep;
         progress.currentStep++;
-        stepsExecuted++;
         
         // 進捗を保存
         await ordersDB.saveReportProgress(orderId, progress);
@@ -293,9 +351,37 @@ module.exports = async (req, res) => {
       } catch (stepError) {
         console.error(`❌ Error in step ${progress.currentStep}:`, stepError.message);
         
-        // エラーでも次のステップに進む（最大試行回数でガード）
-        progress.currentStep++;
+        // エラーの場合もリトライする
         progress.lastError = stepError.message;
+        progress.errorCount = (progress.errorCount || 0) + 1;
+        
+        // 3回までリトライ
+        if (progress.errorCount < 3) {
+          console.log(`🔄 Will retry step ${progress.currentStep} (attempt ${progress.errorCount}/3)`);
+          await ordersDB.saveReportProgress(orderId, progress);
+          
+          // 5秒後にリトライ
+          const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://line-love-edu.vercel.app';
+          setTimeout(() => {
+            fetch(`${baseUrl}/api/generate-report-chunked`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ orderId: orderId })
+            }).catch(err => console.error('⚠️ Retry failed:', err));
+          }, 5000);
+          
+          return res.json({
+            status: 'continuing',
+            message: `Error in step ${progress.currentStep}, will retry`,
+            error: stepError.message,
+            retryCount: progress.errorCount
+          });
+        }
+        
+        // 3回失敗したら次のステップに進む
+        console.log(`⚠️ Step ${progress.currentStep} failed 3 times, moving to next step`);
+        progress.currentStep++;
+        progress.errorCount = 0; // リセット
         await ordersDB.saveReportProgress(orderId, progress);
       }
     }
@@ -316,14 +402,32 @@ module.exports = async (req, res) => {
     if (progress.currentStep <= progress.totalSteps) {
       console.log('🔄 Need to continue from step', progress.currentStep);
       console.log('⏱️ Total elapsed:', Date.now() - startTime, 'ms');
+      shouldContinue = true;
       
-      // 継続が必要なことを返す（continue-reportエンドポイントが処理を引き継ぐ）
+      // 自動的に次の処理を開始
+      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://line-love-edu.vercel.app';
+      
+      // 3秒後に次の処理をトリガー
+      setTimeout(() => {
+        fetch(`${baseUrl}/api/generate-report-chunked`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ orderId: orderId })
+        }).then(() => {
+          console.log('✅ Next process triggered after 3 seconds');
+        }).catch(err => {
+          console.error('⚠️ Failed to trigger next process:', err.message);
+        });
+      }, 3000); // 3秒後
+      
+      // クライアントには継続中であることを返す
       return res.json({
         status: 'continuing',
         message: `Completed steps 1-${lastCompletedStep}, continuing from step ${progress.currentStep}`,
         nextStep: progress.currentStep,
         totalSteps: progress.totalSteps,
-        elapsed: Date.now() - startTime
+        elapsed: Date.now() - startTime,
+        autoTriggered: true // 自動継続フラグ
       });
     }
     
