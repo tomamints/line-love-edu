@@ -423,6 +423,50 @@ app.post('/webhook', middleware(config), async (req, res) => {
         // 生成中の注文がある場合の処理を削除
         // 「レポート状況」コマンドで適切に処理される
         
+        // 「レポート」コマンドで最新のレポートを表示
+        if (messageText === 'レポート' || messageText === 'れぽーと') {
+          const orders = await ordersDB.getUserOrders(userId);
+          const completedOrder = orders.find(order => 
+            order.status === 'completed' && order.report_url
+          );
+          
+          if (completedOrder) {
+            // 完成したレポートがある場合
+            const completionMessage = paymentHandler.generateCompletionMessage({
+              success: true,
+              reportUrl: completedOrder.report_url,
+              orderId: completedOrder.id
+            });
+            return client.replyMessage(event.replyToken, completionMessage);
+          }
+          
+          // 生成中の注文を確認
+          const generatingOrder = orders.find(order => 
+            order.status === 'generating' || order.status === 'paid' ||
+            (order.status && order.status.startsWith('generating_step_'))
+          );
+          
+          if (generatingOrder) {
+            // ステータスから進捗を取得
+            let progressText = '生成中...';
+            if (generatingOrder.status && generatingOrder.status.startsWith('generating_step_')) {
+              const step = generatingOrder.status.replace('generating_step_', '');
+              progressText = `ステップ ${step}/5 処理中...`;
+            }
+            
+            return client.replyMessage(event.replyToken, {
+              type: 'text',
+              text: `⏳ レポート生成中\n\n${progressText}\n\n完成まで約1-2分お待ちください。\n完成したらお知らせします。`
+            });
+          }
+          
+          // レポートがない場合
+          return client.replyMessage(event.replyToken, {
+            type: 'text',
+            text: '📊 レポートはありません\n\nプレミアムレポートを購入するには「占いを始める」と送信してください。'
+          });
+        }
+        
         // 「レポート履歴」コマンドの処理
         if (messageText === 'レポート履歴' || messageText === '購入履歴') {
           const orders = await ordersDB.getUserOrders(userId);
@@ -445,7 +489,7 @@ app.post('/webhook', middleware(config), async (req, res) => {
           
           return client.replyMessage(event.replyToken, {
             type: 'text',
-            text: `📚 購入履歴（最新5件）\n\n${historyText}\n\n最新のレポートを見るには「レポート状況」と送信してください。`
+            text: `📚 購入履歴（最新5件）\n\n${historyText}\n\n最新のレポートを見るには「レポート」と送信してください。`
           });
         }
         
