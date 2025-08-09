@@ -265,6 +265,7 @@ class OrdersDB {
         userProfile: null,
         pdf_data: data.pdf_data,
         notified: data.notified,
+        report_progress: data.report_progress,  // 重要: report_progressを追加
         createdAt: data.created_at,
         updatedAt: data.updated_at
       };
@@ -461,43 +462,41 @@ class OrdersDB {
   async saveReportProgress(orderId, progress) {
     console.log('📊 [saveReportProgress] 開始:', { orderId, progress });
     
-    if (!this.useDatabase) {
-      // ファイルストレージの場合
-      const fs = require('fs').promises;
-      const path = require('path');
-      const progressDir = path.join(process.cwd(), 'progress');
-      
-      try {
-        await fs.mkdir(progressDir, { recursive: true });
-        const progressFile = path.join(progressDir, `${orderId}.json`);
-        await fs.writeFile(progressFile, JSON.stringify({
-          ...progress,
-          updatedAt: new Date().toISOString()
-        }, null, 2));
-        console.log('✅ 進捗をファイルに保存:', progressFile);
-        return true;
-      } catch (err) {
-        console.error('❌ 進捗保存エラー:', err);
-        return false;
-      }
-    }
+    // 常にファイルストレージを使用（Supabaseのreport_progressカラムが存在しない可能性があるため）
+    const fs = require('fs').promises;
+    const path = require('path');
+    const progressDir = path.join(process.cwd(), 'progress');
     
-    // Supabaseの場合はordersテーブルのreport_progressカラムを使用
     try {
-      const { error } = await this.supabase
-        .from('orders')
-        .update({
-          report_progress: progress,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', orderId);
+      await fs.mkdir(progressDir, { recursive: true });
+      const progressFile = path.join(progressDir, `${orderId}.json`);
+      await fs.writeFile(progressFile, JSON.stringify({
+        ...progress,
+        updatedAt: new Date().toISOString()
+      }, null, 2));
+      console.log('✅ 進捗をファイルに保存:', progressFile);
       
-      if (error) {
-        console.error('❌ 進捗保存エラー:', error);
-        return false;
+      // Supabaseも試してみる（エラーは無視）
+      if (this.useDatabase) {
+        try {
+          const { error } = await this.supabase
+            .from('orders')
+            .update({
+              report_progress: progress,
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', orderId);
+          
+          if (error) {
+            console.log('⚠️ DB保存エラー（無視）:', error.message);
+          } else {
+            console.log('✅ 進捗をDBにも保存');
+          }
+        } catch (dbErr) {
+          console.log('⚠️ DB保存エラー（無視）:', dbErr.message);
+        }
       }
       
-      console.log('✅ 進捗をDBに保存');
       return true;
     } catch (err) {
       console.error('❌ 進捗保存エラー:', err);
@@ -509,71 +508,77 @@ class OrdersDB {
   async getReportProgress(orderId) {
     console.log('📊 [getReportProgress] 開始:', orderId);
     
-    if (!this.useDatabase) {
-      // ファイルストレージの場合
-      const fs = require('fs').promises;
-      const path = require('path');
-      const progressFile = path.join(process.cwd(), 'progress', `${orderId}.json`);
-      
+    // まずファイルストレージから取得を試みる
+    const fs = require('fs').promises;
+    const path = require('path');
+    const progressFile = path.join(process.cwd(), 'progress', `${orderId}.json`);
+    
+    try {
+      const data = await fs.readFile(progressFile, 'utf8');
+      const progress = JSON.parse(data);
+      console.log('✅ 進捗をファイルから取得:', progress);
+      return progress;
+    } catch (err) {
+      console.log('⚠️ 進捗ファイルなし');
+    }
+    
+    // ファイルがない場合、Supabaseを試す
+    if (this.useDatabase) {
       try {
-        const data = await fs.readFile(progressFile, 'utf8');
-        const progress = JSON.parse(data);
-        console.log('✅ 進捗をファイルから取得:', progress);
-        return progress;
+        const order = await this.getOrder(orderId);
+        console.log('📊 取得した注文データ:', {
+          hasOrder: !!order,
+          hasReportProgress: order ? !!order.report_progress : false,
+          reportProgress: order?.report_progress
+        });
+        
+        if (order && order.report_progress) {
+          console.log('✅ 進捗をDBから取得:', order.report_progress);
+          return order.report_progress;
+        }
       } catch (err) {
-        console.log('⚠️ 進捗ファイルなし（初回実行）');
-        return null;
+        console.error('⚠️ DB取得エラー:', err.message);
       }
     }
     
-    // Supabaseの場合
-    try {
-      const order = await this.getOrder(orderId);
-      if (order && order.report_progress) {
-        console.log('✅ 進捗をDBから取得:', order.report_progress);
-        return order.report_progress;
-      }
-      console.log('⚠️ 進捗データなし（初回実行）');
-      return null;
-    } catch (err) {
-      console.error('❌ 進捗取得エラー:', err);
-      return null;
-    }
+    console.log('⚠️ 進捗データなし（初回実行）');
+    return null;
   }
   
   // 進捗をクリア
   async clearReportProgress(orderId) {
     console.log('🧹 [clearReportProgress] 進捗をクリア:', orderId);
     
-    if (!this.useDatabase) {
-      const fs = require('fs').promises;
-      const path = require('path');
-      const progressFile = path.join(process.cwd(), 'progress', `${orderId}.json`);
-      
-      try {
-        await fs.unlink(progressFile);
-        console.log('✅ 進捗ファイルを削除');
-      } catch (err) {
-        console.log('⚠️ 進捗ファイル削除エラー（既に削除済み？）');
-      }
-      return true;
-    }
+    // ファイルストレージをクリア
+    const fs = require('fs').promises;
+    const path = require('path');
+    const progressFile = path.join(process.cwd(), 'progress', `${orderId}.json`);
     
     try {
-      await this.supabase
-        .from('orders')
-        .update({
-          report_progress: null,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', orderId);
-      
-      console.log('✅ DB進捗をクリア');
-      return true;
+      await fs.unlink(progressFile);
+      console.log('✅ 進捗ファイルを削除');
     } catch (err) {
-      console.error('❌ 進捗クリアエラー:', err);
-      return false;
+      console.log('⚠️ 進捗ファイル削除エラー（既に削除済み？）');
     }
+    
+    // Supabaseもクリア（エラーは無視）
+    if (this.useDatabase) {
+      try {
+        await this.supabase
+          .from('orders')
+          .update({
+            report_progress: null,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', orderId);
+        
+        console.log('✅ DB進捗もクリア');
+      } catch (err) {
+        console.log('⚠️ DB進捗クリアエラー（無視）:', err.message);
+      }
+    }
+    
+    return true;
   }
 }
 
