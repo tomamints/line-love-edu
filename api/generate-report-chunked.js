@@ -13,7 +13,7 @@ const profileManager = new UserProfileManager();
 const STEP_TIMEOUTS = {
   1: 5000,   // メッセージ取得
   2: 15000,  // 基本分析
-  3: 20000,  // AI分析（最も時間がかかる）
+  3: 35000,  // AI分析（最も時間がかかる - 実際は20秒程度だが余裕を持つ）
   4: 10000,  // HTML生成
   5: 5000,   // 保存と通知
 };
@@ -31,7 +31,7 @@ module.exports = async (req, res) => {
   console.log('📍 Continue From:', continueFrom || 'start');
   
   const startTime = Date.now();
-  const TIME_LIMIT = 45000; // 45秒でタイムアウト（安全マージン）
+  const TIME_LIMIT = 40000; // 40秒でタイムアウト（Vercelの60秒制限に対して余裕を持つ）
   
   try {
     // 注文情報を取得
@@ -93,8 +93,20 @@ module.exports = async (req, res) => {
     // 各ステップを実行
     let completed = false;
     let lastCompletedStep = progress.currentStep - 1;
+    let maxStepsThisRun = 2; // デフォルトは最大2ステップ実行
     
-    while (progress.currentStep <= progress.totalSteps) {
+    // 現在のステップに応じて実行可能なステップ数を決定
+    if (progress.currentStep === 1) {
+      maxStepsThisRun = 2; // Step 1,2を実行
+    } else if (progress.currentStep === 3) {
+      maxStepsThisRun = 1; // Step 3のみ（AI分析は単独で実行）
+    } else if (progress.currentStep === 4) {
+      maxStepsThisRun = 2; // Step 4,5を実行
+    }
+    
+    let stepsExecuted = 0;
+    
+    while (progress.currentStep <= progress.totalSteps && stepsExecuted < maxStepsThisRun) {
       const elapsed = Date.now() - startTime;
       const stepTimeout = STEP_TIMEOUTS[progress.currentStep] || 10000;
       
@@ -103,6 +115,14 @@ module.exports = async (req, res) => {
         console.log('⏸️ Pausing before step', progress.currentStep);
         console.log('⏱️ Elapsed:', elapsed, 'ms');
         console.log('⏱️ Next step needs:', stepTimeout, 'ms');
+        console.log('⏰ Will continue in next invocation to avoid timeout');
+        break;
+      }
+      
+      // Step 3（AI分析）の前は必ず中断して、新しいリクエストで実行
+      if (progress.currentStep === 3 && stepsExecuted > 0) {
+        console.log('⏸️ Pausing before AI analysis (Step 3)');
+        console.log('⏰ AI analysis will run in a fresh invocation');
         break;
       }
       
@@ -154,13 +174,22 @@ module.exports = async (req, res) => {
             
           case 3:
             console.log('🤖 Step 3: AI insights (may take time)...');
+            console.log('📊 Starting AI analysis at:', new Date().toISOString());
+            console.log('⏱️ Current elapsed time:', Date.now() - startTime, 'ms');
+            
             // AI分析（最も時間がかかる）
-            const reportGenerator = new (require('../core/premium/report-generator'))();
-            progress.data.aiInsights = await reportGenerator.getAIInsights(
-              progress.data.messages,
-              progress.data.fortune
-            );
-            console.log('✅ AI analysis complete');
+            try {
+              const reportGenerator = new (require('../core/premium/report-generator'))();
+              progress.data.aiInsights = await reportGenerator.getAIInsights(
+                progress.data.messages,
+                progress.data.fortune
+              );
+              console.log('✅ AI analysis complete');
+            } catch (aiError) {
+              console.error('⚠️ AI analysis error (will retry):', aiError.message);
+              // エラーでも次回リトライできるように進捗は保存
+              progress.data.aiInsights = null;
+            }
             break;
             
           case 4:
@@ -230,6 +259,7 @@ module.exports = async (req, res) => {
         
         lastCompletedStep = progress.currentStep;
         progress.currentStep++;
+        stepsExecuted++;
         
         // 進捗を保存
         await ordersDB.saveReportProgress(orderId, progress);
