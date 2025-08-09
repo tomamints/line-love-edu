@@ -468,13 +468,19 @@ class OrdersDB {
     }
     
     try {
-      // Supabaseに保存（report_progressカラムがなくても他のフィールドで管理）
-      const progressData = {
-        ...progress,
-        updatedAt: new Date().toISOString()
-      };
+      // 進捗データを/tmpに一時保存（関数の実行中は保持される）
+      const fs = require('fs').promises;
+      const path = require('path');
+      const tmpFile = path.join('/tmp', `progress_${orderId}.json`);
       
-      // report_progressカラムが存在しない場合は、statusとupdated_atで管理
+      try {
+        await fs.writeFile(tmpFile, JSON.stringify(progress, null, 2));
+        console.log('📝 進捗データを一時保存:', tmpFile);
+      } catch (fsErr) {
+        console.log('⚠️ 一時ファイル保存エラー（無視）:', fsErr.message);
+      }
+      
+      // Supabaseにステータスを保存
       const { error } = await this.supabase
         .from('orders')
         .update({
@@ -508,6 +514,24 @@ class OrdersDB {
     }
     
     try {
+      // まず/tmpから完全な進捗データを取得を試みる
+      const fs = require('fs').promises;
+      const path = require('path');
+      const tmpFile = path.join('/tmp', `progress_${orderId}.json`);
+      
+      try {
+        const data = await fs.readFile(tmpFile, 'utf8');
+        const progress = JSON.parse(data);
+        console.log('📝 一時ファイルから進捗を復元:', {
+          currentStep: progress.currentStep,
+          hasData: !!progress.data,
+          dataKeys: Object.keys(progress.data || {})
+        });
+        return progress;
+      } catch (fsErr) {
+        console.log('⚠️ 一時ファイルなし、DBから復元を試みる');
+      }
+      
       const order = await this.getOrder(orderId);
       
       if (!order) {
@@ -520,11 +544,11 @@ class OrdersDB {
         const stepNumber = parseInt(order.status.replace('generating_step_', ''));
         console.log('✅ ステータスから進捗を復元: Step', stepNumber);
         
-        // 簡易的な進捗オブジェクトを返す
+        // 簡易的な進捗オブジェクトを返す（データは失われる）
         return {
           currentStep: stepNumber,
           totalSteps: 5,
-          data: {},
+          data: {},  // データは復元できない
           attempts: 1,
           startedAt: order.updatedAt || order.createdAt
         };

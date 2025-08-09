@@ -71,6 +71,13 @@ module.exports = async (req, res) => {
     } else {
       console.log('♻️ Resuming from step', progress.currentStep);
       progress.attempts = (progress.attempts || 0) + 1;
+      
+      // データが失われている場合は、Step 1-2 を再実行してデータを取得
+      if (progress.currentStep >= 3 && (!progress.data || !progress.data.messages)) {
+        console.log('⚠️ データが失われているため、Step 1-2を再実行');
+        progress.currentStep = 1;
+        progress.data = {};
+      }
     }
     
     // 最大試行回数チェック
