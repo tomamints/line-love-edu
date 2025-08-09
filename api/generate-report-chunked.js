@@ -218,8 +218,10 @@ module.exports = async (req, res) => {
             
             // HTML/PDF生成
             const pdfGenerator = new (require('../core/premium/pdf-generator'))();
-            progress.data.pdfBuffer = await pdfGenerator.generatePDF(progress.data.reportData);
-            console.log('✅ Report generated');
+            const pdfBuffer = await pdfGenerator.generatePDF(progress.data.reportData);
+            // BufferをBase64として保存（JSONシリアライズ可能）
+            progress.data.pdfBuffer = pdfBuffer.toString('base64');
+            console.log('✅ Report generated, PDF size:', Math.round(pdfBuffer.length / 1024), 'KB');
             break;
             
           case 5:
@@ -232,13 +234,24 @@ module.exports = async (req, res) => {
             
             await fs.mkdir(ordersDir, { recursive: true });
             const pdfPath = path.join(ordersDir, `${orderId}.pdf`);
-            await fs.writeFile(pdfPath, progress.data.pdfBuffer);
+            
+            // pdfBufferがBufferオブジェクトか確認し、必要に応じて変換
+            let pdfBuffer = progress.data.pdfBuffer;
+            if (pdfBuffer && typeof pdfBuffer === 'object' && pdfBuffer.type === 'Buffer' && pdfBuffer.data) {
+              // JSONから復元されたBufferオブジェクトの場合
+              pdfBuffer = Buffer.from(pdfBuffer.data);
+            } else if (typeof pdfBuffer === 'string') {
+              // Base64文字列の場合
+              pdfBuffer = Buffer.from(pdfBuffer, 'base64');
+            }
+            
+            await fs.writeFile(pdfPath, pdfBuffer);
             
             // Base64エンコード
-            const pdfBase64 = progress.data.pdfBuffer.toString('base64');
+            const pdfBase64 = pdfBuffer.toString('base64');
             
             // URL生成
-            const baseUrl = process.env.BASE_URL || 'http://localhost:3000';
+            const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://line-love-edu.vercel.app';
             const reportUrl = `${baseUrl}/api/view-report?orderId=${orderId}`;
             
             // 注文を完了状態に更新
