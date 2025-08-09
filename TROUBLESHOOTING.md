@@ -71,6 +71,25 @@ const rawBody = await getRawBody(req);
 
 ### 📊 レポート生成関連
 
+#### 「pdfBufferが既に宣言されています」エラー
+```javascript
+SyntaxError: Identifier 'pdfBuffer' has already been declared
+```
+
+**原因:**
+- Step 4とStep 5で同じ変数名を使用
+- スコープが同じため重複エラー
+
+**解決策:**
+```javascript
+// Step 4で別の変数名を使用
+const generatedPdfBuffer = await pdfGenerator.generatePDF(reportData);
+progress.data.pdfBuffer = generatedPdfBuffer.toString('base64');
+
+// Step 5ではpdfBufferを使用可能
+let pdfBuffer = progress.data.pdfBuffer;
+```
+
 #### レポート生成がタイムアウトする
 ```
 ⏱️ Execution time: 50001ms
@@ -80,6 +99,7 @@ const rawBody = await getRawBody(req);
 **正常な動作:**
 - これは正常な動作です
 - チャンク処理で自動継続されます
+- 3秒後に自動的に次の処理が開始されます
 - 完了後にユーザーに通知されます
 
 **確認方法:**
@@ -184,12 +204,17 @@ Error: Rate limit exceeded
 
 #### AI分析がタイムアウト
 ```
-⚠️ AI分析タイムアウト - デフォルト分析を使用
+⏳ AI analysis still in progress (2m 45s elapsed)
+🔄 Will check again in 15 seconds
 ```
 
 **正常な動作:**
-- 5秒でタイムアウトしてデフォルト分析に切り替え
-- レポート品質に大きな影響なし
+- 30秒でタイムアウトしてバックグラウンド継続
+- 最大5分間待機（段階的にチェック間隔を調整）
+  - 0-60秒: 5秒ごと
+  - 60-180秒: 10秒ごと
+  - 180-300秒: 15秒ごと
+- 5分経過でnullとして続行（レポート品質に影響少）
 
 ### 🚀 デプロイ関連
 
@@ -219,6 +244,20 @@ vercel env ls
 # 2. 再デプロイ
 vercel --prod --force
 ```
+
+#### 古いStripe Webhookが届く
+```
+❌ Order not found: ORDER_U69bf66f_1754752858840_jvwqu2
+⚠️ This might be an old order or duplicate webhook
+```
+
+**原因:**
+- Stripeの再送信メカニズム
+- 1時間以上前のイベントが再送信された
+
+**対応:**
+- 無視してOK（自動的にスキップされる）
+- Stripeダッシュボードで古いイベントをクリア
 
 ### 📱 ユーザー報告の問題
 

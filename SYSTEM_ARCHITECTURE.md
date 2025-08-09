@@ -59,19 +59,46 @@ graph TB
 Vercelの60秒制限を回避するため、処理を分割実行：
 
 ```javascript
-// 45秒で安全に停止
-if (elapsed + nextStepTime > 45000) {
+// 50秒で安全に停止
+const TIME_LIMIT = 50000; // Vercelの60秒制限に対して余裕
+
+if (elapsed + nextStepTime > TIME_LIMIT) {
   // 進捗を保存
   await saveProgress(orderId, currentStep, data);
   
-  // 5秒後に自動再開
+  // 3秒後に自動再開
   setTimeout(() => {
     fetch('/api/generate-report-chunked', {
-      body: { orderId, continueFrom: currentStep }
+      body: { orderId }
     });
-  }, 5000);
+  }, 3000);
   
-  return { status: 'continuing' };
+  return { status: 'continuing', autoTriggered: true };
+}
+```
+
+### AI分析の特別処理
+Step 3のAI分析は最大時間がかかるため、特別な処理を実装：
+
+```javascript
+// 30秒タイムアウトでバックグラウンド継続
+const aiAnalysisPromise = reportGenerator.getAIInsights(messages, fortune);
+const timeoutPromise = new Promise((_, reject) => 
+  setTimeout(() => reject(new Error('timeout')), 30000)
+);
+
+try {
+  const result = await Promise.race([aiAnalysisPromise, timeoutPromise]);
+} catch (timeoutError) {
+  // バックグラウンドで継続
+  aiAnalysisPromise.then(result => {
+    // 完了時に結果を保存
+    progress.data.aiInsights = result;
+    saveProgress(orderId, progress);
+  });
+  
+  // 5秒後に再チェック（最大5分間待機）
+  setTimeout(() => checkAIStatus(orderId), 5000);
 }
 ```
 
@@ -84,10 +111,37 @@ if (elapsed + nextStepTime > 45000) {
     "messages": [...],
     "userProfile": {...},
     "fortune": {...},
-    "aiInsights": {...}
+    "aiInsights": {...},
+    "aiAnalysisInProgress": true,  // AI分析進行中フラグ
+    "aiAnalysisStartTime": "2025-01-08T10:00:00Z"
   },
   "attempts": 2,
+  "errorCount": 0,  // エラーリトライ回数
   "startedAt": "2025-01-08T10:00:00Z"
+}
+```
+
+### エラーハンドリング
+各ステップでエラーが発生した場合、最大3回までリトライ：
+
+```javascript
+catch (stepError) {
+  progress.errorCount = (progress.errorCount || 0) + 1;
+  
+  if (progress.errorCount < 3) {
+    // 5秒後にリトライ
+    setTimeout(() => {
+      fetch('/api/generate-report-chunked', { 
+        body: { orderId } 
+      });
+    }, 5000);
+    
+    return { status: 'continuing', retryCount: progress.errorCount };
+  }
+  
+  // 3回失敗したら次のステップへ
+  progress.currentStep++;
+  progress.errorCount = 0;
 }
 ```
 
