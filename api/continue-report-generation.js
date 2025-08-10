@@ -38,6 +38,13 @@ module.exports = async (req, res) => {
   console.log('📍 Order ID:', orderId);
   console.log('📍 Continue From:', continueFrom || 'start');
   console.log('📍 Request Type:', continueFrom ? 'CONTINUATION' : 'NEW REQUEST');
+  
+  // GitHub Actionsからの呼び出しを検出
+  const isFromGitHubActions = req.headers['x-github-actions'] === 'true' || continueFrom === 'github-actions';
+  if (isFromGitHubActions) {
+    console.log('🤖 Called from GitHub Actions!');
+    console.log('🔄 Request chain reset - no infinite loop detection');
+  }
   if (method) {
     console.log('🎯 Method triggered:', method);
     console.log('🕒 Method call timestamp:', Date.now());

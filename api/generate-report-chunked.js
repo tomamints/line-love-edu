@@ -509,11 +509,49 @@ module.exports = async (req, res) => {
                 // 一時ファイルを削除
                 await fs.unlink(tempPath).catch(() => {});
                 
-                // 継続を返す
+                // GitHub Actionsをトリガー（10秒後に実行）
+                console.log('🚀 Triggering GitHub Actions to continue processing...');
+                const triggerGitHubActions = async () => {
+                  try {
+                    const githubToken = process.env.GITHUB_TOKEN || process.env.GITHUB_PAT;
+                    if (githubToken) {
+                      const response = await fetch('https://api.github.com/repos/tomamints/line-love-edu/dispatches', {
+                        method: 'POST',
+                        headers: {
+                          'Accept': 'application/vnd.github.v3+json',
+                          'Authorization': `token ${githubToken}`,
+                          'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                          event_type: 'continue-report',
+                          client_payload: {
+                            orderId: orderId,
+                            batchId: batch.id
+                          }
+                        })
+                      });
+                      
+                      if (response.ok) {
+                        console.log('✅ GitHub Actions triggered successfully');
+                      } else {
+                        console.error('❌ Failed to trigger GitHub Actions:', response.status);
+                      }
+                    } else {
+                      console.log('⚠️ GITHUB_TOKEN not set, skipping GitHub Actions trigger');
+                    }
+                  } catch (err) {
+                    console.error('❌ Error triggering GitHub Actions:', err.message);
+                  }
+                };
+                
+                // 非同期で実行（レスポンスを待たない）
+                triggerGitHubActions().catch(console.error);
+                
+                // 継続を返す（GitHub Actionsが後で処理を続行）
                 await ordersDB.saveReportProgress(orderId, progress);
                 return res.json({
-                  status: 'continuing',
-                  message: 'AI batch job created',
+                  status: 'waiting_github_actions',
+                  message: 'AI batch job created, GitHub Actions will continue',
                   nextStep: progress.currentStep,
                   totalSteps: progress.totalSteps,
                   batchId: batch.id,

@@ -123,6 +123,17 @@ async function processReportWithLoop(orderId, iteration = 1) {
           await new Promise(resolve => setTimeout(resolve, 45000)); // 45秒待つ
         }
         
+        // GitHub Actionsが処理を引き継ぐ場合
+        if (result.status === 'waiting_github_actions') {
+          console.log('🤖 GitHub Actions will continue the processing');
+          console.log('🛑 Stopping process-report-loop to avoid infinite loop detection');
+          return {
+            success: true,
+            status: 'waiting_github_actions',
+            message: 'GitHub Actions will continue processing'
+          };
+        }
+        
         // Step 3完了でStep 4に進む場合は、process-report-loopを終了
         if (result.nextStep === 4) {
           console.log('🏁 Step 3 completed, Step 4+ will be handled by generate-report-chunked directly');
