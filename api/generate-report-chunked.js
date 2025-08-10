@@ -548,7 +548,16 @@ module.exports = async (req, res) => {
           console.log(`🔄 Will retry step ${progress.currentStep} (attempt ${progress.errorCount}/3)`);
           await ordersDB.saveReportProgress(orderId, progress);
           
-          // process-report-loopがリトライを管理するため、ここでは自己呼び出ししない
+          // 10秒後にリトライ（無限ループ検出を回避）
+          const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://line-love-edu.vercel.app';
+          setTimeout(() => {
+            fetch(`${baseUrl}/api/generate-report-chunked`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ orderId: orderId })
+            }).catch(err => console.error('⚠️ Retry failed:', err));
+          }, 10000); // 10秒後
+          
           return res.json({
             status: 'continuing',
             message: `Error in step ${progress.currentStep}, will retry`,
@@ -584,14 +593,29 @@ module.exports = async (req, res) => {
     if (progress.currentStep <= progress.totalSteps) {
       console.log('🔄 Need to continue from step', progress.currentStep);
       console.log('⏱️ Total elapsed:', Date.now() - startTime, 'ms');
+      shouldContinue = true;
       
-      // process-report-loopが継続を管理するため、ここでは自己呼び出ししない
+      // 8秒後に次の処理をトリガー（無限ループ検出を回避）
+      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://line-love-edu.vercel.app';
+      setTimeout(() => {
+        fetch(`${baseUrl}/api/generate-report-chunked`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ orderId: orderId })
+        }).then(() => {
+          console.log('✅ Next process triggered after 8 seconds');
+        }).catch(err => {
+          console.error('⚠️ Failed to trigger next process:', err.message);
+        });
+      }, 8000); // 8秒後
+      
       return res.json({
         status: 'continuing',
         message: `Completed steps 1-${lastCompletedStep}, continuing from step ${progress.currentStep}`,
         nextStep: progress.currentStep,
         totalSteps: progress.totalSteps,
-        elapsed: Date.now() - startTime
+        elapsed: Date.now() - startTime,
+        autoTriggered: true
       });
     }
     
