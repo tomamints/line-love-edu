@@ -141,7 +141,8 @@ async function processReportWithLoop(orderId, iteration = 1) {
     }
     
     // まだ完了していない場合、自分自身を再呼び出し
-    // waiting_batchの場合はgenerate-report-chunkedが自己呼び出しするので、ここでは何もしない
+    console.log(`📊 Loop ended - lastStatus: ${lastStatus}, iteration: ${iteration}/${maxIterations}, callCount: ${callCount}`);
+    
     if (lastStatus === 'continuing' && iteration < maxIterations) {
       console.log('🔄 Self-invoking for next iteration...');
       
