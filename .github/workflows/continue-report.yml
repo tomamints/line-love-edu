@@ -27,8 +27,9 @@ jobs:
       - name: Call continue-report-generation API
         id: api-call
         run: |
-          # Order IDを取得（workflow_dispatchまたはrepository_dispatch）
+          # Order IDとBatch IDを取得（workflow_dispatchまたはrepository_dispatch）
           ORDER_ID="${{ github.event.inputs.orderId || github.event.client_payload.orderId }}"
+          BATCH_ID="${{ github.event.inputs.batchId || github.event.client_payload.batchId }}"
           
           if [ -z "$ORDER_ID" ]; then
             echo "Error: No orderId provided"
@@ -36,14 +37,15 @@ jobs:
           fi
           
           echo "Processing order: $ORDER_ID"
+          echo "Batch ID: $BATCH_ID"
           echo "Calling API: https://line-love-edu.vercel.app/api/continue-report-generation"
           
-          # APIを呼び出し
+          # APIを呼び出し（Batch IDも含める）
           RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
             https://line-love-edu.vercel.app/api/continue-report-generation \
             -H "Content-Type: application/json" \
             -H "X-GitHub-Actions: true" \
-            -d "{\"orderId\": \"$ORDER_ID\", \"continueFrom\": \"github-actions\"}")
+            -d "{\"orderId\": \"$ORDER_ID\", \"batchId\": \"$BATCH_ID\", \"continueFrom\": \"github-actions\"}")
           
           # HTTPステータスコードを取得
           HTTP_CODE=$(echo "$RESPONSE" | tail -n 1)

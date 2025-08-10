@@ -24,7 +24,7 @@ const STEP_TIMEOUTS = {
 };
 
 module.exports = async (req, res) => {
-  const { orderId, continueFrom, method } = req.body || req.query;
+  const { orderId, continueFrom, method, batchId } = req.body || req.query;
   
   if (!orderId) {
     return res.status(400).json({ error: 'Order ID required' });
@@ -44,6 +44,9 @@ module.exports = async (req, res) => {
   if (isFromGitHubActions) {
     console.log('🤖 Called from GitHub Actions!');
     console.log('🔄 Request chain reset - no infinite loop detection');
+    if (batchId) {
+      console.log('📦 Batch ID provided:', batchId);
+    }
   }
   if (method) {
     console.log('🎯 Method triggered:', method);
@@ -112,8 +115,22 @@ module.exports = async (req, res) => {
         });
       }
       
-      // データが失われている場合は、Step 1-2 を再実行してデータを取得
-      if (progress.currentStep >= 3 && (!progress.data || !progress.data.messages)) {
+      // GitHub ActionsからBatch IDが渡された場合
+      if (isFromGitHubActions && batchId && progress.currentStep >= 3) {
+        console.log('💉 Injecting Batch ID from GitHub Actions:', batchId);
+        if (!progress.data) progress.data = {};
+        progress.data.aiBatchId = batchId;
+        
+        // Step 4-5に必要なデータ（messages、userProfile）がない場合は取得が必要
+        if (!progress.data.messages || !progress.data.userProfile) {
+          console.log('⚠️ Batch IDはあるが、messages/userProfileがないのでStep 1-2を実行');
+          progress.currentStep = 1;
+          // Batch IDは保持したまま
+          const savedBatchId = progress.data.aiBatchId;
+          progress.data = { aiBatchId: savedBatchId };
+        }
+      } else if (progress.currentStep >= 3 && (!progress.data || !progress.data.messages)) {
+        // データが失われている場合は、Step 1-2 を再実行してデータを取得
         console.log('⚠️ データが失われているため、Step 1-2を再実行');
         progress.currentStep = 1;
         progress.data = {};
