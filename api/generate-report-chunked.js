@@ -482,7 +482,6 @@ module.exports = async (req, res) => {
             console.log('💾 Step 5: Saving and notifying...');
             
             // PDFを保存
-            const fs = require('fs').promises;
             const path = require('path');
             const ordersDir = process.env.VERCEL ? '/tmp/orders' : path.join(process.cwd(), 'orders');
             
