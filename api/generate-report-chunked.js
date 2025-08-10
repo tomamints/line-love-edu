@@ -352,15 +352,14 @@ module.exports = async (req, res) => {
                     }
                   }
                   
-                  // Step 4へ進む
-                  progress.currentStep++;
+                  // Step 4へ進む（switch文の後でインクリメントされるので、ここではしない）
                   console.log('🔄 Breaking from Step 3 to proceed to Step 4');
-                  break; // switch文を抜ける（重要：これがないとStep 4がスキップされる）
+                  break; // switch文を抜ける
                   
                 } else if (batch.status === 'failed' || batch.status === 'expired') {
                   console.log(`❌ Batch ${batch.status}`);
                   progress.data.aiInsights = null;
-                  progress.currentStep++;
+                  // currentStepのインクリメントはswitch文の後で行われる
                   console.log('🔄 Breaking from Step 3 (batch failed/expired)');
                   break; // switch文を抜ける
                   
@@ -376,7 +375,7 @@ module.exports = async (req, res) => {
                   if (waitTime > 1200000) { // 20分
                     console.log('⏰ Timeout after 20 minutes - skipping AI analysis');
                     progress.data.aiInsights = null;
-                    progress.currentStep++;
+                    // currentStepのインクリメントはswitch文の後で行われる
                     console.log('🔄 Breaking from Step 3 (timeout)');
                     break; // switch文を抜ける
                   } else {
@@ -400,7 +399,7 @@ module.exports = async (req, res) => {
                 console.error('❌ Error checking batch:', error.message);
                 // エラーの場合はAIなしで続行
                 progress.data.aiInsights = null;
-                progress.currentStep++;
+                // currentStepのインクリメントはswitch文の後で行われる
                 console.log('🔄 Breaking from Step 3 (error)');
                 break; // switch文を抜ける
               }
@@ -590,6 +589,7 @@ module.exports = async (req, res) => {
         console.log(`📊 Progress: Step ${progress.currentStep}/5 [${progressBar}] ${percentage}%`);
         
         lastCompletedStep = progress.currentStep;
+        
         progress.currentStep++;
         
         // 進捗を保存
