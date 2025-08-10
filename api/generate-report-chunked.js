@@ -375,8 +375,8 @@ module.exports = async (req, res) => {
                     }
                   }
                   
-                  // Step 4へ進む（同じプロセス内で続行）
-                  console.log('🔄 Step 3 completed, continuing to Step 4 in same process');
+                  // Step 4へ進む（複数の方法で実行を試みる）
+                  console.log('🔄 Step 3 completed, trying multiple methods to trigger Step 4');
                   
                   // Step 4へインクリメント
                   progress.currentStep = 4;
@@ -384,10 +384,103 @@ module.exports = async (req, res) => {
                   // 進捗を保存
                   await ordersDB.saveReportProgress(orderId, progress);
                   
-                  // Step 3が完了したので、Step 4に続行する
-                  // breakしないでwhileループを続行
-                  console.log('📝 Continuing to Step 4 without breaking...');
-                  // breakを削除して続行
+                  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://line-love-edu.vercel.app';
+                  
+                  // 方法1: 即座にfetch（await付き）
+                  console.log('📍 Method 1: Immediate fetch with await');
+                  try {
+                    const immediateResponse = await fetch(`${baseUrl}/api/generate-report-chunked`, {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ orderId: orderId, method: 'immediate_await' })
+                    });
+                    console.log('✅ Method 1 completed:', immediateResponse.status);
+                  } catch (err) {
+                    console.error('❌ Method 1 failed:', err.message);
+                  }
+                  
+                  // 方法2: 即座にfetch（awaitなし）
+                  console.log('📍 Method 2: Immediate fetch without await');
+                  fetch(`${baseUrl}/api/generate-report-chunked`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ orderId: orderId, method: 'immediate_no_await' })
+                  }).then(() => {
+                    console.log('✅ Method 2 triggered');
+                  }).catch(err => {
+                    console.error('❌ Method 2 failed:', err.message);
+                  });
+                  
+                  // 方法3: setTimeout 100ms
+                  console.log('📍 Method 3: setTimeout 100ms');
+                  setTimeout(() => {
+                    console.log('⏰ Method 3 timeout fired');
+                    fetch(`${baseUrl}/api/generate-report-chunked`, {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ orderId: orderId, method: 'timeout_100ms' })
+                    }).then(() => {
+                      console.log('✅ Method 3 triggered');
+                    }).catch(err => {
+                      console.error('❌ Method 3 failed:', err.message);
+                    });
+                  }, 100);
+                  
+                  // 方法4: setTimeout 1000ms
+                  console.log('📍 Method 4: setTimeout 1000ms');
+                  setTimeout(() => {
+                    console.log('⏰ Method 4 timeout fired');
+                    fetch(`${baseUrl}/api/generate-report-chunked`, {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ orderId: orderId, method: 'timeout_1000ms' })
+                    }).then(() => {
+                      console.log('✅ Method 4 triggered');
+                    }).catch(err => {
+                      console.error('❌ Method 4 failed:', err.message);
+                    });
+                  }, 1000);
+                  
+                  // 方法5: setImmediate
+                  console.log('📍 Method 5: setImmediate');
+                  setImmediate(() => {
+                    console.log('⏰ Method 5 immediate fired');
+                    fetch(`${baseUrl}/api/generate-report-chunked`, {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ orderId: orderId, method: 'set_immediate' })
+                    }).then(() => {
+                      console.log('✅ Method 5 triggered');
+                    }).catch(err => {
+                      console.error('❌ Method 5 failed:', err.message);
+                    });
+                  });
+                  
+                  // 方法6: Promise.resolve().then()
+                  console.log('📍 Method 6: Promise.resolve().then()');
+                  Promise.resolve().then(() => {
+                    console.log('⏰ Method 6 promise fired');
+                    fetch(`${baseUrl}/api/generate-report-chunked`, {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ orderId: orderId, method: 'promise_then' })
+                    }).then(() => {
+                      console.log('✅ Method 6 triggered');
+                    }).catch(err => {
+                      console.error('❌ Method 6 failed:', err.message);
+                    });
+                  });
+                  
+                  // 500ms待ってからレスポンスを返す（一部のfetchが完了するのを待つ）
+                  await new Promise(resolve => setTimeout(resolve, 500));
+                  
+                  // レスポンスを返す（process-report-loopに終了を通知）
+                  return res.json({
+                    status: 'continuing',
+                    message: 'Step 3 completed, Step 4 scheduled via multiple methods',
+                    nextStep: 4,
+                    totalSteps: progress.totalSteps
+                  });
                   
                 } else if (batch.status === 'failed' || batch.status === 'expired') {
                   console.log(`❌ Batch ${batch.status}`);
@@ -525,14 +618,7 @@ module.exports = async (req, res) => {
               }
             }
           }
-            // AI insightsが取得できた場合のみStep 4に続行
-            if (progress.data.aiInsights) {
-              console.log('✅ AI insights ready, continuing to Step 4...');
-              // breakせずに続行
-            } else {
-              console.log('⏳ AI insights not ready yet, will retry');
-              break; // Batch APIの結果待ちの場合はbreak
-            }
+            break;
             
           case 4:
             console.log('📝 Step 4: Generating report...');
