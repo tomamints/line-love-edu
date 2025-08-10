@@ -133,17 +133,8 @@ module.exports = async (req, res) => {
           channelSecret: process.env.CHANNEL_SECRET
         });
         
-        // ユーザーに通知（エラーは無視して続行）
-        try {
-          await lineClient.pushMessage(userId, {
-            type: 'text',
-            text: '✅ 決済完了しました！\n\nレポートを生成中です...\nしばらくお待ちください。'
-          });
-          console.log('✅ User notified about payment completion');
-        } catch (err) {
-          console.log('⚠️ LINE notification failed:', err.message);
-          // 通知失敗してもレポート生成は続行
-        }
+        // pushMessageは使用しない（ユーザーは「レポート」で確認）
+        console.log('📝 Payment completed - user can check with "レポート" command');
         
         // ユーザープロフィールを取得（レート制限対策付き）
         let userProfile = { displayName: 'ユーザー' };
@@ -162,15 +153,8 @@ module.exports = async (req, res) => {
         console.log('🚀 Starting report generation via process-report-loop...');
         const startTime = Date.now();
         
-        // ユーザーに処理開始を通知
-        try {
-          await lineClient.pushMessage(userId, {
-            type: 'text',
-            text: '📝 レポート生成を開始しました。\n\n処理には数分かかる場合があります。\n完成次第お知らせします。'
-          });
-        } catch (err) {
-          console.log('⚠️ Start notification failed:', err.message);
-        }
+        // pushMessageは使用しない
+        console.log('📝 Report generation started');
         
         // process-report-loopを呼び出し（完了まで自動的にループ）
         console.log('🔄 Starting report processing loop...');

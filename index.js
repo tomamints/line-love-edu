@@ -85,23 +85,7 @@ app.use('/api', express.json());
 // URLエンコードされたフォームデータ用
 app.use('/api', express.urlencoded({ extended: true }));
 
-// レポート生成エンドポイント
-app.all('/api/process-paid-orders', async (req, res) => {
-  const processPaidOrders = require('./api/process-paid-orders');
-  await processPaidOrders(req, res);
-});
-
-// 高速版レポート生成（ステータス更新のみ）
-app.all('/api/process-paid-orders-fast', async (req, res) => {
-  const processPaidOrdersFast = require('./api/process-paid-orders-fast');
-  await processPaidOrdersFast(req, res);
-});
-
-// 保存されたトーク履歴からレポート生成
-app.all('/api/generate-report-from-saved', async (req, res) => {
-  const generateReportFromSaved = require('./api/generate-report-from-saved');
-  await generateReportFromSaved(req, res);
-});
+// 古いエンドポイントは削除（新しいフローを使用）
 
 // プロフィールフォーム
 app.all('/api/profile-form', async (req, res) => {
@@ -456,7 +440,7 @@ app.post('/webhook', middleware(config), async (req, res) => {
             
             return client.replyMessage(event.replyToken, {
               type: 'text',
-              text: `⏳ レポート生成中\n\n${progressText}\n\n完成まで約1-2分お待ちください。\n完成したらお知らせします。`
+              text: `⏳ レポート生成中\n\n${progressText}\n\n完成まで約1-2分お待ちください。\n完成後は「レポート」と送信して確認してください。`
             });
           }
           
@@ -540,27 +524,7 @@ app.post('/webhook', middleware(config), async (req, res) => {
           }
         }
         
-        // 保留中のレポート完成通知をチェック
-        const pendingNotifications = global.pendingNotifications || new Map();
-        const notification = pendingNotifications.get(userId);
-        
-        if (notification && notification.type === 'report_complete') {
-          logger.log('🔔 保留中のレポート完成通知を発見');
-          
-          // paymentHandlerは既にインスタンス化済み
-          const completionMessage = paymentHandler.generateCompletionMessage({
-            reportUrl: notification.reportUrl,
-            orderId: notification.orderId,
-            success: true
-          });
-          
-          await client.replyMessage(event.replyToken, completionMessage);
-          logger.log('✅ レポート完成通知を送信しました');
-          
-          // 通知を削除
-          pendingNotifications.delete(userId);
-          return;
-        }
+        // pendingNotificationsは使用しない（削除）
         
         // 通常のメッセージ処理
         return handleTextMessage(event).catch(err => {

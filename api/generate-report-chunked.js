@@ -513,18 +513,8 @@ module.exports = async (req, res) => {
               pdf_data: pdfBase64
             });
             
-            // ユーザーに通知
-            try {
-              const completionMessage = paymentHandler.generateCompletionMessage({
-                success: true,
-                reportUrl: reportUrl,
-                orderId: orderId
-              });
-              await lineClient.pushMessage(order.userId, completionMessage);
-              console.log('✅ User notified');
-            } catch (err) {
-              console.log('⚠️ Notification failed:', err.message);
-            }
+            // pushMessageは使用しない（ユーザーは「レポート」で確認）
+            console.log('✅ Report completed - user can check with "レポート" command');
             
             // 進捗をクリア
             await ordersDB.clearReportProgress(orderId);

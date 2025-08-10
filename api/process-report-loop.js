@@ -86,8 +86,8 @@ async function processReportWithLoop(orderId, iteration = 1) {
         if (result.status === 'completed') {
           console.log('🎉 Report generation completed!');
           
-          // ユーザーに通知
-          await sendCompletionNotification(order.userId, orderId, result.reportUrl);
+          // pushMessageは使用しない（ユーザーは「レポート」で確認）
+          console.log('🎉 Report completed - user can check with "レポート" command');
           
           return {
             success: true,
@@ -210,28 +210,7 @@ async function processReportWithLoop(orderId, iteration = 1) {
   }
 }
 
-/**
- * 完了通知を送信
- */
-async function sendCompletionNotification(userId, orderId, reportUrl) {
-  try {
-    const lineClient = new line.Client({
-      channelAccessToken: process.env.CHANNEL_ACCESS_TOKEN,
-      channelSecret: process.env.CHANNEL_SECRET
-    });
-    
-    const completionMessage = paymentHandler.generateCompletionMessage({
-      success: true,
-      reportUrl: reportUrl,
-      orderId: orderId
-    });
-    
-    await lineClient.pushMessage(userId, completionMessage);
-    console.log('✅ Completion notification sent');
-  } catch (error) {
-    console.log('⚠️ Notification failed:', error.message);
-  }
-}
+// pushMessageを使用しないため、通知関数は不要
 
 // APIエンドポイント
 module.exports = async (req, res) => {
