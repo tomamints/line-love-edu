@@ -161,9 +161,9 @@ async function processReportWithLoop(orderId, iteration = 1) {
     console.log(`📊 Loop ended - lastStatus: ${lastStatus}, iteration: ${iteration}/${maxIterations}, callCount: ${callCount}`);
     
     if (lastStatus === 'continuing' && iteration < maxIterations) {
-      // 3回目までは同じprocess-report-loop、4回目以降はprocess-report-loop2
-      const shouldUseLoop2 = iteration >= 3;
-      const loopEndpoint = shouldUseLoop2 ? 'process-report-loop2' : 'process-report-loop';
+      // iteration 4以降は自己呼び出しを避ける（continue-report-generationを使うため）
+      // 次のiterationも同じprocess-report-loopを使う
+      const loopEndpoint = 'process-report-loop';
       
       console.log(`🔄 Self-invoking for next iteration... (using ${loopEndpoint})`);
       
