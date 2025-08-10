@@ -201,7 +201,7 @@ module.exports = async (req, res) => {
     }
     
     // タイムアウトまで可能な限りステップを実行
-    while (progress.currentStep <= progress.totalSteps) {
+    while (progress.currentStep <= progress.totalSteps && !completed) {
       const elapsed = Date.now() - startTime;
       const stepTimeout = STEP_TIMEOUTS[progress.currentStep] || 10000;
       
