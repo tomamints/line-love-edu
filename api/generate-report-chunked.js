@@ -354,12 +354,14 @@ module.exports = async (req, res) => {
                   
                   // Step 4へ進む
                   progress.currentStep++;
+                  console.log('🔄 Breaking from Step 3 to proceed to Step 4');
                   break; // switch文を抜ける（重要：これがないとStep 4がスキップされる）
                   
                 } else if (batch.status === 'failed' || batch.status === 'expired') {
                   console.log(`❌ Batch ${batch.status}`);
                   progress.data.aiInsights = null;
                   progress.currentStep++;
+                  console.log('🔄 Breaking from Step 3 (batch failed/expired)');
                   break; // switch文を抜ける
                   
                 } else {
@@ -375,6 +377,7 @@ module.exports = async (req, res) => {
                     console.log('⏰ Timeout after 20 minutes - skipping AI analysis');
                     progress.data.aiInsights = null;
                     progress.currentStep++;
+                    console.log('🔄 Breaking from Step 3 (timeout)');
                     break; // switch文を抜ける
                   } else {
                     // まだBatch処理中なので、Step 3のまま継続
@@ -398,6 +401,7 @@ module.exports = async (req, res) => {
                 // エラーの場合はAIなしで続行
                 progress.data.aiInsights = null;
                 progress.currentStep++;
+                console.log('🔄 Breaking from Step 3 (error)');
                 break; // switch文を抜ける
               }
               
