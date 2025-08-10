@@ -406,9 +406,59 @@ module.exports = async (req, res) => {
                     }
                   }
                   
-                  // Step 3完了後、同じプロセス内でStep 4-5を続行
+                  // Step 3完了後の処理
                   console.log('🔄 Step 3 completed with AI insights');
-                  console.log('✨ AI insights successfully extracted, continuing to Step 4-5 in same process');
+                  
+                  // 時間チェック（GitHub Actionsから呼ばれた場合は特に重要）
+                  const step3EndTime = Date.now() - startTime;
+                  console.log(`⏱️ Step 3 completed at ${step3EndTime}ms`);
+                  
+                  // 30秒以上経過していたら、Step 4は次回に回す
+                  if (step3EndTime > 30000 || isFromGitHubActions) {
+                    console.log('⏰ Time limit consideration - deferring Step 4 to next iteration');
+                    progress.currentStep = 4;
+                    await ordersDB.saveReportProgress(orderId, progress);
+                    
+                    // GitHub Actionsから呼ばれた場合は再トリガー
+                    if (isFromGitHubActions) {
+                      console.log('🔄 Re-triggering GitHub Actions for Step 4...');
+                      try {
+                        const githubToken = process.env.GITHUB_TOKEN || process.env.GITHUB_PAT;
+                        if (githubToken) {
+                          await fetch('https://api.github.com/repos/tomamints/line-love-edu/dispatches', {
+                            method: 'POST',
+                            headers: {
+                              'Accept': 'application/vnd.github.v3+json',
+                              'Authorization': `token ${githubToken}`,
+                              'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                              event_type: 'continue-report',
+                              client_payload: {
+                                orderId: orderId,
+                                batchId: batch.id,
+                                retry: true
+                              }
+                            })
+                          });
+                          console.log('✅ GitHub Actions re-triggered for Step 4');
+                        }
+                      } catch (err) {
+                        console.error('❌ Error re-triggering:', err.message);
+                      }
+                    }
+                    
+                    return res.json({
+                      status: 'continuing',
+                      message: 'Step 3 completed, will continue with Step 4 next iteration',
+                      nextStep: 4,
+                      totalSteps: progress.totalSteps,
+                      elapsed: step3EndTime
+                    });
+                  }
+                  
+                  // 時間に余裕がある場合のみStep 4-5を続行
+                  console.log('✨ Time available, continuing to Step 4-5 in same process');
                   console.log('🚫 NOT calling any additional functions to avoid infinite loop detection');
                   
                   // Step 4へインクリメント
