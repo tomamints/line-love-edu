@@ -521,9 +521,20 @@ class PremiumReportGenerator {
   
   // 簡易実装（実際はより詳細な分析ロジックを実装）
   calculateDetailedStatistics(messages) {
+    // メッセージが空またはtextがない場合のデフォルト値
+    if (!messages || messages.length === 0) {
+      return {
+        totalMessages: 0,
+        averageLength: 0,
+        responseRate: 0,
+        averageResponseTime: '不明'
+      };
+    }
+    
+    const totalLength = messages.reduce((sum, msg) => sum + (msg.text ? msg.text.length : 0), 0);
     return {
       totalMessages: messages.length,
-      averageLength: messages.reduce((sum, msg) => sum + msg.text.length, 0) / messages.length,
+      averageLength: messages.length > 0 ? totalLength / messages.length : 0,
       responseRate: 0.85, // 実際は計算
       averageResponseTime: '15分' // 実際は計算
     };
@@ -890,10 +901,13 @@ ${conversationSample}
         apiKey: process.env.OPENAI_API_KEY
       });
       
-      // 最近30メッセージを抽出
-      const recentMessages = messages.slice(-30).map(m => 
-        `${m.isUser ? 'あなた' : '相手'}: ${m.text.substring(0, 100)}`
-      ).join('\n');
+      // 最近30メッセージを抽出（undefinedチェック追加）
+      const validMessages = messages.filter(m => m && typeof m === 'object');
+      const recentMessages = validMessages.length > 0 
+        ? validMessages.slice(-30).map(m => 
+            `${m.isUser ? 'あなた' : '相手'}: ${(m.text || 'メッセージなし').substring(0, 100)}`
+          ).join('\n')
+        : 'メッセージ履歴がありません';
       
       const prompt = `以下のLINEトーク履歴を分析し、恋愛アドバイザーとして非常に詳細なレポートを作成してください。
 
