@@ -665,6 +665,52 @@ module.exports = async (req, res) => {
           case 4:
             console.log('📝 Step 4: Generating report...');
             
+            // 時間チェック（Step 4開始時）
+            const step4ElapsedTime = Date.now() - startTime;
+            console.log(`⏱️ Step 4 started at ${step4ElapsedTime}ms`);
+            
+            // 40秒以上経過していたら、次回に回す
+            if (step4ElapsedTime > 40000) {
+              console.log('⏰ Time limit approaching for Step 4, deferring to next iteration');
+              await ordersDB.saveReportProgress(orderId, progress);
+              
+              // GitHub Actionsから呼ばれた場合は再トリガー
+              if (isFromGitHubActions) {
+                try {
+                  const githubToken = process.env.GITHUB_TOKEN || process.env.GITHUB_PAT;
+                  if (githubToken) {
+                    await fetch('https://api.github.com/repos/tomamints/line-love-edu/dispatches', {
+                      method: 'POST',
+                      headers: {
+                        'Accept': 'application/vnd.github.v3+json',
+                        'Authorization': `token ${githubToken}`,
+                        'Content-Type': 'application/json'
+                      },
+                      body: JSON.stringify({
+                        event_type: 'continue-report',
+                        client_payload: {
+                          orderId: orderId,
+                          batchId: progress.data.aiBatchId,
+                          retry: true
+                        }
+                      })
+                    });
+                    console.log('✅ GitHub Actions re-triggered for Step 4');
+                  }
+                } catch (err) {
+                  console.error('❌ Error re-triggering:', err.message);
+                }
+              }
+              
+              return res.json({
+                status: 'continuing',
+                message: 'Time limit reached, will continue Step 4 next iteration',
+                nextStep: 4,
+                totalSteps: progress.totalSteps,
+                elapsed: step4ElapsedTime
+              });
+            }
+            
             // AI分析結果がまだない場合の処理を修正
             // 既にStep 5まで進んでいる場合はStep 3に戻さない
             if (progress.data.aiBatchId && progress.data.aiInsights === undefined) {
@@ -712,10 +758,55 @@ module.exports = async (req, res) => {
             progress.data.pdfBuffer = generatedPdfBuffer.toString('base64');
             console.log('✅ Report generated, PDF size:', Math.round(generatedPdfBuffer.length / 1024), 'KB');
             
+            // Step 5に進む前に時間チェック
+            const step4EndTime = Date.now() - startTime;
+            if (step4EndTime > 50000) {
+              console.log('⏰ Time limit reached after Step 4, deferring Step 5');
+              progress.currentStep = 5;
+              await ordersDB.saveReportProgress(orderId, progress);
+              
+              // GitHub Actionsから呼ばれた場合は再トリガー
+              if (isFromGitHubActions) {
+                try {
+                  const githubToken = process.env.GITHUB_TOKEN || process.env.GITHUB_PAT;
+                  if (githubToken) {
+                    await fetch('https://api.github.com/repos/tomamints/line-love-edu/dispatches', {
+                      method: 'POST',
+                      headers: {
+                        'Accept': 'application/vnd.github.v3+json',
+                        'Authorization': `token ${githubToken}`,
+                        'Content-Type': 'application/json'
+                      },
+                      body: JSON.stringify({
+                        event_type: 'continue-report',
+                        client_payload: {
+                          orderId: orderId,
+                          batchId: progress.data.aiBatchId,
+                          retry: true
+                        }
+                      })
+                    });
+                    console.log('✅ GitHub Actions re-triggered for Step 5');
+                  }
+                } catch (err) {
+                  console.error('❌ Error re-triggering:', err.message);
+                }
+              }
+              
+              return res.json({
+                status: 'continuing',
+                message: 'Step 4 completed, will continue with Step 5 next iteration',
+                nextStep: 5,
+                totalSteps: progress.totalSteps,
+                elapsed: step4EndTime
+              });
+            }
+            
             // Step 5に続行
             progress.currentStep = 5;
             await ordersDB.saveReportProgress(orderId, progress);
-            console.log('➡️ Continuing to Step 5 without breaking...');
+            console.log('➡️ Continuing to Step 5...');
+            break; // breakを追加してStep 5を独立させる
             
           case 5:
             console.log('💾 Step 5: Saving and notifying...');
