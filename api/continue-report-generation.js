@@ -799,15 +799,76 @@ module.exports = async (req, res) => {
             // レポート生成（Phase 1: データ生成）
             if (!progress.data.reportData) {
               console.log('📊 Phase 1: Generating report data...');
-              const ReportGenerator = require('../core/premium/report-generator');
-              const fullReportGenerator = new ReportGenerator();
-              progress.data.reportData = await fullReportGenerator.generatePremiumReport(
-                progress.data.messages,
-                order.userId,
-                progress.data.userProfile.displayName
-              );
               
-              // 中間保存と時間チェック
+              // タイムアウト対策：try-catchでエラーハンドリング
+              try {
+                // 処理開始時刻を記録
+                const reportStartTime = Date.now();
+                
+                const ReportGenerator = require('../core/premium/report-generator');
+                const fullReportGenerator = new ReportGenerator();
+                
+                // 15秒のタイムアウトを設定（GitHub Actionsの場合）
+                const reportGenerationPromise = fullReportGenerator.generatePremiumReport(
+                  progress.data.messages,
+                  order.userId,
+                  progress.data.userProfile.displayName
+                );
+                
+                // GitHub Actionsの場合はタイムアウトを設定
+                if (isFromGitHubActions) {
+                  const timeoutPromise = new Promise((_, reject) => {
+                    setTimeout(() => reject(new Error('Report generation timeout')), 15000);
+                  });
+                  
+                  try {
+                    progress.data.reportData = await Promise.race([reportGenerationPromise, timeoutPromise]);
+                  } catch (timeoutErr) {
+                    console.log('⏰ Report generation timed out, will retry');
+                    // 部分的な進捗を保存（エラーフラグを立てる）
+                    progress.data.reportGenerationStarted = true;
+                    await ordersDB.saveReportProgress(orderId, progress);
+                    
+                    // GitHub Actions再トリガー
+                    const githubToken = process.env.GITHUB_TOKEN || process.env.GITHUB_PAT;
+                    if (githubToken) {
+                      await fetch('https://api.github.com/repos/tomamints/line-love-edu/dispatches', {
+                        method: 'POST',
+                        headers: {
+                          'Accept': 'application/vnd.github.v3+json',
+                          'Authorization': `token ${githubToken}`,
+                          'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                          event_type: 'continue-report',
+                          client_payload: {
+                            orderId: orderId,
+                            batchId: progress.data.aiBatchId,
+                            retry: true
+                          }
+                        })
+                      });
+                    }
+                    
+                    return res.json({
+                      status: 'continuing',
+                      message: 'Report generation in progress, retrying',
+                      nextStep: 4,
+                      totalSteps: progress.totalSteps
+                    });
+                  }
+                } else {
+                  progress.data.reportData = await reportGenerationPromise;
+                }
+                
+                console.log('✅ Report data generated successfully');
+              } catch (error) {
+                console.error('❌ Report generation error:', error.message);
+                // エラーでも続行を試みる
+                progress.data.reportData = { error: true, message: error.message };
+              }
+              
+              // 中間保存
               await ordersDB.saveReportProgress(orderId, progress);
               const midStep4Time = Date.now() - startTime;
               console.log(`⏱️ Report data generated at ${midStep4Time}ms`);
