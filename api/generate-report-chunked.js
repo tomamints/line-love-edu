@@ -6,6 +6,11 @@ const PaymentHandler = require('../core/premium/payment-handler');
 const profileManager = require('../core/database/profiles-db');
 const line = require('@line/bot-sdk');
 
+// OpenAIモジュールのロード
+const { OpenAI } = require('openai');
+
+const fs = require('fs').promises;
+
 const paymentHandler = new PaymentHandler();
 
 // 各ステップの処理時間目安（ミリ秒）
@@ -249,11 +254,29 @@ module.exports = async (req, res) => {
             console.log('⏱️ Current elapsed time:', Date.now() - startTime, 'ms');
             
             // Batch APIを使用したAI分析
-            const OpenAI = require('openai');
-            const fs = require('fs').promises;
-            const openai = new OpenAI({
-              apiKey: process.env.OPENAI_API_KEY
-            });
+            console.log('🔧 Initializing OpenAI client...');
+            
+            // OpenAIクライアントの初期化（エラーハンドリング付き）
+            let openai;
+            try {
+              if (!process.env.OPENAI_API_KEY) {
+                console.log('⚠️ OPENAI_API_KEY not set, skipping AI analysis');
+                progress.data.aiInsights = null;
+                progress.currentStep++;
+                break;
+              }
+              
+              openai = new OpenAI({
+                apiKey: process.env.OPENAI_API_KEY
+              });
+              console.log('✅ OpenAI client initialized');
+            } catch (initError) {
+              console.error('❌ OpenAI initialization error:', initError.message);
+              console.error('   - Error stack:', initError.stack);
+              progress.data.aiInsights = null;
+              progress.currentStep++;
+              break;
+            }
             
             // バッチIDが既に存在する場合は結果を確認
             if (progress.data.aiBatchId) {
