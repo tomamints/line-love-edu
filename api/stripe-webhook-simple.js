@@ -238,6 +238,9 @@ module.exports = async (req, res) => {
           const startProcessingLoop = async () => {
             try {
               const loopUrl = `${process.env.NEXT_PUBLIC_BASE_URL || 'https://line-love-edu.vercel.app'}/api/process-report-loop`;
+              console.log(`📡 Calling process-report-loop at: ${loopUrl}`);
+              console.log(`📡 Order ID: ${orderId}`);
+              
               const response = await fetch(loopUrl, {
                 method: 'POST',
                 headers: {
@@ -249,6 +252,8 @@ module.exports = async (req, res) => {
                 })
               });
               
+              console.log(`📡 Response status: ${response.status}`);
+              
               if (response.ok) {
                 const result = await response.json();
                 console.log('✅ Processing loop result:', result.status);
@@ -256,7 +261,8 @@ module.exports = async (req, res) => {
                   console.log('🎉 Report completed via loop processing');
                 }
               } else {
-                console.error('❌ Failed to start processing loop:', response.status);
+                const errorText = await response.text().catch(() => 'No error text');
+                console.error('❌ Failed to start processing loop:', response.status, errorText);
                 
                 // フォールバック：元のバックグラウンド処理
                 reportPromise.then(async (bgResult) => {
@@ -293,13 +299,17 @@ module.exports = async (req, res) => {
             }
           };
           
-          // レスポンスを先に返す
-          res.json({ received: true, status: 'generating' });
-          
-          // バックグラウンドでループ処理を開始
-          startProcessingLoop().catch(err => {
+          // process-report-loopを即座に開始してからレスポンスを返す
+          // 非同期でfetchを開始（待たない）
+          const loopPromise = startProcessingLoop().catch(err => {
             console.log('⚠️ Processing loop error:', err.message);
           });
+          
+          // fetchが開始されるまで少し待つ（100ms）
+          await new Promise(resolve => setTimeout(resolve, 100));
+          
+          // レスポンスを返す
+          res.json({ received: true, status: 'generating' });
           
           return;
         }
