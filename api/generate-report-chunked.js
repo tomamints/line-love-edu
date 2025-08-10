@@ -8,8 +8,9 @@ const line = require('@line/bot-sdk');
 
 // OpenAIモジュールのロード
 const { OpenAI } = require('openai');
-
+// fsモジュールは2つ必要
 const fs = require('fs').promises;
+const fsSync = require('fs');
 
 const paymentHandler = new PaymentHandler();
 
@@ -411,9 +412,9 @@ module.exports = async (req, res) => {
                 const tempPath = `/tmp/batch_${orderId}_${Date.now()}.jsonl`;
                 await fs.writeFile(tempPath, jsonlContent);
                 
-                // OpenAIにアップロード
+                // OpenAIにアップロード（fsStreamを使用）
                 const file = await openai.files.create({
-                  file: await fs.readFile(tempPath),
+                  file: fsSync.createReadStream(tempPath),
                   purpose: "batch"
                 });
                 console.log(`📁 File uploaded: ${file.id}`);
