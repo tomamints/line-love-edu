@@ -115,6 +115,16 @@ async function processReportWithLoop(orderId, iteration = 1) {
           // 少し待つ（サーバー負荷軽減、無限ループ検出を回避）
           await new Promise(resolve => setTimeout(resolve, 45000)); // 45秒待つ
         }
+        
+        // Step 3完了でStep 4に進む場合は、process-report-loopを終了
+        if (result.nextStep === 4) {
+          console.log('🏁 Step 3 completed, Step 4+ will be handled by generate-report-chunked directly');
+          return {
+            success: false,
+            status: 'step3_completed',
+            message: 'Step 3 completed, continuing with Step 4 via generate-report-chunked'
+          };
+        }
         // まだ続きがある場合（waiting_batchの場合は除く）
         else if (result.status === 'continuing') {
           console.log(`⏳ Continuing... (step ${result.nextStep}/${result.totalSteps})`);

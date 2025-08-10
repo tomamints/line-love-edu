@@ -185,13 +185,18 @@ module.exports = async (req, res) => {
       const elapsed = Date.now() - startTime;
       const stepTimeout = STEP_TIMEOUTS[progress.currentStep] || 10000;
       
-      // 時間チェック（全ステップ共通）
-      if (elapsed + stepTimeout > TIME_LIMIT) {
+      // 時間チェック（Step 3以下のみ。Step 4以降は一気に進める）
+      if (progress.currentStep <= 3 && elapsed + stepTimeout > TIME_LIMIT) {
         console.log('⏸️ Pausing before step', progress.currentStep);
         console.log('⏱️ Elapsed:', elapsed, 'ms');
         console.log('⏱️ Next step needs:', stepTimeout, 'ms');
         console.log('⏰ Will continue in next invocation to avoid timeout');
         break;
+      }
+      
+      // Step 4以降は時間制限なしで最後まで進める
+      if (progress.currentStep >= 4) {
+        console.log('🚀 Step 4+: Running to completion without timeout check');
       }
       
       const stepNames = {
