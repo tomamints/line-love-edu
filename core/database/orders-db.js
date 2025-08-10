@@ -480,11 +480,31 @@ class OrdersDB {
         console.log('⚠️ 一時ファイル保存エラー（無視）:', fsErr.message);
       }
       
-      // Supabaseにステータスを保存
+      // Supabaseにステータスと進捗データを保存
+      // progressデータをJSONとして保存（messages以外）
+      const progressToSave = {
+        currentStep: progress.currentStep,
+        totalSteps: progress.totalSteps,
+        attempts: progress.attempts,
+        startedAt: progress.startedAt,
+        data: {
+          // messagesは大きすぎるので除外
+          userProfile: progress.data?.userProfile,
+          fortune: progress.data?.fortune,
+          aiBatchId: progress.data?.aiBatchId,
+          aiBatchStartTime: progress.data?.aiBatchStartTime,
+          aiInsights: progress.data?.aiInsights,
+          reportData: progress.data?.reportData,
+          // messagesは件数だけ保存
+          messageCount: progress.data?.messages?.length || 0
+        }
+      };
+      
       const { error } = await this.supabase
         .from('orders')
         .update({
           status: `generating_step_${progress.currentStep}`,
+          report_progress: progressToSave,  // 進捗データをJSONとして保存
           updated_at: new Date().toISOString()
         })
         .eq('id', orderId);
@@ -539,7 +559,23 @@ class OrdersDB {
         return null;
       }
       
-      // statusからステップ番号を取得
+      // report_progressフィールドがある場合（優先）
+      if (order.report_progress) {
+        console.log('✅ 進捗をDBから完全復元');
+        console.log('   - Step:', order.report_progress.currentStep);
+        console.log('   - Batch ID:', order.report_progress.data?.aiBatchId);
+        console.log('   - Message count:', order.report_progress.data?.messageCount);
+        
+        // messagesだけは再取得が必要（DBには保存していない）
+        const progress = order.report_progress;
+        if (progress.data && progress.data.messageCount > 0 && !progress.data.messages) {
+          console.log('   ⚠️ messagesは再取得が必要');
+        }
+        
+        return progress;
+      }
+      
+      // statusからステップ番号を取得（フォールバック）
       if (order.status && order.status.startsWith('generating_step_')) {
         const stepNumber = parseInt(order.status.replace('generating_step_', ''));
         console.log('✅ ステータスから進捗を復元: Step', stepNumber);
@@ -552,12 +588,6 @@ class OrdersDB {
           attempts: 1,
           startedAt: order.updatedAt || order.createdAt
         };
-      }
-      
-      // report_progressフィールドがある場合（将来的にカラムが追加された場合）
-      if (order.report_progress) {
-        console.log('✅ 進捗をDBから取得:', order.report_progress);
-        return order.report_progress;
       }
       
       console.log('⚠️ 進捗データなし（初回実行）');

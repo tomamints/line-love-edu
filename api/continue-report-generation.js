@@ -120,20 +120,22 @@ module.exports = async (req, res) => {
         console.log('💉 Injecting Batch ID from GitHub Actions:', batchId);
         if (!progress.data) progress.data = {};
         progress.data.aiBatchId = batchId;
-        
-        // Step 4-5に必要なデータ（messages、userProfile）がない場合は取得が必要
-        if (!progress.data.messages || !progress.data.userProfile) {
-          console.log('⚠️ Batch IDはあるが、messages/userProfileがないのでStep 1-2を実行');
+      }
+      
+      // messagesが欠けている場合のみ再取得（他のデータはDBから復元済み）
+      if (progress.currentStep >= 3 && progress.data && !progress.data.messages) {
+        if (progress.data.messageCount > 0) {
+          console.log('📝 DBから復元されたが、messagesだけ再取得が必要');
+          // messagesだけ取得するためStep 1を実行（他のデータは保持）
+          const savedData = { ...progress.data };
           progress.currentStep = 1;
-          // Batch IDは保持したまま
-          const savedBatchId = progress.data.aiBatchId;
-          progress.data = { aiBatchId: savedBatchId };
+          progress.data = savedData;  // 既存データを保持
+        } else if (!progress.data.userProfile) {
+          // userProfileもない場合は完全に再実行
+          console.log('⚠️ データが失われているため、Step 1-2を再実行');
+          progress.currentStep = 1;
+          progress.data = {};
         }
-      } else if (progress.currentStep >= 3 && (!progress.data || !progress.data.messages)) {
-        // データが失われている場合は、Step 1-2 を再実行してデータを取得
-        console.log('⚠️ データが失われているため、Step 1-2を再実行');
-        progress.currentStep = 1;
-        progress.data = {};
       }
     }
     
