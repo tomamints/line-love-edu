@@ -109,10 +109,13 @@ async function processReportWithLoop(orderId, iteration = 1) {
         // Batch API待機中の特別処理
         if (result.status === 'waiting_batch') {
           console.log(`⏳ Batch API waiting... (${result.message})`);
-          console.log('⏰ Step 3 will self-invoke after 30s - breaking loop here');
-          // このイテレーションを終了（generate-report-chunkedが30秒後に自己呼び出し）
-          lastStatus = 'waiting_batch';
-          break; // whileループを抜けるが、処理は継続可能
+          console.log('⏰ Skipping further calls - Step 3 will self-invoke after 30s');
+          // process-report-loopは呼び出しを停止（generate-report-chunkedが30秒後に自己呼び出し）
+          return {
+            success: false,
+            status: 'waiting_batch',
+            message: result.message
+          };
         }
         
         // まだ続きがある場合
@@ -141,7 +144,6 @@ async function processReportWithLoop(orderId, iteration = 1) {
     }
     
     // まだ完了していない場合、自分自身を再呼び出し
-    // waiting_batchの場合はgenerate-report-chunkedが自己呼び出しするので、ここでは何もしない
     if (lastStatus === 'continuing' && iteration < maxIterations) {
       console.log('🔄 Self-invoking for next iteration...');
       
@@ -194,15 +196,6 @@ async function processReportWithLoop(orderId, iteration = 1) {
         success: false,
         status: 'error',
         error: 'Max iterations reached'
-      };
-    }
-    
-    // waiting_batchの場合は、generate-report-chunkedが自己処理
-    if (lastStatus === 'waiting_batch') {
-      return {
-        success: false,
-        status: 'waiting_batch',
-        message: 'Batch API processing - will auto-continue'
       };
     }
     
