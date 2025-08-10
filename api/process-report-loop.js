@@ -171,12 +171,15 @@ async function processReportWithLoop(orderId, iteration = 1) {
         }
       };
       
-      // 非同期実行（待たない）
-      triggerNextIteration().catch(err => {
+      // 非同期実行（少し待つ）
+      const triggerPromise = triggerNextIteration().catch(err => {
         console.error('❌ Trigger failed:', err);
       });
       
-      // 即座にレスポンスを返す
+      // fetchが開始されるまで少し待つ（500ms）
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      // レスポンスを返す
       return {
         success: false,
         status: 'continuing',
