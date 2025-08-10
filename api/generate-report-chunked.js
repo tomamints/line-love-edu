@@ -374,10 +374,19 @@ module.exports = async (req, res) => {
                     progress.data.aiInsights = null;
                     progress.currentStep++;
                   } else {
-                    // 進捗を保存して継続を返す（通常のcontinuingと同じ）
+                    // まだBatch処理中なので、Step 3のまま継続
                     await ordersDB.saveReportProgress(orderId, progress);
                     shouldContinue = true; // 続行フラグをセット
-                    break; // whileループを抜ける
+                    // Step 3のままでwhileループを抜ける（currentStepは増やさない）
+                    // 次回もStep 3から始まってBatch状態を再確認する
+                    return res.json({
+                      status: 'waiting_batch',
+                      message: `AI batch ${batch.status} (${waitMinutes}m ${waitSeconds}s)`,
+                      nextStep: progress.currentStep,
+                      totalSteps: progress.totalSteps,
+                      batchId: progress.data.aiBatchId,
+                      elapsed: Date.now() - startTime
+                    });
                   }
                 }
                 
@@ -480,6 +489,28 @@ module.exports = async (req, res) => {
             
           case 4:
             console.log('📝 Step 4: Generating report...');
+            
+            // AI分析結果がまだない場合はStep 3に戻る
+            if (progress.data.aiBatchId && progress.data.aiInsights === undefined) {
+              console.log('⚠️ AI insights not ready yet, going back to Step 3');
+              progress.currentStep = 3;
+              await ordersDB.saveReportProgress(orderId, progress);
+              // 8秒後に再実行
+              setTimeout(() => {
+                fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'https://line-love-edu.vercel.app'}/api/generate-report-chunked`, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ orderId: orderId })
+                }).catch(err => console.error('⚠️ Retry failed:', err));
+              }, 8000);
+              return res.json({
+                status: 'continuing',
+                message: 'AI not ready, going back to Step 3',
+                nextStep: 3,
+                totalSteps: progress.totalSteps
+              });
+            }
+            
             // レポート生成
             const ReportGenerator = require('../core/premium/report-generator');
             const fullReportGenerator = new ReportGenerator();
