@@ -357,32 +357,35 @@ module.exports = async (req, res) => {
                     }
                   }
                   
-                  // Step 4へ進む（次のプロセスで実行）
-                  console.log('🔄 Step 3 completed, will continue with Step 4 in next invocation');
+                  // Step 4へ進む（新しいプロセスで実行）
+                  console.log('🔄 Step 3 completed, scheduling Step 4 directly');
                   
                   // Step 4へインクリメント
                   progress.currentStep = 4;
                   
-                  // 進捗を保存してStep 4へ
+                  // 進捗を保存
                   await ordersDB.saveReportProgress(orderId, progress);
                   
-                  // 8秒後に次の処理をトリガー
+                  // 1秒後に直接generate-report-chunkedを呼び出し（process-report-loop経由ではなく）
                   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://line-love-edu.vercel.app';
                   setTimeout(() => {
                     fetch(`${baseUrl}/api/generate-report-chunked`, {
                       method: 'POST',
                       headers: { 'Content-Type': 'application/json' },
                       body: JSON.stringify({ orderId: orderId })
-                    }).catch(err => console.error('⚠️ Next invocation failed:', err));
-                  }, 8000);
+                    }).then(() => {
+                      console.log('✅ Step 4 invocation triggered');
+                    }).catch(err => {
+                      console.error('⚠️ Step 4 invocation failed:', err);
+                    });
+                  }, 1000); // 1秒後（確実に送信されるよう短く）
                   
-                  // 即座にレスポンスを返す（Step 3で終了）
+                  // レスポンスを返す（process-report-loopに終了を通知）
                   return res.json({
                     status: 'continuing',
-                    message: 'Step 3 completed, continuing to Step 4',
+                    message: 'Step 3 completed, Step 4 scheduled',
                     nextStep: 4,
-                    totalSteps: progress.totalSteps,
-                    elapsed: Date.now() - startTime
+                    totalSteps: progress.totalSteps
                   });
                   
                 } else if (batch.status === 'failed' || batch.status === 'expired') {
