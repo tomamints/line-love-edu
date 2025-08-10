@@ -1023,7 +1023,7 @@ ${recentMessages}
           }
         ],
         temperature: 0.8,
-        max_tokens: 8000,  // 3000→8000に増やす（GPT-4oの上限内）
+        max_tokens: 16384,  // GPT-4oの最大出力トークン数
         response_format: { type: "json_object" }
       });
       
