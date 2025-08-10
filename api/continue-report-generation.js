@@ -243,9 +243,11 @@ module.exports = async (req, res) => {
         break;
       }
       
-      // Step 4以降は時間制限なしで最後まで進める
-      if (progress.currentStep >= 4) {
-        console.log('🚀 Step 4+: Running to completion without timeout check');
+      // Step 4以降は時間制限なしで最後まで進める（GitHub Actions以外の場合のみ）
+      if (progress.currentStep >= 4 && !isFromGitHubActions) {
+        console.log('🚀 Step 4+: Running to completion without timeout check (not from GitHub Actions)');
+      } else if (progress.currentStep >= 4 && isFromGitHubActions) {
+        console.log('⚠️ Step 4+ from GitHub Actions: Time limit still applies');
       }
       
       const stepNames = {
@@ -719,8 +721,11 @@ module.exports = async (req, res) => {
             const step4ElapsedTime = Date.now() - startTime;
             console.log(`⏱️ Step 4 started at ${step4ElapsedTime}ms`);
             
-            // 40秒以上経過していたら、次回に回す
-            if (step4ElapsedTime > 40000) {
+            // GitHub Actionsから呼ばれた場合、またはすでに時間が経過している場合は分割処理
+            // GitHub Actionsの場合は20秒、通常は40秒を閾値とする
+            const step4TimeLimit = isFromGitHubActions ? 20000 : 40000;
+            
+            if (step4ElapsedTime > step4TimeLimit) {
               console.log('⏰ Time limit approaching for Step 4, deferring to next iteration');
               await ordersDB.saveReportProgress(orderId, progress);
               
@@ -791,22 +796,76 @@ module.exports = async (req, res) => {
               }
             }
             
-            // レポート生成
-            const ReportGenerator = require('../core/premium/report-generator');
-            const fullReportGenerator = new ReportGenerator();
-            progress.data.reportData = await fullReportGenerator.generatePremiumReport(
-              progress.data.messages,
-              order.userId,
-              progress.data.userProfile.displayName
-            );
+            // レポート生成（Phase 1: データ生成）
+            if (!progress.data.reportData) {
+              console.log('📊 Phase 1: Generating report data...');
+              const ReportGenerator = require('../core/premium/report-generator');
+              const fullReportGenerator = new ReportGenerator();
+              progress.data.reportData = await fullReportGenerator.generatePremiumReport(
+                progress.data.messages,
+                order.userId,
+                progress.data.userProfile.displayName
+              );
+              
+              // 中間保存と時間チェック
+              await ordersDB.saveReportProgress(orderId, progress);
+              const midStep4Time = Date.now() - startTime;
+              console.log(`⏱️ Report data generated at ${midStep4Time}ms`);
+              
+              // GitHub Actionsから呼ばれた場合、30秒超えたら一旦中断
+              if (isFromGitHubActions && midStep4Time > 30000) {
+                console.log('⏰ Time limit reached after report data generation, deferring PDF generation');
+                
+                // GitHub Actions再トリガー
+                try {
+                  const githubToken = process.env.GITHUB_TOKEN || process.env.GITHUB_PAT;
+                  if (githubToken) {
+                    await fetch('https://api.github.com/repos/tomamints/line-love-edu/dispatches', {
+                      method: 'POST',
+                      headers: {
+                        'Accept': 'application/vnd.github.v3+json',
+                        'Authorization': `token ${githubToken}`,
+                        'Content-Type': 'application/json'
+                      },
+                      body: JSON.stringify({
+                        event_type: 'continue-report',
+                        client_payload: {
+                          orderId: orderId,
+                          batchId: progress.data.aiBatchId,
+                          retry: true
+                        }
+                      })
+                    });
+                    console.log('✅ GitHub Actions re-triggered for PDF generation');
+                  }
+                } catch (err) {
+                  console.error('❌ Error re-triggering:', err.message);
+                }
+                
+                return res.json({
+                  status: 'continuing',
+                  message: 'Report data generated, will continue with PDF generation',
+                  nextStep: 4,
+                  totalSteps: progress.totalSteps,
+                  elapsed: midStep4Time
+                });
+              }
+            } else {
+              console.log('📊 Report data already exists, skipping generation');
+            }
             
-            // HTML/PDF生成
-            const PDFGenerator = require('../core/premium/pdf-generator');
-            const pdfGenerator = new PDFGenerator();
-            const generatedPdfBuffer = await pdfGenerator.generatePDF(progress.data.reportData);
-            // BufferをBase64として保存（JSONシリアライズ可能）
-            progress.data.pdfBuffer = generatedPdfBuffer.toString('base64');
-            console.log('✅ Report generated, PDF size:', Math.round(generatedPdfBuffer.length / 1024), 'KB');
+            // HTML/PDF生成（Phase 2: PDF生成）
+            if (!progress.data.pdfBuffer) {
+              console.log('📄 Phase 2: Generating PDF...');
+              const PDFGenerator = require('../core/premium/pdf-generator');
+              const pdfGenerator = new PDFGenerator();
+              const generatedPdfBuffer = await pdfGenerator.generatePDF(progress.data.reportData);
+              // BufferをBase64として保存（JSONシリアライズ可能）
+              progress.data.pdfBuffer = generatedPdfBuffer.toString('base64');
+              console.log('✅ PDF generated, size:', Math.round(generatedPdfBuffer.length / 1024), 'KB');
+            } else {
+              console.log('📄 PDF already exists, skipping generation');
+            }
             
             // Step 5に進む前に時間チェック
             const step4EndTime = Date.now() - startTime;
