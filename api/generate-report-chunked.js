@@ -352,9 +352,33 @@ module.exports = async (req, res) => {
                     }
                   }
                   
-                  // Step 4へ進む（switch文の後でインクリメントされるので、ここではしない）
-                  console.log('🔄 Breaking from Step 3 to proceed to Step 4');
-                  break; // switch文を抜ける
+                  // Step 4へ進む（次のプロセスで実行）
+                  console.log('🔄 Step 3 completed, will continue with Step 4 in next invocation');
+                  
+                  // Step 4へインクリメント
+                  progress.currentStep = 4;
+                  
+                  // 進捗を保存してStep 4へ
+                  await ordersDB.saveReportProgress(orderId, progress);
+                  
+                  // 8秒後に次の処理をトリガー
+                  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://line-love-edu.vercel.app';
+                  setTimeout(() => {
+                    fetch(`${baseUrl}/api/generate-report-chunked`, {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ orderId: orderId })
+                    }).catch(err => console.error('⚠️ Next invocation failed:', err));
+                  }, 8000);
+                  
+                  // 即座にレスポンスを返す（Step 3で終了）
+                  return res.json({
+                    status: 'continuing',
+                    message: 'Step 3 completed, continuing to Step 4',
+                    nextStep: 4,
+                    totalSteps: progress.totalSteps,
+                    elapsed: Date.now() - startTime
+                  });
                   
                 } else if (batch.status === 'failed' || batch.status === 'expired') {
                   console.log(`❌ Batch ${batch.status}`);
