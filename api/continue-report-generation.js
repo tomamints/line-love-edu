@@ -1042,16 +1042,10 @@ module.exports = async (req, res) => {
             }
             
             // Step 5に続行
-            // Step 3→4の直接遷移の場合は、whileループ最後でインクリメントされるのでここでは設定しない
-            if (!skipIncrementForDirectTransition) {
-              progress.currentStep = 5;
-              await ordersDB.saveReportProgress(orderId, progress);
-              console.log('➡️ Continuing to Step 5 (normal flow)...');
-            } else {
-              // Step 3→4直接遷移の場合、currentStepは4のまま。whileループ最後で5にインクリメントされる
-              console.log('➡️ Will continue to Step 5 after while loop increment...');
-              await ordersDB.saveReportProgress(orderId, progress);
-            }
+            // whileループの最後でインクリメントされるので、ここでは4のままにしておく
+            // 次のイテレーションでStep 5が実行される
+            console.log('➡️ Step 4 completed, will continue to Step 5 in next iteration...');
+            await ordersDB.saveReportProgress(orderId, progress);
             break; // breakを追加してStep 5を独立させる
             
           case 5:
