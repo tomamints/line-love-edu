@@ -374,15 +374,31 @@ module.exports = async (req, res) => {
                     progress.data.aiInsights = null;
                     progress.currentStep++;
                   } else {
-                    // まだ待つ
+                    // Batch API待機中は特別処理（30秒後にチェック）
                     await ordersDB.saveReportProgress(orderId, progress);
+                    
+                    // 30秒後に自己呼び出し（Step 3のBatch待機時のみ）
+                    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://line-love-edu.vercel.app';
+                    setTimeout(() => {
+                      fetch(`${baseUrl}/api/generate-report-chunked`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ orderId: orderId })
+                      }).then(() => {
+                        console.log('✅ Batch status check scheduled (30s interval for Step 3)');
+                      }).catch(err => {
+                        console.error('⚠️ Failed to schedule batch check:', err.message);
+                      });
+                    }, 30000); // 30秒後
+                    
                     return res.json({
-                      status: 'continuing',
+                      status: 'waiting_batch', // 特別なステータス（process-report-loopに長時間待機を指示）
                       message: `AI batch ${batch.status} (${waitMinutes}m ${waitSeconds}s)`,
                       nextStep: progress.currentStep,
                       totalSteps: progress.totalSteps,
                       batchId: progress.data.aiBatchId,
-                      elapsed: Date.now() - startTime
+                      elapsed: Date.now() - startTime,
+                      waitInterval: 30000 // 30秒待機中であることを明示
                     });
                   }
                 }

@@ -106,6 +106,18 @@ async function processReportWithLoop(orderId, iteration = 1) {
           };
         }
         
+        // Batch API待機中の特別処理
+        if (result.status === 'waiting_batch') {
+          console.log(`⏳ Batch API waiting... (${result.message})`);
+          console.log('⏰ Skipping further calls - Step 3 will self-invoke after 30s');
+          // process-report-loopは呼び出しを停止（generate-report-chunkedが30秒後に自己呼び出し）
+          return {
+            success: false,
+            status: 'waiting_batch',
+            message: result.message
+          };
+        }
+        
         // まだ続きがある場合
         if (result.status === 'continuing') {
           console.log(`⏳ Continuing... (step ${result.nextStep}/${result.totalSteps})`);
