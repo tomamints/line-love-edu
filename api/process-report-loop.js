@@ -112,8 +112,8 @@ async function processReportWithLoop(orderId, iteration = 1) {
           lastStatus = 'continuing'; // continuingとして扱う
           callCount++;
           
-          // 少し待つ（サーバー負荷軽減）
-          await new Promise(resolve => setTimeout(resolve, 2000)); // 2秒待つ
+          // 少し待つ（サーバー負荷軽減、無限ループ検出を回避）
+          await new Promise(resolve => setTimeout(resolve, 10000)); // 10秒待つ
         }
         
         // まだ続きがある場合
@@ -122,7 +122,7 @@ async function processReportWithLoop(orderId, iteration = 1) {
           callCount++;
           
           // 少し待つ（サーバー負荷軽減、Vercelの無限ループ検出を回避）
-          await new Promise(resolve => setTimeout(resolve, 2000)); // 2秒待つ
+          await new Promise(resolve => setTimeout(resolve, 10000)); // 10秒待つ
         }
         
       } catch (error) {
@@ -130,7 +130,7 @@ async function processReportWithLoop(orderId, iteration = 1) {
         callCount++;
         
         // エラーでも続行を試みる（Vercelの無限ループ検出を回避）
-        await new Promise(resolve => setTimeout(resolve, 3000)); // 3秒待つ
+        await new Promise(resolve => setTimeout(resolve, 10000)); // 10秒待つ
       }
       
       // 時間チェック
