@@ -160,6 +160,7 @@ module.exports = async (req, res) => {
     let completed = false;
     let lastCompletedStep = progress.currentStep - 1;
     let shouldContinue = false; // 継続が必要かどうか
+    let skipIncrementForDirectTransition = false; // Step 3→4直接遷移時のフラグ
     
     // Step 3でAI分析が進行中の場合のチェック
     if (progress.currentStep === 3 && progress.data?.aiAnalysisInProgress) {
@@ -463,15 +464,15 @@ module.exports = async (req, res) => {
                   console.log('✨ Time available, continuing to Step 4-5 in same process');
                   console.log('🚫 NOT calling any additional functions to avoid infinite loop detection');
                   
-                  // Step 4へインクリメント
+                  // Step 4へ進む
                   progress.currentStep = 4;
-                  
                   // 進捗を保存
                   await ordersDB.saveReportProgress(orderId, progress);
                   
                   console.log('➡️ Continuing to Step 4 without breaking the while loop...');
-                  // breakせずにwhileループを継続してStep 4-5を実行
-                  // これによりStep 4のcaseに直接進む
+                  // breakせずにwhileループを継続してStep 4を実行
+                  // Step 3→4の場合は、whileループ最後のcurrentStep++をスキップするフラグをセット
+                  skipIncrementForDirectTransition = true;
                   
                 } else if (batch.status === 'failed' || batch.status === 'expired') {
                   console.log(`❌ Batch ${batch.status}`);
@@ -1041,9 +1042,16 @@ module.exports = async (req, res) => {
             }
             
             // Step 5に続行
-            progress.currentStep = 5;
-            await ordersDB.saveReportProgress(orderId, progress);
-            console.log('➡️ Continuing to Step 5...');
+            // Step 3→4の直接遷移の場合は、whileループ最後でインクリメントされるのでここでは設定しない
+            if (!skipIncrementForDirectTransition) {
+              progress.currentStep = 5;
+              await ordersDB.saveReportProgress(orderId, progress);
+              console.log('➡️ Continuing to Step 5 (normal flow)...');
+            } else {
+              // Step 3→4直接遷移の場合、currentStepは4のまま。whileループ最後で5にインクリメントされる
+              console.log('➡️ Will continue to Step 5 after while loop increment...');
+              await ordersDB.saveReportProgress(orderId, progress);
+            }
             break; // breakを追加してStep 5を独立させる
             
           case 5:
@@ -1105,7 +1113,14 @@ module.exports = async (req, res) => {
           
           lastCompletedStep = progress.currentStep;
           
-          progress.currentStep++;
+          // Step 3→4の直接遷移の場合もインクリメントする（4→5へ）
+          if (!skipIncrementForDirectTransition) {
+            progress.currentStep++;
+          } else {
+            console.log('⏭️ Incrementing Step 4→5 for direct transition');
+            progress.currentStep++;  // Step 3→4直接遷移の場合も、4→5へインクリメント
+            skipIncrementForDirectTransition = false; // フラグをリセット
+          }
           
           // 進捗を保存
           await ordersDB.saveReportProgress(orderId, progress);
