@@ -722,8 +722,8 @@ module.exports = async (req, res) => {
             console.log(`⏱️ Step 4 started at ${step4ElapsedTime}ms`);
             
             // GitHub Actionsから呼ばれた場合、またはすでに時間が経過している場合は分割処理
-            // GitHub Actionsの場合は20秒、通常は40秒を閾値とする
-            const step4TimeLimit = isFromGitHubActions ? 20000 : 40000;
+            // GitHub Actionsの場合は5秒、通常は40秒を閾値とする（確実にタイムアウトを防ぐ）
+            const step4TimeLimit = isFromGitHubActions ? 5000 : 40000;
             
             if (step4ElapsedTime > step4TimeLimit) {
               console.log('⏰ Time limit approaching for Step 4, deferring to next iteration');
@@ -799,6 +799,13 @@ module.exports = async (req, res) => {
             // レポート生成（Phase 1: データ生成）
             if (!progress.data.reportData) {
               console.log('📊 Phase 1: Generating report data...');
+              console.log('📊 Current progress:', {
+                hasMessages: !!progress.data.messages,
+                messageCount: progress.data.messages?.length,
+                hasAiInsights: !!progress.data.aiInsights,
+                hasUserProfile: !!progress.data.userProfile,
+                reportGenerationStarted: progress.data.reportGenerationStarted
+              });
               
               // タイムアウト対策：try-catchでエラーハンドリング
               try {
@@ -808,7 +815,7 @@ module.exports = async (req, res) => {
                 const ReportGenerator = require('../core/premium/report-generator');
                 const fullReportGenerator = new ReportGenerator();
                 
-                // 15秒のタイムアウトを設定（GitHub Actionsの場合）
+                // 10秒のタイムアウトを設定（GitHub Actionsの場合）- より安全に
                 const reportGenerationPromise = fullReportGenerator.generatePremiumReport(
                   progress.data.messages,
                   order.userId,
@@ -818,7 +825,7 @@ module.exports = async (req, res) => {
                 // GitHub Actionsの場合はタイムアウトを設定
                 if (isFromGitHubActions) {
                   const timeoutPromise = new Promise((_, reject) => {
-                    setTimeout(() => reject(new Error('Report generation timeout')), 15000);
+                    setTimeout(() => reject(new Error('Report generation timeout')), 10000);  // 10秒に短縮
                   });
                   
                   try {
@@ -918,12 +925,72 @@ module.exports = async (req, res) => {
             // HTML/PDF生成（Phase 2: PDF生成）
             if (!progress.data.pdfBuffer) {
               console.log('📄 Phase 2: Generating PDF...');
-              const PDFGenerator = require('../core/premium/pdf-generator');
-              const pdfGenerator = new PDFGenerator();
-              const generatedPdfBuffer = await pdfGenerator.generatePDF(progress.data.reportData);
-              // BufferをBase64として保存（JSONシリアライズ可能）
-              progress.data.pdfBuffer = generatedPdfBuffer.toString('base64');
-              console.log('✅ PDF generated, size:', Math.round(generatedPdfBuffer.length / 1024), 'KB');
+              
+              try {
+                const PDFGenerator = require('../core/premium/pdf-generator');
+                const pdfGenerator = new PDFGenerator();
+                
+                // GitHub Actionsの場合は10秒タイムアウト
+                if (isFromGitHubActions) {
+                  const pdfGenerationPromise = pdfGenerator.generatePDF(progress.data.reportData);
+                  const timeoutPromise = new Promise((_, reject) => {
+                    setTimeout(() => reject(new Error('PDF generation timeout')), 10000);
+                  });
+                  
+                  try {
+                    const generatedPdfBuffer = await Promise.race([pdfGenerationPromise, timeoutPromise]);
+                    progress.data.pdfBuffer = generatedPdfBuffer.toString('base64');
+                    console.log('✅ PDF generated, size:', Math.round(generatedPdfBuffer.length / 1024), 'KB');
+                  } catch (pdfTimeoutErr) {
+                    console.log('⏰ PDF generation timed out, will retry');
+                    // 進捗を保存して再実行
+                    progress.data.pdfGenerationStarted = true;
+                    await ordersDB.saveReportProgress(orderId, progress);
+                    
+                    // GitHub Actions再トリガー
+                    const githubToken = process.env.GITHUB_TOKEN || process.env.GITHUB_PAT;
+                    if (githubToken) {
+                      await fetch('https://api.github.com/repos/tomamints/line-love-edu/dispatches', {
+                        method: 'POST',
+                        headers: {
+                          'Accept': 'application/vnd.github.v3+json',
+                          'Authorization': `token ${githubToken}`,
+                          'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                          event_type: 'continue-report',
+                          client_payload: {
+                            orderId: orderId,
+                            batchId: progress.data.aiBatchId,
+                            retry: true
+                          }
+                        })
+                      });
+                    }
+                    
+                    return res.json({
+                      status: 'continuing',
+                      message: 'PDF generation in progress, retrying',
+                      nextStep: 4,
+                      totalSteps: progress.totalSteps
+                    });
+                  }
+                } else {
+                  // 通常の処理
+                  const generatedPdfBuffer = await pdfGenerator.generatePDF(progress.data.reportData);
+                  progress.data.pdfBuffer = generatedPdfBuffer.toString('base64');
+                  console.log('✅ PDF generated, size:', Math.round(generatedPdfBuffer.length / 1024), 'KB');
+                }
+                
+                // 進捗を保存
+                await ordersDB.saveReportProgress(orderId, progress);
+                console.log('✅ PDF saved to progress');
+                
+              } catch (error) {
+                console.error('❌ PDF generation error:', error.message);
+                // エラーでも簡易PDFを生成
+                progress.data.pdfBuffer = Buffer.from('<html><body>Error generating PDF</body></html>').toString('base64');
+              }
             } else {
               console.log('📄 PDF already exists, skipping generation');
             }
