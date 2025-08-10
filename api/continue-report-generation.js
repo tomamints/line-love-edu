@@ -447,6 +447,43 @@ module.exports = async (req, res) => {
                     // まだBatch処理中なので、Step 3のまま継続
                     await ordersDB.saveReportProgress(orderId, progress);
                     shouldContinue = true; // 続行フラグをセット
+                    
+                    // GitHub Actionsから呼ばれた場合は、30秒後に再度GitHub Actionsをトリガー
+                    if (isFromGitHubActions) {
+                      console.log('🔄 Batch still processing, re-triggering GitHub Actions in 30s...');
+                      
+                      setTimeout(async () => {
+                        try {
+                          const githubToken = process.env.GITHUB_TOKEN || process.env.GITHUB_PAT;
+                          if (githubToken) {
+                            const response = await fetch('https://api.github.com/repos/tomamints/line-love-edu/dispatches', {
+                              method: 'POST',
+                              headers: {
+                                'Accept': 'application/vnd.github.v3+json',
+                                'Authorization': `token ${githubToken}`,
+                                'Content-Type': 'application/json'
+                              },
+                              body: JSON.stringify({
+                                event_type: 'continue-report',
+                                client_payload: {
+                                  orderId: orderId,
+                                  batchId: batch.id
+                                }
+                              })
+                            });
+                            
+                            if (response.ok) {
+                              console.log('✅ GitHub Actions re-triggered for retry');
+                            } else {
+                              console.error('❌ Failed to re-trigger GitHub Actions:', response.status);
+                            }
+                          }
+                        } catch (err) {
+                          console.error('❌ Error re-triggering GitHub Actions:', err.message);
+                        }
+                      }, 30000); // 30秒後
+                    }
+                    
                     // Step 3のままでwhileループを抜ける（currentStepは増やさない）
                     // 次回もStep 3から始まってBatch状態を再確認する
                     return res.json({
