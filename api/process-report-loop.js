@@ -15,7 +15,7 @@ const paymentHandler = new PaymentHandler();
  * @returns {object} 処理結果
  */
 async function processReportWithLoop(orderId, iteration = 1) {
-  const maxIterations = 5; // 最大5回まで（Step数と同じ）
+  const maxIterations = 3; // 最大3回まで（無限ループ検出を回避）
   const startTime = Date.now();
   const TIME_LIMIT = 55000; // 55秒（Vercelの60秒制限に対して余裕を持つ）
   
@@ -186,8 +186,8 @@ async function processReportWithLoop(orderId, iteration = 1) {
         console.error('❌ Trigger failed:', err);
       });
       
-      // fetchが開始されるまで少し待つ（500ms）
-      await new Promise(resolve => setTimeout(resolve, 500));
+      // fetchが開始されるまで待つ（長めに設定して無限ループ検出を回避）
+      await new Promise(resolve => setTimeout(resolve, 5000)); // 5秒待つ
       
       // レスポンスを返す
       return {
