@@ -608,16 +608,16 @@ class OrdersDB {
     }
     
     try {
-      // statusを元に戻す
+      // report_progressフィールドのみクリア（statusは変更しない）
       await this.supabase
         .from('orders')
         .update({
-          status: 'paid', // またはgenerating
+          report_progress: null,  // 進捗データのみクリア
           updated_at: new Date().toISOString()
         })
         .eq('id', orderId);
       
-      console.log('✅ DB進捗をクリア');
+      console.log('✅ DB進捗をクリア（statusは変更せず）');
       return true;
     } catch (err) {
       console.error('❌ 進捗クリアエラー:', err.message);
