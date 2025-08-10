@@ -847,34 +847,31 @@ module.exports = async (req, res) => {
             // pushMessageは使用しない（ユーザーは「レポート」で確認）
             console.log('✅ Report completed - user can check with "レポート" command');
             
-            // Step 5を完了済みに追加してから進捗をクリア
-            if (!progress.completedSteps) progress.completedSteps = [];
-            if (!progress.completedSteps.includes(5)) {
-              progress.completedSteps.push(5);
-            }
-            progress.currentStep = 6; // 5より大きい値にして完了を明確に
-            await ordersDB.saveReportProgress(orderId, progress);
-            console.log('📝 Marked Step 5 as completed, currentStep set to 6');
+            // 完了フラグを設定
+            completed = true;
+            console.log('✅ Step 5 completed - Report generation finished!');
             
             // 進捗をクリア（これにより次回のチェックで新規扱いになる）
             await ordersDB.clearReportProgress(orderId);
-            completed = true;
             console.log('✅ All steps completed and progress cleared!');
             break;
         }
         
-        const stepTime = Date.now() - stepStart;
-        const progressBar = '■'.repeat(progress.currentStep) + '□'.repeat(5 - progress.currentStep);
-        const percentage = Math.round(progress.currentStep / 5 * 100);
-        console.log(`✅ Step ${progress.currentStep} completed in ${stepTime}ms`);
-        console.log(`📊 Progress: Step ${progress.currentStep}/5 [${progressBar}] ${percentage}%`);
-        
-        lastCompletedStep = progress.currentStep;
-        
-        progress.currentStep++;
-        
-        // 進捗を保存
-        await ordersDB.saveReportProgress(orderId, progress);
+        // completedフラグがtrueの場合はスキップ
+        if (!completed) {
+          const stepTime = Date.now() - stepStart;
+          const progressBar = '■'.repeat(Math.min(progress.currentStep, 5)) + '□'.repeat(Math.max(0, 5 - progress.currentStep));
+          const percentage = Math.round(Math.min(progress.currentStep, 5) / 5 * 100);
+          console.log(`✅ Step ${progress.currentStep} completed in ${stepTime}ms`);
+          console.log(`📊 Progress: Step ${progress.currentStep}/5 [${progressBar}] ${percentage}%`);
+          
+          lastCompletedStep = progress.currentStep;
+          
+          progress.currentStep++;
+          
+          // 進捗を保存
+          await ordersDB.saveReportProgress(orderId, progress);
+        }
         
       } catch (stepError) {
         console.error(`❌ Error in step ${progress.currentStep}:`, stepError.message);
