@@ -115,9 +115,8 @@ async function processReportWithLoop(orderId, iteration = 1) {
           // 少し待つ（サーバー負荷軽減、無限ループ検出を回避）
           await new Promise(resolve => setTimeout(resolve, 10000)); // 10秒待つ
         }
-        
-        // まだ続きがある場合
-        if (result.status === 'continuing') {
+        // まだ続きがある場合（waiting_batchの場合は除く）
+        else if (result.status === 'continuing') {
           console.log(`⏳ Continuing... (step ${result.nextStep}/${result.totalSteps})`);
           callCount++;
           
