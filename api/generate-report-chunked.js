@@ -250,7 +250,7 @@ module.exports = async (req, res) => {
             console.log('✅ Basic analysis complete');
             break;
             
-          case 3:
+          case 3: {
             console.log('🤖 Step 3: AI insights (using Batch API)...');
             console.log('⏱️ Current elapsed time:', Date.now() - startTime, 'ms');
             console.log('📦 Module check - fs:', typeof fs, 'fsSync:', typeof fsSync);
@@ -452,9 +452,10 @@ module.exports = async (req, res) => {
                 console.error('❌ Error creating batch:', error.message);
                 // バッチ作成に失敗した場合はAIなしで続行
                 progress.data.aiInsights = null;
-                progress.currentStep++;
+                // Step 4に進まず、ループを続行してStep 4を実行
               }
             }
+          }
             break;
             
           case 4:
