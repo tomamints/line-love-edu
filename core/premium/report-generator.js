@@ -902,11 +902,11 @@ ${conversationSample}
         apiKey: process.env.OPENAI_API_KEY
       });
       
-      // 最近30メッセージを抽出（undefinedチェック追加）
+      // 全メッセージを送信
       const validMessages = messages.filter(m => m && typeof m === 'object');
       const recentMessages = validMessages.length > 0 
-        ? validMessages.slice(-30).map(m => 
-            `${m.isUser ? 'あなた' : '相手'}: ${(m.text || 'メッセージなし').substring(0, 100)}`
+        ? validMessages.map(m => 
+            `${m.isUser ? 'あなた' : '相手'}: ${m.text || 'メッセージなし'}`
           ).join('\n')
         : 'メッセージ履歴がありません';
       
