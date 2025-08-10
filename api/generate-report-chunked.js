@@ -52,7 +52,9 @@ module.exports = async (req, res) => {
     
     // 既に完了している場合
     if (order.status === 'completed') {
-      console.log('✅ Already completed');
+      console.log('✅ Already completed - stopping all processing');
+      console.log('📍 Report URL:', order.reportUrl);
+      console.log('🛑 This should stop process-report-loop from continuing');
       return res.json({ 
         status: 'completed',
         message: 'Report already generated',
@@ -84,6 +86,19 @@ module.exports = async (req, res) => {
       console.log('♻️ Resuming from step', progress.currentStep);
       console.log(`📊 Progress: Step ${progress.currentStep - 1}/5 [${progressBar}] ${percentage}%`);
       progress.attempts = (progress.attempts || 0) + 1;
+      
+      // Step 5が完了済み、または currentStep > 5 の場合は完了とみなす
+      if (progress.currentStep > 5 || (progress.completedSteps && progress.completedSteps.includes(5))) {
+        console.log('⚠️ Report already completed (Step 5 done or currentStep > 5)');
+        console.log('🛑 Stopping to prevent re-processing');
+        console.log('   Current step:', progress.currentStep);
+        console.log('   Completed steps:', progress.completedSteps);
+        return res.json({ 
+          status: 'completed',
+          message: 'Report already generated',
+          reportUrl: order.reportUrl || progress.data?.reportUrl
+        });
+      }
       
       // データが失われている場合は、Step 1-2 を再実行してデータを取得
       if (progress.currentStep >= 3 && (!progress.data || !progress.data.messages)) {
@@ -608,25 +623,34 @@ module.exports = async (req, res) => {
           case 4:
             console.log('📝 Step 4: Generating report...');
             
-            // AI分析結果がまだない場合はStep 3に戻る
+            // AI分析結果がまだない場合の処理を修正
+            // 既にStep 5まで進んでいる場合はStep 3に戻さない
             if (progress.data.aiBatchId && progress.data.aiInsights === undefined) {
-              console.log('⚠️ AI insights not ready yet, going back to Step 3');
-              progress.currentStep = 3;
-              await ordersDB.saveReportProgress(orderId, progress);
-              // 8秒後に再実行
-              setTimeout(() => {
-                fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'https://line-love-edu.vercel.app'}/api/generate-report-chunked`, {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({ orderId: orderId })
-                }).catch(err => console.error('⚠️ Retry failed:', err));
-              }, 8000);
-              return res.json({
-                status: 'continuing',
-                message: 'AI not ready, going back to Step 3',
-                nextStep: 3,
-                totalSteps: progress.totalSteps
-              });
+              console.log('⚠️ AI insights not ready yet');
+              
+              // 既にPDFが生成されている場合（Step 5完了済み）はStep 3に戻さない
+              if (progress.data.pdfBuffer || progress.data.reportUrl) {
+                console.log('✅ But PDF/report already exists, continuing without AI insights');
+                // AI insightsなしでも続行
+              } else {
+                console.log('⚠️ Going back to Step 3 to wait for AI insights');
+                progress.currentStep = 3;
+                await ordersDB.saveReportProgress(orderId, progress);
+                // 8秒後に再実行
+                setTimeout(() => {
+                  fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'https://line-love-edu.vercel.app'}/api/generate-report-chunked`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ orderId: orderId })
+                  }).catch(err => console.error('⚠️ Retry failed:', err));
+                }, 8000);
+                return res.json({
+                  status: 'continuing',
+                  message: 'AI not ready, going back to Step 3',
+                  nextStep: 3,
+                  totalSteps: progress.totalSteps
+                });
+              }
             }
             
             // レポート生成
@@ -686,10 +710,19 @@ module.exports = async (req, res) => {
             // pushMessageは使用しない（ユーザーは「レポート」で確認）
             console.log('✅ Report completed - user can check with "レポート" command');
             
-            // 進捗をクリア
+            // Step 5を完了済みに追加してから進捗をクリア
+            if (!progress.completedSteps) progress.completedSteps = [];
+            if (!progress.completedSteps.includes(5)) {
+              progress.completedSteps.push(5);
+            }
+            progress.currentStep = 6; // 5より大きい値にして完了を明確に
+            await ordersDB.saveReportProgress(orderId, progress);
+            console.log('📝 Marked Step 5 as completed, currentStep set to 6');
+            
+            // 進捗をクリア（これにより次回のチェックで新規扱いになる）
             await ordersDB.clearReportProgress(orderId);
             completed = true;
-            console.log('✅ All steps completed!');
+            console.log('✅ All steps completed and progress cleared!');
             break;
         }
         
