@@ -448,11 +448,12 @@ module.exports = async (req, res) => {
                     await ordersDB.saveReportProgress(orderId, progress);
                     shouldContinue = true; // 続行フラグをセット
                     
-                    // GitHub Actionsから呼ばれた場合は、30秒後に再度GitHub Actionsをトリガー
+                    // GitHub Actionsから呼ばれた場合は、即座にGitHub Actionsを再トリガー
                     if (isFromGitHubActions) {
-                      console.log('🔄 Batch still processing, re-triggering GitHub Actions in 30s...');
+                      console.log('🔄 Batch still processing, immediately re-triggering GitHub Actions...');
                       
-                      setTimeout(async () => {
+                      // setTimeoutを使わず即座に実行（非同期で実行）
+                      const triggerGitHubActions = async () => {
                         try {
                           const githubToken = process.env.GITHUB_TOKEN || process.env.GITHUB_PAT;
                           if (githubToken) {
@@ -467,7 +468,8 @@ module.exports = async (req, res) => {
                                 event_type: 'continue-report',
                                 client_payload: {
                                   orderId: orderId,
-                                  batchId: batch.id
+                                  batchId: batch.id,
+                                  retry: true  // リトライフラグを追加
                                 }
                               })
                             });
@@ -475,13 +477,21 @@ module.exports = async (req, res) => {
                             if (response.ok) {
                               console.log('✅ GitHub Actions re-triggered for retry');
                             } else {
-                              console.error('❌ Failed to re-trigger GitHub Actions:', response.status);
+                              const errorText = await response.text();
+                              console.error('❌ Failed to re-trigger GitHub Actions:', response.status, errorText);
                             }
+                          } else {
+                            console.error('❌ GitHub token not found for re-trigger');
                           }
                         } catch (err) {
                           console.error('❌ Error re-triggering GitHub Actions:', err.message);
                         }
-                      }, 30000); // 30秒後
+                      };
+                      
+                      // 非同期で実行（待たない）
+                      triggerGitHubActions().catch(err => {
+                        console.error('❌ Re-trigger failed:', err);
+                      });
                     }
                     
                     // Step 3のままでwhileループを抜ける（currentStepは増やさない）

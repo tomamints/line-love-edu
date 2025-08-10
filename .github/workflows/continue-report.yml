@@ -19,10 +19,24 @@ jobs:
     timeout-minutes: 2  # 2分でタイムアウト
     
     steps:
+      - name: Determine wait time
+        id: wait-time
+        run: |
+          # リトライの場合は30秒待つ、初回は10秒待つ
+          IS_RETRY="${{ github.event.client_payload.retry }}"
+          if [ "$IS_RETRY" = "true" ]; then
+            echo "wait_seconds=30" >> $GITHUB_OUTPUT
+            echo "This is a retry, waiting 30 seconds..."
+          else
+            echo "wait_seconds=10" >> $GITHUB_OUTPUT
+            echo "Initial call, waiting 10 seconds..."
+          fi
+      
       - name: Wait for Batch API processing
         run: |
-          echo "Waiting 10 seconds for Batch API to process..."
-          sleep 10
+          WAIT_TIME="${{ steps.wait-time.outputs.wait_seconds }}"
+          echo "Waiting $WAIT_TIME seconds for Batch API to process..."
+          sleep $WAIT_TIME
       
       - name: Call continue-report-generation API
         id: api-call
@@ -54,10 +68,19 @@ jobs:
           echo "HTTP Status: $HTTP_CODE"
           echo "Response: $BODY"
           
+          # レスポンスからstatusを抽出
+          STATUS=$(echo "$BODY" | grep -o '"status":"[^"]*"' | cut -d'"' -f4 || echo "")
+          echo "Extracted status: $STATUS"
+          
           # 成功チェック（200-299）
           if [ "$HTTP_CODE" -ge 200 ] && [ "$HTTP_CODE" -lt 300 ]; then
             echo "✅ API call successful"
             echo "result=success" >> $GITHUB_OUTPUT
+            
+            # statusがwaiting_batchの場合、GitHub Actionsが再トリガーされることを通知
+            if [ "$STATUS" = "waiting_batch" ]; then
+              echo "⏳ Batch API is still processing. GitHub Actions will be re-triggered automatically."
+            fi
           else
             echo "❌ API call failed with status $HTTP_CODE"
             echo "result=failed" >> $GITHUB_OUTPUT
