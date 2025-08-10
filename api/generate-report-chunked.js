@@ -294,35 +294,61 @@ module.exports = async (req, res) => {
                   
                   // 結果ファイルを取得
                   const outputFile = await openai.files.content(batch.output_file_id);
+                  console.log('📦 Output file type:', typeof outputFile);
+                  console.log('📦 Output file constructor:', outputFile?.constructor?.name);
                   
                   // ストリームをテキストに変換
                   let content;
-                  if (typeof outputFile === 'string') {
-                    content = outputFile;
-                  } else if (Buffer.isBuffer(outputFile)) {
-                    content = outputFile.toString('utf-8');
-                  } else {
-                    // ReadableStreamの場合
-                    const chunks = [];
-                    for await (const chunk of outputFile) {
-                      chunks.push(chunk);
+                  try {
+                    // Response オブジェクトの場合
+                    if (outputFile && typeof outputFile.text === 'function') {
+                      console.log('📄 Using .text() method to read content');
+                      content = await outputFile.text();
+                    } else if (typeof outputFile === 'string') {
+                      console.log('📄 Output is already a string');
+                      content = outputFile;
+                    } else if (Buffer.isBuffer(outputFile)) {
+                      console.log('📄 Output is a Buffer');
+                      content = outputFile.toString('utf-8');
+                    } else {
+                      console.log('❌ Unknown output type, trying JSON stringify');
+                      console.log('📄 Output sample:', JSON.stringify(outputFile).substring(0, 200));
+                      throw new Error(`Unknown output type: ${typeof outputFile}`);
                     }
-                    content = Buffer.concat(chunks).toString('utf-8');
+                  } catch (readError) {
+                    console.error('❌ Error reading output file:', readError.message);
+                    throw readError;
                   }
                   
                   // 結果をパース
+                  console.log('📄 Content length:', content.length);
+                  console.log('📄 First 500 chars:', content.substring(0, 500));
+                  
                   const lines = content.split('\n').filter(line => line.trim());
+                  console.log(`📄 Found ${lines.length} lines in output`);
+                  
                   for (const line of lines) {
-                    const result = JSON.parse(line);
-                    if (result.custom_id === `order_${orderId}`) {
-                      if (result.response && result.response.body) {
-                        const aiContent = result.response.body.choices[0].message.content;
-                        progress.data.aiInsights = JSON.parse(aiContent);
-                        console.log('✅ AI insights extracted successfully');
-                      } else if (result.error) {
-                        console.error('❌ Batch request failed:', result.error);
-                        progress.data.aiInsights = null;
+                    try {
+                      const result = JSON.parse(line);
+                      console.log('📄 Parsed result custom_id:', result.custom_id);
+                      
+                      if (result.custom_id === `order_${orderId}`) {
+                        if (result.response && result.response.body) {
+                          console.log('📄 Found matching result with response');
+                          const aiContent = result.response.body.choices[0].message.content;
+                          console.log('📄 AI content type:', typeof aiContent);
+                          console.log('📄 AI content preview:', aiContent.substring(0, 200));
+                          progress.data.aiInsights = JSON.parse(aiContent);
+                          console.log('✅ AI insights extracted successfully');
+                        } else if (result.error) {
+                          console.error('❌ Batch request failed:', result.error);
+                          console.error('📄 Error details:', JSON.stringify(result.error));
+                          progress.data.aiInsights = null;
+                        }
                       }
+                    } catch (parseError) {
+                      console.error('❌ Error parsing line:', parseError.message);
+                      console.error('📄 Problematic line:', line.substring(0, 200));
                     }
                   }
                   
