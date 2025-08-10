@@ -217,15 +217,17 @@ module.exports = async (req, res) => {
             
             // メッセージを取得
             if (!progress.data.messages) {
-              const profile = await profileManager.getProfile(order.userId);
-              progress.data.messages = profile?.messages || [];
-              console.log('💬 Messages loaded:', progress.data.messages.length);
+              const messagesDB = require('../core/database/messages-db');
+              const savedMessages = await messagesDB.getMessages(order.userId);
               
-              if (progress.data.messages.length === 0) {
-                console.log('⚠️ No messages found, using default');
-                // デフォルトメッセージ生成
+              if (savedMessages && savedMessages.length > 0) {
+                console.log(`📊 Using ${savedMessages.length} saved messages from database`);
+                progress.data.messages = savedMessages;
+              } else {
+                console.log('⚠️ No saved messages found, using default for demo');
                 progress.data.messages = generateDefaultMessages();
               }
+              console.log('💬 Messages prepared:', progress.data.messages.length);
             }
             break;
             

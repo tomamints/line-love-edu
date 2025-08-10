@@ -1687,6 +1687,15 @@ async function handleFortuneEvent(event) {
     // 占い結果に波動診断を追加
     fortune.waveAnalysis = waveResult;
     
+    // パースしたメッセージを保存（プレミアムレポート用）
+    try {
+      const messagesDB = require('./core/database/messages-db');
+      await messagesDB.saveMessages(userId, messages);
+      logger.log('💾 メッセージを保存しました');
+    } catch (saveError) {
+      console.error('⚠️ メッセージ保存エラー（続行）:', saveError.message);
+    }
+    
     // おつきさま診断も生成
     logger.log('🌙 おつきさま診断を実行中...');
     loadHeavyModules();
