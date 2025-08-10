@@ -111,16 +111,16 @@ async function processReportWithLoop(orderId, iteration = 1) {
           console.log(`⏳ Continuing... (step ${result.nextStep}/${result.totalSteps})`);
           callCount++;
           
-          // 少し待つ（サーバー負荷軽減）
-          await new Promise(resolve => setTimeout(resolve, 500));
+          // 少し待つ（サーバー負荷軽減、Vercelの無限ループ検出を回避）
+          await new Promise(resolve => setTimeout(resolve, 2000)); // 2秒待つ
         }
         
       } catch (error) {
         console.error(`❌ Error calling generate-report-chunked:`, error.message);
         callCount++;
         
-        // エラーでも続行を試みる
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        // エラーでも続行を試みる（Vercelの無限ループ検出を回避）
+        await new Promise(resolve => setTimeout(resolve, 3000)); // 3秒待つ
       }
       
       // 時間チェック
