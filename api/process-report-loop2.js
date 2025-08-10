@@ -58,11 +58,12 @@ async function processReportWithLoop(orderId, iteration = 1) {
     const maxCallsPerIteration = 1; // 1回のイテレーションで最大1回呼び出し（2→1に変更）
     
     while ((Date.now() - startTime) < TIME_LIMIT && callCount < maxCallsPerIteration) {
-      console.log(`\n📞 Calling generate-report-chunked (call ${callCount + 1}/${maxCallsPerIteration})`);
+      console.log(`\n📞 Calling continue-report-generation (call ${callCount + 1}/${maxCallsPerIteration})`);
+      console.log('🎯 Using continue-report-generation to avoid infinite loop detection');
       
       try {
         const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://line-love-edu.vercel.app';
-        const response = await fetch(`${baseUrl}/api/generate-report-chunked`, {
+        const response = await fetch(`${baseUrl}/api/continue-report-generation`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
