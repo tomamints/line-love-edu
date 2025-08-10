@@ -54,7 +54,7 @@ async function processReportWithLoop(orderId, iteration = 1) {
     // generate-report-chunkedを呼び出し続ける
     let lastStatus = 'continuing';
     let callCount = 0;
-    const maxCallsPerIteration = 3; // 1回のイテレーションで最大3回呼び出し
+    const maxCallsPerIteration = 2; // 1回のイテレーションで最大2回呼び出し（3→2に変更）
     
     while ((Date.now() - startTime) < TIME_LIMIT && callCount < maxCallsPerIteration) {
       console.log(`\n📞 Calling generate-report-chunked (call ${callCount + 1}/${maxCallsPerIteration})`);
@@ -113,7 +113,7 @@ async function processReportWithLoop(orderId, iteration = 1) {
           callCount++;
           
           // 少し待つ（サーバー負荷軽減、無限ループ検出を回避）
-          await new Promise(resolve => setTimeout(resolve, 10000)); // 10秒待つ
+          await new Promise(resolve => setTimeout(resolve, 20000)); // 20秒待つ（10→20秒に変更）
         }
         // まだ続きがある場合（waiting_batchの場合は除く）
         else if (result.status === 'continuing') {
@@ -121,7 +121,7 @@ async function processReportWithLoop(orderId, iteration = 1) {
           callCount++;
           
           // 少し待つ（サーバー負荷軽減、Vercelの無限ループ検出を回避）
-          await new Promise(resolve => setTimeout(resolve, 10000)); // 10秒待つ
+          await new Promise(resolve => setTimeout(resolve, 20000)); // 20秒待つ（10→20秒に変更）
         }
         
       } catch (error) {
@@ -129,7 +129,7 @@ async function processReportWithLoop(orderId, iteration = 1) {
         callCount++;
         
         // エラーでも続行を試みる（Vercelの無限ループ検出を回避）
-        await new Promise(resolve => setTimeout(resolve, 10000)); // 10秒待つ
+        await new Promise(resolve => setTimeout(resolve, 20000)); // 20秒待つ（10→20秒に変更）
       }
       
       // 時間チェック
