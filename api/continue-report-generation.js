@@ -450,48 +450,43 @@ module.exports = async (req, res) => {
                     
                     // GitHub Actionsから呼ばれた場合は、即座にGitHub Actionsを再トリガー
                     if (isFromGitHubActions) {
-                      console.log('🔄 Batch still processing, immediately re-triggering GitHub Actions...');
+                      console.log('🔄 Batch still processing, triggering GitHub Actions for retry...');
                       
-                      // setTimeoutを使わず即座に実行（非同期で実行）
-                      const triggerGitHubActions = async () => {
-                        try {
-                          const githubToken = process.env.GITHUB_TOKEN || process.env.GITHUB_PAT;
-                          if (githubToken) {
-                            const response = await fetch('https://api.github.com/repos/tomamints/line-love-edu/dispatches', {
-                              method: 'POST',
-                              headers: {
-                                'Accept': 'application/vnd.github.v3+json',
-                                'Authorization': `token ${githubToken}`,
-                                'Content-Type': 'application/json'
-                              },
-                              body: JSON.stringify({
-                                event_type: 'continue-report',
-                                client_payload: {
-                                  orderId: orderId,
-                                  batchId: batch.id,
-                                  retry: true  // リトライフラグを追加
-                                }
-                              })
-                            });
-                            
-                            if (response.ok) {
-                              console.log('✅ GitHub Actions re-triggered for retry');
-                            } else {
-                              const errorText = await response.text();
-                              console.error('❌ Failed to re-trigger GitHub Actions:', response.status, errorText);
-                            }
+                      // GitHub Actionsをトリガー（awaitして確実に実行）
+                      try {
+                        const githubToken = process.env.GITHUB_TOKEN || process.env.GITHUB_PAT;
+                        if (githubToken) {
+                          console.log('🔑 GitHub token found, sending trigger request...');
+                          const response = await fetch('https://api.github.com/repos/tomamints/line-love-edu/dispatches', {
+                            method: 'POST',
+                            headers: {
+                              'Accept': 'application/vnd.github.v3+json',
+                              'Authorization': `token ${githubToken}`,
+                              'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                              event_type: 'continue-report',
+                              client_payload: {
+                                orderId: orderId,
+                                batchId: batch.id,
+                                retry: true  // リトライフラグを追加
+                              }
+                            })
+                          });
+                          
+                          if (response.ok) {
+                            console.log('✅ GitHub Actions re-triggered successfully');
                           } else {
-                            console.error('❌ GitHub token not found for re-trigger');
+                            const errorText = await response.text();
+                            console.error('❌ Failed to re-trigger GitHub Actions:', response.status, errorText);
                           }
-                        } catch (err) {
-                          console.error('❌ Error re-triggering GitHub Actions:', err.message);
+                        } else {
+                          console.error('❌ GitHub token not found for re-trigger');
                         }
-                      };
-                      
-                      // 非同期で実行（待たない）
-                      triggerGitHubActions().catch(err => {
-                        console.error('❌ Re-trigger failed:', err);
-                      });
+                      } catch (err) {
+                        console.error('❌ Error re-triggering GitHub Actions:', err.message);
+                        console.error('Stack:', err.stack);
+                      }
                     }
                     
                     // Step 3のままでwhileループを抜ける（currentStepは増やさない）
@@ -502,7 +497,8 @@ module.exports = async (req, res) => {
                       nextStep: progress.currentStep,
                       totalSteps: progress.totalSteps,
                       batchId: progress.data.aiBatchId,
-                      elapsed: Date.now() - startTime
+                      elapsed: Date.now() - startTime,
+                      githubActionsTriggered: isFromGitHubActions  // デバッグ用
                     });
                   }
                 }
