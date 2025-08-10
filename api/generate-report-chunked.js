@@ -28,6 +28,7 @@ module.exports = async (req, res) => {
   console.log('📍 Time:', new Date().toISOString());
   console.log('📍 Order ID:', orderId);
   console.log('📍 Continue From:', continueFrom || 'start');
+  console.log('📍 Request Type:', continueFrom ? 'CONTINUATION' : 'NEW REQUEST');
   
   const startTime = Date.now();
   const TIME_LIMIT = 50000; // 50秒でタイムアウト（Vercelの60秒制限に対して余裕を持つ）
@@ -54,6 +55,7 @@ module.exports = async (req, res) => {
     let progress = await ordersDB.getReportProgress(orderId);
     if (!progress) {
       console.log('🆕 Starting new report generation');
+      console.log('📊 Progress: Step 0/5 [□□□□□] 0%');
       progress = {
         currentStep: 1,
         totalSteps: 5,
@@ -68,7 +70,10 @@ module.exports = async (req, res) => {
         status: 'generating'
       });
     } else {
+      const progressBar = '■'.repeat(progress.currentStep - 1) + '□'.repeat(6 - progress.currentStep);
+      const percentage = Math.round((progress.currentStep - 1) / 5 * 100);
       console.log('♻️ Resuming from step', progress.currentStep);
+      console.log(`📊 Progress: Step ${progress.currentStep - 1}/5 [${progressBar}] ${percentage}%`);
       progress.attempts = (progress.attempts || 0) + 1;
       
       // データが失われている場合は、Step 1-2 を再実行してデータを取得
@@ -117,10 +122,12 @@ module.exports = async (req, res) => {
         const waitMinutes = Math.floor(waitTime / 60000);
         const waitSeconds = Math.floor((waitTime % 60000) / 1000);
         console.log(`⏳ AI analysis still in progress (${waitMinutes}m ${waitSeconds}s elapsed)`);
+        console.log(`🔄 Status: WAITING for AI completion (max 5 minutes)`);
         
         // 5分（300秒）以上待っても完了しない場合はnullで続行
         if (waitTime > 300000) { // 300秒 = 5分
           console.log('⚠️ AI analysis timeout after 5 minutes, continuing without insights');
+          console.log('📊 Status: TIMEOUT - Moving to next step');
           progress.data.aiInsights = null;
           progress.data.aiAnalysisInProgress = false;
           progress.currentStep++;
@@ -181,7 +188,15 @@ module.exports = async (req, res) => {
         break;
       }
       
-      console.log(`\n📍 Step ${progress.currentStep}/${progress.totalSteps}`);
+      const stepNames = {
+        1: 'Loading Data',
+        2: 'Basic Analysis', 
+        3: 'AI Analysis',
+        4: 'PDF Generation',
+        5: 'Save & Notify'
+      };
+      console.log(`\n📍 Step ${progress.currentStep}/${progress.totalSteps}: ${stepNames[progress.currentStep]}`);
+      console.log(`⏱️ Step started at: ${new Date().toISOString()}`);
       const stepStart = Date.now();
       
       try {
@@ -340,7 +355,10 @@ module.exports = async (req, res) => {
         }
         
         const stepTime = Date.now() - stepStart;
-        console.log(`⏱️ Step ${progress.currentStep} took ${stepTime}ms`);
+        const progressBar = '■'.repeat(progress.currentStep) + '□'.repeat(5 - progress.currentStep);
+        const percentage = Math.round(progress.currentStep / 5 * 100);
+        console.log(`✅ Step ${progress.currentStep} completed in ${stepTime}ms`);
+        console.log(`📊 Progress: Step ${progress.currentStep}/5 [${progressBar}] ${percentage}%`);
         
         lastCompletedStep = progress.currentStep;
         progress.currentStep++;
@@ -388,7 +406,10 @@ module.exports = async (req, res) => {
     
     // 完了チェック
     if (completed) {
+      const finalProgressBar = '■■■■■';
       console.log('🎉 Report generation completed successfully!');
+      console.log(`📊 Progress: Step 5/5 [${finalProgressBar}] 100%`);
+      console.log('🎆 Status: COMPLETED - Report ready!');
       return res.json({
         status: 'completed',
         message: 'Report generated successfully',
