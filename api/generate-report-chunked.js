@@ -24,7 +24,7 @@ const STEP_TIMEOUTS = {
 };
 
 module.exports = async (req, res) => {
-  const { orderId, continueFrom } = req.body || req.query;
+  const { orderId, continueFrom, method } = req.body || req.query;
   
   if (!orderId) {
     return res.status(400).json({ error: 'Order ID required' });
@@ -35,6 +35,9 @@ module.exports = async (req, res) => {
   console.log('📍 Order ID:', orderId);
   console.log('📍 Continue From:', continueFrom || 'start');
   console.log('📍 Request Type:', continueFrom ? 'CONTINUATION' : 'NEW REQUEST');
+  if (method) {
+    console.log('🚀 Called via method:', method);
+  }
   
   const startTime = Date.now();
   const TIME_LIMIT = 50000; // 50秒でタイムアウト（Vercelの60秒制限に対して余裕を持つ）
@@ -357,8 +360,8 @@ module.exports = async (req, res) => {
                     }
                   }
                   
-                  // Step 4へ進む（新しいプロセスで実行）
-                  console.log('🔄 Step 3 completed, scheduling Step 4 directly');
+                  // Step 4へ進む（複数の方法で実行を試みる）
+                  console.log('🔄 Step 3 completed, trying multiple methods to trigger Step 4');
                   
                   // Step 4へインクリメント
                   progress.currentStep = 4;
@@ -366,24 +369,100 @@ module.exports = async (req, res) => {
                   // 進捗を保存
                   await ordersDB.saveReportProgress(orderId, progress);
                   
-                  // 1秒後に直接generate-report-chunkedを呼び出し（process-report-loop経由ではなく）
                   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://line-love-edu.vercel.app';
+                  
+                  // 方法1: 即座にfetch（await付き）
+                  console.log('📍 Method 1: Immediate fetch with await');
+                  try {
+                    const immediateResponse = await fetch(`${baseUrl}/api/generate-report-chunked`, {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ orderId: orderId, method: 'immediate_await' })
+                    });
+                    console.log('✅ Method 1 completed:', immediateResponse.status);
+                  } catch (err) {
+                    console.error('❌ Method 1 failed:', err.message);
+                  }
+                  
+                  // 方法2: 即座にfetch（awaitなし）
+                  console.log('📍 Method 2: Immediate fetch without await');
+                  fetch(`${baseUrl}/api/generate-report-chunked`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ orderId: orderId, method: 'immediate_no_await' })
+                  }).then(() => {
+                    console.log('✅ Method 2 triggered');
+                  }).catch(err => {
+                    console.error('❌ Method 2 failed:', err.message);
+                  });
+                  
+                  // 方法3: setTimeout 100ms
+                  console.log('📍 Method 3: setTimeout 100ms');
                   setTimeout(() => {
+                    console.log('⏰ Method 3 timeout fired');
                     fetch(`${baseUrl}/api/generate-report-chunked`, {
                       method: 'POST',
                       headers: { 'Content-Type': 'application/json' },
-                      body: JSON.stringify({ orderId: orderId })
+                      body: JSON.stringify({ orderId: orderId, method: 'timeout_100ms' })
                     }).then(() => {
-                      console.log('✅ Step 4 invocation triggered');
+                      console.log('✅ Method 3 triggered');
                     }).catch(err => {
-                      console.error('⚠️ Step 4 invocation failed:', err);
+                      console.error('❌ Method 3 failed:', err.message);
                     });
-                  }, 1000); // 1秒後（確実に送信されるよう短く）
+                  }, 100);
+                  
+                  // 方法4: setTimeout 1000ms
+                  console.log('📍 Method 4: setTimeout 1000ms');
+                  setTimeout(() => {
+                    console.log('⏰ Method 4 timeout fired');
+                    fetch(`${baseUrl}/api/generate-report-chunked`, {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ orderId: orderId, method: 'timeout_1000ms' })
+                    }).then(() => {
+                      console.log('✅ Method 4 triggered');
+                    }).catch(err => {
+                      console.error('❌ Method 4 failed:', err.message);
+                    });
+                  }, 1000);
+                  
+                  // 方法5: setImmediate
+                  console.log('📍 Method 5: setImmediate');
+                  setImmediate(() => {
+                    console.log('⏰ Method 5 immediate fired');
+                    fetch(`${baseUrl}/api/generate-report-chunked`, {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ orderId: orderId, method: 'set_immediate' })
+                    }).then(() => {
+                      console.log('✅ Method 5 triggered');
+                    }).catch(err => {
+                      console.error('❌ Method 5 failed:', err.message);
+                    });
+                  });
+                  
+                  // 方法6: Promise.resolve().then()
+                  console.log('📍 Method 6: Promise.resolve().then()');
+                  Promise.resolve().then(() => {
+                    console.log('⏰ Method 6 promise fired');
+                    fetch(`${baseUrl}/api/generate-report-chunked`, {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ orderId: orderId, method: 'promise_then' })
+                    }).then(() => {
+                      console.log('✅ Method 6 triggered');
+                    }).catch(err => {
+                      console.error('❌ Method 6 failed:', err.message);
+                    });
+                  });
+                  
+                  // 500ms待ってからレスポンスを返す（一部のfetchが完了するのを待つ）
+                  await new Promise(resolve => setTimeout(resolve, 500));
                   
                   // レスポンスを返す（process-report-loopに終了を通知）
                   return res.json({
                     status: 'continuing',
-                    message: 'Step 3 completed, Step 4 scheduled',
+                    message: 'Step 3 completed, Step 4 scheduled via multiple methods',
                     nextStep: 4,
                     totalSteps: progress.totalSteps
                   });
