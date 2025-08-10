@@ -489,9 +489,9 @@ module.exports = async (req, res) => {
                   
                   console.log(`⏳ Batch ${batch.status} (${waitMinutes}m ${waitSeconds}s elapsed)`);
                   
-                  // 20分（1200秒）まで待つ
-                  if (waitTime > 1200000) { // 20分
-                    console.log('⏰ Timeout after 20 minutes - skipping AI analysis');
+                  // 5分（300秒）まで待つ（Batch APIは通常1-2分で完了）
+                  if (waitTime > 300000) { // 5分
+                    console.log('⏰ Timeout after 5 minutes - skipping AI analysis');
                     progress.data.aiInsights = null;
                     // currentStepのインクリメントはswitch文の後で行われる
                     console.log('🔄 Breaking from Step 3 (timeout)');
@@ -1132,15 +1132,27 @@ module.exports = async (req, res) => {
           console.log(`🔄 Will retry step ${progress.currentStep} (attempt ${progress.errorCount}/3)`);
           await ordersDB.saveReportProgress(orderId, progress);
           
-          // 10秒後にリトライ（無限ループ検出を回避）
-          const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://line-love-edu.vercel.app';
-          setTimeout(() => {
-            fetch(`${baseUrl}/api/generate-report-chunked`, {
+          // GitHub Actionsをトリガーしてリトライ
+          const githubToken = process.env.GITHUB_TOKEN || process.env.GITHUB_PAT;
+          if (githubToken) {
+            fetch('https://api.github.com/repos/tomamints/line-love-edu/dispatches', {
               method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ orderId: orderId })
-            }).catch(err => console.error('⚠️ Retry failed:', err));
-          }, 10000); // 10秒後
+              headers: {
+                'Accept': 'application/vnd.github.v3+json',
+                'Authorization': `token ${githubToken}`,
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                event_type: 'continue-report',
+                client_payload: {
+                  orderId: orderId,
+                  batchId: progress.data?.aiBatchId || null,
+                  retry: true,
+                  errorRetry: true
+                }
+              })
+            }).catch(err => console.error('⚠️ GitHub Actions trigger failed:', err));
+          }
           
           return res.json({
             status: 'continuing',
@@ -1179,19 +1191,28 @@ module.exports = async (req, res) => {
       console.log('⏱️ Total elapsed:', Date.now() - startTime, 'ms');
       shouldContinue = true;
       
-      // 8秒後に次の処理をトリガー（無限ループ検出を回避）
-      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://line-love-edu.vercel.app';
-      setTimeout(() => {
-        fetch(`${baseUrl}/api/generate-report-chunked`, {
+      // GitHub Actionsをトリガー（setTimeoutは使わない）
+      const githubToken = process.env.GITHUB_TOKEN || process.env.GITHUB_PAT;
+      if (githubToken) {
+        fetch('https://api.github.com/repos/tomamints/line-love-edu/dispatches', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ orderId: orderId })
-        }).then(() => {
-          console.log('✅ Next process triggered after 8 seconds');
+          headers: {
+            'Accept': 'application/vnd.github.v3+json',
+            'Authorization': `token ${githubToken}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            event_type: 'continue-report',
+            client_payload: {
+              orderId: orderId,
+              batchId: progress.data?.aiBatchId || null,
+              retry: true
+            }
+          })
         }).catch(err => {
-          console.error('⚠️ Failed to trigger next process:', err.message);
+          console.error('⚠️ Failed to trigger GitHub Actions:', err.message);
         });
-      }, 8000); // 8秒後
+      }
       
       return res.json({
         status: 'continuing',
@@ -1202,6 +1223,20 @@ module.exports = async (req, res) => {
         autoTriggered: true
       });
     }
+    
+    // エラー: 想定外の状態
+    console.error('⚠️ Unexpected state: currentStep > totalSteps', {
+      currentStep: progress.currentStep,
+      totalSteps: progress.totalSteps,
+      completed: completed
+    });
+    
+    return res.status(500).json({
+      error: 'Unexpected state',
+      message: 'Current step exceeded total steps',
+      currentStep: progress.currentStep,
+      totalSteps: progress.totalSteps
+    });
     
   } catch (error) {
     console.error('❌ Fatal error:', error.message);
