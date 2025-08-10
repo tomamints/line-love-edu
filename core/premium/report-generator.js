@@ -17,15 +17,16 @@ class PremiumReportGenerator {
    * @param {array} messages - メッセージ履歴
    * @param {string} userId - ユーザーID
    * @param {string} userName - ユーザー名
+   * @param {object} existingAiInsights - 既存のAI分析結果（Step 3で取得済み）
    * @returns {object} 詳細レポートデータ
    */
-  async generatePremiumReport(messages, userId, userName = 'あなた') {
+  async generatePremiumReport(messages, userId, userName = 'あなた', existingAiInsights = null) {
     try {
       // 基本分析を実行
       const fortune = await this.fortuneEngine.generateFortune(messages, userId, userName);
       
-      // AIによる深い洞察を取得
-      const aiInsights = await this.getAIInsights(messages, fortune);
+      // AIによる深い洞察を取得（既存のものがあればそれを使用）
+      const aiInsights = existingAiInsights || await this.getAIInsights(messages, fortune);
       
       // 追加の詳細分析（AI洞察を含む）
       const detailedAnalysis = await this.performDetailedAnalysis(messages, fortune, aiInsights);
@@ -1026,11 +1027,29 @@ ${recentMessages}
         response_format: { type: "json_object" }
       });
       
-      const aiResponse = JSON.parse(completion.choices[0].message.content);
+      // JSONパースを安全に実行
+      let aiResponse;
+      try {
+        const content = completion.choices[0].message.content;
+        console.log('AI response length:', content.length);
+        
+        // JSONパースエラー対策
+        aiResponse = JSON.parse(content);
+      } catch (parseError) {
+        console.error('JSONパースエラー:', parseError.message);
+        console.log('AI response (first 500 chars):', completion.choices[0].message.content.substring(0, 500));
+        console.log('AI response (last 500 chars):', completion.choices[0].message.content.slice(-500));
+        
+        // パース失敗時はデフォルト値を使用
+        console.log('⚠️ JSONパースに失敗したため、デフォルト値を使用します');
+        return this.getDefaultAIInsights();
+      }
+      
       return aiResponse;
       
     } catch (error) {
-      console.error('AI分析エラー:', error);
+      console.error('AI分析エラー:', error.message);
+      console.error('Error stack:', error.stack);
       // フォールバック用の詳細なデフォルト値を返す
       return this.getDefaultAIInsights();
     }

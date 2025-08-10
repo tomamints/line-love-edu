@@ -819,7 +819,8 @@ module.exports = async (req, res) => {
                 const reportGenerationPromise = fullReportGenerator.generatePremiumReport(
                   progress.data.messages,
                   order.userId,
-                  progress.data.userProfile.displayName
+                  progress.data.userProfile.displayName,
+                  progress.data.aiInsights  // Step 3で取得済みのAI分析結果を渡す
                 );
                 
                 // GitHub Actionsの場合はタイムアウトを設定

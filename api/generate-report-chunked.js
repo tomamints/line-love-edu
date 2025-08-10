@@ -652,7 +652,8 @@ module.exports = async (req, res) => {
             progress.data.reportData = await fullReportGenerator.generatePremiumReport(
               progress.data.messages,
               order.userId,
-              progress.data.userProfile.displayName
+              progress.data.userProfile.displayName,
+              progress.data.aiInsights  // Step 3で取得済みのAI分析結果を渡す
             );
             
             // HTML/PDF生成
