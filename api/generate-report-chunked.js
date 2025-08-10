@@ -253,6 +253,7 @@ module.exports = async (req, res) => {
           case 3:
             console.log('🤖 Step 3: AI insights (using Batch API)...');
             console.log('⏱️ Current elapsed time:', Date.now() - startTime, 'ms');
+            console.log('📦 Module check - fs:', typeof fs, 'fsSync:', typeof fsSync);
             
             // Batch APIを使用したAI分析
             console.log('🔧 Initializing OpenAI client...');
