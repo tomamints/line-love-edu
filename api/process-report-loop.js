@@ -135,29 +135,42 @@ async function processReportWithLoop(orderId, iteration = 1) {
     if (lastStatus === 'continuing' && iteration < maxIterations) {
       console.log('🔄 Self-invoking for next iteration...');
       
-      try {
-        const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://line-love-edu.vercel.app';
-        const response = await fetch(`${baseUrl}/api/process-report-loop`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            orderId: orderId,
-            iteration: iteration + 1
-          })
-        });
-        
-        if (response.ok) {
-          const result = await response.json();
-          console.log('✅ Next iteration triggered');
-          return result;
-        } else {
-          console.error('❌ Failed to trigger next iteration');
+      // 非同期で次のイテレーションを開始（待たない）
+      const triggerNextIteration = async () => {
+        try {
+          const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://line-love-edu.vercel.app';
+          const response = await fetch(`${baseUrl}/api/process-report-loop`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              orderId: orderId,
+              iteration: iteration + 1
+            })
+          });
+          
+          if (response.ok) {
+            console.log('✅ Next iteration triggered successfully');
+          } else {
+            console.error('❌ Failed to trigger next iteration:', response.status);
+          }
+        } catch (error) {
+          console.error('❌ Error triggering next iteration:', error.message);
         }
-      } catch (error) {
-        console.error('❌ Error triggering next iteration:', error.message);
-      }
+      };
+      
+      // 非同期実行（待たない）
+      triggerNextIteration().catch(err => {
+        console.error('❌ Trigger failed:', err);
+      });
+      
+      // 即座にレスポンスを返す
+      return {
+        success: false,
+        status: 'continuing',
+        message: `Processing continues in iteration ${iteration + 1}`
+      };
     }
     
     // 最大イテレーション数に達した場合

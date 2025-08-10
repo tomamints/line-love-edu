@@ -819,6 +819,65 @@ class PremiumReportGenerator {
   }
   
   /**
+   * AI分析用のプロンプトを作成
+   * @param {string} conversationSample - 会話サンプル
+   * @param {object} fortune - 基本分析結果
+   * @returns {string} プロンプト
+   */
+  createAIPrompt(conversationSample, fortune) {
+    return `以下のLINEトーク履歴を分析し、恋愛アドバイザーとして非常に詳細なレポートを作成してください。
+
+会話サンプル：
+${conversationSample}
+
+基本分析結果：
+時間相性: ${fortune.time?.score || 0}点
+バランス相性: ${fortune.balance?.score || 0}点
+テンポ相性: ${fortune.tempo?.score || 0}点
+タイプ相性: ${fortune.type?.score || 0}点
+言葉相性: ${fortune.language?.score || 0}点
+総合相性: ${fortune.totalScore || 0}点
+
+以下のJSON形式で、非常に詳細な分析結果を返してください：
+{
+  "emotionalState": {
+    "user": "ユーザーの感情状態の詳細分析（200文字以上）",
+    "partner": "相手の感情状態の詳細分析（200文字以上）",
+    "compatibility": "感情的な相性の詳細評価（200文字以上）"
+  },
+  "communicationStyle": {
+    "userPattern": "ユーザーのコミュニケーションパターン詳細（150文字以上）",
+    "partnerPattern": "相手のコミュニケーションパターン詳細（150文字以上）",
+    "recommendations": ["改善提案1", "改善提案2", "改善提案3"]
+  },
+  "futureOutlook": [
+    {
+      "month": "1ヶ月後",
+      "prediction": "詳細な予測内容（150文字以上）",
+      "keyEvents": ["重要イベント1", "重要イベント2"]
+    },
+    {
+      "month": "2ヶ月後",
+      "prediction": "詳細な予測内容（150文字以上）",
+      "keyEvents": ["重要イベント1", "重要イベント2"]
+    },
+    {
+      "month": "3ヶ月後",
+      "prediction": "詳細な予測内容（150文字以上）",
+      "keyEvents": ["重要イベント1", "重要イベント2"]
+    }
+  ],
+  "uniqueInsights": "この二人特有の非常に詳細な洞察（300文字以上）",
+  "confessionStrategy": {
+    "readiness": "告白の準備度評価",
+    "optimalTiming": "最適な告白タイミングの詳細",
+    "approach": "推奨される告白アプローチの詳細",
+    "successRate": "成功率の評価と根拠"
+  }
+}`;
+  }
+
+  /**
    * AIによる深い洞察を取得
    * @param {Array} messages - メッセージ履歴
    * @param {object} fortune - 基本分析結果

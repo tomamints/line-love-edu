@@ -158,8 +158,8 @@ module.exports = async (req, res) => {
           }
         }
         
-        // チャンク処理を直接開始（直接生成は行わない）
-        console.log('🚀 Starting chunked report generation directly...');
+        // process-report-loopを使用してレポート生成を開始
+        console.log('🚀 Starting report generation via process-report-loop...');
         const startTime = Date.now();
         
         // ユーザーに処理開始を通知
@@ -172,23 +172,23 @@ module.exports = async (req, res) => {
           console.log('⚠️ Start notification failed:', err.message);
         }
         
-        // チャンク処理を開始
-        console.log('🔄 Starting chunked processing...');
+        // process-report-loopを呼び出し（完了まで自動的にループ）
+        console.log('🔄 Starting report processing loop...');
         
-        // generate-report-chunkedを呼び出し
-        const startChunkedProcessing = async () => {
+        const startProcessingLoop = async () => {
           try {
-            const chunkedUrl = `${process.env.NEXT_PUBLIC_BASE_URL || 'https://line-love-edu.vercel.app'}/api/generate-report-chunked`;
-            console.log(`📡 Calling generate-report-chunked at: ${chunkedUrl}`);
+            const loopUrl = `${process.env.NEXT_PUBLIC_BASE_URL || 'https://line-love-edu.vercel.app'}/api/process-report-loop`;
+            console.log(`📡 Calling process-report-loop at: ${loopUrl}`);
             console.log(`📡 Order ID: ${orderId}`);
             
-            const response = await fetch(chunkedUrl, {
+            const response = await fetch(loopUrl, {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json'
               },
               body: JSON.stringify({
-                orderId: orderId
+                orderId: orderId,
+                iteration: 1
               })
             });
             
@@ -196,25 +196,23 @@ module.exports = async (req, res) => {
             
             if (response.ok) {
               const result = await response.json();
-              console.log('✅ Chunked processing started:', result.status);
-              if (result.status === 'completed') {
-                console.log('🎉 Report completed immediately');
-              } else if (result.status === 'continuing') {
-                console.log('⏳ Report generation will continue automatically');
+              console.log('✅ Processing loop started:', result.status);
+              if (result.success) {
+                console.log('🎉 Report completed via loop processing');
               }
             } else {
               const errorText = await response.text().catch(() => 'No error text');
-              console.error('❌ Failed to start chunked processing:', response.status, errorText);
+              console.error('❌ Failed to start processing loop:', response.status, errorText);
             }
           } catch (err) {
-            console.error('❌ Error starting chunked processing:', err.message);
+            console.error('❌ Error starting processing loop:', err.message);
           }
         };
         
-        // チャンク処理を即座に開始してからレスポンスを返す
+        // process-report-loopを即座に開始してからレスポンスを返す
         // 非同期でfetchを開始（待たない）
-        const chunkedPromise = startChunkedProcessing().catch(err => {
-          console.log('⚠️ Chunked processing error:', err.message);
+        const loopPromise = startProcessingLoop().catch(err => {
+          console.log('⚠️ Processing loop error:', err.message);
         });
         
         // fetchが開始されるまで少し待つ（100ms）

@@ -245,37 +245,190 @@ module.exports = async (req, res) => {
             break;
             
           case 3:
-            console.log('🤖 Step 3: AI insights (may take time)...');
-            console.log('📊 Starting AI analysis at:', new Date().toISOString());
+            console.log('🤖 Step 3: AI insights (using Batch API)...');
             console.log('⏱️ Current elapsed time:', Date.now() - startTime, 'ms');
             
-            // AI分析（最も時間がかかる）
-            try {
-              const ReportGenerator = require('../core/premium/report-generator');
-              const reportGenerator = new ReportGenerator();
-              progress.data.aiInsights = await reportGenerator.getAIInsights(
-                progress.data.messages,
-                progress.data.fortune
-              );
-              console.log('✅ AI analysis complete');
-            } catch (aiError) {
-              console.error('⚠️ AI analysis error:', aiError.message);
-              // AI分析エラーの場合はリトライするため、ステップを進めない
-              if (progress.attempts < 3) {
-                console.log('🔄 Will retry AI analysis on next attempt');
-                // ステップを進めずに終了（次回同じステップから再開）
+            // Batch APIを使用したAI分析
+            const OpenAI = require('openai');
+            const fs = require('fs').promises;
+            const openai = new OpenAI({
+              apiKey: process.env.OPENAI_API_KEY
+            });
+            
+            // バッチIDが既に存在する場合は結果を確認
+            if (progress.data.aiBatchId) {
+              console.log('🔍 Checking batch status...');
+              console.log('📦 Batch ID:', progress.data.aiBatchId);
+              
+              try {
+                const batch = await openai.batches.retrieve(progress.data.aiBatchId);
+                console.log(`📊 Batch status: ${batch.status}`);
+                
+                if (batch.status === 'completed') {
+                  console.log('✅ Batch completed! Retrieving results...');
+                  
+                  // 結果ファイルを取得
+                  const outputFile = await openai.files.content(batch.output_file_id);
+                  
+                  // ストリームをテキストに変換
+                  let content;
+                  if (typeof outputFile === 'string') {
+                    content = outputFile;
+                  } else if (Buffer.isBuffer(outputFile)) {
+                    content = outputFile.toString('utf-8');
+                  } else {
+                    // ReadableStreamの場合
+                    const chunks = [];
+                    for await (const chunk of outputFile) {
+                      chunks.push(chunk);
+                    }
+                    content = Buffer.concat(chunks).toString('utf-8');
+                  }
+                  
+                  // 結果をパース
+                  const lines = content.split('\n').filter(line => line.trim());
+                  for (const line of lines) {
+                    const result = JSON.parse(line);
+                    if (result.custom_id === `order_${orderId}`) {
+                      if (result.response && result.response.body) {
+                        const aiContent = result.response.body.choices[0].message.content;
+                        progress.data.aiInsights = JSON.parse(aiContent);
+                        console.log('✅ AI insights extracted successfully');
+                      } else if (result.error) {
+                        console.error('❌ Batch request failed:', result.error);
+                        progress.data.aiInsights = null;
+                      }
+                    }
+                  }
+                  
+                  // Step 4へ進む
+                  progress.currentStep++;
+                  
+                } else if (batch.status === 'failed' || batch.status === 'expired') {
+                  console.log(`❌ Batch ${batch.status}`);
+                  progress.data.aiInsights = null;
+                  progress.currentStep++;
+                  
+                } else {
+                  // まだ処理中 (validating, in_progress, finalizing)
+                  const waitTime = Date.now() - new Date(progress.data.aiBatchStartTime).getTime();
+                  const waitMinutes = Math.floor(waitTime / 60000);
+                  const waitSeconds = Math.floor((waitTime % 60000) / 1000);
+                  
+                  console.log(`⏳ Batch ${batch.status} (${waitMinutes}m ${waitSeconds}s elapsed)`);
+                  
+                  // 20分（1200秒）まで待つ
+                  if (waitTime > 1200000) { // 20分
+                    console.log('⏰ Timeout after 20 minutes - skipping AI analysis');
+                    progress.data.aiInsights = null;
+                    progress.currentStep++;
+                  } else {
+                    // まだ待つ
+                    await ordersDB.saveReportProgress(orderId, progress);
+                    return res.json({
+                      status: 'continuing',
+                      message: `AI batch ${batch.status} (${waitMinutes}m ${waitSeconds}s)`,
+                      nextStep: progress.currentStep,
+                      totalSteps: progress.totalSteps,
+                      batchId: progress.data.aiBatchId,
+                      elapsed: Date.now() - startTime
+                    });
+                  }
+                }
+                
+              } catch (error) {
+                console.error('❌ Error checking batch:', error.message);
+                // エラーの場合はAIなしで続行
+                progress.data.aiInsights = null;
+                progress.currentStep++;
+              }
+              
+            } else {
+              // 初回: バッチジョブを作成
+              console.log('🚀 Creating AI batch job...');
+              
+              try {
+                const ReportGenerator = require('../core/premium/report-generator');
+                const reportGenerator = new ReportGenerator();
+                
+                // メッセージサンプルを作成（最新15件）
+                const recentMessages = progress.data.messages.slice(-15);
+                const conversationSample = recentMessages.map(m => 
+                  `${m.isUser ? 'ユーザー' : '相手'}: ${m.text}`
+                ).join('\n');
+                
+                // プロンプトを作成（report-generatorから流用）
+                const prompt = reportGenerator.createAIPrompt(conversationSample, progress.data.fortune);
+                
+                // バッチリクエストを作成
+                const batchRequest = {
+                  custom_id: `order_${orderId}`,
+                  method: "POST",
+                  url: "/v1/chat/completions",
+                  body: {
+                    model: "gpt-4o-mini",
+                    messages: [
+                      {
+                        role: "system",
+                        content: "あなたは経験豊富な恋愛カウンセラーで、心理学の専門知識を持ち、日本の恋愛文化に精通しています。非常に詳細で具体的なアドバイスを提供してください。"
+                      },
+                      {
+                        role: "user",
+                        content: prompt
+                      }
+                    ],
+                    temperature: 0.8,
+                    max_tokens: 3000,
+                    response_format: { type: "json_object" }
+                  }
+                };
+                
+                // JSONLファイルを作成
+                const jsonlContent = JSON.stringify(batchRequest);
+                const tempPath = `/tmp/batch_${orderId}_${Date.now()}.jsonl`;
+                await fs.writeFile(tempPath, jsonlContent);
+                
+                // OpenAIにアップロード
+                const file = await openai.files.create({
+                  file: await fs.readFile(tempPath),
+                  purpose: "batch"
+                });
+                console.log(`📁 File uploaded: ${file.id}`);
+                
+                // バッチジョブを作成
+                const batch = await openai.batches.create({
+                  input_file_id: file.id,
+                  endpoint: "/v1/chat/completions",
+                  completion_window: "24h"
+                });
+                
+                console.log(`✅ Batch created: ${batch.id}`);
+                console.log(`   Initial status: ${batch.status}`);
+                
+                // 進捗に保存
+                progress.data.aiBatchId = batch.id;
+                progress.data.aiBatchStartTime = new Date().toISOString();
+                
+                // 一時ファイルを削除
+                await fs.unlink(tempPath).catch(() => {});
+                
+                // 継続を返す
                 await ordersDB.saveReportProgress(orderId, progress);
                 return res.json({
                   status: 'continuing',
-                  message: `AI analysis failed, will retry (attempt ${progress.attempts}/3)`,
+                  message: 'AI batch job created',
                   nextStep: progress.currentStep,
                   totalSteps: progress.totalSteps,
+                  batchId: batch.id,
                   elapsed: Date.now() - startTime
                 });
+                
+              } catch (error) {
+                console.error('❌ Error creating batch:', error.message);
+                // バッチ作成に失敗した場合はAIなしで続行
+                progress.data.aiInsights = null;
+                progress.currentStep++;
               }
-              // 3回失敗したら空のAI洞察で続行
-              console.log('⚠️ AI analysis failed 3 times, continuing without AI insights');
-              progress.data.aiInsights = null;
             }
             break;
             
