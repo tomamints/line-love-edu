@@ -1,6 +1,5 @@
-// api/continue-report-generation.js
-// generate-report-chunkedの続きを処理する専用エンドポイント
-// 無限ループ検出を回避するための別関数
+// api/generate-report-chunked.js
+// レポート生成を分割実行（50秒タイムアウト対策）
 
 const ordersDB = require('../core/database/orders-db');
 const PaymentHandler = require('../core/premium/payment-handler');
@@ -31,6 +30,9 @@ module.exports = async (req, res) => {
     return res.status(400).json({ error: 'Order ID required' });
   }
   
+  // GitHub Actionsからの呼び出しを検出
+  const isFromGitHubActions = req.headers['x-github-actions'] === 'true' || continueFrom === 'github-actions';
+  
   console.log('\n========== CONTINUE REPORT GENERATION ==========');
   console.log('🔄 This is continue-report-generation (NOT generate-report-chunked)');
   console.log('🎯 Purpose: Avoid infinite loop detection');
@@ -39,8 +41,6 @@ module.exports = async (req, res) => {
   console.log('📍 Continue From:', continueFrom || 'start');
   console.log('📍 Request Type:', continueFrom ? 'CONTINUATION' : 'NEW REQUEST');
   
-  // GitHub Actionsからの呼び出しを検出
-  const isFromGitHubActions = req.headers['x-github-actions'] === 'true' || continueFrom === 'github-actions';
   if (isFromGitHubActions) {
     console.log('🤖 Called from GitHub Actions!');
     console.log('🔄 Request chain reset - no infinite loop detection');
@@ -519,16 +519,70 @@ module.exports = async (req, res) => {
                 // 一時ファイルを削除
                 await fs.unlink(tempPath).catch(() => {});
                 
-                // 継続を返す
-                await ordersDB.saveReportProgress(orderId, progress);
-                return res.json({
-                  status: 'continuing',
-                  message: 'AI batch job created',
-                  nextStep: progress.currentStep,
-                  totalSteps: progress.totalSteps,
-                  batchId: batch.id,
-                  elapsed: Date.now() - startTime
-                });
+                // GitHub Actionsをトリガー（10秒後に実行）- ただしGitHub Actionsから呼ばれた場合は除く
+                if (!isFromGitHubActions) {
+                  console.log('🚀 Triggering GitHub Actions to continue processing...');
+                  const triggerGitHubActions = async () => {
+                    try {
+                    const githubToken = process.env.GITHUB_TOKEN || process.env.GITHUB_PAT;
+                    if (githubToken) {
+                      const response = await fetch('https://api.github.com/repos/tomamints/line-love-edu/dispatches', {
+                        method: 'POST',
+                        headers: {
+                          'Accept': 'application/vnd.github.v3+json',
+                          'Authorization': `token ${githubToken}`,
+                          'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                          event_type: 'continue-report',
+                          client_payload: {
+                            orderId: orderId,
+                            batchId: batch.id
+                          }
+                        })
+                      });
+                      
+                      if (response.ok) {
+                        console.log('✅ GitHub Actions triggered successfully');
+                      } else {
+                        console.error('❌ Failed to trigger GitHub Actions:', response.status);
+                      }
+                    } else {
+                      console.log('⚠️ GITHUB_TOKEN not set, skipping GitHub Actions trigger');
+                    }
+                  } catch (err) {
+                    console.error('❌ Error triggering GitHub Actions:', err.message);
+                  }
+                };
+                
+                  // 非同期で実行（レスポンスを待たない）
+                  triggerGitHubActions().catch(console.error);
+                  
+                  // 継続を返す（GitHub Actionsが後で処理を続行）
+                  await ordersDB.saveReportProgress(orderId, progress);
+                  return res.json({
+                    status: 'waiting_github_actions',
+                    message: 'AI batch job created, GitHub Actions will continue',
+                    nextStep: progress.currentStep,
+                    totalSteps: progress.totalSteps,
+                    batchId: batch.id,
+                    elapsed: Date.now() - startTime
+                  });
+                } else {
+                  // GitHub Actionsから呼ばれた場合は、再トリガーしない
+                  console.log('⚠️ Already called from GitHub Actions, not triggering again');
+                  
+                  // 継続を返す（通常の処理として）
+                  await ordersDB.saveReportProgress(orderId, progress);
+                  return res.json({
+                    status: 'continuing',
+                    message: 'AI batch job created (from GitHub Actions)',
+                    nextStep: progress.currentStep,
+                    totalSteps: progress.totalSteps,
+                    batchId: batch.id,
+                    elapsed: Date.now() - startTime
+                  });
+                }
                 
               } catch (error) {
                 console.error('❌ Error creating batch:', error.message);
