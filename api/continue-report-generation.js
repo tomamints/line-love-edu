@@ -489,9 +489,9 @@ module.exports = async (req, res) => {
                   
                   console.log(`⏳ Batch ${batch.status} (${waitMinutes}m ${waitSeconds}s elapsed)`);
                   
-                  // 5分（300秒）まで待つ（Batch APIは通常1-2分で完了）
-                  if (waitTime > 300000) { // 5分
-                    console.log('⏰ Timeout after 5 minutes - skipping AI analysis');
+                  // 20分（1200秒）まで待つ（通常1-2分だが、混雑時を考慮）
+                  if (waitTime > 1200000) { // 20分
+                    console.log('⏰ Timeout after 20 minutes - skipping AI analysis');
                     progress.data.aiInsights = null;
                     // currentStepのインクリメントはswitch文の後で行われる
                     console.log('🔄 Breaking from Step 3 (timeout)');
