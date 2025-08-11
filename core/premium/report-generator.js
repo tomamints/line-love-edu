@@ -5,11 +5,13 @@
 
 const FortuneEngine = require('../fortune-engine');
 const ConversationPeaksAnalyzer = require('../ai-analyzer/conversation-peaks');
+const ScoringLogic = require('./scoring-logic');
 
 class PremiumReportGenerator {
   constructor() {
     this.fortuneEngine = new FortuneEngine();
     this.peaksAnalyzer = new ConversationPeaksAnalyzer();
+    this.scoringLogic = new ScoringLogic();
   }
   
   /**
@@ -573,29 +575,94 @@ class PremiumReportGenerator {
     };
   }
   
-  // 簡易実装版のヘルパーメソッド
-  calculateResponseSpeedCompatibility(analysis) { return Math.floor(Math.random() * 30) + 70; }
-  calculateMessageLengthCompatibility(analysis) { return Math.floor(Math.random() * 30) + 65; }
-  calculateEmojiCompatibility(analysis) { return Math.floor(Math.random() * 25) + 75; }
-  calculateConversationTempo(analysis) { return Math.floor(Math.random() * 35) + 60; }
-  calculateQuestionBalance(analysis) { return Math.floor(Math.random() * 30) + 70; }
-  calculateEmotionalExpression(analysis) { return Math.floor(Math.random() * 25) + 75; }
-  calculateHumorCompatibility(analysis) { return Math.floor(Math.random() * 40) + 50; }
-  calculateEmpathyLevel(analysis) { return Math.floor(Math.random() * 20) + 80; }
-  calculatePositivityLevel(analysis) { return Math.floor(Math.random() * 30) + 70; }
-  calculateSupportiveness(analysis) { return Math.floor(Math.random() * 25) + 75; }
-  calculateCommonInterests(analysis) { return Math.floor(Math.random() * 30) + 70; }
-  calculateValueAlignment(analysis) { return Math.floor(Math.random() * 35) + 60; }
-  calculateFutureVisionCompatibility(analysis) { return Math.floor(Math.random() * 40) + 55; }
-  calculateLifestyleCompatibility(analysis) { return Math.floor(Math.random() * 30) + 65; }
-  calculateTimeCompatibility(analysis) { return Math.floor(Math.random() * 25) + 75; }
-  calculateContactFrequencyCompatibility(analysis) { return Math.floor(Math.random() * 30) + 70; }
-  calculateDateCompatibility(analysis) { return Math.floor(Math.random() * 35) + 60; }
-  calculateDecisionSpeedCompatibility(analysis) { return Math.floor(Math.random() * 40) + 55; }
-  calculateTrustBuildingSpeed(analysis) { return Math.floor(Math.random() * 30) + 70; }
-  calculateRelationshipStability(analysis) { return Math.floor(Math.random() * 25) + 75; }
-  calculateGrowthPotential(analysis) { return Math.floor(Math.random() * 20) + 80; }
-  calculateLongTermViability(analysis) { return Math.floor(Math.random() * 30) + 70; }
+  // 詳細な分析ロジックを使用したヘルパーメソッド
+  calculateResponseSpeedCompatibility(analysis) { 
+    return this.scoringLogic.calculateResponseSpeedCompatibility(analysis);
+  }
+  
+  calculateMessageLengthCompatibility(analysis) { 
+    return this.scoringLogic.calculateMessageLengthCompatibility(analysis);
+  }
+  
+  calculateEmojiCompatibility(analysis) { 
+    return this.scoringLogic.calculateEmojiCompatibility(analysis);
+  }
+  
+  calculateConversationTempo(analysis) { 
+    return this.scoringLogic.calculateConversationTempo(analysis);
+  }
+  
+  calculateQuestionBalance(analysis) { 
+    return this.scoringLogic.calculateQuestionBalance(analysis);
+  }
+  
+  calculateEmotionalExpression(analysis) { 
+    return this.scoringLogic.calculateEmotionalExpression(analysis);
+  }
+  
+  calculateHumorCompatibility(analysis) { 
+    return this.scoringLogic.calculateHumorCompatibility(analysis);
+  }
+  
+  calculateEmpathyLevel(analysis) { 
+    return this.scoringLogic.calculateEmpathyLevel(analysis);
+  }
+  
+  calculatePositivityLevel(analysis) { 
+    return this.scoringLogic.calculatePositivityLevel(analysis);
+  }
+  
+  calculateSupportiveness(analysis) { 
+    return this.scoringLogic.calculateSupportiveness(analysis);
+  }
+  
+  calculateCommonInterests(analysis) { 
+    return this.scoringLogic.calculateCommonInterests(analysis);
+  }
+  
+  calculateValueAlignment(analysis) { 
+    return this.scoringLogic.calculateValueAlignment(analysis);
+  }
+  
+  calculateFutureVisionCompatibility(analysis) { 
+    return this.scoringLogic.calculateFutureVisionCompatibility(analysis);
+  }
+  
+  calculateLifestyleCompatibility(analysis) { 
+    return this.scoringLogic.calculateLifestyleCompatibility(analysis);
+  }
+  
+  calculateTimeCompatibility(analysis) { 
+    return this.scoringLogic.calculateTimeCompatibility(analysis);
+  }
+  
+  calculateContactFrequencyCompatibility(analysis) { 
+    return this.scoringLogic.calculateContactFrequencyCompatibility(analysis);
+  }
+  
+  calculateDateCompatibility(analysis) { 
+    return this.scoringLogic.calculateDateCompatibility(analysis);
+  }
+  
+  calculateDecisionSpeedCompatibility(analysis) { 
+    return this.scoringLogic.calculateDecisionSpeedCompatibility(analysis);
+  }
+  
+  calculateTrustBuildingSpeed(analysis) { 
+    return this.scoringLogic.calculateTrustBuildingSpeed(analysis);
+  }
+  
+  calculateRelationshipStability(analysis) { 
+    return this.scoringLogic.calculateRelationshipStability(analysis);
+  }
+  
+  calculateGrowthPotential(analysis) { 
+    return this.scoringLogic.calculateGrowthPotential(analysis);
+  }
+  
+  calculateLongTermViability(analysis) { 
+    return this.scoringLogic.calculateLongTermViability(analysis);
+  }
   
   calculateCategoryAverages(items) {
     const categories = {};

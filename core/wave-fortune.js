@@ -29,48 +29,157 @@ class WaveFortuneEngine {
     return analysis;
   }
 
-  // オーラカラー検出
+  // オーラカラー検出（詳細な分析ロジック）
   detectAuraColor(messages) {
     const colors = {
-      red: { name: '情熱の赤', meaning: '強い愛情と欲求', score: 0 },
-      pink: { name: 'ローズピンク', meaning: '無条件の愛と優しさ', score: 0 },
-      orange: { name: '創造のオレンジ', meaning: '楽しさと冒険心', score: 0 },
-      yellow: { name: '太陽の黄', meaning: '知性と明るさ', score: 0 },
-      green: { name: '調和の緑', meaning: '癒しと成長', score: 0 },
-      blue: { name: '真実の青', meaning: '誠実さと深い理解', score: 0 },
-      purple: { name: '霊性の紫', meaning: '直感と精神性', score: 0 },
-      white: { name: '純粋な白', meaning: '清らかさと新しい始まり', score: 0 },
-      gold: { name: '黄金の光', meaning: '高次の愛と悟り', score: 0 }
+      red: { name: '情熱の赤', meaning: '強い愛情と欲求', score: 0, keywords: [] },
+      pink: { name: 'ローズピンク', meaning: '無条件の愛と優しさ', score: 0, keywords: [] },
+      orange: { name: '創造のオレンジ', meaning: '楽しさと冒険心', score: 0, keywords: [] },
+      yellow: { name: '太陽の黄', meaning: '知性と明るさ', score: 0, keywords: [] },
+      green: { name: '調和の緑', meaning: '癒しと成長', score: 0, keywords: [] },
+      blue: { name: '真実の青', meaning: '誠実さと深い理解', score: 0, keywords: [] },
+      purple: { name: '霊性の紫', meaning: '直感と精神性', score: 0, keywords: [] },
+      white: { name: '純粋な白', meaning: '清らかさと新しい始まり', score: 0, keywords: [] },
+      gold: { name: '黄金の光', meaning: '高次の愛と悟り', score: 0, keywords: [] }
     };
 
-    // メッセージパターンからオーラを分析
+    // 詳細なキーワード定義と重み付け
+    const keywordWeights = {
+      red: {
+        high: ['情熱', '欲望', '燃える', '熱い', '激しい'],
+        medium: ['会いたい', '寂しい', '触れ', 'キス', 'ハグ'],
+        low: ['赤', '火', '炎', '血']
+      },
+      pink: {
+        high: ['愛してる', '大好き', '愛情', '優しさ', '思いやり'],
+        medium: ['好き', '愛', '大切', '幸せ', 'ありがとう'],
+        low: ['ピンク', 'ハート', '♡', '❤️']
+      },
+      orange: {
+        high: ['冒険', '挑戦', 'チャレンジ', 'ワクワク', '創造'],
+        medium: ['楽しい', '面白い', '新しい', '元気', '活発'],
+        low: ['オレンジ', '夕日', '暖かい']
+      },
+      yellow: {
+        high: ['賢い', '知的', '理論', '分析', '学習'],
+        medium: ['明るい', '嬉しい', '笑顔', '楽しみ', 'ポジティブ'],
+        low: ['黄色', '太陽', '光']
+      },
+      green: {
+        high: ['癒し', '成長', '調和', '平和', 'バランス'],
+        medium: ['感謝', '自然', '健康', '安心', '穏やか'],
+        low: ['緑', '植物', '森']
+      },
+      blue: {
+        high: ['誠実', '信頼', '真実', '深い', '静寂'],
+        medium: ['理解', '冷静', '落ち着き', '心配', '不安'],
+        low: ['青', '海', '空']
+      },
+      purple: {
+        high: ['直感', '霊的', '神秘', '瞑想', '悟り'],
+        medium: ['感じる', '察する', '理解', '共感', '深層'],
+        low: ['紫', '神秘的', 'ミステリアス']
+      },
+      white: {
+        high: ['純粋', '清らか', '新生', '浄化', '無垢'],
+        medium: ['新しい', '始まり', 'リセット', 'クリア', '白紙'],
+        low: ['白', '透明', '光']
+      },
+      gold: {
+        high: ['悟り', '覚醒', '至福', '神聖', '永遠'],
+        medium: ['一緒', '共に', '絆', '運命', '特別'],
+        low: ['金', '輝き', '宝']
+      }
+    };
+
+    // メッセージパターンからオーラを詳細分析
     messages.forEach(msg => {
-      if (!msg || !msg.text) return; // textが存在しない場合はスキップ
+      if (!msg || !msg.text) return;
       const text = msg.text.toLowerCase();
       
-      if (text.includes('愛') || text.includes('好き')) colors.pink.score += 2;
-      if (text.includes('楽し') || text.includes('嬉し')) colors.yellow.score += 2;
-      if (text.includes('ありがと') || text.includes('感謝')) colors.green.score += 2;
-      if (text.includes('心配') || text.includes('不安')) colors.blue.score += 1;
-      if (text.includes('会いたい') || text.includes('寂し')) colors.red.score += 2;
-      if (text.includes('理解') || text.includes('分か')) colors.purple.score += 1;
-      if (text.includes('一緒') || text.includes('共に')) colors.gold.score += 1;
-      if (text.includes('新し') || text.includes('始')) colors.white.score += 1;
-      if (text.includes('面白') || text.includes('冒険')) colors.orange.score += 1;
+      // 各色のキーワードをチェック
+      Object.entries(keywordWeights).forEach(([color, keywords]) => {
+        keywords.high.forEach(keyword => {
+          if (text.includes(keyword)) {
+            colors[color].score += 3;
+            colors[color].keywords.push(keyword);
+          }
+        });
+        keywords.medium.forEach(keyword => {
+          if (text.includes(keyword)) {
+            colors[color].score += 2;
+            colors[color].keywords.push(keyword);
+          }
+        });
+        keywords.low.forEach(keyword => {
+          if (text.includes(keyword)) {
+            colors[color].score += 1;
+            colors[color].keywords.push(keyword);
+          }
+        });
+      });
+      
+      // 絵文字による追加スコアリング
+      const emojiPatterns = {
+        red: /[🔥❤️‍🔥💋]/g,
+        pink: /[💕💖💗💝💓]/g,
+        orange: /[🌅🎯🎨]/g,
+        yellow: /[☀️😊😄🌟]/g,
+        green: /[🌿🍃💚]/g,
+        blue: /[💙🌊🌌]/g,
+        purple: /[💜🔮✨]/g,
+        white: /[⚪️🤍☁️]/g,
+        gold: /[⭐️🌟✨]/g
+      };
+      
+      Object.entries(emojiPatterns).forEach(([color, pattern]) => {
+        const matches = text.match(pattern);
+        if (matches) {
+          colors[color].score += matches.length * 1.5;
+        }
+      });
     });
 
-    // 最も強いオーラカラーを特定
-    const dominantColor = Object.entries(colors)
-      .sort((a, b) => b[1].score - a[1].score)[0];
+    // スコアがすべて0の場合のフォールバック処理
+    const totalScore = Object.values(colors).reduce((sum, color) => sum + color.score, 0);
+    
+    if (totalScore === 0) {
+      // メッセージの長さと頻度から推測
+      const avgLength = messages.reduce((sum, msg) => sum + (msg.text?.length || 0), 0) / messages.length;
+      const messageCount = messages.length;
+      
+      if (avgLength > 100) {
+        colors.blue.score = 5; // 長文＝深い思考
+        colors.purple.score = 3;
+      } else if (avgLength < 30) {
+        colors.yellow.score = 5; // 短文＝軽快
+        colors.orange.score = 3;
+      } else {
+        colors.green.score = 5; // 中間＝バランス
+        colors.pink.score = 3;
+      }
+      
+      if (messageCount > 100) {
+        colors.red.score += 2; // 多い＝情熱的
+      }
+    }
 
-    // セカンダリーカラーも特定
-    const secondaryColor = Object.entries(colors)
-      .sort((a, b) => b[1].score - a[1].score)[1];
+    // 最も強いオーラカラーを特定
+    const sortedColors = Object.entries(colors)
+      .sort((a, b) => b[1].score - a[1].score);
+    
+    const dominantColor = sortedColors[0];
+    const secondaryColor = sortedColors[1];
+
+    // 分析の信頼度を計算
+    const confidence = Math.min(100, (dominantColor[1].score / Math.max(1, totalScore)) * 100);
 
     return {
       primary: dominantColor[1],
       secondary: secondaryColor[1],
-      blend: this.createAuraBlend(dominantColor[0], secondaryColor[0])
+      blend: this.createAuraBlend(dominantColor[0], secondaryColor[0]),
+      confidence: Math.round(confidence),
+      detectedKeywords: dominantColor[1].keywords.slice(0, 5) // トップ5キーワード
     };
   }
 
