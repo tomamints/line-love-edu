@@ -154,6 +154,11 @@ class PremiumReportGenerator {
    * @returns {object} 相性分析
    */
   generateCompatibilityAnalysis(analysis) {
+    // analysisにmessagesがない場合は追加
+    if (!analysis.messages && this.messages) {
+      analysis.messages = this.messages;
+    }
+    
     const compatibilityItems = [
       // コミュニケーション系
       { category: 'コミュニケーション', item: '返信速度の相性', score: this.calculateResponseSpeedCompatibility(analysis) },

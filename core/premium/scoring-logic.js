@@ -37,6 +37,12 @@ class ScoringLogic {
 
   // 返信速度の相性を計算
   calculateResponseSpeedCompatibility(analysis) {
+    // analysisオブジェクトまたはmessagesが存在しない場合のフォールバック
+    if (!analysis || !analysis.messages || !Array.isArray(analysis.messages)) {
+      console.warn('⚠️ calculateResponseSpeedCompatibility: messages not found, returning default score');
+      return 75; // デフォルトスコア
+    }
+    
     const userSpeeds = [];
     const partnerSpeeds = [];
     
@@ -100,6 +106,11 @@ class ScoringLogic {
 
   // メッセージ長の相性を計算
   calculateMessageLengthCompatibility(analysis) {
+    if (!analysis || !analysis.messages || !Array.isArray(analysis.messages)) {
+      console.warn('⚠️ calculateMessageLengthCompatibility: messages not found, returning default score');
+      return 75;
+    }
+    
     const userLengths = [];
     const partnerLengths = [];
     
