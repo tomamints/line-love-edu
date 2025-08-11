@@ -22,11 +22,11 @@ jobs:
       - name: Determine wait time
         id: wait-time
         run: |
-          # リトライの場合は30秒待つ、初回は10秒待つ
+          # リトライの場合は60秒待つ、初回は10秒待つ
           IS_RETRY="${{ github.event.client_payload.retry }}"
           if [ "$IS_RETRY" = "true" ]; then
-            echo "wait_seconds=30" >> $GITHUB_OUTPUT
-            echo "This is a retry, waiting 30 seconds..."
+            echo "wait_seconds=60" >> $GITHUB_OUTPUT
+            echo "This is a retry, waiting 60 seconds..."
           else
             echo "wait_seconds=10" >> $GITHUB_OUTPUT
             echo "Initial call, waiting 10 seconds..."
