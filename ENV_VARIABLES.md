@@ -216,7 +216,7 @@ const openai = new OpenAI({
 
 // テスト
 const response = await openai.chat.completions.create({
-  model: 'gpt-4o-mini',
+  model: 'gpt-4.1-mini',  // 2025年2月リリース：50%高速化
   messages: [{ role: 'user', content: 'test' }],
   max_tokens: 10
 });

@@ -1096,7 +1096,7 @@ ${recentMessages}
 }`;
       
       const completion = await openai.chat.completions.create({
-        model: 'gpt-4o-mini',
+        model: 'gpt-4.1-mini',  // 50%高速化、出力32Kトークン対応
         messages: [
           {
             role: 'system',
@@ -1108,7 +1108,7 @@ ${recentMessages}
           }
         ],
         temperature: 0.8,
-        max_tokens: 16384,  // GPT-4oの最大出力トークン数
+        max_tokens: 32000,  // GPT-4.1-miniの最大出力トークン数（GPT-4o-miniの2倍）
         response_format: { type: "json_object" }
       });
       

@@ -588,7 +588,7 @@ module.exports = async (req, res) => {
                   method: "POST",
                   url: "/v1/chat/completions",
                   body: {
-                    model: "gpt-4o-mini",
+                    model: "gpt-4.1-mini",  // 50%高速化、出力32Kトークン対応
                     messages: [
                       {
                         role: "system",
@@ -600,7 +600,7 @@ module.exports = async (req, res) => {
                       }
                     ],
                     temperature: 0.8,
-                    max_tokens: 16384,  // GPT-4o-miniの最大値に統一（重要：Batch APIの遅延対策）
+                    max_tokens: 32000,  // GPT-4.1-miniの最大出力トークン数
                     response_format: { type: "json_object" }
                   }
                 };

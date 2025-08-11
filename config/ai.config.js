@@ -2,7 +2,7 @@
 module.exports = {
   // OpenAI API設定
   openai: {
-    model: 'gpt-4o-mini',
+    model: 'gpt-4.1-mini',  // 2025年2月リリース：50%高速化、出力32Kトークン対応
     maxTokens: 500,  // 短い回答用に戻す
     temperature: 0.7,
     topP: 1,
