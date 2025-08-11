@@ -971,9 +971,22 @@ ${conversationSample}
       
       // 最新100件のメッセージのみを送信（処理時間改善）
       const validMessages = messages.filter(m => m && typeof m === 'object');
-      const messagesToAnalyze = validMessages.slice(-100); // 最新100件のみ取得
+      
+      // タイムスタンプでソートして最新100件を取得
+      const sortedMessages = validMessages.sort((a, b) => {
+        const timeA = a.timestamp ? new Date(a.timestamp).getTime() : 0;
+        const timeB = b.timestamp ? new Date(b.timestamp).getTime() : 0;
+        return timeA - timeB; // 古い順にソート
+      });
+      
+      const messagesToAnalyze = sortedMessages.slice(-100); // 末尾（最新）100件を取得
       
       console.log(`📊 AI分析用メッセージ: 全${validMessages.length}件中、最新${messagesToAnalyze.length}件を使用`);
+      if (messagesToAnalyze.length > 0) {
+        const firstMsg = messagesToAnalyze[0];
+        const lastMsg = messagesToAnalyze[messagesToAnalyze.length - 1];
+        console.log(`📅 分析期間: ${firstMsg.timestamp || '不明'} 〜 ${lastMsg.timestamp || '不明'}`);
+      }
       
       const recentMessages = messagesToAnalyze.length > 0 
         ? messagesToAnalyze.map(m => 
