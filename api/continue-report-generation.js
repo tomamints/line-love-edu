@@ -140,7 +140,7 @@ module.exports = async (req, res) => {
     }
     
     // 最大試行回数チェック
-    if (progress.attempts > 10) {
+    if (progress.attempts > 30) {
       console.error('❌ Too many attempts:', progress.attempts);
       await ordersDB.updateOrder(orderId, {
         status: 'error',
