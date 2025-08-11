@@ -475,7 +475,7 @@ module.exports = async (req, res) => {
                       }
                     ],
                     temperature: 0.8,
-                    max_tokens: 3000,
+                    max_tokens: 16384,  // GPT-4o-miniの最大値に統一（重要：Batch APIの遅延対策）
                     response_format: { type: "json_object" }
                   }
                 };
