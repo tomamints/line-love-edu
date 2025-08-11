@@ -448,8 +448,8 @@ module.exports = async (req, res) => {
                 const ReportGenerator = require('../core/premium/report-generator');
                 const reportGenerator = new ReportGenerator();
                 
-                // メッセージサンプルを作成（最新15件）
-                const recentMessages = progress.data.messages.slice(-15);
+                // メッセージサンプルを作成（最新100件に統一）
+                const recentMessages = progress.data.messages.slice(-100);
                 const conversationSample = recentMessages.map(m => 
                   `${m.isUser ? 'ユーザー' : '相手'}: ${m.text}`
                 ).join('\n');
