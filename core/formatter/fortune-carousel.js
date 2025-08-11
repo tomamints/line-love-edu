@@ -322,7 +322,7 @@ class FortuneCarouselBuilder {
           contents: [
             {
               type: 'text',
-              text: '🌙 月相恋愛占い 🌙',
+              text: '🌙 おつきさまからのメッセージ 🌙',
               size: 'xl',
               color: this.styles.gold,
               align: 'center',
@@ -361,7 +361,7 @@ class FortuneCarouselBuilder {
         contents: [
           {
             type: 'text',
-            text: '🌙 月相恋愛占い 🌙',
+            text: '🌙 おつきさまからのメッセージ 🌙',
             size: 'xl',
             color: this.styles.gold,
             align: 'center',
@@ -369,7 +369,7 @@ class FortuneCarouselBuilder {
           },
           {
             type: 'text',
-            text: 'Moon Phase Love Fortune',
+            text: 'Your Moon Fortune Validation',
             size: 'xs',
             color: this.styles.stardust,
             align: 'center',
@@ -1466,6 +1466,53 @@ class FortuneCarouselBuilder {
     }
     
     return message.substring(0, 150) + (message.length > 150 ? '...' : '');
+  }
+  
+  /**
+   * 月相タイプの検証メッセージを生成
+   */
+  generateMoonValidation(moonPhaseType, target) {
+    // AI分析結果があれば使用
+    const aiInsights = this.fortune.aiInsights || {};
+    
+    // 月相タイプに基づく具体的な行動例
+    const validationExamples = {
+      '新月': {
+        user: '• 新しいことに挑戦したくなる\n• 相手に自分から連絡を取る\n• 未来の計画を立てたがる',
+        partner: '積極的に新しい提案をしてくるはず。最近何か新しい話題を持ち出してきませんでしたか？'
+      },
+      '三日月': {
+        user: '• 相手の反応を気にする\n• メッセージを何度も読み返す\n• 言葉選びに慎重になる',
+        partner: '慎重で思慮深い返信が多いはず。じっくり考えてから返信してくることが多いでしょう。'
+      },
+      '上弦の月': {
+        user: '• 積極的にアプローチする\n• デートの誘いをする\n• 自分の気持ちを素直に表現',
+        partner: '行動的で決断が早いはず。デートの提案や新しい場所への誘いが多いのでは？'
+      },
+      '満月': {
+        user: '• 感情が高ぶりやすい\n• 愛情表現が豊かになる\n• 相手との時間を大切にする',
+        partner: '感情豊かで情熱的なメッセージが多いはず。絵文字やスタンプも多用していませんか？'
+      },
+      '下弦の月': {
+        user: '• 冷静に状況を分析する\n• 関係性を見直したくなる\n• 一人の時間も大切にする',
+        partner: '理性的で落ち着いた対応が多いはず。論理的な会話を好む傾向があります。'
+      },
+      '逆三日月': {
+        user: '• 内省的になる\n• 深い話をしたくなる\n• 精神的なつながりを求める',
+        partner: '深い話題や哲学的な会話を好むはず。夜遅くに長文メッセージを送ってきませんか？'
+      }
+    };
+    
+    // デフォルトの検証メッセージ
+    const defaultValidation = target === 'user' 
+      ? '• 直感を大切にする\n• 相手のペースに合わせる\n• 自然体で接する'
+      : '相手のペースを尊重し、自然な関係を築こうとしているはずです。';
+    
+    // 月相タイプ名から適切な検証例を取得
+    const typeName = moonPhaseType.name || '新月';
+    const examples = validationExamples[typeName] || { user: defaultValidation, partner: defaultValidation };
+    
+    return examples[target] || defaultValidation;
   }
   
   /**
