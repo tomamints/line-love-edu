@@ -969,10 +969,14 @@ ${conversationSample}
         apiKey: process.env.OPENAI_API_KEY
       });
       
-      // 全メッセージを送信
+      // 最新100件のメッセージのみを送信（処理時間改善）
       const validMessages = messages.filter(m => m && typeof m === 'object');
-      const recentMessages = validMessages.length > 0 
-        ? validMessages.map(m => 
+      const messagesToAnalyze = validMessages.slice(-100); // 最新100件のみ取得
+      
+      console.log(`📊 AI分析用メッセージ: 全${validMessages.length}件中、最新${messagesToAnalyze.length}件を使用`);
+      
+      const recentMessages = messagesToAnalyze.length > 0 
+        ? messagesToAnalyze.map(m => 
             `${m.isUser ? 'あなた' : '相手'}: ${m.text || 'メッセージなし'}`
           ).join('\n')
         : 'メッセージ履歴がありません';
@@ -984,7 +988,8 @@ ${recentMessages}
 
 基本分析結果：
 - 総合スコア: ${fortune.overall?.score || 70}点
-- 合計メッセージ数: ${messages.length}
+- 合計メッセージ数: ${validMessages.length}
+- 分析対象メッセージ数: ${messagesToAnalyze.length}
 
 以下のJSON形式で詳細な分析を提供してください：
 {
