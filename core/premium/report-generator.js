@@ -108,6 +108,7 @@ class PremiumReportGenerator {
     
     return {
       ...fortune,
+      messages, // メッセージデータを追加（相性分析で必要）
       statistics,
       timePatterns,
       emotionTimeline,
