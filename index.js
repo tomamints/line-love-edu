@@ -782,113 +782,142 @@ async function handleTextMessage(event) {
   const text = event.message.text;
   
   try {
-    // 占いを始める
+    // 占いを始める - 友達追加時と同じカードを表示
     if (text === '占いを始める' || text === 'start') {
-      // あなたの情報入力カード（生年月日と性別を一つのカードで）
-      await client.replyMessage(event.replyToken, [
-        {
-          type: 'flex',
-          altText: 'あなたの情報を入力',
-          contents: {
-            type: 'bubble',
-            header: {
-              type: 'box',
-              layout: 'vertical',
-              contents: [
-                {
-                  type: 'text',
-                  text: 'STEP 1/2',
-                  size: 'xs',
-                  color: '#ffffff'
-                },
-                {
-                  type: 'text',
-                  text: 'あなたの情報',
-                  size: 'lg',
-                  color: '#ffffff',
-                  weight: 'bold'
-                }
-              ],
-              backgroundColor: '#764ba2',
-              paddingAll: '15px'
-            },
-            body: {
-              type: 'box',
-              layout: 'vertical',
-              spacing: 'md',
-              contents: [
-                {
-                  type: 'text',
-                  text: '1️⃣ 生年月日',
-                  size: 'sm',
-                  weight: 'bold',
-                  color: '#764ba2'
-                },
-                {
-                  type: 'button',
-                  action: {
-                    type: 'datetimepicker',
-                    label: '📅 生年月日を選択',
-                    data: 'action=userBirthDate',
-                    mode: 'date',
-                    initial: '1995-01-01',
-                    max: '2010-12-31',
-                    min: '1950-01-01'
+      const userId = event.source.userId;
+      const formUrl = `${process.env.BASE_URL || 'https://line-love-edu.vercel.app'}/api/profile-form?userId=${userId}`;
+      
+      await client.replyMessage(event.replyToken, {
+        type: 'flex',
+        altText: '🌙 おつきさま診断へようこそ！',
+        contents: {
+          type: 'bubble',
+          size: 'mega',
+          header: {
+            type: 'box',
+            layout: 'vertical',
+            contents: [
+              {
+                type: 'box',
+                layout: 'vertical',
+                contents: [
+                  {
+                    type: 'text',
+                    text: '🌙',
+                    size: '60px',
+                    align: 'center'
                   },
-                  style: 'secondary'
+                  {
+                    type: 'text',
+                    text: 'おつきさま診断',
+                    size: 'xl',
+                    color: '#ffffff',
+                    align: 'center',
+                    weight: 'bold'
+                  },
+                  {
+                    type: 'text',
+                    text: '生年月日から導く運命の相性',
+                    size: 'sm',
+                    color: '#ffffff',
+                    align: 'center',
+                    margin: 'sm'
+                  }
+                ]
+              }
+            ],
+            paddingAll: '20px',
+            backgroundColor: '#764ba2',
+            spacing: 'md',
+            paddingTop: '22px'
+          },
+          body: {
+            type: 'box',
+            layout: 'vertical',
+            contents: [
+              {
+                type: 'text',
+                text: 'あなたと大切な人の相性を',
+                size: 'md',
+                wrap: true,
+                align: 'center'
+              },
+              {
+                type: 'text',
+                text: '月の満ち欠けから占います',
+                size: 'md',
+                wrap: true,
+                align: 'center',
+                margin: 'sm'
+              },
+              {
+                type: 'separator',
+                margin: 'lg'
+              },
+              {
+                type: 'box',
+                layout: 'vertical',
+                margin: 'lg',
+                spacing: 'sm',
+                contents: [
+                  {
+                    type: 'text',
+                    text: '📝 かんたん3ステップ',
+                    weight: 'bold',
+                    size: 'sm',
+                    color: '#764ba2'
+                  },
+                  {
+                    type: 'text',
+                    text: '1. あなたの生年月日を入力',
+                    size: 'sm',
+                    margin: 'sm'
+                  },
+                  {
+                    type: 'text',
+                    text: '2. お相手の生年月日を入力',
+                    size: 'sm'
+                  },
+                  {
+                    type: 'text',
+                    text: '3. 相性診断結果をチェック！',
+                    size: 'sm'
+                  }
+                ]
+              }
+            ]
+          },
+          footer: {
+            type: 'box',
+            layout: 'vertical',
+            spacing: 'sm',
+            contents: [
+              {
+                type: 'button',
+                style: 'primary',
+                height: 'md',
+                action: {
+                  type: 'uri',
+                  label: '🔮 情報を入力する',
+                  uri: formUrl
                 },
-                {
-                  type: 'separator',
-                  margin: 'md'
+                color: '#764ba2'
+              },
+              {
+                type: 'button',
+                style: 'primary',
+                height: 'md',
+                action: {
+                  type: 'message',
+                  label: '診断結果を見る',
+                  text: '診断結果'
                 },
-                {
-                  type: 'text',
-                  text: '2️⃣ 性別',
-                  size: 'sm',
-                  weight: 'bold',
-                  color: '#764ba2',
-                  margin: 'md'
-                },
-                {
-                  type: 'box',
-                  layout: 'horizontal',
-                  spacing: 'sm',
-                  contents: [
-                    {
-                      type: 'button',
-                      action: {
-                        type: 'postback',
-                        label: '👨 男性',
-                        data: 'action=userGenderWithBirthDate&value=male'
-                      },
-                      style: 'secondary',
-                      flex: 1
-                    },
-                    {
-                      type: 'button',
-                      action: {
-                        type: 'postback',
-                        label: '👩 女性',
-                        data: 'action=userGenderWithBirthDate&value=female'
-                      },
-                      style: 'secondary',
-                      flex: 1
-                    }
-                  ]
-                },
-                {
-                  type: 'text',
-                  text: '※ まず生年月日を選択してから性別を選んでください',
-                  size: 'xs',
-                  color: '#999999',
-                  wrap: true,
-                  margin: 'md'
-                }
-              ]
-            }
+                color: '#667eea'
+              }
+            ]
           }
         }
-      ]);
+      });
       return;
     }
     
