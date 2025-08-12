@@ -14,53 +14,57 @@ class FortuneCarouselBuilder {
     this.userProfile = userProfile;
     this.userName = userProfile.displayName || 'あなた';
     
-    // スタイル定義 - LINE登録時の既存デザインと完全統一
+    // スタイル定義 - おつきさま診断の実際のデザインと完全統一
     this.styles = {
-      // メインカラー（既存のLINE登録カルーセルから）
-      headerBg: '#FAF4F9',         // ヘッダー背景（薄紫ピンク）
-      bodyBg: '#FAF4F9',           // ボディ背景（薄紫ピンク）
-      footerBg: '#FFE7F0',         // フッター背景（薄ピンク）
+      // メインカラー（実際のおつきさま診断から）
+      headerBg: '#1a0033',         // ヘッダー背景（ディープパープル）
+      bodyBg: '#FFFFFF',           // ボディ背景（白）
+      footerBg: '#f8f4ff',         // フッター背景（薄い紫）
       
       // カード背景色
-      cardBg1: '#FAF4F9',          // カード背景1（薄紫ピンク）
-      cardBg2: '#FFE7F0',          // カード背景2（薄ピンク）
-      cardBg3: '#FFF9FC',          // カード背景3（より薄いピンク）
+      cardBg1: '#f8f4ff',          // カード背景1（薄い紫）
+      cardBg2: '#FFF0F8',          // カード背景2（薄いピンク）
+      cardBg3: '#F5F8FF',          // カード背景3（薄い青）
       
       // テキストカラー
+      headerText: '#FFFFFF',       // ヘッダーテキスト（白）
+      headerSubText: '#e0e0e0',    // ヘッダーサブテキスト（薄いグレー）
       mainText: '#333333',         // メインテキスト（濃いグレー）
-      subText: '#888888',          // サブテキスト（薄グレー）
-      accentText: '#D63384',       // アクセントテキスト（濃いピンク）
+      subText: '#888888',          // サブテキスト（グレー）
+      accentText: '#764ba2',       // アクセントテキスト（紫）
       
       // アクセントカラー
-      separator: '#FFC1D4',        // セパレーター（薄ピンク）
-      accentPink: '#D63384',       // アクセントカラー（濃いピンク）
+      separator: '#E0E0E0',        // セパレーター（グレー）
+      accentPurple: '#764ba2',     // アクセントカラー（紫）
+      accentBlue: '#667eea',       // アクセントカラー（紫青）
       green: '#4CAF50',            // 成功色（グリーン）
-      gold: '#FF8F00',             // 警告色（オレンジ）
+      gold: '#FFD700',             // ゴールド（重要テキスト）
       red: '#F44336',              // エラー色（レッド）
       
       // 互換性のためのマッピング
-      headerPink: '#FAF4F9',
-      bodyPink: '#FAF4F9',
-      deepPurple: '#D63384',
-      midnightBlue: '#D63384',
-      cosmicPurple: '#FAF4F9',
-      roseGold: '#FFC1D4',
-      starlight: '#FFFFFF',
-      auroraGreen: '#4CAF50',
-      mysticPink: '#D63384',
-      stardust: '#FFC1D4',
-      primary: '#D63384',
-      secondary: '#FF8F00',
+      headerPink: '#1a0033',
+      bodyPink: '#FFFFFF',
+      deepPurple: '#1a0033',
+      midnightBlue: '#24243e',
+      cosmicPurple: '#24243e',
+      roseGold: '#E8B4B8',
+      starlight: '#F8F8FF',
+      auroraGreen: '#00FF88',
+      mysticPink: '#FF006E',
+      stardust: '#B8E7FC',
+      primary: '#764ba2',
+      secondary: '#667eea',
       text: '#333333',
-      warning: '#FF8F00',
-      success: '#4CAF50',
-      accent: '#D63384',
-      mystical: '#FAF4F9',
-      softPurple: '#FAF4F9',
-      hotPink: '#D63384',
+      warning: '#FF006E',
+      success: '#00FF88',
+      accent: '#764ba2',
+      mystical: '#f8f4ff',
+      softPurple: '#764ba2',
+      hotPink: '#FF006E',
       mainTextColor: '#333333',
       lightText: '#888888',
-      blue: '#4CAF50'
+      blue: '#667eea',
+      accentPink: '#764ba2'
     };
   }
   
@@ -165,7 +169,7 @@ class FortuneCarouselBuilder {
             type: 'text',
             text: this.userName + 'さんと相手の方へ',
             size: 'md',
-            color: this.styles.accentPink,
+            color: this.styles.accentText,
             align: 'center',
             weight: 'bold'
           },
@@ -195,7 +199,7 @@ class FortuneCarouselBuilder {
             type: 'text',
             text: '✨ 二人の間に神秘的なエネルギーが高まっています ✨',
             size: 'sm',
-            color: this.styles.subText,
+            color: this.styles.mainText,
             align: 'center'
           }
         ]
@@ -210,7 +214,7 @@ class FortuneCarouselBuilder {
             type: 'text',
             text: '▶ スワイプして次へ',
             size: 'sm',
-            color: this.styles.accentText,
+            color: this.styles.accentPurple,
             align: 'center'
           }
         ]
@@ -247,13 +251,13 @@ class FortuneCarouselBuilder {
             text: '✨ 二人の恋愛運勢 ✨',
             size: 'xl',
             weight: 'bold',
-            color: this.styles.accentText,
+            color: this.styles.headerText,
             align: 'center'
           },
           {
             type: 'separator',
             margin: 'md',
-            color: this.styles.separator
+            color: this.styles.gold
           }
         ]
       },
@@ -346,7 +350,7 @@ class FortuneCarouselBuilder {
               type: 'text',
               text: '🌙 おつきさまからのメッセージ 🌙',
               size: 'xl',
-              color: this.styles.accentText,
+              color: this.styles.headerText,
               align: 'center',
               weight: 'bold'
             }
@@ -385,7 +389,7 @@ class FortuneCarouselBuilder {
             type: 'text',
             text: '🌙 おつきさまからのメッセージ 🌙',
             size: 'xl',
-            color: this.styles.accentText,
+            color: this.styles.headerText,
             align: 'center',
             weight: 'bold'
           },
@@ -393,7 +397,7 @@ class FortuneCarouselBuilder {
             type: 'text',
             text: 'Your Moon Fortune Validation',
             size: 'xs',
-            color: this.styles.subText,
+            color: this.styles.headerSubText,
             align: 'center',
             margin: 'sm'
           }
