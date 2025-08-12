@@ -16,55 +16,69 @@ class FortuneCarouselBuilder {
     
     // スタイル定義 - おつきさま診断の実際のデザインと完全統一
     this.styles = {
-      // メインカラー（実際のおつきさま診断から）
-      headerBg: '#1a0033',         // ヘッダー背景（ディープパープル）
-      bodyBg: '#FFFFFF',           // ボディ背景（白）
-      footerBg: '#f8f4ff',         // フッター背景（薄い紫）
-      
-      // カード背景色
-      cardBg1: '#f8f4ff',          // カード背景1（薄い紫）
-      cardBg2: '#FFF0F8',          // カード背景2（薄いピンク）
-      cardBg3: '#F5F8FF',          // カード背景3（薄い青）
+      // カード別ヘッダー背景（実際のおつきさま診断から）
+      purple: '#764ba2',           // 紫（カード1: 総合運勢）
+      bluePurple: '#667eea',       // 青紫（カード2: 月相診断）  
+      pink: '#e91e63',             // ピンク（カード3: 運命の瞬間）
+      coral: '#ff6b6b',            // コーラルレッド（カード4: 今月の運勢）
       
       // テキストカラー
-      headerText: '#FFFFFF',       // ヘッダーテキスト（白）
-      headerSubText: '#e0e0e0',    // ヘッダーサブテキスト（薄いグレー）
-      mainText: '#333333',         // メインテキスト（濃いグレー）
-      subText: '#888888',          // サブテキスト（グレー）
-      accentText: '#764ba2',       // アクセントテキスト（紫）
+      white: '#ffffff',            // 白（ヘッダーテキスト）
+      gold: '#ffd700',             // ゴールド（重要テキスト・星）
+      grayText: '#555555',         // グレーテキスト（本文）
+      darkGray: '#333333',         // 濃いグレー（見出し）
+      lightGray: '#888888',        // 薄いグレー（サブテキスト）
       
-      // アクセントカラー
-      separator: '#E0E0E0',        // セパレーター（グレー）
-      accentPurple: '#764ba2',     // アクセントカラー（紫）
-      accentBlue: '#667eea',       // アクセントカラー（紫青）
-      green: '#4CAF50',            // 成功色（グリーン）
-      gold: '#FFD700',             // ゴールド（重要テキスト）
-      red: '#F44336',              // エラー色（レッド）
+      // ボディ・フッター
+      bodyBg: '#FFFFFF',           // ボディ背景（白）
+      footerBg: '#f0f0f0',         // フッター背景（薄いグレー）
+      
+      // カード内アクセント色（カードごとに変える）
+      purpleAccent: '#764ba2',     // 紫のアクセント
+      blueAccent: '#667eea',       // 青紫のアクセント
+      pinkAccent: '#e91e63',       // ピンクのアクセント
+      coralAccent: '#ff6b6b',      // コーラルのアクセント
       
       // 互換性のためのマッピング
-      headerPink: '#1a0033',
-      bodyPink: '#FFFFFF',
-      deepPurple: '#1a0033',
-      midnightBlue: '#24243e',
-      cosmicPurple: '#24243e',
-      roseGold: '#E8B4B8',
-      starlight: '#F8F8FF',
-      auroraGreen: '#00FF88',
-      mysticPink: '#FF006E',
-      stardust: '#B8E7FC',
+      headerBg: '#764ba2',
+      headerText: '#ffffff',
+      headerSubText: '#ffd700',
+      mainText: '#555555',
+      subText: '#888888',
+      accentText: '#764ba2',
+      separator: '#E0E0E0',
+      accentPurple: '#764ba2',
+      accentBlue: '#667eea',
+      gold: '#ffd700',
       primary: '#764ba2',
       secondary: '#667eea',
       text: '#333333',
-      warning: '#FF006E',
-      success: '#00FF88',
       accent: '#764ba2',
-      mystical: '#f8f4ff',
       softPurple: '#764ba2',
-      hotPink: '#FF006E',
-      mainTextColor: '#333333',
+      accentPink: '#e91e63',
+      mainTextColor: '#555555',
       lightText: '#888888',
+      cardBg1: '#FFFFFF',
+      cardBg2: '#FFFFFF',
+      cardBg3: '#FFFFFF',
+      green: '#4CAF50',
+      auroraGreen: '#4CAF50',
+      mysticPink: '#e91e63',
+      stardust: '#ffd700',
+      cosmicPurple: '#764ba2',
+      roseGold: '#ffd700',
+      starlight: '#ffffff',
+      mystical: '#f0f0f0',
+      deepPurple: '#764ba2',
+      midnightBlue: '#667eea',
+      warning: '#ff6b6b',
+      success: '#4CAF50',
+      hotPink: '#e91e63',
       blue: '#667eea',
-      accentPink: '#764ba2'
+      red: '#ff6b6b',
+      bodyPink: '#FFFFFF',
+      headerPink: '#764ba2',
+      footerBg: '#f0f0f0'
     };
   }
   
@@ -106,8 +120,10 @@ class FortuneCarouselBuilder {
    * 1. オープニングページ
    */
   addOpeningPage() {
-    const mainMessage = this.fortune.mainMessage || '星々があなたの恋愛を見守っています✨';
-    const score = this.fortune.overall?.score || 75;
+    const score = this.fortune.overall?.score || 85;
+    const starCount = Math.floor(score / 20);
+    const level = this.fortune.overall?.level || '運命の相性';
+    const description = this.fortune.overall?.description || '二人の月の波長が絶妙に調和し、深いレベルでの理解が可能な組み合わせです。';
     
     return {
       type: 'bubble',
@@ -115,46 +131,33 @@ class FortuneCarouselBuilder {
       header: {
         type: 'box',
         layout: 'vertical',
-        backgroundColor: this.styles.headerBg,
+        backgroundColor: '#764ba2',
         paddingAll: '20px',
         contents: [
           {
             type: 'text',
-            text: '🌙 ✨ 🌙',
+            text: '🌙 おつきさま診断',
             size: 'xl',
-            color: this.styles.accentPink,
-            align: 'center'
-          },
-          {
-            type: 'text',
-            text: '運命の扉が開かれます',
-            size: 'lg',
+            color: '#ffffff',
             weight: 'bold',
-            color: this.styles.accentPink,
-            align: 'center',
-            margin: 'md'
-          },
-          {
-            type: 'text',
-            text: 'あなたの恋の行方を',
-            size: 'md',
-            color: this.styles.subText,
             align: 'center'
           },
           {
             type: 'text',
-            text: '星々に問いかけます',
-            size: 'md',
-            color: this.styles.subText,
-            align: 'center'
+            text: `総合相性: ${score}%`,
+            size: 'xxl',
+            color: '#ffd700',
+            align: 'center',
+            margin: 'md',
+            weight: 'bold'
           },
           {
             type: 'text',
-            text: '💫 ✨ 💫',
-            size: 'lg',
-            color: this.styles.accentText,
+            text: '★'.repeat(starCount) + '☆'.repeat(5 - starCount),
+            size: 'xxl',
+            color: '#ffd700',
             align: 'center',
-            margin: 'md'
+            margin: 'sm'
           }
         ]
       },
@@ -167,75 +170,57 @@ class FortuneCarouselBuilder {
         contents: [
           {
             type: 'text',
-            text: this.userName + 'さんと相手の方へ',
-            size: 'md',
-            color: this.styles.accentText,
-            align: 'center',
-            weight: 'bold'
-          },
-          {
-            type: 'text',
-            text: this.formatMainMessage(mainMessage),
-            size: 'sm',
-            color: this.styles.mainText,
-            wrap: true,
-            align: 'center',
-            margin: 'sm'
-          },
-          {
-            type: 'separator',
-            margin: 'lg'
-          },
-          {
-            type: 'text',
-            text: `二人の恋愛運勢: ${score}点 - ${this.getScoreText(score)}`,
-            size: 'lg',
+            text: `【${level}】`,
             weight: 'bold',
-            color: this.styles.accentText,
-            align: 'center',
+            size: 'xl',
+            color: '#764ba2',
+            align: 'center'
+          },
+          {
+            type: 'text',
+            text: description,
+            wrap: true,
+            size: 'md',
             margin: 'md'
           },
           {
+            type: 'separator',
+            margin: 'xl'
+          },
+          {
             type: 'text',
-            text: '✨ 二人の間に神秘的なエネルギーが高まっています ✨',
+            text: '🔮 相性のポイント',
+            weight: 'bold',
+            size: 'lg',
+            color: '#764ba2',
+            margin: 'xl'
+          },
+          {
+            type: 'text',
+            text: this.fortune.overall?.advice?.slice(0, 2).join('\n\n') || '二人の相性はとても良好です。お互いの気持ちを大切にしてください。',
+            wrap: true,
             size: 'sm',
-            color: this.styles.mainText,
-            align: 'center'
+            margin: 'md',
+            color: '#555555'
           }
         ]
       },
-      footer: {
-        type: 'box',
-        layout: 'vertical',
-        backgroundColor: this.styles.headerBg,
-        paddingAll: '10px',
-        contents: [
-          {
-            type: 'text',
-            text: '▶ スワイプして次へ',
-            size: 'sm',
-            color: this.styles.accentPurple,
-            align: 'center'
-          }
-        ]
-      }
     };
   }
   
   /**
-   * 2. 総合運勢ページ
+   * 2. あなたの月相タイプ
    */
   addOverallPage() {
-    const overall = this.fortune.overall || {};
-    const score = overall.score || 75;
-    const trend = overall.trendText || '安定';
-    const accuracy = overall.accuracy || '★★★☆☆';
-    const element = overall.element || '火';
-    const phase = overall.phase || '成長期';
-    
-    // スコアに応じた星の数を生成
-    const starCount = Math.min(5, Math.max(1, Math.round(score / 20)));
-    const stars = '⭐'.repeat(starCount) + '☆'.repeat(5 - starCount);
+    const userMoon = this.fortune.moonAnalysis?.user || {};
+    const moonPhaseType = userMoon.moonPhaseType || {
+      name: '新月タイプ',
+      symbol: '🌑',
+      traits: '新しい始まりを求める冒険家',
+      description: '直感力が鋭く、常に新しいことにチャレンジする情熱的なタイプ。',
+      keywords: ['情熱', '直感', '冒険', '始まり', 'チャレンジ']
+    };
+    const moonAge = userMoon.moonAge || 7;
     
     return {
       type: 'bubble',
@@ -243,23 +228,33 @@ class FortuneCarouselBuilder {
       header: {
         type: 'box',
         layout: 'vertical',
-        backgroundColor: this.styles.headerBg,
-        paddingAll: '20px',
         contents: [
           {
             type: 'text',
-            text: '✨ 二人の恋愛運勢 ✨',
-            size: 'xl',
+            text: 'あなたのおつきさま',
+            size: 'lg',
+            color: '#ffffff',
             weight: 'bold',
-            color: this.styles.headerText,
             align: 'center'
           },
           {
-            type: 'separator',
-            margin: 'md',
-            color: this.styles.gold
+            type: 'text',
+            text: moonPhaseType.symbol,
+            size: '80px',
+            align: 'center',
+            margin: 'md'
+          },
+          {
+            type: 'text',
+            text: moonPhaseType.name,
+            size: 'xl',
+            color: '#ffd700',
+            align: 'center',
+            weight: 'bold'
           }
-        ]
+        ],
+        backgroundColor: '#667eea',
+        paddingAll: '20px'
       },
       body: {
         type: 'box',
