@@ -2562,22 +2562,28 @@ class FortuneCarouselBuilder {
    * v2.0: カード8 - プレミアム誘導
    */
   addCard8_PremiumPage() {
+    // 過去の動作していた実装をそのまま使用
     return {
       type: 'bubble',
       size: 'mega',
       header: {
         type: 'box',
         layout: 'vertical',
-        backgroundColor: '#FFD700',
+        backgroundColor: '#1a0033',
         paddingAll: '20px',
         contents: [
           {
             type: 'text',
-            text: '💎 もっと詳しく知りたい方へ',
+            text: '✨ より深い運命を知りたい方へ ✨',
             size: 'lg',
-            color: '#333333',
             weight: 'bold',
+            color: '#FFD700',
             align: 'center'
+          },
+          {
+            type: 'separator',
+            margin: 'md',
+            color: '#FFD700'
           }
         ]
       },
@@ -2586,91 +2592,106 @@ class FortuneCarouselBuilder {
         layout: 'vertical',
         spacing: 'md',
         paddingAll: '20px',
-        backgroundColor: '#ffffff',
+        backgroundColor: '#0f0c29',
         contents: [
           {
             type: 'text',
-            text: 'プレミアム恋愛診断',
-            size: 'lg',
-            color: '#333333',
-            align: 'center',
-            weight: 'bold'
-          },
-          {
-            type: 'text',
-            text: '特別価格',
-            size: 'sm',
-            color: '#666666',
-            align: 'center',
-            margin: 'md'
-          },
-          {
-            type: 'text',
-            text: '¥1,980',
-            size: 'xxl',
-            weight: 'bold',
-            color: '#FFD700',
-            align: 'center'
-          },
-          {
-            type: 'separator',
-            margin: 'xl'
-          },
-          {
-            type: 'text',
-            text: '📊 22項目の詳細分析',
-            size: 'sm',
-            color: '#555555',
-            margin: 'md'
-          },
-          {
-            type: 'text',
-            text: '📖 12-15ページの完全レポート',
-            size: 'sm',
-            color: '#555555',
-            margin: 'sm'
-          },
-          {
-            type: 'text',
-            text: '💡 具体的な成功戦略',
-            size: 'sm',
-            color: '#555555',
-            margin: 'sm'
-          },
-          {
-            type: 'text',
-            text: '🔮 3ヶ月先の未来予測',
-            size: 'sm',
-            color: '#555555',
-            margin: 'sm'
-          },
-          {
-            type: 'separator',
-            margin: 'xl'
-          },
-          {
-            type: 'text',
-            text: '今すぐ注文するには',
-            size: 'sm',
-            color: '#666666',
-            align: 'center',
-            margin: 'md'
-          },
-          {
-            type: 'text',
-            text: '「プレミアム診断を注文」',
-            size: 'md',
+            text: '🔮 プレミアム恋愛レポート',
+            size: 'xl',
             weight: 'bold',
             color: '#FFD700',
             align: 'center',
-            margin: 'sm'
+            margin: 'md'
           },
           {
             type: 'text',
-            text: 'とメッセージしてください',
+            text: 'AIが分析した超詳細な恋愛診断書をお届け',
             size: 'sm',
-            color: '#666666',
-            align: 'center'
+            color: '#E8B4B8',
+            align: 'center',
+            wrap: true
+          },
+          {
+            type: 'separator',
+            margin: 'lg'
+          },
+          {
+            type: 'box',
+            layout: 'vertical',
+            spacing: 'sm',
+            contents: [
+              {
+                type: 'text',
+                text: '📊 含まれる内容',
+                size: 'md',
+                weight: 'bold',
+                color: '#FFD700',
+                margin: 'md'
+              },
+              {
+                type: 'text',
+                text: '• 詳細な相性分析（20項目以上）\n• 会話の癖と改善点\n• 月別恋愛運勢カレンダー\n• パーソナライズされた40のアクション\n• 危険な時期とその対策\n• 告白成功の最適タイミング',
+                size: 'xs',
+                color: '#F8F8FF',
+                wrap: true,
+                margin: 'sm'
+              }
+            ]
+          },
+          {
+            type: 'separator',
+            margin: 'lg'
+          },
+          {
+            type: 'box',
+            layout: 'horizontal',
+            contents: [
+              {
+                type: 'text',
+                text: '特別価格',
+                size: 'sm',
+                color: '#E8B4B8',
+                flex: 1
+              },
+              {
+                type: 'text',
+                text: '¥1,980',
+                size: 'xl',
+                weight: 'bold',
+                color: '#FFD700',
+                align: 'end',
+                flex: 1
+              }
+            ]
+          }
+        ]
+      },
+      footer: {
+        type: 'box',
+        layout: 'vertical',
+        backgroundColor: '#1a0033',
+        paddingAll: '15px',
+        contents: [
+          {
+            type: 'button',
+            action: {
+              type: 'postback',
+              label: '📋 詳細レポートを注文する',
+              data: JSON.stringify({
+                action: 'order_premium_report',
+                userId: this.userProfile.userId || 'unknown'
+              })
+            },
+            style: 'primary',
+            color: '#FFD700'
+          },
+          {
+            type: 'text',
+            text: '💎 PDF形式で詳細レポートをお送りします',
+            size: 'xs',
+            color: '#B8E7FC',
+            align: 'center',
+            margin: 'sm'
           }
         ]
       }
