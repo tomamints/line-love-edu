@@ -614,7 +614,7 @@ class FortuneCarouselBuilder {
             color: '#4CAF50',
             margin: 'sm',
             wrap: true
-          }
+          },
           // お相手の月相タイプ
           {
             type: 'box',
