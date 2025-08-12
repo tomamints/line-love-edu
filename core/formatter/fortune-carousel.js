@@ -270,14 +270,14 @@ class FortuneCarouselBuilder {
             contents: [
               {
                 type: 'text',
-                text: stars,
+                text: '★'.repeat(Math.floor(75 / 20)) + '☆'.repeat(5 - Math.floor(75 / 20)),
                 size: 'xxl',
                 color: this.styles.accentText,
                 align: 'center'
               },
               {
                 type: 'text',
-                text: `${score}/100点`,
+                text: '75/100点',
                 size: 'xl',
                 weight: 'bold',
                 color: this.styles.mainText,
@@ -295,7 +295,7 @@ class FortuneCarouselBuilder {
           },
           {
             type: 'text',
-            text: `「${overall.keyword || '新たな扉'}」`,
+            text: `「${'新たな扉'}」`,
             size: 'xl',
             weight: 'bold',
             color: this.styles.accentText,
@@ -308,7 +308,7 @@ class FortuneCarouselBuilder {
           },
           {
             type: 'text',
-            text: overall.cosmicMessage || '金星と木星が調和し',
+            text: '金星と木星が調和し',
             size: 'sm',
             color: this.styles.mainText,
             align: 'center',
@@ -1267,6 +1267,17 @@ class FortuneCarouselBuilder {
         ]
       }
     };
+  }
+  
+  /**
+   * 相性アドバイスを取得
+   */
+  getCompatibilityAdvice() {
+    if (this.fortune.overall?.advice && Array.isArray(this.fortune.overall.advice)) {
+      return this.fortune.overall.advice.slice(0, 2).join('\n\n');
+    }
+    // デフォルトのアドバイス
+    return 'お互いの気持ちを大切にし、素直なコミュニケーションを心がけましょう。\n\n相手のペースを尊重し、無理に関係を急がないことが大切です。';
   }
   
   /**
