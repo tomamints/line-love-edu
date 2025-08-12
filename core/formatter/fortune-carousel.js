@@ -2590,78 +2590,87 @@ class FortuneCarouselBuilder {
         contents: [
           {
             type: 'text',
-            text: 'プレミアム恋愛診断で',
-            size: 'md',
+            text: 'プレミアム恋愛診断',
+            size: 'lg',
             color: '#333333',
             align: 'center',
             weight: 'bold'
           },
           {
-            type: 'box',
-            layout: 'vertical',
-            spacing: 'sm',
-            margin: 'lg',
-            contents: [
-              {
-                type: 'text',
-                text: '• 22項目の詳細分析',
-                size: 'sm',
-                color: '#555555'
-              },
-              {
-                type: 'text',
-                text: '• 12-15ページの完全レポート',
-                size: 'sm',
-                color: '#555555'
-              },
-              {
-                type: 'text',
-                text: '• 具体的な成功戦略',
-                size: 'sm',
-                color: '#555555'
-              },
-              {
-                type: 'text',
-                text: '• 3ヶ月先の未来予測',
-                size: 'sm',
-                color: '#555555'
-              }
-            ]
-          },
-          {
-            type: 'separator',
-            margin: 'lg'
+            type: 'text',
+            text: '特別価格',
+            size: 'sm',
+            color: '#666666',
+            align: 'center',
+            margin: 'md'
           },
           {
             type: 'text',
-            text: '特別価格: ¥1,980',
-            size: 'xl',
+            text: '¥1,980',
+            size: 'xxl',
+            weight: 'bold',
+            color: '#FFD700',
+            align: 'center'
+          },
+          {
+            type: 'separator',
+            margin: 'xl'
+          },
+          {
+            type: 'text',
+            text: '📊 22項目の詳細分析',
+            size: 'sm',
+            color: '#555555',
+            margin: 'md'
+          },
+          {
+            type: 'text',
+            text: '📖 12-15ページの完全レポート',
+            size: 'sm',
+            color: '#555555',
+            margin: 'sm'
+          },
+          {
+            type: 'text',
+            text: '💡 具体的な成功戦略',
+            size: 'sm',
+            color: '#555555',
+            margin: 'sm'
+          },
+          {
+            type: 'text',
+            text: '🔮 3ヶ月先の未来予測',
+            size: 'sm',
+            color: '#555555',
+            margin: 'sm'
+          },
+          {
+            type: 'separator',
+            margin: 'xl'
+          },
+          {
+            type: 'text',
+            text: '今すぐ注文するには',
+            size: 'sm',
+            color: '#666666',
+            align: 'center',
+            margin: 'md'
+          },
+          {
+            type: 'text',
+            text: '「プレミアム診断を注文」',
+            size: 'md',
             weight: 'bold',
             color: '#FFD700',
             align: 'center',
-            margin: 'lg'
-          },
-          {
-            type: 'separator',
-            margin: 'lg'
+            margin: 'sm'
           },
           {
             type: 'text',
-            text: '👉 詳しくはこちら',
-            size: 'md',
-            color: '#FFD700',
-            align: 'center',
-            margin: 'md',
-            weight: 'bold'
-          },
-          {
-            type: 'text',
-            text: 'line.me/R/app/1655790987-DW9nZJGl',
-            size: 'xs',
-            color: '#888888',
-            align: 'center',
-            margin: 'sm',
-            decoration: 'underline'
+            text: 'とメッセージしてください',
+            size: 'sm',
+            color: '#666666',
+            align: 'center'
           }
         ]
       }
