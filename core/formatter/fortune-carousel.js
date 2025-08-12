@@ -2640,14 +2640,7 @@ class FortuneCarouselBuilder {
             color: '#FFD700',
             align: 'center',
             margin: 'lg'
-          }
-        ]
-      },
-      footer: {
-        type: 'box',
-        layout: 'vertical',
-        spacing: 'sm',
-        contents: [
+          },
           {
             type: 'button',
             action: {
@@ -2659,8 +2652,7 @@ class FortuneCarouselBuilder {
             color: '#FFD700',
             height: 'md'
           }
-        ],
-        flex: 0
+        ]
       }
     };
   }
