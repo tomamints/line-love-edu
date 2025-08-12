@@ -139,9 +139,6 @@ class FortuneCarouselBuilder {
             color: '#ffffff',
             weight: 'bold',
             align: 'center'
-          },
-          {
-            type: 'text',
           }
         ]
       },
