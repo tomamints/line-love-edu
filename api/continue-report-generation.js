@@ -475,11 +475,20 @@ module.exports = async (req, res) => {
                   skipIncrementForDirectTransition = true;
                   
                 } else if (batch.status === 'failed' || batch.status === 'expired') {
-                  console.log(`❌ Batch ${batch.status}`);
-                  progress.data.aiInsights = null;
-                  // currentStepのインクリメントはswitch文の後で行われる
-                  console.log('🔄 Breaking from Step 3 (batch failed/expired)');
-                  break; // switch文を抜ける
+                  console.error(`❌ Batch ${batch.status} - AI analysis is required`);
+                  
+                  // エラーステータスをDBに保存
+                  await ordersDB.updateOrder(orderId, {
+                    status: 'error',
+                    error_message: `AI batch ${batch.status}. Please retry.`
+                  });
+                  
+                  return res.status(500).json({
+                    status: 'error',
+                    message: `AI batch ${batch.status}. The report cannot be generated without AI insights.`,
+                    error: 'AI_BATCH_FAILED',
+                    orderId: orderId
+                  });
                   
                 } else {
                   // まだ処理中 (validating, in_progress, finalizing)
@@ -491,11 +500,20 @@ module.exports = async (req, res) => {
                   
                   // 20分（1200秒）まで待つ（通常1-2分だが、混雑時を考慮）
                   if (waitTime > 1200000) { // 20分
-                    console.log('⏰ Timeout after 20 minutes - skipping AI analysis');
-                    progress.data.aiInsights = null;
-                    // currentStepのインクリメントはswitch文の後で行われる
-                    console.log('🔄 Breaking from Step 3 (timeout)');
-                    break; // switch文を抜ける
+                    console.error('❌ Batch API timeout after 20 minutes - AI analysis is required');
+                    
+                    // エラーステータスをDBに保存
+                    await ordersDB.updateOrder(orderId, {
+                      status: 'error',
+                      error_message: 'AI analysis timeout after 20 minutes. Please retry.'
+                    });
+                    
+                    return res.status(500).json({
+                      status: 'error',
+                      message: 'AI analysis timeout. The report cannot be generated without AI insights.',
+                      error: 'AI_ANALYSIS_TIMEOUT',
+                      orderId: orderId
+                    });
                   } else {
                     // まだBatch処理中なので、Step 3のまま継続
                     await ordersDB.saveReportProgress(orderId, progress);
@@ -707,12 +725,24 @@ module.exports = async (req, res) => {
               }
             }
           }
-            // AI insightsが取得できていない場合のみbreak
+            // AI insightsが取得できていない場合は必ずエラー
             if (!progress.data.aiInsights) {
-              console.log('⏳ Still waiting for AI insights, breaking from Step 3');
-              break;
+              console.error('❌ Cannot proceed to Step 4 without AI insights');
+              
+              // エラーステータスをDBに保存
+              await ordersDB.updateOrder(orderId, {
+                status: 'error',
+                error_message: 'AI analysis is required but not available. Please retry.'
+              });
+              
+              return res.status(500).json({
+                status: 'error',
+                message: 'AI analysis is required for report generation',
+                error: 'AI_INSIGHTS_REQUIRED',
+                orderId: orderId
+              });
             }
-            // AI insightsがある場合はbreakせずにStep 4に続行
+            // AI insightsがある場合のみStep 4に続行
             console.log('✅ AI insights available, falling through to Step 4');
             
           case 4:
@@ -767,32 +797,62 @@ module.exports = async (req, res) => {
               });
             }
             
-            // AI分析結果がまだない場合の処理を修正
-            // 既にStep 5まで進んでいる場合はStep 3に戻さない
-            if (progress.data.aiBatchId && progress.data.aiInsights === undefined) {
-              console.log('⚠️ AI insights not ready yet');
+            // Step 4開始時にAI分析結果が必須
+            if (!progress.data.aiInsights) {
+              console.error('❌ Step 4 requires AI insights but they are not available');
               
-              // 既にPDFが生成されている場合（Step 5完了済み）はStep 3に戻さない
-              if (progress.data.pdfBuffer || progress.data.reportUrl) {
-                console.log('✅ But PDF/report already exists, continuing without AI insights');
-                // AI insightsなしでも続行
-              } else {
-                console.log('⚠️ Going back to Step 3 to wait for AI insights');
+              // Batch IDがある場合は、Step 3に戻って再チェック
+              if (progress.data.aiBatchId) {
+                console.log('⚠️ Going back to Step 3 to check batch status');
                 progress.currentStep = 3;
                 await ordersDB.saveReportProgress(orderId, progress);
-                // 8秒後に再実行
-                setTimeout(() => {
-                  fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'https://line-love-edu.vercel.app'}/api/generate-report-chunked`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ orderId: orderId })
-                  }).catch(err => console.error('⚠️ Retry failed:', err));
-                }, 8000);
+                
+                // GitHub Actionsから呼ばれた場合は再トリガー
+                if (isFromGitHubActions) {
+                  try {
+                    const githubToken = process.env.GITHUB_TOKEN || process.env.GITHUB_PAT;
+                    if (githubToken) {
+                      await fetch('https://api.github.com/repos/tomamints/line-love-edu/dispatches', {
+                        method: 'POST',
+                        headers: {
+                          'Accept': 'application/vnd.github.v3+json',
+                          'Authorization': `token ${githubToken}`,
+                          'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                          event_type: 'continue-report',
+                          client_payload: {
+                            orderId: orderId,
+                            batchId: progress.data.aiBatchId,
+                            retry: true
+                          }
+                        })
+                      });
+                      console.log('✅ GitHub Actions re-triggered for Step 3 retry');
+                    }
+                  } catch (err) {
+                    console.error('❌ Error re-triggering:', err.message);
+                  }
+                }
+                
                 return res.json({
                   status: 'continuing',
-                  message: 'AI not ready, going back to Step 3',
+                  message: 'Checking AI batch status',
                   nextStep: 3,
                   totalSteps: progress.totalSteps
+                });
+              } else {
+                // Batch IDもない場合は完全なエラー
+                await ordersDB.updateOrder(orderId, {
+                  status: 'error',
+                  error_message: 'AI analysis is required but not initiated. Please retry.'
+                });
+                
+                return res.status(500).json({
+                  status: 'error',
+                  message: 'AI analysis is required for report generation',
+                  error: 'AI_INSIGHTS_MISSING',
+                  orderId: orderId
                 });
               }
             }

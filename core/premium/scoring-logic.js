@@ -1283,6 +1283,1012 @@ class ScoringLogic {
     
     return Math.round(weightedScore);
   }
+
+  // ========== v2.0 新機能 ==========
+
+  // 会話のラリー回数分析（v2.0新機能）
+  detectMessageRallies(messages, timeWindowMinutes = 5) {
+    const rallies = [];
+    let currentRally = null;
+    
+    for (let i = 0; i < messages.length; i++) {
+      const msg = messages[i];
+      if (!msg.timestamp) continue;
+      
+      if (currentRally === null) {
+        // 新しいラリーを開始
+        currentRally = {
+          startTime: new Date(msg.timestamp),
+          endTime: new Date(msg.timestamp),
+          messages: [msg],
+          messageCount: 1,
+          participants: new Set([msg.isUser ? 'user' : 'partner'])
+        };
+      } else {
+        const timeDiff = (new Date(msg.timestamp) - currentRally.endTime) / (1000 * 60);
+        
+        if (timeDiff <= timeWindowMinutes) {
+          // ラリー継続
+          currentRally.endTime = new Date(msg.timestamp);
+          currentRally.messages.push(msg);
+          currentRally.messageCount++;
+          currentRally.participants.add(msg.isUser ? 'user' : 'partner');
+          
+          // 両者が参加している場合のみラリーとしてカウント
+          if (currentRally.participants.size === 2 && currentRally.messageCount >= 6) {
+            currentRally.duration = (currentRally.endTime - currentRally.startTime) / (1000 * 60);
+            currentRally.avgResponseTime = currentRally.duration / currentRally.messageCount;
+            currentRally.intensity = currentRally.messageCount / currentRally.duration;
+          }
+        } else {
+          // ラリー終了、保存
+          if (currentRally.participants.size === 2 && currentRally.messageCount >= 6) {
+            rallies.push(currentRally);
+          }
+          
+          // 新しいラリー開始
+          currentRally = {
+            startTime: new Date(msg.timestamp),
+            endTime: new Date(msg.timestamp),
+            messages: [msg],
+            messageCount: 1,
+            participants: new Set([msg.isUser ? 'user' : 'partner'])
+          };
+        }
+      }
+    }
+    
+    // 最後のラリーを保存
+    if (currentRally && currentRally.participants.size === 2 && currentRally.messageCount >= 6) {
+      rallies.push(currentRally);
+    }
+    
+    return rallies;
+  }
+
+  // 関係性段階の自動検出（v2.0新機能）
+  detectRelationshipStage(analysis) {
+    if (!analysis || !analysis.messages || analysis.messages.length < 10) {
+      return { stage: 'acquaintance', confidence: 0.5, indicators: {} };
+    }
+    
+    const indicators = {
+      messageFrequency: this.analyzeMessageFrequency(analysis),
+      topicDiversity: this.analyzeTopicDiversity(analysis),
+      emotionalDepth: this.analyzeEmotionalDepth(analysis),
+      questionRate: this.calculateQuestionRate(analysis),
+      formalityLevel: this.analyzeFormalityLevel(analysis),
+      emojiUsage: this.analyzeEmojiUsageLevel(analysis),
+      insideJokes: this.detectInsideJokes(analysis),
+      silenceComfort: this.analyzeSilenceComfort(analysis)
+    };
+    
+    // 各段階のスコアを計算
+    const scores = {
+      acquaintance: 0,
+      friend: 0,
+      stable: 0
+    };
+    
+    // 知り合ったばかりの特徴
+    if (indicators.messageFrequency === 'low') scores.acquaintance += 20;
+    if (indicators.topicDiversity === 'exploring') scores.acquaintance += 20;
+    if (indicators.emotionalDepth === 'surface') scores.acquaintance += 20;
+    if (indicators.questionRate > 0.3) scores.acquaintance += 15;
+    if (indicators.formalityLevel === 'polite') scores.acquaintance += 15;
+    if (indicators.emojiUsage === 'moderate') scores.acquaintance += 10;
+    
+    // 仲良しの特徴
+    if (indicators.messageFrequency === 'medium') scores.friend += 20;
+    if (indicators.topicDiversity === 'balanced') scores.friend += 20;
+    if (indicators.emotionalDepth === 'sharing') scores.friend += 20;
+    if (indicators.questionRate >= 0.15 && indicators.questionRate <= 0.3) scores.friend += 15;
+    if (indicators.formalityLevel === 'casual') scores.friend += 15;
+    if (indicators.emojiUsage === 'frequent') scores.friend += 10;
+    
+    // 安定期の特徴
+    if (indicators.messageFrequency === 'consistent') scores.stable += 20;
+    if (indicators.topicDiversity === 'routine') scores.stable += 20;
+    if (indicators.emotionalDepth === 'implicit') scores.stable += 20;
+    if (indicators.questionRate < 0.15) scores.stable += 15;
+    if (indicators.formalityLevel === 'intimate') scores.stable += 15;
+    if (indicators.silenceComfort === 'high') scores.stable += 10;
+    
+    // 最高スコアの段階を選択
+    const maxScore = Math.max(scores.acquaintance, scores.friend, scores.stable);
+    let stage = 'acquaintance';
+    
+    if (scores.friend === maxScore) stage = 'friend';
+    if (scores.stable === maxScore) stage = 'stable';
+    
+    const confidence = maxScore / 100;
+    
+    return {
+      stage,
+      confidence,
+      scores,
+      indicators
+    };
+  }
+
+  // ネガティブパターン検出（v2.0新機能）
+  detectNegativePatterns(analysis) {
+    const patterns = [];
+    const topics = this.extractTopics(analysis);
+    
+    topics.forEach(topic => {
+      const topicMessages = analysis.messages.filter(msg => 
+        msg.text && msg.text.includes(topic)
+      );
+      
+      if (topicMessages.length < 3) return;
+      
+      // 返信遅延パターン
+      const avgResponseTime = this.calculateAverageResponseTime(analysis);
+      const topicResponseTime = this.calculateTopicResponseTime(topicMessages);
+      
+      if (topicResponseTime > avgResponseTime * 2) {
+        patterns.push({
+          type: 'responseDelay',
+          topic,
+          severity: (topicResponseTime / avgResponseTime),
+          advice: '今はこの話題より、別の話の方が盛り上がりそう',
+          indicator: `返信時間が通常の${Math.round(topicResponseTime / avgResponseTime)}倍`
+        });
+      }
+      
+      // 会話終了パターン
+      const conversationEndings = this.detectConversationEndings(topicMessages);
+      if (conversationEndings > 0.5) {
+        patterns.push({
+          type: 'conversationKiller',
+          topic,
+          severity: conversationEndings,
+          advice: 'この話題の後は会話が続きにくいみたい',
+          indicator: `${Math.round(conversationEndings * 100)}%の確率で会話終了`
+        });
+      }
+      
+      // 短文返答パターン
+      const avgLength = this.calculateAverageMessageLength(analysis);
+      const topicAvgLength = this.calculateTopicMessageLength(topicMessages);
+      
+      if (topicAvgLength < avgLength * 0.5) {
+        patterns.push({
+          type: 'shortResponse',
+          topic,
+          severity: 1 - (topicAvgLength / avgLength),
+          advice: '相手の関心が薄いかも。別の角度から話してみて',
+          indicator: `メッセージ長が通常の${Math.round((topicAvgLength / avgLength) * 100)}%`
+        });
+      }
+      
+      // 絵文字減少パターン
+      const avgEmoji = this.calculateAverageEmojiUsage(analysis);
+      const topicEmoji = this.calculateTopicEmojiUsage(topicMessages);
+      
+      if (topicEmoji < avgEmoji * 0.3) {
+        patterns.push({
+          type: 'emojiDecrease',
+          topic,
+          severity: 1 - (topicEmoji / avgEmoji),
+          advice: 'テンションが下がる話題かも',
+          indicator: `絵文字使用率が通常の${Math.round((topicEmoji / avgEmoji) * 100)}%`
+        });
+      }
+    });
+    
+    return patterns.sort((a, b) => b.severity - a.severity);
+  }
+
+  // 深化した月相分析（v2.0新機能）
+  analyzeMoonPhaseAlignment(analysis, moonPhase) {
+    const recentMessages = analysis.messages.slice(-100); // 直近100件
+    
+    const moonPhasePatterns = {
+      '新月': {
+        keywords: ['新しい', '始め', 'チャレンジ', '挑戦', '初めて', 'スタート', '開始'],
+        behaviorChecks: {
+          newTopicsRate: this.calculateNewTopicsRate(recentMessages),
+          initiationRate: this.calculateConversationInitiationRate(recentMessages),
+          futurePlanning: this.countFutureTenseMessages(recentMessages),
+          avgMessageLength: this.calculateAverageLength(recentMessages),
+          responseTime: this.calculateAverageResponseTime({ messages: recentMessages }),
+          questionRate: this.calculateQuestionRate({ messages: recentMessages })
+        }
+      },
+      '上弦の月': {
+        keywords: ['頑張', '決め', '行く', 'やる', '実行', '進む', '前進'],
+        behaviorChecks: {
+          decisionRate: this.calculateDecisionRate(recentMessages),
+          exclamationRate: this.countExclamations(recentMessages),
+          quickResponseRate: this.calculateQuickResponseRate(recentMessages),
+          actionWords: this.countActionWords(recentMessages),
+          positivityRate: this.calculatePositivityRate(recentMessages)
+        }
+      },
+      '満月': {
+        keywords: ['感情', '気持ち', '好き', '愛', '嬉しい', '楽しい', '最高'],
+        behaviorChecks: {
+          emotionalIntensity: this.calculateEmotionalIntensity(recentMessages),
+          messageLengthVariance: this.calculateMessageLengthVariance(recentMessages),
+          emojiDensity: this.calculateEmojiDensity(recentMessages),
+          exclamationRate: this.countExclamations(recentMessages),
+          peakActivityTime: this.findPeakActivityTime(recentMessages)
+        }
+      },
+      '下弦の月': {
+        keywords: ['考え', '思う', 'かも', 'どうしよう', '振り返', '反省', '見直し'],
+        behaviorChecks: {
+          reflectionRate: this.countReflectiveMessages(recentMessages),
+          responseDelay: this.calculateThinkingTime(recentMessages),
+          questionDepth: this.analyzeQuestionComplexity(recentMessages),
+          conditionalStatements: this.countConditionals(recentMessages),
+          uncertaintyRate: this.calculateUncertaintyRate(recentMessages)
+        }
+      }
+    };
+    
+    const pattern = moonPhasePatterns[moonPhase] || moonPhasePatterns['新月'];
+    
+    // キーワードマッチング
+    let keywordMatches = 0;
+    recentMessages.forEach(msg => {
+      if (!msg.text) return;
+      pattern.keywords.forEach(keyword => {
+        if (msg.text.includes(keyword)) keywordMatches++;
+      });
+    });
+    
+    const keywordMatchRate = keywordMatches / Math.max(1, recentMessages.length);
+    
+    // 行動パターンの評価
+    const behaviorAlignment = this.evaluateBehaviorAlignment(pattern.behaviorChecks, moonPhase);
+    
+    return {
+      moonPhase,
+      keywordMatchRate,
+      behaviorAlignment,
+      overallAlignment: (keywordMatchRate * 0.4 + behaviorAlignment * 0.6),
+      interpretation: this.interpretMoonPhaseAlignment(keywordMatchRate, behaviorAlignment),
+      behaviorDetails: pattern.behaviorChecks
+    };
+  }
+
+  // パーソナライズされたラッキーアイテム生成（v2.0新機能）
+  generatePersonalizedLuckyItems(analysis) {
+    // 最もポジティブな文脈で使われた色絵文字を検出
+    const luckyColor = this.findLuckyColor(analysis);
+    
+    // 最も盛り上がった話題から関連アイテムを選択
+    const luckyItem = this.findLuckyItem(analysis);
+    
+    // 最も盛り上がった日付や時間から数字を抽出
+    const luckyNumber = this.findLuckyNumber(analysis);
+    
+    // 成功率の高い行動パターンから提案
+    const luckyAction = this.findLuckyAction(analysis);
+    
+    return {
+      color: luckyColor,
+      item: luckyItem,
+      number: luckyNumber,
+      action: luckyAction,
+      personalizationScore: this.calculatePersonalizationScore(analysis)
+    };
+  }
+
+  // 深掘り提案機能（v2.0新機能）
+  generateDeepDiveSuggestions(analysis) {
+    const suggestions = [];
+    
+    // 未完の話題を検出
+    const unfinishedTopics = this.findUnfinishedConversations(analysis);
+    unfinishedTopics.forEach(topic => {
+      suggestions.push({
+        type: 'unfinished',
+        message: `${topic.subject}の話、その後どうなった？`,
+        reason: '未完の話題を再開',
+        lastMentioned: topic.daysAgo,
+        originalExcitement: topic.excitement,
+        successRate: this.calculateTopicSuccessRate(topic, analysis)
+      });
+    });
+    
+    // 相手の興味関心を分析
+    const partnerInterests = this.analyzePartnerInterests(analysis);
+    if (partnerInterests.top) {
+      suggestions.push({
+        type: 'interest',
+        message: `${partnerInterests.top}について、もっと教えて`,
+        reason: `相手が${partnerInterests.frequency}回言及`,
+        category: partnerInterests.category,
+        successRate: 85
+      });
+    }
+    
+    // 成功した話題の深掘り
+    const successfulTopics = this.findSuccessfulTopics(analysis);
+    successfulTopics.forEach(topic => {
+      suggestions.push({
+        type: 'successful',
+        message: `また${topic.name}の話しようよ`,
+        reason: '盛り上がった話題',
+        lastSuccess: topic.lastSuccess,
+        successRate: topic.historicalSuccessRate
+      });
+    });
+    
+    return suggestions.sort((a, b) => b.successRate - a.successRate);
+  }
+
+  // ========== ヘルパーメソッド（v2.0） ==========
+
+  analyzeMessageFrequency(analysis) {
+    const dailyCount = this.calculateDailyMessageCount(analysis);
+    if (dailyCount < 10) return 'low';
+    if (dailyCount < 50) return 'medium';
+    return 'consistent';
+  }
+
+  analyzeTopicDiversity(analysis) {
+    const topics = this.extractTopics(analysis);
+    const uniqueTopics = new Set(topics);
+    const diversityRatio = uniqueTopics.size / Math.max(1, topics.length);
+    
+    if (diversityRatio > 0.7) return 'exploring';
+    if (diversityRatio > 0.4) return 'balanced';
+    return 'routine';
+  }
+
+  analyzeEmotionalDepth(analysis) {
+    const emotionalWords = ['感じ', '思い', '気持ち', '心', '愛', '好き', '嫌い', '不安', '嬉しい', '悲しい'];
+    let emotionalCount = 0;
+    
+    analysis.messages.forEach(msg => {
+      if (!msg.text) return;
+      emotionalWords.forEach(word => {
+        if (msg.text.includes(word)) emotionalCount++;
+      });
+    });
+    
+    const emotionalRate = emotionalCount / Math.max(1, analysis.messages.length);
+    
+    if (emotionalRate < 0.05) return 'surface';
+    if (emotionalRate < 0.15) return 'sharing';
+    return 'implicit';
+  }
+
+  calculateQuestionRate(analysis) {
+    const questions = analysis.messages.filter(msg => 
+      msg.text && (msg.text.includes('？') || msg.text.includes('?'))
+    );
+    return questions.length / Math.max(1, analysis.messages.length);
+  }
+
+  analyzeFormalityLevel(analysis) {
+    const formalWords = ['です', 'ます', 'でしょう', 'ございます'];
+    const casualWords = ['だね', 'じゃん', 'っす', 'よね'];
+    
+    let formalCount = 0;
+    let casualCount = 0;
+    
+    analysis.messages.forEach(msg => {
+      if (!msg.text) return;
+      formalWords.forEach(word => {
+        if (msg.text.includes(word)) formalCount++;
+      });
+      casualWords.forEach(word => {
+        if (msg.text.includes(word)) casualCount++;
+      });
+    });
+    
+    if (formalCount > casualCount * 2) return 'polite';
+    if (casualCount > formalCount * 2) return 'intimate';
+    return 'casual';
+  }
+
+  analyzeEmojiUsageLevel(analysis) {
+    const emojiRegex = /[\u{1F300}-\u{1F9FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/gu;
+    let totalEmojis = 0;
+    
+    analysis.messages.forEach(msg => {
+      if (!msg.text) return;
+      const emojis = msg.text.match(emojiRegex) || [];
+      totalEmojis += emojis.length;
+    });
+    
+    const emojiRate = totalEmojis / Math.max(1, analysis.messages.length);
+    
+    if (emojiRate < 0.2) return 'moderate';
+    if (emojiRate < 1) return 'frequent';
+    return 'selective';
+  }
+
+  detectInsideJokes(analysis) {
+    // 同じフレーズが3回以上繰り返される場合を内輪ネタとして検出
+    const phrases = {};
+    
+    analysis.messages.forEach(msg => {
+      if (!msg.text || msg.text.length < 5) return;
+      
+      // 2-5単語の連続を抽出
+      const words = msg.text.split(/\s+/);
+      for (let i = 0; i < words.length - 1; i++) {
+        for (let len = 2; len <= Math.min(5, words.length - i); len++) {
+          const phrase = words.slice(i, i + len).join(' ');
+          phrases[phrase] = (phrases[phrase] || 0) + 1;
+        }
+      }
+    });
+    
+    const insideJokes = Object.entries(phrases).filter(([_, count]) => count >= 3);
+    return insideJokes.length > 0 ? 'present' : 'absent';
+  }
+
+  analyzeSilenceComfort(analysis) {
+    const gaps = [];
+    
+    for (let i = 1; i < analysis.messages.length; i++) {
+      if (!analysis.messages[i].timestamp || !analysis.messages[i-1].timestamp) continue;
+      
+      const gap = (new Date(analysis.messages[i].timestamp) - new Date(analysis.messages[i-1].timestamp)) / (1000 * 60 * 60);
+      gaps.push(gap);
+    }
+    
+    const longGaps = gaps.filter(gap => gap > 12).length;
+    const totalGaps = gaps.length;
+    
+    if (totalGaps === 0) return 'unknown';
+    
+    const longGapRatio = longGaps / totalGaps;
+    
+    if (longGapRatio > 0.3) return 'high';
+    if (longGapRatio > 0.1) return 'medium';
+    return 'low';
+  }
+
+  extractTopics(analysis) {
+    const topics = [];
+    const topicKeywords = {
+      '映画': ['映画', 'シネマ', '観た', '見た'],
+      '仕事': ['仕事', '会社', '職場', 'オフィス'],
+      '食事': ['食べ', 'ご飯', 'ランチ', 'ディナー'],
+      '音楽': ['音楽', '曲', '歌', 'ライブ'],
+      '旅行': ['旅行', '旅', '観光', 'ホテル']
+    };
+    
+    analysis.messages.forEach(msg => {
+      if (!msg.text) return;
+      
+      Object.entries(topicKeywords).forEach(([topic, keywords]) => {
+        if (keywords.some(keyword => msg.text.includes(keyword))) {
+          topics.push(topic);
+        }
+      });
+    });
+    
+    return topics;
+  }
+
+  calculateAverageResponseTime(analysis) {
+    const responseTimes = [];
+    
+    for (let i = 1; i < analysis.messages.length; i++) {
+      const current = analysis.messages[i];
+      const previous = analysis.messages[i - 1];
+      
+      if (!current.timestamp || !previous.timestamp) continue;
+      if (current.isUser === previous.isUser) continue;
+      
+      const timeDiff = (new Date(current.timestamp) - new Date(previous.timestamp)) / (1000 * 60);
+      responseTimes.push(timeDiff);
+    }
+    
+    if (responseTimes.length === 0) return 30;
+    
+    return responseTimes.reduce((a, b) => a + b, 0) / responseTimes.length;
+  }
+
+  calculateTopicResponseTime(topicMessages) {
+    const responseTimes = [];
+    
+    for (let i = 1; i < topicMessages.length; i++) {
+      const current = topicMessages[i];
+      const previous = topicMessages[i - 1];
+      
+      if (!current.timestamp || !previous.timestamp) continue;
+      if (current.isUser === previous.isUser) continue;
+      
+      const timeDiff = (new Date(current.timestamp) - new Date(previous.timestamp)) / (1000 * 60);
+      responseTimes.push(timeDiff);
+    }
+    
+    if (responseTimes.length === 0) return 60;
+    
+    return responseTimes.reduce((a, b) => a + b, 0) / responseTimes.length;
+  }
+
+  detectConversationEndings(topicMessages) {
+    let endings = 0;
+    
+    for (let i = 0; i < topicMessages.length - 1; i++) {
+      const current = topicMessages[i];
+      const next = topicMessages[i + 1];
+      
+      if (!current.timestamp || !next.timestamp) continue;
+      
+      const timeDiff = (new Date(next.timestamp) - new Date(current.timestamp)) / (1000 * 60 * 60);
+      
+      if (timeDiff > 6) {
+        endings++;
+      }
+    }
+    
+    return endings / Math.max(1, topicMessages.length - 1);
+  }
+
+  calculateAverageMessageLength(analysis) {
+    let totalLength = 0;
+    let count = 0;
+    
+    analysis.messages.forEach(msg => {
+      if (!msg.text) return;
+      totalLength += msg.text.length;
+      count++;
+    });
+    
+    return count > 0 ? totalLength / count : 50;
+  }
+
+  calculateTopicMessageLength(topicMessages) {
+    let totalLength = 0;
+    let count = 0;
+    
+    topicMessages.forEach(msg => {
+      if (!msg.text) return;
+      totalLength += msg.text.length;
+      count++;
+    });
+    
+    return count > 0 ? totalLength / count : 30;
+  }
+
+  calculateAverageEmojiUsage(analysis) {
+    const emojiRegex = /[\u{1F300}-\u{1F9FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/gu;
+    let totalEmojis = 0;
+    let count = 0;
+    
+    analysis.messages.forEach(msg => {
+      if (!msg.text) return;
+      const emojis = msg.text.match(emojiRegex) || [];
+      totalEmojis += emojis.length;
+      count++;
+    });
+    
+    return count > 0 ? totalEmojis / count : 0.5;
+  }
+
+  calculateTopicEmojiUsage(topicMessages) {
+    const emojiRegex = /[\u{1F300}-\u{1F9FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/gu;
+    let totalEmojis = 0;
+    let count = 0;
+    
+    topicMessages.forEach(msg => {
+      if (!msg.text) return;
+      const emojis = msg.text.match(emojiRegex) || [];
+      totalEmojis += emojis.length;
+      count++;
+    });
+    
+    return count > 0 ? totalEmojis / count : 0.2;
+  }
+
+  calculateDailyMessageCount(analysis) {
+    const dailyMessages = {};
+    
+    analysis.messages.forEach(msg => {
+      if (!msg.timestamp) return;
+      const date = new Date(msg.timestamp).toDateString();
+      dailyMessages[date] = (dailyMessages[date] || 0) + 1;
+    });
+    
+    const days = Object.keys(dailyMessages);
+    if (days.length === 0) return 0;
+    
+    const total = Object.values(dailyMessages).reduce((a, b) => a + b, 0);
+    return total / days.length;
+  }
+
+  // 月相分析用ヘルパーメソッド
+  calculateNewTopicsRate(messages) {
+    // 実装省略: 新しい話題の出現率を計算
+    return 0.3;
+  }
+
+  calculateConversationInitiationRate(messages) {
+    // 実装省略: 会話開始率を計算
+    return 0.4;
+  }
+
+  countFutureTenseMessages(messages) {
+    // 実装省略: 未来形のメッセージ数をカウント
+    return messages.filter(msg => 
+      msg.text && (msg.text.includes('たい') || msg.text.includes('予定') || msg.text.includes('これから'))
+    ).length;
+  }
+
+  calculateAverageLength(messages) {
+    // 実装省略: 平均メッセージ長を計算
+    return 50;
+  }
+
+  calculateDecisionRate(messages) {
+    // 実装省略: 決断的な発言の率を計算
+    return 0.3;
+  }
+
+  countExclamations(messages) {
+    // 実装省略: 感嘆符の使用率を計算
+    return messages.filter(msg => msg.text && msg.text.includes('！')).length / Math.max(1, messages.length);
+  }
+
+  calculateQuickResponseRate(messages) {
+    // 実装省略: 素早い返信の率を計算
+    return 0.5;
+  }
+
+  countActionWords(messages) {
+    // 実装省略: 行動的な単語の数をカウント
+    return 10;
+  }
+
+  calculatePositivityRate(messages) {
+    // 実装省略: ポジティブ度を計算
+    return 0.7;
+  }
+
+  calculateEmotionalIntensity(messages) {
+    // 実装省略: 感情の強度を計算
+    return 0.6;
+  }
+
+  calculateMessageLengthVariance(messages) {
+    // 実装省略: メッセージ長の分散を計算
+    return 20;
+  }
+
+  calculateEmojiDensity(messages) {
+    // 実装省略: 絵文字密度を計算
+    return 0.3;
+  }
+
+  findPeakActivityTime(messages) {
+    // 実装省略: 活動ピーク時間を見つける
+    return 21;
+  }
+
+  countReflectiveMessages(messages) {
+    // 実装省略: 内省的メッセージ数をカウント
+    return 5;
+  }
+
+  calculateThinkingTime(messages) {
+    // 実装省略: 熟考時間を計算
+    return 15;
+  }
+
+  analyzeQuestionComplexity(messages) {
+    // 実装省略: 質問の複雑さを分析
+    return 0.5;
+  }
+
+  countConditionals(messages) {
+    // 実装省略: 条件文の数をカウント
+    return messages.filter(msg => 
+      msg.text && (msg.text.includes('もし') || msg.text.includes('たら') || msg.text.includes('れば'))
+    ).length / Math.max(1, messages.length);
+  }
+
+  calculateUncertaintyRate(messages) {
+    // 実装省略: 不確実性の率を計算
+    return 0.2;
+  }
+
+  evaluateBehaviorAlignment(behaviorChecks, moonPhase) {
+    // 実装省略: 行動パターンの評価
+    return 0.7;
+  }
+
+  interpretMoonPhaseAlignment(keywordRate, behaviorAlignment) {
+    // 実装省略: 月相との一致度の解釈
+    if (keywordRate > 0.2 && behaviorAlignment > 0.6) {
+      return '月相と強く一致しています';
+    } else if (keywordRate > 0.1 || behaviorAlignment > 0.4) {
+      return '月相とある程度一致しています';
+    } else {
+      return '今回は月相と違う傾向です';
+    }
+  }
+
+  // ラッキーアイテム生成用ヘルパー
+  findLuckyColor(analysis) {
+    const colorEmojis = {
+      '❤️': { color: 'ローズピンク', score: 0 },
+      '💙': { color: 'スカイブルー', score: 0 },
+      '💚': { color: 'フォレストグリーン', score: 0 },
+      '💛': { color: 'サンシャインイエロー', score: 0 },
+      '💜': { color: 'ミスティックパープル', score: 0 },
+      '🧡': { color: 'サンセットオレンジ', score: 0 },
+      '✨': { color: 'ゴールド', score: 0 },
+      '🌟': { color: 'シルバー', score: 0 }
+    };
+    
+    // ポジティブな文脈での使用をカウント
+    analysis.messages.forEach(msg => {
+      if (!msg.text) return;
+      
+      Object.keys(colorEmojis).forEach(emoji => {
+        if (msg.text.includes(emoji)) {
+          // ポジティブワードと一緒に使われている場合は高スコア
+          if (['楽しい', '嬉しい', '最高', '素敵', '好き'].some(word => msg.text.includes(word))) {
+            colorEmojis[emoji].score += 2;
+          } else {
+            colorEmojis[emoji].score += 1;
+          }
+        }
+      });
+    });
+    
+    // 最高スコアの色を選択
+    const sorted = Object.values(colorEmojis).sort((a, b) => b.score - a.score);
+    return {
+      color: sorted[0].color,
+      reason: sorted[0].score > 0 ? 'よく使われる色' : 'デフォルト'
+    };
+  }
+
+  findLuckyItem(analysis) {
+    const topicScores = {};
+    const itemMap = {
+      '映画': { item: 'ポップコーン', emoji: '🍿' },
+      'カフェ': { item: 'コーヒー', emoji: '☕' },
+      '音楽': { item: 'イヤホン', emoji: '🎧' },
+      '旅行': { item: '地図', emoji: '🗺️' },
+      '料理': { item: 'エプロン', emoji: '👨‍🍳' },
+      'スポーツ': { item: 'スニーカー', emoji: '👟' },
+      '読書': { item: 'しおり', emoji: '📖' },
+      'ゲーム': { item: 'コントローラー', emoji: '🎮' }
+    };
+    
+    // 各話題の盛り上がり度を計算
+    Object.keys(itemMap).forEach(topic => {
+      topicScores[topic] = 0;
+      
+      analysis.messages.forEach(msg => {
+        if (!msg.text || !msg.text.includes(topic)) return;
+        
+        // 盛り上がり度を計算
+        if (msg.text.includes('！')) topicScores[topic] += 2;
+        if (msg.text.includes('最高') || msg.text.includes('楽しい')) topicScores[topic] += 3;
+        if (msg.text.length > 100) topicScores[topic] += 1;
+      });
+    });
+    
+    // 最高スコアの話題を選択
+    const topTopic = Object.entries(topicScores).sort((a, b) => b[1] - a[1])[0];
+    
+    if (topTopic && topTopic[1] > 0) {
+      return {
+        ...itemMap[topTopic[0]],
+        reason: `${topTopic[0]}の話題で盛り上がり度No.1`
+      };
+    }
+    
+    return { item: 'お守り', emoji: '🔮', reason: 'デフォルト' };
+  }
+
+  findLuckyNumber(analysis) {
+    const rallies = this.detectMessageRallies(analysis.messages);
+    
+    if (rallies.length > 0) {
+      // 最も盛り上がったラリーの日付を取得
+      const bestRally = rallies.sort((a, b) => b.messageCount - a.messageCount)[0];
+      const date = bestRally.startTime.getDate();
+      
+      return {
+        number: date % 10 || 7,
+        reason: `最高の盛り上がりが${date}日の出来事`
+      };
+    }
+    
+    return {
+      number: 7,
+      reason: 'ラッキーセブン'
+    };
+  }
+
+  findLuckyAction(analysis) {
+    const actions = [];
+    
+    // 返信が早い話題を検出
+    const topics = this.extractTopics(analysis);
+    topics.forEach(topic => {
+      const topicMessages = analysis.messages.filter(msg => msg.text && msg.text.includes(topic));
+      const responseTime = this.calculateTopicResponseTime(topicMessages);
+      
+      if (responseTime < 10) {
+        actions.push({
+          action: `${topic}の話をする`,
+          reason: `${topic}の話題で返信速度${Math.round(10 / responseTime)}倍`,
+          timing: '夜の時間帯',
+          score: 100 - responseTime
+        });
+      }
+    });
+    
+    // 最高スコアのアクションを選択
+    if (actions.length > 0) {
+      const bestAction = actions.sort((a, b) => b.score - a.score)[0];
+      return bestAction;
+    }
+    
+    return {
+      action: '新しいカフェを探す',
+      reason: 'デフォルト提案',
+      timing: '週末'
+    };
+  }
+
+  calculatePersonalizationScore(analysis) {
+    // パーソナライズ度を計算（0-100）
+    let score = 50;
+    
+    if (analysis.messages.length > 100) score += 10;
+    if (analysis.messages.length > 500) score += 10;
+    
+    const topics = this.extractTopics(analysis);
+    if (topics.length > 5) score += 10;
+    if (topics.length > 10) score += 10;
+    
+    const rallies = this.detectMessageRallies(analysis.messages);
+    if (rallies.length > 5) score += 10;
+    
+    return Math.min(100, score);
+  }
+
+  // 深掘り提案用ヘルパー
+  findUnfinishedConversations(analysis) {
+    const topics = [];
+    const topicLastMentioned = {};
+    
+    // 各話題の最後の言及を記録
+    analysis.messages.forEach((msg, index) => {
+      if (!msg.text) return;
+      
+      this.extractTopics({ messages: [msg] }).forEach(topic => {
+        topicLastMentioned[topic] = index;
+      });
+    });
+    
+    // 未完の話題を検出（最後の20%のメッセージで言及されていない）
+    const threshold = Math.floor(analysis.messages.length * 0.8);
+    
+    Object.entries(topicLastMentioned).forEach(([topic, lastIndex]) => {
+      if (lastIndex < threshold) {
+        const daysAgo = this.calculateDaysAgo(analysis.messages[lastIndex].timestamp);
+        
+        topics.push({
+          subject: topic,
+          daysAgo,
+          excitement: this.calculateTopicExcitement(topic, analysis),
+          lastIndex
+        });
+      }
+    });
+    
+    return topics.sort((a, b) => b.excitement - a.excitement).slice(0, 3);
+  }
+
+  analyzePartnerInterests(analysis) {
+    const userWords = {};
+    const partnerWords = {};
+    
+    analysis.messages.forEach(msg => {
+      if (!msg.text) return;
+      
+      const words = msg.text.split(/[、。！？\s]+/).filter(word => word.length > 2);
+      
+      words.forEach(word => {
+        if (msg.isUser) {
+          userWords[word] = (userWords[word] || 0) + 1;
+        } else {
+          partnerWords[word] = (partnerWords[word] || 0) + 1;
+        }
+      });
+    });
+    
+    // 相手が多用するが自分があまり使わない単語を検出
+    const interestGap = [];
+    
+    Object.entries(partnerWords).forEach(([word, count]) => {
+      const userCount = userWords[word] || 0;
+      
+      if (count > 3 && count > userCount * 2) {
+        interestGap.push({
+          word,
+          frequency: count,
+          gap: count - userCount
+        });
+      }
+    });
+    
+    if (interestGap.length > 0) {
+      const top = interestGap.sort((a, b) => b.gap - a.gap)[0];
+      
+      return {
+        top: top.word,
+        frequency: top.frequency,
+        category: this.categorizeWord(top.word)
+      };
+    }
+    
+    return { top: null };
+  }
+
+  findSuccessfulTopics(analysis) {
+    const topics = this.extractTopics(analysis);
+    const topicSuccess = {};
+    
+    topics.forEach(topic => {
+      const topicMessages = analysis.messages.filter(msg => msg.text && msg.text.includes(topic));
+      
+      // 成功指標を計算
+      const rallies = this.detectMessageRallies(topicMessages);
+      const avgLength = this.calculateAverageMessageLength({ messages: topicMessages });
+      const emojiRate = this.calculateAverageEmojiUsage({ messages: topicMessages });
+      
+      topicSuccess[topic] = {
+        name: topic,
+        rallyCount: rallies.length,
+        avgLength,
+        emojiRate,
+        historicalSuccessRate: (rallies.length * 20 + avgLength / 10 + emojiRate * 30),
+        lastSuccess: this.findLastSuccessfulMention(topic, analysis)
+      };
+    });
+    
+    return Object.values(topicSuccess)
+      .sort((a, b) => b.historicalSuccessRate - a.historicalSuccessRate)
+      .slice(0, 3);
+  }
+
+  calculateTopicSuccessRate(topic, analysis) {
+    // 実装省略: 話題の成功率を計算
+    return 75 + Math.random() * 20;
+  }
+
+  calculateDaysAgo(timestamp) {
+    if (!timestamp) return 999;
+    const now = new Date();
+    const then = new Date(timestamp);
+    return Math.floor((now - then) / (1000 * 60 * 60 * 24));
+  }
+
+  calculateTopicExcitement(topic, analysis) {
+    // 実装省略: 話題の盛り上がり度を計算
+    return Math.random() * 100;
+  }
+
+  categorizeWord(word) {
+    // 実装省略: 単語をカテゴリー分類
+    return 'general';
+  }
+
+  findLastSuccessfulMention(topic, analysis) {
+    // 実装省略: 最後の成功した言及を検出
+    return 3;
+  }
 }
 
 module.exports = ScoringLogic;

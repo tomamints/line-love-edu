@@ -560,18 +560,40 @@ module.exports = async (req, res) => {
                 
               } catch (error) {
                 console.error('❌ Error creating batch:', error.message);
-                // バッチ作成に失敗した場合はAIなしで続行
-                progress.data.aiInsights = null;
-                // Step 4に進まず、ループを続行してStep 4を実行
+                // バッチ作成に失敗した場合はエラー
+                await ordersDB.updateOrder(orderId, {
+                  status: 'error',
+                  error_message: `Failed to create AI batch: ${error.message}`
+                });
+                
+                return res.status(500).json({
+                  status: 'error',
+                  message: 'Failed to create AI batch job',
+                  error: 'AI_BATCH_CREATION_FAILED',
+                  orderId: orderId,
+                  details: error.message
+                });
               }
             }
           }
-            // AI insightsが取得できていない場合のみbreak
+            // AI insightsが取得できていない場合は必ずエラー
             if (!progress.data.aiInsights) {
-              console.log('⏳ Still waiting for AI insights, breaking from Step 3');
-              break;
+              console.error('❌ Cannot proceed to Step 4 without AI insights');
+              
+              // エラーステータスをDBに保存
+              await ordersDB.updateOrder(orderId, {
+                status: 'error',
+                error_message: 'AI analysis is required but not available. Please retry.'
+              });
+              
+              return res.status(500).json({
+                status: 'error',
+                message: 'AI analysis is required for report generation',
+                error: 'AI_INSIGHTS_REQUIRED',
+                orderId: orderId
+              });
             }
-            // AI insightsがある場合はbreakせずにStep 4に続行
+            // AI insightsがある場合のみStep 4に続行
             console.log('✅ AI insights available, falling through to Step 4');
             
           case 4:
@@ -616,17 +638,13 @@ module.exports = async (req, res) => {
               });
             }
             
-            // AI分析結果がまだない場合の処理を修正
-            // 既にStep 5まで進んでいる場合はStep 3に戻さない
-            if (progress.data.aiBatchId && progress.data.aiInsights === undefined) {
-              console.log('⚠️ AI insights not ready yet');
+            // Step 4開始時にAI分析結果が必須
+            if (!progress.data.aiInsights) {
+              console.error('❌ Step 4 requires AI insights but they are not available');
               
-              // 既にPDFが生成されている場合（Step 5完了済み）はStep 3に戻さない
-              if (progress.data.pdfBuffer || progress.data.reportUrl) {
-                console.log('✅ But PDF/report already exists, continuing without AI insights');
-                // AI insightsなしでも続行
-              } else {
-                console.log('⚠️ Going back to Step 3 to wait for AI insights');
+              // Batch IDがある場合は、Step 3に戻って再チェック
+              if (progress.data.aiBatchId) {
+                console.log('⚠️ Going back to Step 3 to check batch status');
                 progress.currentStep = 3;
                 await ordersDB.saveReportProgress(orderId, progress);
                 // 8秒後に再実行
@@ -642,6 +660,19 @@ module.exports = async (req, res) => {
                   message: 'AI not ready, going back to Step 3',
                   nextStep: 3,
                   totalSteps: progress.totalSteps
+                });
+              } else {
+                // Batch IDもない場合は完全なエラー
+                await ordersDB.updateOrder(orderId, {
+                  status: 'error',
+                  error_message: 'AI analysis is required but not initiated. Please retry.'
+                });
+                
+                return res.status(500).json({
+                  status: 'error',
+                  message: 'AI analysis is required for report generation',
+                  error: 'AI_INSIGHTS_MISSING',
+                  orderId: orderId
                 });
               }
             }
