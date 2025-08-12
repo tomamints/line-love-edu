@@ -2682,7 +2682,7 @@ class FortuneCarouselBuilder {
                 userId: this.userProfile.userId || 'unknown'
               })
             },
-            style: 'primary',
+            style: 'secondary',
             color: '#FFD700'
           },
           {
