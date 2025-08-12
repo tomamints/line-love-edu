@@ -2642,23 +2642,26 @@ class FortuneCarouselBuilder {
             margin: 'lg'
           },
           {
-            type: 'box',
-            layout: 'vertical',
-            margin: 'lg',
-            spacing: 'sm',
-            contents: [
-              {
-                type: 'button',
-                action: {
-                  type: 'uri',
-                  label: '詳しく見る',
-                  uri: 'https://line.me/R/app/1655790987-DW9nZJGl'
-                },
-                style: 'primary',
-                color: '#FFD700',
-                height: 'md'
-              }
-            ]
+            type: 'separator',
+            margin: 'lg'
+          },
+          {
+            type: 'text',
+            text: '👉 詳しくはこちら',
+            size: 'md',
+            color: '#FFD700',
+            align: 'center',
+            margin: 'md',
+            weight: 'bold'
+          },
+          {
+            type: 'text',
+            text: 'line.me/R/app/1655790987-DW9nZJGl',
+            size: 'xs',
+            color: '#888888',
+            align: 'center',
+            margin: 'sm',
+            decoration: 'underline'
           }
         ]
       }
