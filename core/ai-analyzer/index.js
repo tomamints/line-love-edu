@@ -130,42 +130,57 @@ ${personalInfo ? `
 - 相手: ${personalInfo.partnerAge}歳 ${personalInfo.partnerGender === 'male' ? '男性' : '女性'}
 ` : ''}
 
-## 分析してほしい項目（JSON形式で回答）
-以下の形式で、具体的な分析結果を返してください：
+## タスク：会話分析と恋愛アドバイスの生成
 
-{
-  "personality": ["相手の性格特徴を3つ"],
-  "interests": ["相手の興味・関心事を3つ"],
-  "relationshipStage": "1-10の数値（1=知り合い、5=友達、10=恋人）",
-  "advice": ["具体的な恋愛アドバイスを2つ"],
-  "emotionalPattern": {
-    "positive": ["ポジティブな感情が出る話題2つ"],
-    "negative": ["避けた方がいい話題1つ"]
-  },
-  "communicationStyle": "相手のコミュニケーションスタイル",
-  "optimalTiming": {
-    "timeOfDay": "連絡に最適な時間帯",
-    "frequency": "理想的な連絡頻度"
-  },
-  "avoidTopics": ["避けるべき話題"],
-  "responsePatterns": {
-    "quickResponse": ["すぐ返信が来るパターン"],
-    "thoughtfulResponse": ["じっくり返信するパターン"],
-    "shortResponse": ["短い返信のパターン"],
-    "enthusiasticResponse": ["テンション高い返信のパターン"]
-  },
-  "suggestedActions": [
-    {
-      "action": "今すぐ送るべきメッセージ例",
-      "expectedResponse": "予想される相手の反応",
-      "timing": "送るタイミング",
-      "successRate": "成功確率（%）",
-      "basedOn": "この提案の根拠"
-    }
-  ]
-}
+あなたのタスクは、上記の会話履歴を分析して、以下の項目について具体的な分析結果をJSON形式で返すことです。
 
-重要：実際の会話内容に基づいて、具体的で実用的な分析を行ってください。`;
+### 分析項目の説明：
+
+1. **personality** (配列・必須): 相手の性格特徴を3つ挙げてください
+   - 例: ["優しい", "マイペース", "好奇心旺盛"]
+
+2. **interests** (配列・必須): 会話から読み取れる相手の興味・関心事を3つ
+   - 例: ["映画", "カフェ巡り", "音楽"]
+
+3. **relationshipStage** (数値・必須): 現在の関係性を1-10で評価
+   - 1-3: 知り合い程度
+   - 4-6: 友達
+   - 7-9: 好意がある関係
+   - 10: 恋人
+
+4. **advice** (配列・必須): ユーザーへの具体的な恋愛アドバイスを2つ
+   - 実行可能で具体的な内容にしてください
+
+5. **emotionalPattern** (オブジェクト・必須): 相手の感情パターン
+   - positive: ポジティブな反応を示す話題（2つ）
+   - negative: ネガティブまたは冷たい反応を示す話題（1つ）
+
+6. **communicationStyle** (文字列・必須): 相手のコミュニケーションスタイル
+   - 例: "絵文字多め・フレンドリー" や "丁寧・慎重" など
+
+7. **optimalTiming** (オブジェクト・必須): 連絡のベストタイミング
+   - timeOfDay: "朝", "昼", "夕方", "夜", "深夜" のいずれか
+   - frequency: "毎日", "2-3日に1回", "週1-2回" など
+
+8. **avoidTopics** (配列・必須): 避けるべき話題のリスト
+
+9. **responsePatterns** (オブジェクト・必須): 相手の返信パターン分析
+   - quickResponse: すぐ返信が来る時の特徴
+   - thoughtfulResponse: 時間をかけて返信する時の特徴
+   - shortResponse: 短い返信の時の特徴
+   - enthusiasticResponse: 盛り上がっている時の特徴
+
+10. **suggestedActions** (配列・必須): 具体的なアクション提案（最低1つ、最大3つ）
+    各アクションには以下を含める：
+    - action: 送るべきメッセージの具体例
+    - expectedResponse: 予想される相手の反応
+    - timing: いつ送るべきか（"今すぐ", "明日の朝", "週末" など）
+    - successRate: 成功確率（0-100の数値）
+    - basedOn: この提案の根拠（会話のどの部分から判断したか）
+
+### 出力形式：
+必ず有効なJSON形式で、すべての必須項目を含めて返答してください。
+文字列は日本語で、具体的な内容を記載してください。`;
 
     return [
       { role: 'system', content: systemPrompt },
