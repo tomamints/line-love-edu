@@ -745,11 +745,22 @@ async function handleFollowEvent(event) {
               height: 'md',
               action: {
                 type: 'uri',
-                label: '🌙 診断を始める',
+                label: '🔮 情報を入力する',
                 uri: formUrl
               },
               color: '#764ba2'
             },
+            {
+              type: 'button',
+              style: 'primary',
+              height: 'md',
+              action: {
+                type: 'message',
+                label: '診断結果を見る',
+                text: '診断結果'
+              },
+              color: '#667eea'
+            }
           ]
         }
       }
