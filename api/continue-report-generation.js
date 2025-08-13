@@ -285,6 +285,16 @@ module.exports = async (req, res) => {
               
               if (savedMessages && savedMessages.length > 0) {
                 console.log(`📊 Using ${savedMessages.length} saved messages from database`);
+                
+                // デバッグ: 取得したメッセージの詳細を確認
+                console.log('📩 First 3 messages after retrieval:', savedMessages.slice(0, 3).map(m => ({
+                  text: m.text?.substring(0, 50),
+                  hasText: !!m.text,
+                  textType: typeof m.text,
+                  isUser: m.isUser,
+                  messageFields: Object.keys(m)
+                })));
+                
                 progress.data.messages = savedMessages;
               } else {
                 console.log('⚠️ No saved messages found, using default for demo');

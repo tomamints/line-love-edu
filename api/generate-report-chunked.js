@@ -450,9 +450,24 @@ module.exports = async (req, res) => {
                 
                 // メッセージサンプルを作成（最新100件に統一）
                 const recentMessages = progress.data.messages.slice(-100);
+                
+                // デバッグ: メッセージの内容を確認
+                console.log('📱 Total messages:', progress.data.messages.length);
+                console.log('📱 Recent messages count:', recentMessages.length);
+                console.log('📱 First 3 messages:', recentMessages.slice(0, 3).map(m => ({
+                  text: m.text,
+                  isUser: m.isUser,
+                  hasText: !!m.text,
+                  textType: typeof m.text
+                })));
+                
                 const conversationSample = recentMessages.map(m => 
                   `${m.isUser ? 'ユーザー' : '相手'}: ${m.text}`
                 ).join('\n');
+                
+                // デバッグ: 送信するテキストの確認
+                console.log('📤 Conversation sample first 500 chars:', conversationSample.substring(0, 500));
+                console.log('📤 Conversation sample contains undefined:', conversationSample.includes('undefined'));
                 
                 // プロンプトを作成（report-generatorから流用）
                 const prompt = reportGenerator.createAIPrompt(conversationSample, progress.data.fortune);

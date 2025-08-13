@@ -107,6 +107,19 @@ class MessagesDB {
       }
 
       console.log(`✅ Retrieved ${data.messages?.length || 0} messages from database`);
+      
+      // デバッグ: メッセージの詳細を確認
+      if (data.messages && data.messages.length > 0) {
+        console.log('📨 First 3 messages from DB:', data.messages.slice(0, 3).map(m => ({
+          text: m.text?.substring(0, 50),
+          hasText: !!m.text,
+          textType: typeof m.text,
+          isUser: m.isUser,
+          createdAt: m.createdAt
+        })));
+        console.log('📨 Message fields:', Object.keys(data.messages[0] || {}));
+      }
+      
       return data.messages;
     } catch (err) {
       console.error('データベースエラー:', err);
