@@ -75,6 +75,114 @@ class ReportGeneratorV2Integration {
   }
   
   /**
+   * AIプロンプトを作成（既存システムとの互換性のため）
+   * @param {string} conversationSample - 会話サンプル
+   * @param {Object} fortune - 基本分析結果
+   * @returns {string} プロンプト
+   */
+  createAIPrompt(conversationSample, fortune) {
+    return `以下のLINEトーク履歴を分析し、恋愛アドバイザーとして非常に詳細なレポートを作成してください。
+
+会話サンプル：
+${conversationSample}
+
+基本分析結果：
+時間相性: ${fortune.time?.score || 0}点
+バランス相性: ${fortune.balance?.score || 0}点
+テンポ相性: ${fortune.tempo?.score || 0}点
+タイプ相性: ${fortune.type?.score || 0}点
+言葉相性: ${fortune.language?.score || 0}点
+総合相性: ${fortune.totalScore || 0}点
+
+以下のJSON形式で、非常に詳細な分析結果を返してください：
+{
+  "emotionalState": {
+    "user": "ユーザーの感情状態の詳細分析（200文字以上）",
+    "partner": "相手の感情状態の詳細分析（200文字以上）",
+    "compatibility": "感情的な相性の詳細評価（200文字以上）"
+  },
+  "communicationStyle": {
+    "userPattern": "ユーザーのコミュニケーションパターン詳細（150文字以上）",
+    "partnerPattern": "相手のコミュニケーションパターン詳細（150文字以上）",
+    "recommendations": ["改善提案1", "改善提案2", "改善提案3"]
+  },
+  "futureOutlook": [
+    {
+      "month": "1ヶ月後",
+      "prediction": "詳細な予測内容（150文字以上）",
+      "keyEvents": ["重要イベント1", "重要イベント2"]
+    },
+    {
+      "month": "3ヶ月後",
+      "prediction": "詳細な予測内容（150文字以上）",
+      "keyEvents": ["重要イベント1", "重要イベント2"]
+    },
+    {
+      "month": "6ヶ月後",
+      "prediction": "詳細な予測内容（150文字以上）",
+      "keyEvents": ["重要イベント1", "重要イベント2"]
+    }
+  ],
+  "actionPlan": {
+    "immediate": [
+      {
+        "action": "今すぐやるべきアクション",
+        "reason": "なぜこれが重要か（100文字以上）",
+        "expectedResult": "期待される結果（100文字以上）"
+      }
+    ],
+    "shortTerm": [
+      {
+        "action": "1ヶ月以内にやるべきアクション",
+        "reason": "なぜこれが重要か（100文字以上）",
+        "expectedResult": "期待される結果（100文字以上）"
+      }
+    ],
+    "longTerm": [
+      {
+        "action": "3ヶ月以内にやるべきアクション",
+        "reason": "なぜこれが重要か（100文字以上）",
+        "expectedResult": "期待される結果（100文字以上）"
+      }
+    ]
+  },
+  "riskAnalysis": {
+    "potentialRisks": [
+      {
+        "risk": "潜在的なリスク",
+        "probability": "高/中/低",
+        "impact": "影響度の説明（100文字以上）",
+        "mitigation": "対策方法（100文字以上）"
+      }
+    ],
+    "warningSignals": ["注意すべきサイン1", "注意すべきサイン2"]
+  },
+  "personality": ["性格特徴1", "性格特徴2", "性格特徴3"],
+  "interests": ["興味1", "興味2", "興味3"],
+  "relationshipStage": 5,
+  "advice": ["具体的アドバイス1（100文字以上）", "具体的アドバイス2（100文字以上）"],
+  "emotionalPattern": {
+    "positive": ["ポジティブな話題1", "ポジティブな話題2"],
+    "negative": ["ネガティブな話題1"]
+  },
+  "communicationStyleSummary": "全体的なコミュニケーションスタイル",
+  "optimalTiming": {
+    "timeOfDay": "夜",
+    "frequency": "毎日"
+  },
+  "suggestedActions": [
+    {
+      "action": "送るべきメッセージの具体例",
+      "expectedResponse": "予想される相手の反応",
+      "timing": "今すぐ",
+      "successRate": 85,
+      "basedOn": "この提案の根拠"
+    }
+  ]
+}`;
+  }
+  
+  /**
    * V2の結果を既存システムの形式に変換
    */
   convertToLegacyFormat(v2Result) {
