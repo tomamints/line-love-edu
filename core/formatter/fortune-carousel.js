@@ -121,7 +121,11 @@ class FortuneCarouselBuilder {
   addCard1_OpeningPage() {
     // v2.0スコア計算ロジック
     const score = this.calculateWaveScore();
-    const message = '運命の相手との出会いは、魂が共鳴する瞬間';
+    const message = score >= 80 ? 
+      '月が囁いています。強い縁で結ばれた二つの魂が、ここに出会いました' :
+      score >= 60 ?
+      '月が告げています。二人の心は少しずつ近づいているようです' :
+      '月が導いています。まだ見ぬ可能性が二人の間に眠っています';
     
     return {
       type: 'bubble',
@@ -134,7 +138,7 @@ class FortuneCarouselBuilder {
         contents: [
           {
             type: 'text',
-            text: '🌙 月の導きが始まります...',
+            text: '🌙 月の導きが始まります',
             size: 'xl',
             color: '#ffffff',
             weight: 'bold',
@@ -151,7 +155,7 @@ class FortuneCarouselBuilder {
         contents: [
           {
             type: 'text',
-            text: 'おふたりの心に映る月を... 視させていただきました...',
+            text: 'おふたりの心に映る月を視させていただきました',
             size: 'md',
             color: '#555555',
             align: 'center',

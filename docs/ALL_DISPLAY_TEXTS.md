@@ -3,7 +3,7 @@
 ## 表示順序（実際のユーザーフロー）
 
 1. **おつきさま診断（生年月日ベース）** - 最初に表示
-2. **波動恋愛診断（8枚カルーセル）** - トーク履歴分析後に表示  
+2. **波動恋愛診断（8枚カルーセル）** - トーク履歴分析後に表示
 3. **恋愛診断（メッセージ分析）** - 波動診断の詳細版
 4. **プレミアムレポート（PDF）** - 有料オプション
 
@@ -159,22 +159,28 @@
 #### 相性別アドバイス（例）
 ```
 # 95点の場合
-運命的な相性です！お互いが完璧に補完し合える理想的な関係。
+月が告げています。運命的な出会いがここに成就しました。
+お互いの魂が完璧に響き合う、理想的な関係です。
 
-# 85-90点の場合  
-とても良い相性です。お互いを尊重し合えば、素晴らしいパートナーシップが築けます。
+# 85-90点の場合
+月が囁いています。とても美しい調和が二人の間に流れています。
+お互いを尊重し合うことで、素晴らしい物語が紡がれるでしょう。
 
 # 75-84点の場合
-良い相性です。コミュニケーションを大切にすることで、より深い関係へと発展できるでしょう。
+月が導いています。良き縁が結ばれています。
+心の言葉を大切にすることで、より深い絆へと成長していくでしょう。
 
 # 65-74点の場合
-平均的な相性です。お互いの違いを理解し、歩み寄ることが大切です。
+月が語りかけています。お互いの違いを認め合うことで、
+新たな調和が生まれる可能性があります。
 
 # 60-64点の場合
-努力次第で良い関係を築けます。相手を理解しようとする姿勢が重要です。
+月が示しています。努力と理解によって、
+関係は少しずつ育まれていくでしょう。
 
 # 60点未満の場合
-個性的な組み合わせです。お互いの違いから学べることが多いでしょう。
+月が教えています。個性的な組み合わせには、
+お互いの違いから学ぶべき大切なことがあるのです。
 ```
 
 **アドバイス決定ルール：**
@@ -186,7 +192,10 @@
 
 #### 一般的なアドバイス
 ```
-💡 アドバイス: お互いの個性を認め合い、時には相手に主導権を譲ることで、より深い関係が築けるでしょう。
+🌙 月詠からの導き:
+お互いの個性という月の光を認め合い、
+時には相手に道を譲ることで、
+より深い縁が結ばれることでしょう。
 ```
 
 ### 1.4 プレミアムレポートへの誘導
@@ -416,7 +425,7 @@ const moonPhaseValidation = {
 const findDestinyMoments = () => {
   // 基本分析
   const timeAnalysis = analyzeTimePatterns()
-  
+
   // v2.0新規：会話のラリー回数分析
   const rallyAnalysis = {
     definition: '5分以内に3往復以上のメッセージ交換',
@@ -431,7 +440,7 @@ const findDestinyMoments = () => {
       }))
     }
   }
-  
+
   // v2.0新規：日常ピークと特別ピークの区別
   const peakTypes = {
     daily: {
@@ -447,7 +456,7 @@ const findDestinyMoments = () => {
       score: rallyAnalysis.emotionalIntensity
     }
   }
-  
+
   return {
     moment1: {
       type: 'special',
@@ -510,12 +519,12 @@ const generatePersonalizedLuckyItems = () => {
       '✨': '輝月の光',          // 輝く月の光
       '🌟': '煌月の銀'           // 煌めく月の銀色
     }
-    
+
     // 最もポジティブな文脈で使われた色絵文字を検出
     const positiveColorUsage = analyzeEmojiContext(colorEmojis)
     return positiveColorUsage.top.color
   }
-  
+
   const luckyItem = () => {
     // 最も盛り上がった話題と連動
     const topTopic = findMostExcitingTopic()
@@ -531,7 +540,7 @@ const generatePersonalizedLuckyItems = () => {
     }
     return itemMap[topTopic] || { item: 'お守り', emoji: '🔮' }
   }
-  
+
   const luckyNumber = () => {
     // 最も盛り上がった日付や時間から抽出
     const peakMoment = findPeakExcitement()
@@ -540,7 +549,7 @@ const generatePersonalizedLuckyItems = () => {
       reason: peakMoment.description
     }
   }
-  
+
   const luckyAction = () => {
     // 成功率の高い行動パターンから提案
     const successfulPatterns = analyzeSuccessfulInteractions()
@@ -550,7 +559,7 @@ const generatePersonalizedLuckyItems = () => {
       timing: successfulPatterns.top.bestTime
     }
   }
-  
+
   return {
     color: luckyColor(),
     item: luckyItem(),
@@ -605,22 +614,22 @@ const generateAdvancedActionPlan = () => {
       successRate: calculateTopicSuccessRate(topic)
     }))
   }
-  
+
   // v2.0新規：相手の興味関心分析
   const partnerInterests = () => {
     const theirWords = analyzePartnerVocabulary()
     const myWords = analyzeMyVocabulary()
-    
+
     // 相手が多用するが自分があまり使わない単語
     const interestGap = findVocabularyGap(theirWords, myWords)
-    
+
     return {
       suggestion: `${interestGap.top}について、もっと教えて`,
       reason: `相手が${interestGap.frequency}回言及`,
       category: interestGap.category
     }
   }
-  
+
   // v2.0新規：ネガティブパターン検出
   const avoidancePatterns = () => {
     const negativeTopics = detectNegativePatterns()
@@ -631,7 +640,7 @@ const generateAdvancedActionPlan = () => {
       severity: topic.impactScore
     }))
   }
-  
+
   // v2.0新規：関係性段階別アドバイス
   const stageSpecificAdvice = () => {
     const stage = detectRelationshipStage()
@@ -654,7 +663,7 @@ const generateAdvancedActionPlan = () => {
     }
     return advice[stage]
   }
-  
+
   return {
     priority1: deepDivesuggestions()[0],
     priority2: partnerInterests(),
@@ -711,7 +720,7 @@ const detectRelationshipStage = () => {
       formalityLevel: 'polite', // 敬語や丁寧な表現
       emojiUsage: 'moderate' // 絵文字は控えめ
     },
-    
+
     // 仲良し（3-12ヶ月）
     friend: {
       messageFrequency: 'medium', // 1日10-50通
@@ -722,7 +731,7 @@ const detectRelationshipStage = () => {
       emojiUsage: 'frequent', // 絵文字多用
       insideJokes: 'present' // 内輪ネタあり
     },
-    
+
     // 安定期（12ヶ月以上）
     stable: {
       messageFrequency: 'consistent', // 安定した頻度
@@ -734,7 +743,7 @@ const detectRelationshipStage = () => {
       silenceComfort: 'high' // 沈黙も心地よい
     }
   }
-  
+
   // 各指標をスコア化して最も近い段階を判定
   const scores = calculateStageScores(indicators)
   return scores.highest.stage
@@ -757,7 +766,7 @@ const detectNegativePatterns = () => {
       },
       advice: '今はこの話題より、別の話の方が盛り上がりそう'
     },
-    
+
     // 会話終了パターン
     conversationKiller: {
       detect: (topic) => {
@@ -766,7 +775,7 @@ const detectNegativePatterns = () => {
       },
       advice: 'この話題の後は会話が続きにくいみたい'
     },
-    
+
     // 短文返答パターン
     shortResponse: {
       detect: (topic) => {
@@ -776,7 +785,7 @@ const detectNegativePatterns = () => {
       },
       advice: '相手の関心が薄いかも。別の角度から話してみて'
     },
-    
+
     // 絵文字減少パターン
     emojiDecrease: {
       detect: (topic) => {
@@ -787,7 +796,7 @@ const detectNegativePatterns = () => {
       advice: 'テンションが下がる話題かも'
     }
   }
-  
+
   return analyzeAllTopics(patterns)
 }
 ```
@@ -992,7 +1001,7 @@ const cosmicMessage = overall.cosmicMessage || '金星と木星が調和し';
 📝 Step 1/5: メッセージ履歴を分析中...
 ```
 
-#### Step 2  
+#### Step 2
 ```
 🔍 Step 2/5: 相性パターンを解析中...
 ```
@@ -1588,7 +1597,7 @@ Premium Love Report
 📝 Step 1/5: メッセージ履歴を分析中...
 ```
 
-#### Step 2  
+#### Step 2
 ```
 🔍 Step 2/5: 相性パターンを解析中...
 ```
