@@ -1683,8 +1683,16 @@ async function handleFortuneEvent(event) {
     // パースしたメッセージを保存（プレミアムレポート用）
     try {
       const messagesDB = require('./core/database/messages-db');
-      await messagesDB.saveMessages(userId, messages);
-      logger.log('💾 メッセージを保存しました');
+      // bodyフィールドをtextフィールドにマッピング（レポート生成用）
+      const messagesForStorage = messages.map(msg => ({
+        ...msg,
+        text: msg.body || msg.text, // bodyがあればtextとして保存
+        isUser: msg.sender === parser.extractParticipants(messages, profile.displayName).self,
+        timestamp: msg.datetime,
+        createdAt: msg.datetime
+      }));
+      await messagesDB.saveMessages(userId, messagesForStorage);
+      logger.log('💾 メッセージを保存しました（text/isUserフィールド付き）');
     } catch (saveError) {
       console.error('⚠️ メッセージ保存エラー（続行）:', saveError.message);
     }

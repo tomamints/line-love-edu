@@ -455,15 +455,18 @@ module.exports = async (req, res) => {
                 console.log('📱 Total messages:', progress.data.messages.length);
                 console.log('📱 Recent messages count:', recentMessages.length);
                 console.log('📱 First 3 messages:', recentMessages.slice(0, 3).map(m => ({
-                  text: m.text,
+                  text: m.text || m.body,
                   isUser: m.isUser,
-                  hasText: !!m.text,
-                  textType: typeof m.text
+                  hasText: !!(m.text || m.body),
+                  textType: typeof (m.text || m.body)
                 })));
                 
-                const conversationSample = recentMessages.map(m => 
-                  `${m.isUser ? 'ユーザー' : '相手'}: ${m.text}`
-                ).join('\n');
+                // bodyフィールドも考慮してテキストを取得
+                const conversationSample = recentMessages.map(m => {
+                  const messageText = m.text || m.body || '[メッセージなし]';
+                  const sender = m.isUser ? 'ユーザー' : '相手';
+                  return `${sender}: ${messageText}`;
+                }).join('\n');
                 
                 // デバッグ: 送信するテキストの確認
                 console.log('📤 Conversation sample first 500 chars:', conversationSample.substring(0, 500));

@@ -603,9 +603,12 @@ module.exports = async (req, res) => {
                 
                 // メッセージサンプルを作成（最新15件）
                 const recentMessages = progress.data.messages.slice(-15);
-                const conversationSample = recentMessages.map(m => 
-                  `${m.isUser ? 'ユーザー' : '相手'}: ${m.text}`
-                ).join('\n');
+                // bodyフィールドも考慮してテキストを取得
+                const conversationSample = recentMessages.map(m => {
+                  const messageText = m.text || m.body || '[メッセージなし]';
+                  const sender = m.isUser ? 'ユーザー' : '相手';
+                  return `${sender}: ${messageText}`;
+                }).join('\n');
                 
                 // プロンプトを作成（report-generatorから流用）
                 const prompt = reportGenerator.createAIPrompt(conversationSample, progress.data.fortune);
