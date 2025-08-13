@@ -17,7 +17,7 @@ const paymentHandler = new PaymentHandler();
 async function processReportWithLoop(orderId, iteration = 1) {
   const maxIterations = 5; // 最大5回まで（Step数と同じ）
   const startTime = Date.now();
-  const TIME_LIMIT = 55000; // 55秒（Vercelの60秒制限に対して余裕を持つ）
+  const TIME_LIMIT = 50000; // 50秒（Vercelの60秒制限に対して余裕を持つ）
   
   console.log(`\n🔄 Process Report Loop - Iteration ${iteration}/${maxIterations}`);
   console.log(`📍 Order ID: ${orderId}`);
@@ -57,11 +57,22 @@ async function processReportWithLoop(orderId, iteration = 1) {
     const maxCallsPerIteration = 1; // 1回のイテレーションで最大1回呼び出し（2→1に変更）
     
     while ((Date.now() - startTime) < TIME_LIMIT && callCount < maxCallsPerIteration) {
+      // 残り時間を確認
+      const currentElapsed = Date.now() - startTime;
+      const currentRemaining = TIME_LIMIT - currentElapsed;
+      
+      // API呼び出し前に残り時間をチェック（最低20秒必要）
+      if (currentRemaining < 20000) {
+        console.log(`⏰ Insufficient time for API call (${Math.round(currentRemaining/1000)}s remaining), breaking loop`);
+        break;
+      }
+      
       // iteration 3以降はcontinue-report-generationを使う
       const useAlternateEndpoint = iteration >= 3;
       const endpointName = useAlternateEndpoint ? 'continue-report-generation' : 'generate-report-chunked';
       
       console.log(`\n📞 Calling ${endpointName} (call ${callCount + 1}/${maxCallsPerIteration})`);
+      console.log(`⏱️ Time elapsed: ${Math.round(currentElapsed/1000)}s, remaining: ${Math.round(currentRemaining/1000)}s`);
       if (useAlternateEndpoint) {
         console.log('🎯 Using continue-report-generation to avoid infinite loop detection');
       }
@@ -120,7 +131,7 @@ async function processReportWithLoop(orderId, iteration = 1) {
           callCount++;
           
           // 少し待つ（サーバー負荷軽減、無限ループ検出を回避）
-          await new Promise(resolve => setTimeout(resolve, 45000)); // 45秒待つ
+          await new Promise(resolve => setTimeout(resolve, 20000)); // 20秒待つ（45→20秒に短縮）
         }
         
         // GitHub Actionsが処理を引き継ぐ場合
@@ -149,7 +160,7 @@ async function processReportWithLoop(orderId, iteration = 1) {
           callCount++;
           
           // 少し待つ（サーバー負荷軽減、Vercelの無限ループ検出を回避）
-          await new Promise(resolve => setTimeout(resolve, 45000)); // 45秒待つ
+          await new Promise(resolve => setTimeout(resolve, 20000)); // 20秒待つ（45→20秒に短縮）
         }
         
       } catch (error) {
@@ -157,13 +168,22 @@ async function processReportWithLoop(orderId, iteration = 1) {
         callCount++;
         
         // エラーでも続行を試みる（Vercelの無限ループ検出を回避）
-        await new Promise(resolve => setTimeout(resolve, 45000)); // 45秒待つ
+        await new Promise(resolve => setTimeout(resolve, 20000)); // 20秒待つ（45→20秒に短縮）
       }
       
       // 時間チェック
       const elapsed = Date.now() - startTime;
-      if (elapsed > TIME_LIMIT - 10000) { // 残り10秒を切ったら
-        console.log('⏰ Time limit approaching, preparing to self-invoke');
+      const remainingTime = TIME_LIMIT - elapsed;
+      
+      // 残り時間が15秒未満の場合は即座に次のイテレーションへ
+      if (remainingTime < 15000) {
+        console.log(`⏰ Only ${Math.round(remainingTime/1000)}s remaining, preparing to self-invoke`);
+        break;
+      }
+      
+      // 残り時間に基づいて次のループを続けるか判断
+      if (remainingTime < 25000) {
+        console.log(`⚠️ Limited time remaining (${Math.round(remainingTime/1000)}s), skipping to next iteration`);
         break;
       }
     }
