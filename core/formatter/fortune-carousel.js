@@ -199,19 +199,19 @@ class FortuneCarouselBuilder {
     
     const messages = {
       '知り合ったばかり': {
-        high: "月が告げています... 新たなる扉が開かれる時...",
-        mid: "ゆっくりと... お互いを知る大切な時間...",
-        low: "焦らずに... 自然の流れに身を任せて..."
+        high: "月が告げています。新たなる扉が開かれる時",
+        mid: "ゆっくりとお互いを知る大切な時間です",
+        low: "焦らずに自然の流れに身を任せてください"
       },
       '仲良し': {
-        high: "月が囁いています... 縁が深まる特別な時...",
-        mid: "信頼の光を... ひとつずつ積み重ねる時...",
-        low: "相手の心の声に... そっと耳を傾けて..."
+        high: "月が囁いています。縁が深まる特別な時",
+        mid: "信頼の光をひとつずつ積み重ねる時です",
+        low: "相手の心の声にそっと耳を傾けてください"
       },
       '安定期': {
-        high: "月が示す道... 新たなる刺激が二人を照らす...",
-        mid: "日々の小さな感謝を... 大切にして...",
-        low: "初めて出会った頃の... 純粋な気持ちを思い出して..."
+        high: "月が示す道。新たなる刺激が二人を照らします",
+        mid: "日々の小さな感謝を大切にしてください",
+        low: "初めて出会った頃の純粋な気持ちを思い出してください"
       }
     };
     
@@ -300,8 +300,8 @@ class FortuneCarouselBuilder {
     const moonPhaseType = userMoon.moonPhaseType || {
       name: '新月タイプ',
       symbol: '🌑',
-      traits: '新たなる始まりを求める、月の冒険者...',
-      description: '月が告げています... 鋭き直感を持ち、新しき道へと歩みを進める情熱的な魂...',
+      traits: '新たなる始まりを求める、月の冒険者',
+      description: '月が告げています。鋭き直感を持ち、新しき道へと歩みを進める情熱的な魂',
       keywords: ['情熱', '直感', '冒険', '始まり', 'チャレンジ']
     };
     const moonAge = userMoon.moonAge || 7;
@@ -315,7 +315,7 @@ class FortuneCarouselBuilder {
         contents: [
           {
             type: 'text',
-            text: 'あなたの心に映る月...',
+            text: 'あなたの心に映る月',
             size: 'lg',
             color: '#ffffff',
             weight: 'bold',
@@ -774,7 +774,7 @@ class FortuneCarouselBuilder {
           contents: [
             {
               type: 'text',
-              text: '波動分析中...',
+              text: '波動分析中',
               size: 'md',
               color: this.styles.mainText,
               align: 'center'
@@ -1723,7 +1723,7 @@ class FortuneCarouselBuilder {
           },
           {
             type: 'text',
-            text: '月の神秘が明かす... 二人だけの詳細なる運命の書...',
+            text: '月の神秘が明かす、二人だけの詳細なる運命の書',
             size: 'sm',
             color: this.styles.subText,
             align: 'center',
@@ -1748,7 +1748,7 @@ class FortuneCarouselBuilder {
               },
               {
                 type: 'text',
-                text: '• 月の満ち欠けが示す相性の真実...\n• 会話に隠された心の声...\n• 月のリズムが示す恋の時...\n• 二人のための特別な導き...\n• 注意すべき月の陰り...\n• 運命が動く特別な瞬間...',
+                text: '• 月の満ち欠けが示す相性の真実\n• 会話に隠された心の声\n• 月のリズムが示す恋の時\n• 二人のための特別な導き\n• 注意すべき月の陰り\n• 運命が動く特別な瞬間',
                 size: 'xs',
                 color: this.styles.mainText,
                 wrap: true,
@@ -1832,7 +1832,7 @@ class FortuneCarouselBuilder {
       message = message.replace(/あなたに/g, 'あなたと相手の方に');
     }
     
-    return message.substring(0, 150) + (message.length > 150 ? '...' : '');
+    return message.substring(0, 150) + (message.length > 150 ? '…' : '');
   }
   
   /**
@@ -2581,7 +2581,7 @@ class FortuneCarouselBuilder {
         contents: [
           {
             type: 'text',
-            text: '🌙 もっと深く... 月の真実を知りたい方へ...',
+            text: '🌙 もっと深く、月の真実を知りたい方へ',
             size: 'lg',
             weight: 'bold',
             color: '#FFD700',
@@ -2612,7 +2612,7 @@ class FortuneCarouselBuilder {
           },
           {
             type: 'text',
-            text: '月の神秘が明かす... 二人だけの詳細なる運命の書...',
+            text: '月の神秘が明かす、二人だけの詳細なる運命の書',
             size: 'sm',
             color: '#E8B4B8',
             align: 'center',
@@ -2637,7 +2637,7 @@ class FortuneCarouselBuilder {
               },
               {
                 type: 'text',
-                text: '• 月の満ち欠けが示す相性の真実...\n• 会話に隠された心の声...\n• 月のリズムが示す恋の時...\n• 二人のための特別な導き...\n• 注意すべき月の陰り...\n• 運命が動く特別な瞬間...',
+                text: '• 月の満ち欠けが示す相性の真実\n• 会話に隠された心の声\n• 月のリズムが示す恋の時\n• 二人のための特別な導き\n• 注意すべき月の陰り\n• 運命が動く特別な瞬間',
                 size: 'xs',
                 color: '#F8F8FF',
                 wrap: true,

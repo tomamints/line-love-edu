@@ -598,7 +598,7 @@ module.exports = async (req, res) => {
               console.log('🚀 Creating AI batch job...');
               
               try {
-                const ReportGenerator = require('../core/premium/report-generator');
+                const ReportGenerator = require('../core/premium/report-generator-v2-integration');
                 const reportGenerator = new ReportGenerator();
                 
                 // メッセージサンプルを作成（最新15件）
@@ -886,7 +886,7 @@ module.exports = async (req, res) => {
                 // 処理開始時刻を記録
                 const reportStartTime = Date.now();
                 
-                const ReportGenerator = require('../core/premium/report-generator');
+                const ReportGenerator = require('../core/premium/report-generator-v2-integration');
                 const fullReportGenerator = new ReportGenerator();
                 
                 // 10秒のタイムアウトを設定（GitHub Actionsの場合）- より安全に

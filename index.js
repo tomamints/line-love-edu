@@ -672,7 +672,7 @@ async function handleFollowEvent(event) {
           contents: [
             {
               type: 'text',
-              text: '私は月詠（つくよみ）と申します…',
+              text: '私は月詠（つくよみ）と申します',
               size: 'md',
               wrap: true,
               align: 'center'

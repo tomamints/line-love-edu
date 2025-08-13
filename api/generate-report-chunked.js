@@ -445,7 +445,7 @@ module.exports = async (req, res) => {
               console.log('🚀 Creating AI batch job...');
               
               try {
-                const ReportGenerator = require('../core/premium/report-generator');
+                const ReportGenerator = require('../core/premium/report-generator-v2-integration');
                 const reportGenerator = new ReportGenerator();
                 
                 // メッセージサンプルを作成（最新100件に統一）
@@ -696,7 +696,7 @@ module.exports = async (req, res) => {
             }
             
             // レポート生成
-            const ReportGenerator = require('../core/premium/report-generator');
+            const ReportGenerator = require('../core/premium/report-generator-v2-integration');
             const fullReportGenerator = new ReportGenerator();
             progress.data.reportData = await fullReportGenerator.generatePremiumReport(
               progress.data.messages,
