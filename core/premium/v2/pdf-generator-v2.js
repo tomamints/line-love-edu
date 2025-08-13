@@ -13,30 +13,103 @@ class PDFGeneratorV2 {
     try {
       const html = this.generateHTML(analysisContext);
       
-      // 実際のPDF変換はpuppeteerで行う（既存の実装を活用）
-      const puppeteer = require('puppeteer');
-      const browser = await puppeteer.launch({
-        headless: true,
-        args: ['--no-sandbox', '--disable-setuid-sandbox']
-      });
+      // Puppeteerは本番環境で利用不可のため、
+      // HTMLをBufferとして返す（ブラウザでPDF保存可能）
+      const pdfHtml = `<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>プレミアムレポート - ${analysisContext.reportContent.page1.userName}</title>
+  <style>
+    @media print {
+      .pdf-controls { display: none !important; }
+      .page { page-break-after: always; }
+    }
+    
+    .pdf-controls {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1000;
+      display: flex;
+      gap: 10px;
+      background: white;
+      padding: 10px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    .pdf-button {
+      padding: 8px 16px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .pdf-button:hover {
+      opacity: 0.9;
+    }
+  </style>
+  <script>
+    function saveAsPDF() {
+      window.print();
+    }
+    function printReport() {
+      window.print();
+    }
+  </script>
+</head>
+<body>
+  <div class="pdf-controls">
+    <button class="pdf-button" onclick="saveAsPDF()">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+        <polyline points="14 2 14 8 20 8"></polyline>
+        <line x1="12" y1="18" x2="12" y2="12"></line>
+        <line x1="9" y1="15" x2="15" y2="15"></line>
+      </svg>
+      PDFとして保存
+    </button>
+    <button class="pdf-button" onclick="printReport()">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="6 9 6 2 18 2 18 9"></polyline>
+        <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+        <rect x="6" y="14" width="12" height="8"></rect>
+      </svg>
+      印刷
+    </button>
+  </div>
+  
+  <div class="report-wrapper">
+    ${html}
+  </div>
+</body>
+</html>`;
       
-      const page = await browser.newPage();
-      await page.setContent(html, { waitUntil: 'networkidle0' });
-      
-      const pdfBuffer = await page.pdf({
-        format: 'A4',
-        printBackground: true,
-        margin: { top: 0, right: 0, bottom: 0, left: 0 }
-      });
-      
-      await browser.close();
-      
-      return pdfBuffer;
+      return Buffer.from(pdfHtml, 'utf8');
       
     } catch (error) {
       console.error('PDF生成エラー:', error);
-      // フォールバック：HTMLを返す
-      return Buffer.from(this.generateHTML(analysisContext));
+      // エラー時は基本的なHTMLを返す
+      const errorHtml = `<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>エラー</title>
+</head>
+<body>
+  <h1>レポート生成エラー</h1>
+  <p>申し訳ございません。レポートの生成中にエラーが発生しました。</p>
+</body>
+</html>`;
+      return Buffer.from(errorHtml, 'utf8');
     }
   }
   
