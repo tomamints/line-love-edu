@@ -88,9 +88,9 @@ class AIAnalyzer {
     
     return messages
       .filter(msg => msg.text && msg.text.trim().length > 0)
-      .slice(-100) // 最新100件のみ
+      .slice(-200) // 最新200件に増加
       .map(msg => ({
-        text: msg.text.substring(0, 500), // 500文字制限
+        text: msg.text.substring(0, 200), // 200文字制限（通常のLINEメッセージには十分）
         timestamp: msg.timestamp || new Date().toISOString(),
         isUser: msg.isUser || false
       }));
@@ -197,6 +197,16 @@ ${conversationText.substring(0, 1000)}${peaksContext}${profileContext}
    * @returns {string} API レスポンス
    */
   async callOpenAI(messages) {
+    // デバッグ: 実際に送信するデータをログ出力
+    console.log('🚀 OpenAI APIに送信するデータ:');
+    console.log('📊 メッセージ数:', messages.length);
+    messages.forEach((msg, idx) => {
+      console.log(`📝 Message ${idx + 1} (${msg.role}):`);
+      console.log(`   文字数: ${msg.content.length}文字`);
+      console.log(`   内容プレビュー: ${msg.content.substring(0, 200)}...`);
+    });
+    console.log('📊 推定トークン数:', Math.ceil(messages.reduce((sum, m) => sum + m.content.length, 0) / 2.5));
+    
     const completion = await this.openai.chat.completions.create({
       model: this.config.openai.model,
       messages,
