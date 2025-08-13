@@ -134,7 +134,7 @@ class FortuneCarouselBuilder {
         contents: [
           {
             type: 'text',
-            text: '🔮 運命の扉が開かれます',
+            text: '🌙 月の導きが始まります...',
             size: 'xl',
             color: '#ffffff',
             weight: 'bold',
@@ -151,7 +151,7 @@ class FortuneCarouselBuilder {
         contents: [
           {
             type: 'text',
-            text: 'お二人の波動エネルギーを解析しました',
+            text: 'おふたりの心に映る月を... 視させていただきました...',
             size: 'md',
             color: '#555555',
             align: 'center',
@@ -159,7 +159,7 @@ class FortuneCarouselBuilder {
           },
           {
             type: 'text',
-            text: `総合スコア: ${score}点`,
+            text: `月の祝福度: ${score}%`,
             size: 'xxl',
             weight: 'bold',
             color: '#764ba2',
@@ -195,19 +195,19 @@ class FortuneCarouselBuilder {
     
     const messages = {
       '知り合ったばかり': {
-        high: "新しい扉が開く時期です",
-        mid: "じっくりお互いを知る時",
-        low: "焦らず自然体で"
+        high: "月が告げています... 新たなる扉が開かれる時...",
+        mid: "ゆっくりと... お互いを知る大切な時間...",
+        low: "焦らずに... 自然の流れに身を任せて..."
       },
       '仲良し': {
-        high: "関係が深まる絶好のチャンス",
-        mid: "信頼を積み重ねていく時期",
-        low: "相手の気持ちに耳を傾けて"
+        high: "月が囁いています... 縁が深まる特別な時...",
+        mid: "信頼の光を... ひとつずつ積み重ねる時...",
+        low: "相手の心の声に... そっと耳を傾けて..."
       },
       '安定期': {
-        high: "新しい刺激が関係を活性化",
-        mid: "日々の感謝を忘れずに",
-        low: "初心に戻ってみましょう"
+        high: "月が示す道... 新たなる刺激が二人を照らす...",
+        mid: "日々の小さな感謝を... 大切にして...",
+        low: "初めて出会った頃の... 純粋な気持ちを思い出して..."
       }
     };
     
@@ -225,7 +225,7 @@ class FortuneCarouselBuilder {
         contents: [
           {
             type: 'text',
-            text: '🌟 総合運勢',
+            text: '✨ 月が映す総合運勢',
             size: 'xl',
             color: '#ffffff',
             weight: 'bold',
@@ -242,7 +242,7 @@ class FortuneCarouselBuilder {
         contents: [
           {
             type: 'text',
-            text: '二人の恋愛運勢:',
+            text: 'おふたりの恋の輝き:',
             size: 'md',
             color: '#555555',
             align: 'center'
@@ -257,7 +257,7 @@ class FortuneCarouselBuilder {
           },
           {
             type: 'text',
-            text: `運命度: ${score}%`,
+            text: `月の満ち欠け度: ${score}%`,
             size: 'lg',
             weight: 'bold',
             color: '#667eea',
@@ -270,7 +270,7 @@ class FortuneCarouselBuilder {
           },
           {
             type: 'text',
-            text: '宇宙からのメッセージ：',
+            text: '月詠からの導き：',
             size: 'sm',
             weight: 'bold',
             color: '#333333',
@@ -296,8 +296,8 @@ class FortuneCarouselBuilder {
     const moonPhaseType = userMoon.moonPhaseType || {
       name: '新月タイプ',
       symbol: '🌑',
-      traits: '新しい始まりを求める冒険家',
-      description: '直感力が鋭く、常に新しいことにチャレンジする情熱的なタイプ。',
+      traits: '新たなる始まりを求める、月の冒険者...',
+      description: '月が告げています... 鋭き直感を持ち、新しき道へと歩みを進める情熱的な魂...',
       keywords: ['情熱', '直感', '冒険', '始まり', 'チャレンジ']
     };
     const moonAge = userMoon.moonAge || 7;
@@ -311,7 +311,7 @@ class FortuneCarouselBuilder {
         contents: [
           {
             type: 'text',
-            text: 'あなたのおつきさま',
+            text: 'あなたの心に映る月...',
             size: 'lg',
             color: '#ffffff',
             weight: 'bold',
@@ -426,7 +426,7 @@ class FortuneCarouselBuilder {
         contents: [
           {
             type: 'text',
-            text: '🌙 おつきさま診断の検証',
+            text: '🌙 月が映す真実',
             size: 'xl',
             color: '#ffffff',
             weight: 'bold',
@@ -443,7 +443,7 @@ class FortuneCarouselBuilder {
         contents: [
           {
             type: 'text',
-            text: `現在の月相：${moonPhase.name}`,
+            text: `今宵の月相：${moonPhase.name}`,
             size: 'lg',
             weight: 'bold',
             color: '#e91e63',
@@ -451,7 +451,7 @@ class FortuneCarouselBuilder {
           },
           {
             type: 'text',
-            text: `診断結果：「${moonPhase.description}」`,
+            text: `月の導き：「${moonPhase.description}」`,
             size: 'md',
             color: '#555555',
             align: 'center',
@@ -464,7 +464,7 @@ class FortuneCarouselBuilder {
           },
           {
             type: 'text',
-            text: '実際の行動パターン分析：',
+            text: '月が告げる変化の兆し：',
             size: 'sm',
             weight: 'bold',
             color: '#333333',
@@ -485,7 +485,7 @@ class FortuneCarouselBuilder {
           },
           {
             type: 'text',
-            text: 'パートナーの様子：',
+            text: 'お相手の心に映る月：',
             size: 'sm',
             weight: 'bold',
             color: '#333333',
@@ -539,7 +539,7 @@ class FortuneCarouselBuilder {
         contents: [
           {
             type: 'text',
-            text: '🌙 おつきさま診断の検証',
+            text: '🌙 月が映す真実',
             size: 'xl',
             color: '#ffffff',
             align: 'center',
@@ -570,7 +570,7 @@ class FortuneCarouselBuilder {
         contents: [
           {
             type: 'text',
-            text: '実際の行動パターン分析：',
+            text: '月が告げる変化の兆し：',
             size: 'md',
             weight: 'bold',
             color: '#e91e63',
@@ -590,7 +590,7 @@ class FortuneCarouselBuilder {
           },
           {
             type: 'text',
-            text: 'パートナーの様子：',
+            text: 'お相手の心に映る月：',
             size: 'md',
             weight: 'bold',
             color: '#e91e63',
@@ -1710,7 +1710,7 @@ class FortuneCarouselBuilder {
         contents: [
           {
             type: 'text',
-            text: '🔮 プレミアム恋愛レポート',
+            text: '🌙 月詠の特別なる占い',
             size: 'xl',
             weight: 'bold',
             color: this.styles.accentText,
@@ -1719,7 +1719,7 @@ class FortuneCarouselBuilder {
           },
           {
             type: 'text',
-            text: 'AIが分析した超詳細な恋愛診断書をお届け',
+            text: '月の神秘が明かす... 二人だけの詳細なる運命の書...',
             size: 'sm',
             color: this.styles.subText,
             align: 'center',
@@ -1736,7 +1736,7 @@ class FortuneCarouselBuilder {
             contents: [
               {
                 type: 'text',
-                text: '📊 含まれる内容',
+                text: '🌙 月が明かす真実',
                 size: 'md',
                 weight: 'bold',
                 color: this.styles.accentText,
@@ -1744,7 +1744,7 @@ class FortuneCarouselBuilder {
               },
               {
                 type: 'text',
-                text: '• 詳細な相性分析（20項目以上）\n• 会話の癖と改善点\n• 月別恋愛運勢カレンダー\n• パーソナライズされた40のアクション\n• 危険な時期とその対策\n• 告白成功の最適タイミング',
+                text: '• 月の満ち欠けが示す相性の真実...\n• 会話に隠された心の声...\n• 月のリズムが示す恋の時...\n• 二人のための特別な導き...\n• 注意すべき月の陰り...\n• 運命が動く特別な瞬間...',
                 size: 'xs',
                 color: this.styles.mainText,
                 wrap: true,
@@ -1762,7 +1762,7 @@ class FortuneCarouselBuilder {
             contents: [
               {
                 type: 'text',
-                text: '特別価格',
+                text: '月の祝福価格',
                 size: 'sm',
                 color: this.styles.subText,
                 flex: 1
@@ -2194,7 +2194,7 @@ class FortuneCarouselBuilder {
         contents: [
           {
             type: 'text',
-            text: '⏰ 運命の瞬間 1',
+            text: '🌙 月が照らす運命の刻',
             size: 'xl',
             color: '#ffffff',
             weight: 'bold',
@@ -2232,7 +2232,7 @@ class FortuneCarouselBuilder {
           },
           {
             type: 'text',
-            text: '詳細分析：',
+            text: '月光が映し出すもの：',
             size: 'sm',
             weight: 'bold',
             color: '#333333',
@@ -2252,7 +2252,7 @@ class FortuneCarouselBuilder {
           },
           {
             type: 'text',
-            text: '推奨アクション：',
+            text: '月詠からの導き：',
             size: 'sm',
             weight: 'bold',
             color: '#ff6b6b',
@@ -2289,7 +2289,7 @@ class FortuneCarouselBuilder {
         contents: [
           {
             type: 'text',
-            text: '⏰ 運命の瞬間 2',
+            text: '🌟 月が囁く特別な時',
             size: 'xl',
             color: '#ffffff',
             weight: 'bold',
@@ -2327,7 +2327,7 @@ class FortuneCarouselBuilder {
           },
           {
             type: 'text',
-            text: '詳細分析：',
+            text: '月光が映し出すもの：',
             size: 'sm',
             weight: 'bold',
             color: '#333333',
@@ -2347,7 +2347,7 @@ class FortuneCarouselBuilder {
           },
           {
             type: 'text',
-            text: '推奨アクション：',
+            text: '月詠からの導き：',
             size: 'sm',
             weight: 'bold',
             color: '#e91e63',
@@ -2383,7 +2383,7 @@ class FortuneCarouselBuilder {
         contents: [
           {
             type: 'text',
-            text: '🎁 二人だけのラッキーアイテム',
+            text: '🌙 月が授ける特別なお守り',
             size: 'lg',
             color: '#ffffff',
             weight: 'bold',
@@ -2429,7 +2429,7 @@ class FortuneCarouselBuilder {
               },
               {
                 type: 'text',
-                text: `理由：${item.reason}`,
+                text: `月の囁き：${item.reason}`,
                 size: 'xs',
                 color: '#666666',
                 margin: 'sm',
@@ -2459,7 +2459,7 @@ class FortuneCarouselBuilder {
         contents: [
           {
             type: 'text',
-            text: '📋 今週のアクションプラン',
+            text: '✨ 月が示す今週の道しるべ',
             size: 'lg',
             color: '#ffffff',
             weight: 'bold',
@@ -2482,7 +2482,7 @@ class FortuneCarouselBuilder {
             contents: [
               {
                 type: 'text',
-                text: `優先度${index + 1}：${priority.title}`,
+                text: `月の導き${index + 1}：${priority.title}`,
                 size: 'sm',
                 weight: 'bold',
                 color: '#764ba2',
@@ -2516,7 +2516,7 @@ class FortuneCarouselBuilder {
             contents: [
               {
                 type: 'text',
-                text: '実行確率:',
+                text: '成就の光:',
                 size: 'xs',
                 color: '#666666',
                 flex: 0
@@ -2539,7 +2539,7 @@ class FortuneCarouselBuilder {
             contents: [
               {
                 type: 'text',
-                text: '関係性段階:',
+                text: '二人の月の位置:',
                 size: 'xs',
                 color: '#666666',
                 flex: 0
@@ -2577,7 +2577,7 @@ class FortuneCarouselBuilder {
         contents: [
           {
             type: 'text',
-            text: '✨ より深い運命を知りたい方へ ✨',
+            text: '🌙 もっと深く... 月の真実を知りたい方へ...',
             size: 'lg',
             weight: 'bold',
             color: '#FFD700',
@@ -2599,7 +2599,7 @@ class FortuneCarouselBuilder {
         contents: [
           {
             type: 'text',
-            text: '🔮 プレミアム恋愛レポート',
+            text: '🌙 月詠の特別なる占い',
             size: 'xl',
             weight: 'bold',
             color: '#FFD700',
@@ -2608,7 +2608,7 @@ class FortuneCarouselBuilder {
           },
           {
             type: 'text',
-            text: 'AIが分析した超詳細な恋愛診断書をお届け',
+            text: '月の神秘が明かす... 二人だけの詳細なる運命の書...',
             size: 'sm',
             color: '#E8B4B8',
             align: 'center',
@@ -2625,7 +2625,7 @@ class FortuneCarouselBuilder {
             contents: [
               {
                 type: 'text',
-                text: '📊 含まれる内容',
+                text: '🌙 月が明かす真実',
                 size: 'md',
                 weight: 'bold',
                 color: '#FFD700',
@@ -2633,7 +2633,7 @@ class FortuneCarouselBuilder {
               },
               {
                 type: 'text',
-                text: '• 詳細な相性分析（20項目以上）\n• 会話の癖と改善点\n• 月別恋愛運勢カレンダー\n• パーソナライズされた40のアクション\n• 危険な時期とその対策\n• 告白成功の最適タイミング',
+                text: '• 月の満ち欠けが示す相性の真実...\n• 会話に隠された心の声...\n• 月のリズムが示す恋の時...\n• 二人のための特別な導き...\n• 注意すべき月の陰り...\n• 運命が動く特別な瞬間...',
                 size: 'xs',
                 color: '#F8F8FF',
                 wrap: true,
@@ -2651,7 +2651,7 @@ class FortuneCarouselBuilder {
             contents: [
               {
                 type: 'text',
-                text: '特別価格',
+                text: '月の祝福価格',
                 size: 'sm',
                 color: '#E8B4B8',
                 flex: 1
