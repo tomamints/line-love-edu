@@ -291,27 +291,8 @@ ${personalInfo ? `
         cleanedResponse = cleanedResponse.substring(jsonStart, jsonEnd + 1);
       }
       
-      // 文字列が途中で切れている場合の処理
-      // 未終了の文字列を検出して閉じる
-      const stringMatches = cleanedResponse.match(/"[^"]*$/);
-      if (stringMatches) {
-        console.warn('未終了の文字列を検出、修正を試みます');
-        cleanedResponse += '"}';
-      }
-      
-      // 末尾に}が不足している場合の対応
-      const openBraces = (cleanedResponse.match(/{/g) || []).length;
-      const closeBraces = (cleanedResponse.match(/}/g) || []).length;
-      if (openBraces > closeBraces) {
-        cleanedResponse += '}'.repeat(openBraces - closeBraces);
-      }
-      
-      // 末尾に]が不足している場合の対応
-      const openBrackets = (cleanedResponse.match(/\[/g) || []).length;
-      const closeBrackets = (cleanedResponse.match(/\]/g) || []).length;
-      if (openBrackets > closeBrackets) {
-        cleanedResponse += ']'.repeat(openBrackets - closeBrackets);
-      }
+      // より詳細な文字列修復処理
+      cleanedResponse = this.repairJSON(cleanedResponse);
       
       console.log('🔍 JSON解析前のレスポンス長:', cleanedResponse.length, '文字');
       const parsed = JSON.parse(cleanedResponse);
@@ -507,6 +488,64 @@ ${personalInfo ? `
   }
   
   /**
+   * 壊れたJSONを修復する
+   * @param {string} jsonString - 修復するJSON文字列
+   * @returns {string} 修復されたJSON文字列
+   */
+  repairJSON(jsonString) {
+    let repaired = jsonString;
+    
+    // 1. 未終了の文字列を検出して修復
+    // 文字列内のエスケープされていない引用符を処理
+    let inString = false;
+    let lastQuoteIndex = -1;
+    let chars = repaired.split('');
+    
+    for (let i = 0; i < chars.length; i++) {
+      if (chars[i] === '"' && (i === 0 || chars[i-1] !== '\\')) {
+        if (!inString) {
+          inString = true;
+          lastQuoteIndex = i;
+        } else {
+          inString = false;
+          lastQuoteIndex = -1;
+        }
+      }
+    }
+    
+    // 文字列が開いたままの場合、閉じる
+    if (inString && lastQuoteIndex !== -1) {
+      console.warn('未終了の文字列を検出、修正を試みます');
+      repaired += '"';
+    }
+    
+    // 2. カンマの問題を修正
+    // 最後の要素の後の不要なカンマを削除
+    repaired = repaired.replace(/,(\s*[}\]])/g, '$1');
+    
+    // 3. 配列やオブジェクトの要素が不完全な場合の処理
+    // 最後の要素が不完全な場合、デフォルト値で補完
+    if (repaired.match(/:\s*$/)) {
+      repaired += '""'; // 空文字列をデフォルト値として追加
+    }
+    
+    // 4. 括弧のバランスを修正
+    const openBraces = (repaired.match(/{/g) || []).length;
+    const closeBraces = (repaired.match(/}/g) || []).length;
+    if (openBraces > closeBraces) {
+      repaired += '}'.repeat(openBraces - closeBraces);
+    }
+    
+    const openBrackets = (repaired.match(/\[/g) || []).length;
+    const closeBrackets = (repaired.match(/\]/g) || []).length;
+    if (openBrackets > closeBrackets) {
+      repaired += ']'.repeat(openBrackets - closeBrackets);
+    }
+    
+    return repaired;
+  }
+  
+  /**
    * 信頼度を計算
    * @param {object} analysis - 分析結果
    * @returns {number} 信頼度（0-100）
@@ -559,23 +598,6 @@ ${personalInfo ? `
     return `ai_analysis:${userId}:${messageHash}`;
   }
   
-  /**
-   * 分析の信頼度を計算
-   * @param {object} analysis - 分析結果
-   * @returns {number} 信頼度（0-1）
-   */
-  calculateConfidence(analysis) {
-    let confidence = 0.5; // ベース信頼度
-    
-    // データの充実度で加点
-    if (analysis.personality?.length >= 3) confidence += 0.1;
-    if (analysis.interests?.length >= 3) confidence += 0.1;
-    if (analysis.advice?.length >= 2) confidence += 0.1;
-    if (analysis.emotionalPattern?.positive?.length > 0) confidence += 0.1;
-    if (typeof analysis.relationshipStage === 'number') confidence += 0.1;
-    
-    return Math.min(confidence, 1.0);
-  }
   
   /**
    * 使用量を記録
