@@ -92,8 +92,51 @@ AIAnalyzerがOpenAI APIに送信するデータの実例：
     - basedOn: この提案の根拠（会話のどの部分から判断したか）
 
 ### 出力形式：
-必ず有効なJSON形式で、すべての必須項目を含めて返答してください。
-文字列は日本語で、具体的な内容を記載してください。
+以下の形式で、JSONのみを返してください。説明文や追加のテキストは不要です。
+
+```json
+{
+  "personality": ["優しい", "思いやりがある", "少し慎重"],
+  "interests": ["カフェ巡り", "映画鑑賞", "音楽"],
+  "relationshipStage": 6,
+  "advice": [
+    "相手は慎重なタイプなので、焦らずゆっくり関係を深めましょう",
+    "映画の話題で盛り上がることが多いので、新作映画の情報を共有すると良いでしょう"
+  ],
+  "emotionalPattern": {
+    "positive": ["趣味の話", "日常の出来事"],
+    "negative": ["仕事の愚痴"]
+  },
+  "communicationStyle": "絵文字多め・親しみやすい",
+  "optimalTiming": {
+    "timeOfDay": "夜",
+    "frequency": "毎日"
+  },
+  "avoidTopics": ["過去の恋愛", "収入の話"],
+  "responsePatterns": {
+    "quickResponse": ["挨拶", "簡単な質問"],
+    "thoughtfulResponse": ["相談事", "将来の話"],
+    "shortResponse": ["朝の時間帯", "仕事中"],
+    "enthusiasticResponse": ["週末の予定", "趣味の話"]
+  },
+  "suggestedActions": [
+    {
+      "action": "今度の週末、気になってたカフェに行ってみない？",
+      "expectedResponse": "いいね！どこのカフェ？",
+      "timing": "金曜日の夜",
+      "successRate": 85,
+      "basedOn": "カフェの話題での高い反応率"
+    }
+  ]
+}
+```
+
+重要：
+- 上記の例と同じ構造で返してください
+- すべての値は実際の会話内容に基づいて具体的に記載
+- relationshipStageは1-10の整数値
+- successRateは0-100の整数値
+- JSON以外のテキストは含めないでください
 
 📊 推定トークン数: 2000-2500
 ```
