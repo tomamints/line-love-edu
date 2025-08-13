@@ -103,87 +103,69 @@ class AIAnalyzer {
    * @returns {array} プロンプトメッセージ配列
    */
   buildAnalysisPrompt(messages, peaksAnalysis = null, personalInfo = null) {
+    // 会話履歴を3000文字まで拡張
     const conversationText = messages
-      .map(msg => `${msg.isUser ? 'ユーザー' : '相手'}: ${msg.text}`)
-      .join('\\n');
+      .map(msg => `${msg.isUser ? '👤' : '💬'}: ${msg.text}`)
+      .join('\n');
     
-    const systemPrompt = `恋愛心理分析AIです。トーク履歴を分析し、短いJSON形式で返します。`;
+    const systemPrompt = `あなたは恋愛心理の専門家です。LINEの会話履歴から相手の性格、感情パターン、関係性を分析します。
+分析は具体的で実用的なものにし、必ずJSON形式で返答してください。`;
 
-    // 盛り上がり情報を含むコンテキスト
-    let peaksContext = '';
-    if (peaksAnalysis && peaksAnalysis.peaks.length > 0) {
-      const topPeak = peaksAnalysis.peaks[0];
-      peaksContext = `\n\n【会話の盛り上がり分析】
-- 最も盛り上がった話題: ${topPeak.topics.map(t => t.topic).join(', ')}
-- 盛り上がり度: ${topPeak.excitementScore}/100
-- 感情トーン: ${topPeak.emotionalTone.dominant}
-- パターン: ${peaksAnalysis.patterns.commonTopics.map(t => t.topic).join(', ')}
-- 推奨時間帯: ${peaksAnalysis.patterns.bestTimeOfDay || '特定なし'}
+    // より構造化されたプロンプト
+    const userPrompt = `以下のLINE会話を分析して、恋愛アドバイスを生成してください。
 
-この情報を考慮して、より具体的で実用的な分析を行ってください。`;
-    }
-    
-    // プロフィール情報を含むコンテキスト
-    let profileContext = '';
-    if (personalInfo) {
-      const ageDiff = Math.abs((personalInfo.userAge || 0) - (personalInfo.partnerAge || 0));
-      profileContext = `\n\n【プロフィール情報】
-- ユーザー年齢: ${personalInfo.userAge}歳
-- 相手の年齢: ${personalInfo.partnerAge}歳
-- 年齢差: ${ageDiff}歳
-- 相手の性別: ${personalInfo.partnerGender === 'male' ? '男性' : personalInfo.partnerGender === 'female' ? '女性' : 'その他'}
+## 会話履歴（👤=ユーザー、💬=相手）
+${conversationText.substring(0, 3000)}
 
-年齢差や性別を考慮した具体的なアドバイスを含めてください。`;
-    }
+${peaksAnalysis && peaksAnalysis.peaks.length > 0 ? `
+## 会話分析データ
+- 盛り上がった話題: ${peaksAnalysis.peaks[0].topics.map(t => t.topic).join(', ')}
+- 盛り上がり度: ${peaksAnalysis.peaks[0].excitementScore}%
+- 感情: ${peaksAnalysis.peaks[0].emotionalTone.dominant}
+` : ''}
 
-    const userPrompt = `会話:
-${conversationText.substring(0, 1000)}${peaksContext}${profileContext}
+${personalInfo ? `
+## プロフィール
+- ユーザー: ${personalInfo.userAge}歳
+- 相手: ${personalInfo.partnerAge}歳 ${personalInfo.partnerGender === 'male' ? '男性' : '女性'}
+` : ''}
 
-短いJSON形式で分析:
+## 分析してほしい項目（JSON形式で回答）
+以下の形式で、具体的な分析結果を返してください：
+
 {
-  "personality": ["性格1", "性格2", "性格3"],
-  "interests": ["興味1", "興味2", "興味3"],
-  "relationshipStage": 5,
-  "advice": ["アドバイス1", "アドバイス2"],
+  "personality": ["相手の性格特徴を3つ"],
+  "interests": ["相手の興味・関心事を3つ"],
+  "relationshipStage": "1-10の数値（1=知り合い、5=友達、10=恋人）",
+  "advice": ["具体的な恋愛アドバイスを2つ"],
   "emotionalPattern": {
-    "positive": ["ポジティブ1", "ポジティブ2"],
-    "negative": ["ネガティブ1"]
+    "positive": ["ポジティブな感情が出る話題2つ"],
+    "negative": ["避けた方がいい話題1つ"]
   },
-  "communicationStyle": "スタイル",
+  "communicationStyle": "相手のコミュニケーションスタイル",
   "optimalTiming": {
-    "timeOfDay": "夜",
-    "frequency": "頻度"
+    "timeOfDay": "連絡に最適な時間帯",
+    "frequency": "理想的な連絡頻度"
   },
-  "avoidTopics": ["避ける話題"],
+  "avoidTopics": ["避けるべき話題"],
   "responsePatterns": {
-    "quickResponse": ["パターン1"],
-    "thoughtfulResponse": ["パターン2"],
-    "shortResponse": ["パターン3"],
-    "enthusiasticResponse": ["パターン4"]
+    "quickResponse": ["すぐ返信が来るパターン"],
+    "thoughtfulResponse": ["じっくり返信するパターン"],
+    "shortResponse": ["短い返信のパターン"],
+    "enthusiasticResponse": ["テンション高い返信のパターン"]
   },
-  "suggestedActions": [{
-    "action": "行動",
-    "expectedResponse": "反応",
-    "timing": "時間"
-      "successRate": 85,
-      "basedOn": "朝の挨拶への反応パターン"
-    },
+  "suggestedActions": [
     {
-      "action": "最近見た映画で面白いのある？",
-      "expectedResponse": "〇〇って映画見たよ！すごく良かった！",
-      "timing": "夜20-22時",
-      "successRate": 90,
-      "basedOn": "映画の話題での盛り上がり"
-    },
-    {
-      "action": "今度一緒にカフェでも行かない？",
-      "expectedResponse": "いいね！来週末とかどう？",
-      "timing": "金曜日の夜",
-      "successRate": 75,
-      "basedOn": "デートの提案への前向きな反応"
+      "action": "今すぐ送るべきメッセージ例",
+      "expectedResponse": "予想される相手の反応",
+      "timing": "送るタイミング",
+      "successRate": "成功確率（%）",
+      "basedOn": "この提案の根拠"
     }
   ]
-}`;
+}
+
+重要：実際の会話内容に基づいて、具体的で実用的な分析を行ってください。`;
 
     return [
       { role: 'system', content: systemPrompt },
