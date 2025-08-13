@@ -227,11 +227,26 @@ ${conversationText.substring(0, 1000)}${peaksContext}${profileContext}
       // JSONの不完全な応答を修正
       let cleanedResponse = response.trim();
       
+      // 文字列が途中で切れている場合の処理
+      // 未終了の文字列を検出して閉じる
+      const stringMatches = cleanedResponse.match(/"[^"]*$/);
+      if (stringMatches) {
+        console.warn('未終了の文字列を検出、修正を試みます');
+        cleanedResponse += '"}';
+      }
+      
       // 末尾に}が不足している場合の対応
       const openBraces = (cleanedResponse.match(/{/g) || []).length;
       const closeBraces = (cleanedResponse.match(/}/g) || []).length;
       if (openBraces > closeBraces) {
         cleanedResponse += '}'.repeat(openBraces - closeBraces);
+      }
+      
+      // 末尾に]が不足している場合の対応
+      const openBrackets = (cleanedResponse.match(/\[/g) || []).length;
+      const closeBrackets = (cleanedResponse.match(/\]/g) || []).length;
+      if (openBrackets > closeBrackets) {
+        cleanedResponse += ']'.repeat(openBrackets - closeBrackets);
       }
       
       const parsed = JSON.parse(cleanedResponse);
