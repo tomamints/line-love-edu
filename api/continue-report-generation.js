@@ -1002,20 +1002,27 @@ module.exports = async (req, res) => {
               console.log('📄 Phase 2: Generating PDF...');
               
               try {
-                const PDFGenerator = require('../core/premium/pdf-generator');
-                const pdfGenerator = new PDFGenerator();
-                
-                // GitHub Actionsの場合は10秒タイムアウト
-                if (isFromGitHubActions) {
-                  const pdfGenerationPromise = pdfGenerator.generatePDF(progress.data.reportData);
-                  const timeoutPromise = new Promise((_, reject) => {
-                    setTimeout(() => reject(new Error('PDF generation timeout')), 10000);
-                  });
+                // V2レポートの場合、reportDataに既にpdfBufferが含まれている
+                if (progress.data.reportData?.pdfBuffer) {
+                  console.log('📄 Using PDF from V2 report generator');
+                  progress.data.pdfBuffer = progress.data.reportData.pdfBuffer.toString('base64');
+                  console.log('✅ PDF buffer extracted from V2 report');
+                } else {
+                  // V1レポートの場合、既存のPDFジェネレーターを使用
+                  const PDFGenerator = require('../core/premium/pdf-generator');
+                  const pdfGenerator = new PDFGenerator();
                   
-                  try {
-                    const generatedPdfBuffer = await Promise.race([pdfGenerationPromise, timeoutPromise]);
-                    progress.data.pdfBuffer = generatedPdfBuffer.toString('base64');
-                    console.log('✅ PDF generated, size:', Math.round(generatedPdfBuffer.length / 1024), 'KB');
+                  // GitHub Actionsの場合は10秒タイムアウト
+                  if (isFromGitHubActions) {
+                    const pdfGenerationPromise = pdfGenerator.generatePDF(progress.data.reportData);
+                    const timeoutPromise = new Promise((_, reject) => {
+                      setTimeout(() => reject(new Error('PDF generation timeout')), 10000);
+                    });
+                    
+                    try {
+                      const generatedPdfBuffer = await Promise.race([pdfGenerationPromise, timeoutPromise]);
+                      progress.data.pdfBuffer = generatedPdfBuffer.toString('base64');
+                      console.log('✅ PDF generated, size:', Math.round(generatedPdfBuffer.length / 1024), 'KB');
                   } catch (pdfTimeoutErr) {
                     console.log('⏰ PDF generation timed out, will retry');
                     // 進捗を保存して再実行
@@ -1050,11 +1057,12 @@ module.exports = async (req, res) => {
                       totalSteps: progress.totalSteps
                     });
                   }
-                } else {
-                  // 通常の処理
-                  const generatedPdfBuffer = await pdfGenerator.generatePDF(progress.data.reportData);
-                  progress.data.pdfBuffer = generatedPdfBuffer.toString('base64');
-                  console.log('✅ PDF generated, size:', Math.round(generatedPdfBuffer.length / 1024), 'KB');
+                  } else {
+                    // 通常の処理
+                    const generatedPdfBuffer = await pdfGenerator.generatePDF(progress.data.reportData);
+                    progress.data.pdfBuffer = generatedPdfBuffer.toString('base64');
+                    console.log('✅ PDF generated, size:', Math.round(generatedPdfBuffer.length / 1024), 'KB');
+                  }
                 }
                 
                 // 進捗を保存
