@@ -28,14 +28,20 @@ AIAnalyzerがOpenAI APIに送信するデータの実例：
 💬: いつでも話聞くよ〜
 ...（最大3000文字の会話履歴）
 
-## 会話分析データ
-- 盛り上がった話題: 映画, カフェ
-- 盛り上がり度: 85%
-- 感情: positive
+## 会話分析データ（ConversationPeaksAnalyzerによる自動分析）
+- 盛り上がった話題: 映画, カフェ  ← 会話から自動抽出された話題
+- 盛り上がり度: 85%  ← メッセージ頻度、文字数、絵文字使用量から計算
+- 感情: positive  ← 感情分析（positive/negative/neutral）
 
-## プロフィール
-- ユーザー: 27歳
-- 相手: 27歳 女性
+※ このデータは `/core/ai-analyzer/conversation-peaks.js` の `ConversationPeaksAnalyzer` クラスが
+  会話履歴を分析して自動生成します。存在しない場合はこのセクション自体が省略されます。
+
+## プロフィール（データベースから取得）
+- ユーザー: 27歳  ← ProfilesDBから取得
+- 相手: 27歳 女性  ← ユーザーが設定した情報
+
+※ このデータは `/core/database/profiles-db.js` からユーザーIDをキーに取得されます。
+  存在しない場合はこのセクション自体が省略されます。
 
 ## タスク：会話分析と恋愛アドバイスの生成
 
@@ -90,6 +96,26 @@ AIAnalyzerがOpenAI APIに送信するデータの実例：
 文字列は日本語で、具体的な内容を記載してください。
 
 📊 推定トークン数: 2000-2500
+```
+
+## データ取得の流れ
+
+### データソースと処理フロー
+```
+1. メッセージ履歴
+   └→ messagesDB.getMessages(userId)
+      └→ 最新200件を取得、各200文字に制限
+
+2. 会話分析データ (条件付き)
+   └→ ConversationPeaksAnalyzer.analyzeConversationPeaks(messages)
+      ├→ 会話セグメント分割
+      ├→ 盛り上がり度計算（メッセージ頻度、文字数、絵文字）
+      ├→ トピック抽出（キーワード分析）
+      └→ 感情分析（positive/negative/neutral）
+
+3. プロフィール情報 (条件付き)
+   └→ ProfilesDB.getProfile(userId)
+      └→ ユーザーが設定した年齢、性別情報
 ```
 
 ## データ構造の詳細
