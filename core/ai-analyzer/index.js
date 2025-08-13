@@ -274,8 +274,22 @@ ${personalInfo ? `
         return this.getDefaultAnalysis();
       }
       
-      // JSONの不完全な応答を修正
       let cleanedResponse = response.trim();
+      
+      // ```json と ``` を削除（ChatGPTがコードブロックで返す場合の対処）
+      if (cleanedResponse.includes('```json')) {
+        cleanedResponse = cleanedResponse.replace(/```json\s*/g, '');
+        cleanedResponse = cleanedResponse.replace(/```\s*/g, '');
+      }
+      
+      // JSONの前後に余計なテキストがある場合の対処
+      // 最初の { から最後の } までを抽出
+      const jsonStart = cleanedResponse.indexOf('{');
+      const jsonEnd = cleanedResponse.lastIndexOf('}');
+      
+      if (jsonStart !== -1 && jsonEnd !== -1 && jsonEnd > jsonStart) {
+        cleanedResponse = cleanedResponse.substring(jsonStart, jsonEnd + 1);
+      }
       
       // 文字列が途中で切れている場合の処理
       // 未終了の文字列を検出して閉じる
@@ -299,6 +313,7 @@ ${personalInfo ? `
         cleanedResponse += ']'.repeat(openBrackets - closeBrackets);
       }
       
+      console.log('🔍 JSON解析前のレスポンス長:', cleanedResponse.length, '文字');
       const parsed = JSON.parse(cleanedResponse);
       
       return {
