@@ -789,7 +789,7 @@ class FortuneEngine {
       }],
       
       luckyItems: {
-        color: { name: 'ラベンダー', meaning: '心の平和', effect: '穏やかな気持ちになる' },
+        color: { name: '神月の紫', meaning: '神秘的な月の光', effect: '穏やかな気持ちになる' },
         emoji: { emoji: '🌙', meaning: '神秘', effect: '直感力が高まる' },
         word: { word: 'ありがとう', meaning: '感謝', effect: '心が温かくなる' },
         number: { number: 7, meaning: '完璧', effect: '調和がもたらされる' }
