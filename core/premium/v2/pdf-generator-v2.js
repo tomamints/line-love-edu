@@ -132,8 +132,8 @@ class PDFGeneratorV2 {
 <body>
   ${this.generateCoverPage(reportContent.page1)}
   ${this.generateIntroPage(reportContent.page2)}
-  ${this.generateDailyActivityPage(reportContent.page3)}
-  ${this.generateHourlyActivityPage(reportContent.page4)}
+  ${this.generateDailyActivityPage({ ...reportContent.page3, rawData: { statistics, scores, aiInsights } })}
+  ${this.generateHourlyActivityPage({ ...reportContent.page4, rawData: { statistics, scores, aiInsights } })}
   ${this.generateQualityPage(reportContent.page5)}
   ${this.generateOverallScorePage(reportContent.page67)}
   ${this.generateFivePillarsPage(reportContent.page8)}
@@ -369,22 +369,38 @@ class PDFGeneratorV2 {
    * P.3: 日別活動
    */
   generateDailyActivityPage(data) {
+    // 日別データからグラフ用データを生成
+    const { statistics } = data.rawData || {};
+    const dailyData = statistics?.dailyActivity || {};
+    
+    // 曜日別の平均メッセージ数を計算
+    const weekDays = ['日', '月', '火', '水', '木', '金', '土'];
+    const weekDayValues = weekDays.map(() => 0);
+    const weekDayCounts = weekDays.map(() => 0);
+    
+    Object.entries(dailyData).forEach(([date, count]) => {
+      const dayOfWeek = new Date(date).getDay();
+      weekDayValues[dayOfWeek] += count;
+      weekDayCounts[dayOfWeek]++;
+    });
+    
+    const avgValues = weekDayValues.map((val, i) => 
+      weekDayCounts[i] > 0 ? Math.round(val / weekDayCounts[i]) : 0
+    );
+    const maxValue = Math.max(...avgValues) || 10;
+    
     return `
     <div class="page">
       <h1 class="page-title">${data.title}</h1>
       <div class="content-section">
         <div class="chart-container">
-          <canvas id="dailyChart"></canvas>
+          ${this.generateBarChart(weekDays, avgValues, maxValue, '曜日別メッセージ数')}
         </div>
         <div class="poetic-text">
           <p>最も言葉が輝いた日：${data.peakDate}</p>
           <p>${data.peakComment}</p>
         </div>
       </div>
-      <script>
-        // グラフ描画用のプレースホルダー
-        // 実際の実装では Chart.js を使用
-      </script>
     </div>`;
   }
   
@@ -392,12 +408,21 @@ class PDFGeneratorV2 {
    * P.4: 時間帯別活動
    */
   generateHourlyActivityPage(data) {
+    // 時間帯別データからグラフ用データを生成
+    const { statistics } = data.rawData || {};
+    const hourlyData = statistics?.hourlyActivity || {};
+    
+    // 24時間のデータを生成
+    const hours = Array.from({length: 24}, (_, i) => `${i}時`);
+    const values = Array.from({length: 24}, (_, i) => hourlyData[i] || 0);
+    const maxValue = Math.max(...values) || 10;
+    
     return `
     <div class="page">
       <h1 class="page-title">${data.title}</h1>
       <div class="content-section">
         <div class="chart-container">
-          <canvas id="hourlyChart"></canvas>
+          ${this.generateLineChart(hours, values, maxValue, '時間帯別メッセージ数')}
         </div>
         <div class="poetic-text">
           <p>最も活発な時間：${data.peakHour}時</p>
@@ -464,13 +489,15 @@ class PDFGeneratorV2 {
    */
   generateFivePillarsPage(data) {
     const pillars = Object.values(data.fivePillars);
+    const labels = pillars.map(p => p.name);
+    const values = pillars.map(p => p.score);
     
     return `
     <div class="page">
       <h1 class="page-title">${data.title}</h1>
       <div class="content-section">
-        <div class="chart-container">
-          <canvas id="radarChart"></canvas>
+        <div class="chart-container" style="text-align: center;">
+          ${this.generateRadarChart(labels, values)}
         </div>
         <div style="margin-top: 40px;">
           ${pillars.map(pillar => `
@@ -568,6 +595,209 @@ class PDFGeneratorV2 {
       star: '⭐'
     };
     return icons[iconName] || '🌙';
+  }
+  
+  /**
+   * 棒グラフをSVGで生成
+   */
+  generateBarChart(labels, values, maxValue, title) {
+    const width = 500;
+    const height = 300;
+    const barWidth = width / labels.length * 0.7;
+    const barGap = width / labels.length * 0.3;
+    
+    return `
+    <svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" style="width: 100%; height: auto;">
+      <!-- グラフ背景 -->
+      <rect x="0" y="0" width="${width}" height="${height}" fill="#f9f9f9" rx="10"/>
+      
+      <!-- グリッド線 -->
+      ${[0, 25, 50, 75, 100].map(percent => {
+        const y = height - (height * percent / 100) - 30;
+        return `
+          <line x1="40" y1="${y}" x2="${width - 20}" y2="${y}" stroke="#e0e0e0" stroke-dasharray="5,5"/>
+          <text x="20" y="${y + 5}" font-size="10" fill="#888">${Math.round(maxValue * percent / 100)}</text>
+        `;
+      }).join('')}
+      
+      <!-- 棒グラフ -->
+      ${labels.map((label, i) => {
+        const x = 50 + i * (barWidth + barGap);
+        const barHeight = (values[i] / maxValue) * (height - 60);
+        const y = height - barHeight - 30;
+        
+        return `
+          <rect x="${x}" y="${y}" width="${barWidth}" height="${barHeight}" 
+                fill="url(#gradient${i})" rx="5" ry="5"/>
+          <text x="${x + barWidth/2}" y="${height - 10}" 
+                text-anchor="middle" font-size="12" fill="#666">${label}</text>
+          <text x="${x + barWidth/2}" y="${y - 5}" 
+                text-anchor="middle" font-size="11" fill="#764ba2" font-weight="bold">${values[i]}</text>
+          
+          <!-- グラデーション定義 -->
+          <defs>
+            <linearGradient id="gradient${i}" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+              <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+            </linearGradient>
+          </defs>
+        `;
+      }).join('')}
+      
+      <!-- タイトル -->
+      <text x="${width/2}" y="20" text-anchor="middle" font-size="14" fill="#333" font-weight="bold">${title}</text>
+    </svg>`;
+  }
+  
+  /**
+   * 折れ線グラフをSVGで生成
+   */
+  generateLineChart(labels, values, maxValue, title) {
+    const width = 500;
+    const height = 300;
+    const pointGap = (width - 80) / (labels.length - 1);
+    
+    // ポイント座標を計算
+    const points = values.map((value, i) => ({
+      x: 50 + i * pointGap,
+      y: height - 30 - ((value / maxValue) * (height - 60))
+    }));
+    
+    // パスを生成
+    const pathData = points.map((p, i) => 
+      `${i === 0 ? 'M' : 'L'} ${p.x},${p.y}`
+    ).join(' ');
+    
+    // エリアパスを生成
+    const areaPath = pathData + ` L ${points[points.length - 1].x},${height - 30} L ${points[0].x},${height - 30} Z`;
+    
+    return `
+    <svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" style="width: 100%; height: auto;">
+      <!-- グラフ背景 -->
+      <rect x="0" y="0" width="${width}" height="${height}" fill="#f9f9f9" rx="10"/>
+      
+      <!-- グリッド線 -->
+      ${[0, 25, 50, 75, 100].map(percent => {
+        const y = height - (height * percent / 100) - 30;
+        return `
+          <line x1="40" y1="${y}" x2="${width - 20}" y2="${y}" stroke="#e0e0e0" stroke-dasharray="5,5"/>
+          <text x="20" y="${y + 5}" font-size="10" fill="#888">${Math.round(maxValue * percent / 100)}</text>
+        `;
+      }).join('')}
+      
+      <!-- グラデーション定義 -->
+      <defs>
+        <linearGradient id="areaGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" style="stop-color:#667eea;stop-opacity:0.3" />
+          <stop offset="100%" style="stop-color:#764ba2;stop-opacity:0.1" />
+        </linearGradient>
+      </defs>
+      
+      <!-- エリア -->
+      <path d="${areaPath}" fill="url(#areaGradient)"/>
+      
+      <!-- 折れ線 -->
+      <path d="${pathData}" fill="none" stroke="url(#lineGradient)" stroke-width="3"/>
+      
+      <!-- グラデーション定義（線用） -->
+      <defs>
+        <linearGradient id="lineGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+          <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+        </linearGradient>
+      </defs>
+      
+      <!-- データポイント -->
+      ${points.map((p, i) => `
+        <circle cx="${p.x}" cy="${p.y}" r="4" fill="#764ba2"/>
+        <circle cx="${p.x}" cy="${p.y}" r="2" fill="white"/>
+        ${i % 3 === 0 ? `<text x="${p.x}" y="${height - 10}" text-anchor="middle" font-size="10" fill="#666">${labels[i]}</text>` : ''}
+      `).join('')}
+      
+      <!-- タイトル -->
+      <text x="${width/2}" y="20" text-anchor="middle" font-size="14" fill="#333" font-weight="bold">${title}</text>
+    </svg>`;
+  }
+  
+  /**
+   * レーダーチャートをSVGで生成
+   */
+  generateRadarChart(labels, values, maxValue = 100) {
+    const width = 400;
+    const height = 400;
+    const centerX = width / 2;
+    const centerY = height / 2;
+    const radius = 150;
+    const angleStep = (Math.PI * 2) / labels.length;
+    
+    // ポイント座標を計算
+    const points = values.map((value, i) => {
+      const angle = angleStep * i - Math.PI / 2;
+      const r = (value / maxValue) * radius;
+      return {
+        x: centerX + Math.cos(angle) * r,
+        y: centerY + Math.sin(angle) * r,
+        labelX: centerX + Math.cos(angle) * (radius + 30),
+        labelY: centerY + Math.sin(angle) * (radius + 30)
+      };
+    });
+    
+    // ポリゴンパスを生成
+    const polygonPath = points.map(p => `${p.x},${p.y}`).join(' ');
+    
+    return `
+    <svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" style="width: 100%; height: auto;">
+      <!-- 背景円 -->
+      ${[20, 40, 60, 80, 100].map(percent => {
+        const r = radius * percent / 100;
+        return `
+          <circle cx="${centerX}" cy="${centerY}" r="${r}" 
+                  fill="none" stroke="#e0e0e0" stroke-dasharray="5,5"/>
+          <text x="${centerX + r + 5}" y="${centerY + 5}" 
+                font-size="10" fill="#888">${percent}</text>
+        `;
+      }).join('')}
+      
+      <!-- 軸線 -->
+      ${labels.map((_, i) => {
+        const angle = angleStep * i - Math.PI / 2;
+        const x = centerX + Math.cos(angle) * radius;
+        const y = centerY + Math.sin(angle) * radius;
+        return `<line x1="${centerX}" y1="${centerY}" x2="${x}" y2="${y}" stroke="#e0e0e0"/>`;
+      }).join('')}
+      
+      <!-- データポリゴン -->
+      <polygon points="${polygonPath}" 
+               fill="url(#radarGradient)" 
+               stroke="#764ba2" 
+               stroke-width="2"/>
+      
+      <!-- グラデーション定義 -->
+      <defs>
+        <radialGradient id="radarGradient">
+          <stop offset="0%" style="stop-color:#764ba2;stop-opacity:0.1" />
+          <stop offset="100%" style="stop-color:#667eea;stop-opacity:0.3" />
+        </radialGradient>
+      </defs>
+      
+      <!-- データポイント -->
+      ${points.map(p => `
+        <circle cx="${p.x}" cy="${p.y}" r="5" fill="#764ba2"/>
+        <circle cx="${p.x}" cy="${p.y}" r="3" fill="white"/>
+      `).join('')}
+      
+      <!-- ラベル -->
+      ${labels.map((label, i) => {
+        const p = points[i];
+        return `
+          <text x="${p.labelX}" y="${p.labelY}" 
+                text-anchor="middle" 
+                font-size="12" 
+                fill="#333" 
+                font-weight="bold">${label}</text>
+        `;
+      }).join('')}
+    </svg>`;
   }
 }
 
