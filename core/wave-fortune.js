@@ -32,15 +32,15 @@ class WaveFortuneEngine {
   // オーラカラー検出（詳細な分析ロジック）
   detectAuraColor(messages) {
     const colors = {
-      red: { name: '情熱の赤', meaning: '強い愛情と欲求', score: 0, keywords: [] },
-      pink: { name: 'ローズピンク', meaning: '無条件の愛と優しさ', score: 0, keywords: [] },
-      orange: { name: '創造のオレンジ', meaning: '楽しさと冒険心', score: 0, keywords: [] },
-      yellow: { name: '太陽の黄', meaning: '知性と明るさ', score: 0, keywords: [] },
-      green: { name: '調和の緑', meaning: '癒しと成長', score: 0, keywords: [] },
-      blue: { name: '真実の青', meaning: '誠実さと深い理解', score: 0, keywords: [] },
-      purple: { name: '霊性の紫', meaning: '直感と精神性', score: 0, keywords: [] },
-      white: { name: '純粋な白', meaning: '清らかさと新しい始まり', score: 0, keywords: [] },
-      gold: { name: '黄金の光', meaning: '高次の愛と悟り', score: 0, keywords: [] }
+      red: { name: '恋月の紅', meaning: '恋する心に宿る月の色', score: 0, keywords: [] },
+      pink: { name: '恋月の紅', meaning: '優しい愛に包まれた月の色', score: 0, keywords: [] },
+      orange: { name: '暖月の橙', meaning: '温かな月の光に包まれた色', score: 0, keywords: [] },
+      yellow: { name: '希月の金', meaning: '希望に満ちた月の輝き', score: 0, keywords: [] },
+      green: { name: '癒月の碧', meaning: '心を癒す月の光', score: 0, keywords: [] },
+      blue: { name: '静月の藍', meaning: '静かに見守る月の深い色', score: 0, keywords: [] },
+      purple: { name: '神月の紫', meaning: '神秘的な月の光が宿る色', score: 0, keywords: [] },
+      white: { name: '煌月の銀', meaning: '清らかな月光の煌めき', score: 0, keywords: [] },
+      gold: { name: '輝月の光', meaning: '満月の輝きそのもの', score: 0, keywords: [] }
     };
 
     // 詳細なキーワード定義と重み付け

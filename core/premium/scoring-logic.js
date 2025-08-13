@@ -2014,14 +2014,14 @@ class ScoringLogic {
   // ラッキーアイテム生成用ヘルパー
   findLuckyColor(analysis) {
     const colorEmojis = {
-      '❤️': { color: 'ローズピンク', score: 0 },
-      '💙': { color: 'スカイブルー', score: 0 },
-      '💚': { color: 'フォレストグリーン', score: 0 },
-      '💛': { color: 'サンシャインイエロー', score: 0 },
-      '💜': { color: 'ミスティックパープル', score: 0 },
-      '🧡': { color: 'サンセットオレンジ', score: 0 },
-      '✨': { color: 'ゴールド', score: 0 },
-      '🌟': { color: 'シルバー', score: 0 }
+      '❤️': { color: '恋月の紅', score: 0 },
+      '💙': { color: '静月の藍', score: 0 },
+      '💚': { color: '癒月の碧', score: 0 },
+      '💛': { color: '希月の金', score: 0 },
+      '💜': { color: '神月の紫', score: 0 },
+      '🧡': { color: '暖月の橙', score: 0 },
+      '✨': { color: '輝月の光', score: 0 },
+      '🌟': { color: '煌月の銀', score: 0 }
     };
     
     // ポジティブな文脈での使用をカウント
