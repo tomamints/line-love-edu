@@ -644,7 +644,7 @@ async function handleFollowEvent(event) {
                 },
                 {
                   type: 'text',
-                  text: 'おつきさま診断',
+                  text: '月詠の占い',
                   size: 'xl',
                   color: '#ffffff',
                   align: 'center',
@@ -652,7 +652,7 @@ async function handleFollowEvent(event) {
                 },
                 {
                   type: 'text',
-                  text: '生年月日から導く運命の相性',
+                  text: '〜月詠が導く運命の相性〜',
                   size: 'sm',
                   color: '#ffffff',
                   align: 'center',
@@ -672,14 +672,26 @@ async function handleFollowEvent(event) {
           contents: [
             {
               type: 'text',
-              text: 'あなたと大切な人の相性を',
+              text: '私は月詠（つくよみ）と申します…',
               size: 'md',
               wrap: true,
               align: 'center'
             },
             {
+              type: 'separator',
+              margin: 'md'
+            },
+            {
               type: 'text',
-              text: '月の満ち欠けから占います',
+              text: 'あなたと大切な方の心に映る',
+              size: 'md',
+              wrap: true,
+              align: 'center',
+              margin: 'md'
+            },
+            {
+              type: 'text',
+              text: '月の姿を視させていただきましょう',
               size: 'md',
               wrap: true,
               align: 'center',
@@ -697,25 +709,25 @@ async function handleFollowEvent(event) {
               contents: [
                 {
                   type: 'text',
-                  text: '📝 かんたん3ステップ',
+                  text: '✨ 月が告げる三つの導き',
                   weight: 'bold',
                   size: 'sm',
                   color: '#764ba2'
                 },
                 {
                   type: 'text',
-                  text: '1. あなたの生年月日を入力',
+                  text: '一、あなたの生年月日をお聞かせください',
                   size: 'sm',
                   margin: 'sm'
                 },
                 {
                   type: 'text',
-                  text: '2. お相手の生年月日を入力',
+                  text: '二、お相手の生年月日をお聞かせください',
                   size: 'sm'
                 },
                 {
                   type: 'text',
-                  text: '3. 相性診断結果をチェック！',
+                  text: '三、ふたりの月が織りなす物語をお伝えいたします',
                   size: 'sm'
                 }
               ]
@@ -733,22 +745,11 @@ async function handleFollowEvent(event) {
               height: 'md',
               action: {
                 type: 'uri',
-                label: '🔮 情報を入力する',
+                label: '🌙 診断を始める',
                 uri: formUrl
               },
               color: '#764ba2'
             },
-            {
-              type: 'button',
-              style: 'primary',
-              height: 'md',
-              action: {
-                type: 'message',
-                label: '診断結果を見る',
-                text: '診断結果'
-              },
-              color: '#667eea'
-            }
           ]
         }
       }
@@ -765,7 +766,7 @@ async function handleFollowEvent(event) {
       logger.log('📤 フォールバックメッセージ送信開始...');
       const fallbackResult = await client.replyMessage(event.replyToken, {
         type: 'text', 
-        text: '🌙 おつきさま診断へようこそ！\n\n生年月日から二人の相性を診断します✨\n\n「診断を始める」と送信してください'
+        text: '🌙 私は月詠（つくよみ）と申します…\n\nあなたと大切な方の心に映る月の姿を視させていただきましょう\n\n「診断を始める」と… 囁いてください…'
       });
       logger.log('✅ フォールバックメッセージ送信成功:', fallbackResult);
     } catch (fallbackError) {
