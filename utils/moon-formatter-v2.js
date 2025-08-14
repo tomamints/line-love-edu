@@ -521,11 +521,18 @@ function formatMoonReportV2(moonReport) {
           contents: [
             {
               type: 'text',
-              text: 'さらに詳しく知る',
+              text: '🔮',
+              size: '60px',
+              align: 'center'
+            },
+            {
+              type: 'text',
+              text: 'もっと深く知りたい方へ',
               size: 'lg',
               color: '#ffffff',
               weight: 'bold',
-              align: 'center'
+              align: 'center',
+              margin: 'md'
             }
           ],
           backgroundColor: '#764ba2',
@@ -538,27 +545,80 @@ function formatMoonReportV2(moonReport) {
           contents: [
             {
               type: 'text',
-              text: 'おつきさま診断の結果について\nより詳しい解説をご覧いただけます',
-              wrap: true,
+              text: '【トーク履歴から分かること】',
+              weight: 'bold',
               size: 'md',
-              align: 'center',
-              color: '#555555',
-              margin: 'lg'
+              color: '#764ba2',
+              align: 'center'
+            },
+            {
+              type: 'box',
+              layout: 'vertical',
+              margin: 'lg',
+              spacing: 'sm',
+              contents: [
+                {
+                  type: 'text',
+                  text: '会話パターンから見る本音',
+                  size: 'sm',
+                  color: '#555555',
+                  align: 'center'
+                },
+                {
+                  type: 'text',
+                  text: '相手の隠れた気持ち',
+                  size: 'sm',
+                  color: '#555555',
+                  align: 'center'
+                },
+                {
+                  type: 'text',
+                  text: '二人の相性度を数値化',
+                  size: 'sm',
+                  color: '#555555',
+                  align: 'center'
+                },
+                {
+                  type: 'text',
+                  text: '関係改善の具体的アドバイス',
+                  size: 'sm',
+                  color: '#555555',
+                  align: 'center'
+                }
+              ]
             },
             {
               type: 'separator',
               margin: 'xl'
             },
             {
+              type: 'text',
+              text: '実際のLINEトークから',
+              size: 'md',
+              weight: 'bold',
+              color: '#764ba2',
+              align: 'center',
+              margin: 'lg'
+            },
+            {
+              type: 'text',
+              text: '二人だけの特別な分析レポート',
+              size: 'sm',
+              color: '#888888',
+              align: 'center',
+              margin: 'sm'
+            },
+            {
               type: 'button',
               action: {
                 type: 'postback',
-                label: '詳しく',
+                label: '詳しい分析を見る',
                 data: 'action=want_more_analysis'
               },
               style: 'primary',
               color: '#764ba2',
-              margin: 'xl'
+              margin: 'xl',
+              height: 'md'
             }
           ],
           paddingAll: '20px'
