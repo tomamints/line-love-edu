@@ -231,14 +231,16 @@ function getMoonTypeFromAge(moonAge) {
 
 // 診断実行
 function diagnose() {
-    const birthdateInput = document.getElementById('birthdate');
-    const birthdate = birthdateInput.value;
+    const year = document.getElementById('year').value;
+    const month = document.getElementById('month').value;
+    const day = document.getElementById('day').value;
     
-    if (!birthdate) {
-        alert('誕生日を入力してください');
+    if (!year || !month || !day) {
+        alert('誕生日を選択してください');
         return;
     }
     
+    const birthdate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
     const date = new Date(birthdate + ' 00:00:00');
     const moonAge = calculateMoonAge(date);
     const moonType = getMoonTypeFromAge(moonAge);
@@ -353,20 +355,96 @@ function retry() {
     inputSection.style.display = 'block';
     resultSection.style.display = 'none';
     
-    document.getElementById('birthdate').value = '';
+    document.getElementById('year').value = '';
+    document.getElementById('month').value = '';
+    document.getElementById('day').value = '';
+}
+
+// セレクトボックスにオプションを追加
+function populateDateSelectors() {
+    const yearSelect = document.getElementById('year');
+    const monthSelect = document.getElementById('month');
+    const daySelect = document.getElementById('day');
+    
+    // 年のオプション（1900年から今年まで）
+    const currentYear = new Date().getFullYear();
+    for (let year = currentYear; year >= 1900; year--) {
+        const option = document.createElement('option');
+        option.value = year;
+        option.textContent = year;
+        yearSelect.appendChild(option);
+    }
+    
+    // 月のオプション
+    for (let month = 1; month <= 12; month++) {
+        const option = document.createElement('option');
+        option.value = month;
+        option.textContent = month;
+        monthSelect.appendChild(option);
+    }
+    
+    // 日のオプション（最初は31日まで）
+    updateDays();
+    
+    // 月や年が変更されたら日を更新
+    yearSelect.addEventListener('change', updateDays);
+    monthSelect.addEventListener('change', updateDays);
+}
+
+// 日のオプションを更新
+function updateDays() {
+    const yearSelect = document.getElementById('year');
+    const monthSelect = document.getElementById('month');
+    const daySelect = document.getElementById('day');
+    
+    const year = parseInt(yearSelect.value);
+    const month = parseInt(monthSelect.value);
+    
+    // 選択された月の最大日数を取得
+    let maxDays = 31;
+    if (month) {
+        if (month === 2) {
+            // うるう年の判定
+            if (year && ((year % 4 === 0 && year % 100 !== 0) || year % 400 === 0)) {
+                maxDays = 29;
+            } else {
+                maxDays = 28;
+            }
+        } else if ([4, 6, 9, 11].includes(month)) {
+            maxDays = 30;
+        }
+    }
+    
+    // 現在の選択値を保存
+    const currentDay = daySelect.value;
+    
+    // 日のオプションをクリアして再生成
+    daySelect.innerHTML = '<option value="">日</option>';
+    for (let day = 1; day <= maxDays; day++) {
+        const option = document.createElement('option');
+        option.value = day;
+        option.textContent = day;
+        daySelect.appendChild(option);
+    }
+    
+    // 可能であれば以前の選択値を復元
+    if (currentDay && currentDay <= maxDays) {
+        daySelect.value = currentDay;
+    }
 }
 
 // ページ読み込み時の処理
 document.addEventListener('DOMContentLoaded', function() {
-    // 今日の日付をデフォルトに設定
-    const today = new Date();
-    const maxDate = today.toISOString().split('T')[0];
-    document.getElementById('birthdate').setAttribute('max', maxDate);
+    // セレクトボックスを初期化
+    populateDateSelectors();
     
     // Enterキーで診断実行
-    document.getElementById('birthdate').addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-            diagnose();
-        }
+    const selects = ['year', 'month', 'day'];
+    selects.forEach(id => {
+        document.getElementById(id).addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                diagnose();
+            }
+        });
     });
 });

@@ -102,20 +102,39 @@
             font-weight: 500;
         }
 
-        input[type="date"] {
-            width: 100%;
-            padding: 12px 16px;
+        .date-selector {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .date-select {
+            padding: 12px 8px;
             border: 2px solid #e0e0e0;
             border-radius: 12px;
             font-size: 16px;
             font-family: inherit;
             transition: all 0.3s;
+            background: white;
+            cursor: pointer;
+            min-width: 80px;
         }
 
-        input[type="date"]:focus {
+        .date-select:focus {
             outline: none;
             border-color: #764ba2;
             box-shadow: 0 0 0 3px rgba(118, 75, 162, 0.1);
+        }
+
+        .date-select:hover {
+            border-color: #764ba2;
+        }
+
+        .date-separator {
+            color: #888;
+            font-size: 14px;
+            font-weight: 500;
         }
 
         .btn-diagnose {
@@ -316,6 +335,16 @@
             .moon-icon {
                 font-size: 64px;
             }
+            
+            .date-selector {
+                justify-content: center;
+            }
+            
+            .date-select {
+                min-width: 70px;
+                padding: 12px 6px;
+                font-size: 15px;
+            }
         }
     </style>
 </head>
@@ -333,8 +362,21 @@
 
             <div id="inputSection" class="input-section">
                 <div class="input-group">
-                    <label for="birthdate">あなたの誕生日を教えてください</label>
-                    <input type="date" id="birthdate" max="2024-12-31" min="1900-01-01">
+                    <label>あなたの誕生日を教えてください</label>
+                    <div class="date-selector">
+                        <select id="year" class="date-select">
+                            <option value="">年</option>
+                        </select>
+                        <span class="date-separator">年</span>
+                        <select id="month" class="date-select">
+                            <option value="">月</option>
+                        </select>
+                        <span class="date-separator">月</span>
+                        <select id="day" class="date-select">
+                            <option value="">日</option>
+                        </select>
+                        <span class="date-separator">日</span>
+                    </div>
                 </div>
                 <button class="btn-diagnose" onclick="diagnose()">
                     🌙 診断する
