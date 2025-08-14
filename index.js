@@ -407,6 +407,51 @@ app.post('/webhook', middleware(config), async (req, res) => {
         // 生成中の注文がある場合の処理を削除
         // 「レポート状況」コマンドで適切に処理される
         
+        // Batch APIデバッグコマンド（後で削除）
+        if (messageText === 'バッチ' || messageText === 'batch') {
+          console.log('🔍 Batch debug command received from:', userId);
+          
+          try {
+            const batchResult = await ordersDB.getBatchResult(userId);
+            
+            if (!batchResult) {
+              return client.replyMessage(event.replyToken, {
+                type: 'text',
+                text: '⚠️ Batch結果が見つかりません\n\nまだレポート生成を実行していないか、データが削除されています。'
+              });
+            }
+            
+            // 結果を整形して表示
+            const debugInfo = `📦 Batch API Debug Info
+━━━━━━━━━━━━━━━━━
+🆔 Batch ID: ${batchResult.batchId || 'N/A'}
+📅 Time: ${batchResult.timestamp || 'N/A'}
+✅ Status: ${batchResult.status || 'N/A'}
+📊 Parsed: ${batchResult.parsedResults?.length || 0} results
+📝 Raw Size: ${Math.round((batchResult.rawContent?.length || 0) / 1024)}KB
+
+${batchResult.aiInsights ? '✅ AI Insights: 取得成功' : '❌ AI Insights: なし'}
+${batchResult.debugInfo ? `\n📊 DB Info: ${JSON.stringify(batchResult.debugInfo, null, 2)}` : ''}
+
+━━━━━━━━━━━━━━━━━
+🔍 Raw Content Preview:
+${batchResult.rawContent ? batchResult.rawContent.substring(0, 500) : 'No content'}
+...`;
+            
+            return client.replyMessage(event.replyToken, {
+              type: 'text',
+              text: debugInfo
+            });
+            
+          } catch (error) {
+            console.error('Batch debug error:', error);
+            return client.replyMessage(event.replyToken, {
+              type: 'text',
+              text: `❌ エラー: ${error.message}`
+            });
+          }
+        }
+        
         // 「レポート」コマンドで最新のレポートを表示
         if (messageText === 'レポート' || messageText === 'れぽーと') {
           const orders = await ordersDB.getUserOrders(userId);

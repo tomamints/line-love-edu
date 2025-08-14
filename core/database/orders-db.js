@@ -624,6 +624,102 @@ class OrdersDB {
       return true; // エラーでも続行
     }
   }
+
+  // Batch API結果の保存（デバッグ用）
+  async saveBatchResult(orderId, batchResult) {
+    const fs = require('fs').promises;
+    const path = require('path');
+    
+    try {
+      // /tmpディレクトリに保存（Vercel環境でも動作）
+      const tempDir = process.env.VERCEL ? '/tmp' : path.join(process.cwd(), 'temp');
+      await fs.mkdir(tempDir, { recursive: true });
+      const batchFile = path.join(tempDir, `batch_${orderId}.json`);
+      
+      // ファイルに保存
+      await fs.writeFile(batchFile, JSON.stringify(batchResult, null, 2));
+      console.log('💾 Batch result saved to:', batchFile);
+      
+      // Supabaseが利用可能な場合は、DBにも保存
+      if (this.useDatabase && this.supabase) {
+        try {
+          // batch_resultsテーブルがない場合のために、ordersテーブルに保存
+          const { error } = await this.supabase
+            .from('orders')
+            .update({
+              batch_debug: {
+                batchId: batchResult.batchId,
+                timestamp: batchResult.timestamp,
+                status: batchResult.status,
+                hasAiInsights: !!batchResult.aiInsights,
+                parsedResultsCount: batchResult.parsedResults?.length || 0,
+                rawContentLength: batchResult.rawContent?.length || 0
+              },
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', orderId);
+          
+          if (!error) {
+            console.log('💾 Batch debug info saved to database');
+          }
+        } catch (dbError) {
+          console.error('⚠️ Failed to save to database:', dbError.message);
+        }
+      }
+      
+      return true;
+    } catch (error) {
+      console.error('❌ Error saving batch result:', error.message);
+      return false;
+    }
+  }
+
+  // Batch API結果の取得（デバッグ用）
+  async getBatchResult(userId) {
+    const fs = require('fs').promises;
+    const path = require('path');
+    
+    try {
+      // ユーザーの最新の注文を取得
+      const orders = await this.getUserOrders(userId);
+      if (!orders || orders.length === 0) {
+        console.log('⚠️ No orders found for user');
+        return null;
+      }
+      
+      const latestOrder = orders[0];
+      const orderId = latestOrder.id || latestOrder.orderId;
+      
+      // ファイルから読み込み
+      const tempDir = process.env.VERCEL ? '/tmp' : path.join(process.cwd(), 'temp');
+      const batchFile = path.join(tempDir, `batch_${orderId}.json`);
+      
+      try {
+        const content = await fs.readFile(batchFile, 'utf-8');
+        const batchResult = JSON.parse(content);
+        console.log('📄 Batch result loaded from file');
+        return batchResult;
+      } catch (fileError) {
+        console.log('⚠️ Batch file not found, checking database');
+        
+        // DBから取得を試みる
+        if (this.useDatabase && this.supabase && latestOrder.batch_debug) {
+          return {
+            batchId: latestOrder.batch_debug.batchId,
+            timestamp: latestOrder.batch_debug.timestamp,
+            status: latestOrder.batch_debug.status,
+            message: 'Debug info from database (full content not available)',
+            debugInfo: latestOrder.batch_debug
+          };
+        }
+        
+        return null;
+      }
+    } catch (error) {
+      console.error('❌ Error getting batch result:', error.message);
+      return null;
+    }
+  }
 }
 
 // シングルトンインスタンスを作成

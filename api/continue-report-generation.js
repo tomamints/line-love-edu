@@ -426,10 +426,28 @@ module.exports = async (req, res) => {
                   const lines = content.split('\n').filter(line => line.trim());
                   console.log(`📄 Found ${lines.length} lines in output`);
                   
+                  // Batch API結果を保存（デバッグ用）
+                  const batchResult = {
+                    batchId: batch.id,
+                    orderId: orderId,
+                    timestamp: new Date().toISOString(),
+                    status: batch.status,
+                    rawContent: content.substring(0, 10000), // 最初の10KB分を保存
+                    parsedResults: []
+                  };
+                  
                   for (const line of lines) {
                     try {
                       const result = JSON.parse(line);
                       console.log('📄 Parsed result custom_id:', result.custom_id);
+                      
+                      // デバッグ用に結果を保存
+                      batchResult.parsedResults.push({
+                        custom_id: result.custom_id,
+                        hasResponse: !!result.response,
+                        hasError: !!result.error,
+                        error: result.error || null
+                      });
                       
                       if (result.custom_id === `order_${orderId}`) {
                         if (result.response && result.response.body) {
@@ -439,6 +457,9 @@ module.exports = async (req, res) => {
                           console.log('📄 AI content preview:', aiContent.substring(0, 200));
                           progress.data.aiInsights = JSON.parse(aiContent);
                           console.log('✅ AI insights extracted successfully');
+                          
+                          // 成功した結果も保存
+                          batchResult.aiInsights = progress.data.aiInsights;
                         } else if (result.error) {
                           console.error('❌ Batch request failed:', result.error);
                           console.error('📄 Error details:', JSON.stringify(result.error));
@@ -449,6 +470,14 @@ module.exports = async (req, res) => {
                       console.error('❌ Error parsing line:', parseError.message);
                       console.error('📄 Problematic line:', line.substring(0, 200));
                     }
+                  }
+                  
+                  // Batch結果をデータベースに保存
+                  try {
+                    await ordersDB.saveBatchResult(orderId, batchResult);
+                    console.log('💾 Batch result saved for debugging');
+                  } catch (saveError) {
+                    console.error('⚠️ Failed to save batch result:', saveError.message);
                   }
                   
                   // Step 3完了後の処理
