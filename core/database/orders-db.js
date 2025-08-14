@@ -727,6 +727,7 @@ class OrdersDB {
               hasAiInsights: latestOrder.batch_debug.hasAiInsights,
               rawContent: latestOrder.batch_debug.rawContentPreview || 'No preview available',
               parsedResults: latestOrder.batch_debug.parsedResults,
+              aiInsights: latestOrder.batch_debug.aiInsightsPreview, // aiInsightsPreviewをaiInsightsとして返す
               aiInsightsPreview: latestOrder.batch_debug.aiInsightsPreview
             };
           } else {
