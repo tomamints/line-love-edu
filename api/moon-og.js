@@ -175,10 +175,10 @@ module.exports = async (req, res) => {
     <title>おつきさま診断 - あなたの月タイプを知ろう</title>
     <meta property="og:title" content="おつきさま診断 🌙 あなたの月タイプを知ろう">
     <meta property="og:description" content="生まれた日の月があなたの本当の性格と恋愛スタイルを教えます">
-    <meta property="og:image" content="https://love-tsukuyomi.com/api/moon-og?mode=image">
-    <meta property="og:url" content="https://love-tsukuyomi.com/moon-fortune.html">
+    <meta property="og:image" content="https://line-love-edu.vercel.app/api/moon-og?mode=image">
+    <meta property="og:url" content="https://line-love-edu.vercel.app/moon-fortune.html">
     <meta name="twitter:card" content="summary_large_image">
-    <script>window.location.href = 'https://love-tsukuyomi.com/moon-fortune.html';</script>
+    <script>window.location.href = 'https://line-love-edu.vercel.app/moon-fortune.html';</script>
 </head>
 <body>
     <p>診断ページに移動中...</p>
@@ -190,12 +190,12 @@ module.exports = async (req, res) => {
     
     const data = moonTypeData[moonType];
     if (!data) {
-        res.setHeader('Location', 'https://love-tsukuyomi.com/moon-fortune.html');
+        res.setHeader('Location', 'https://line-love-edu.vercel.app/moon-fortune.html');
         return res.status(302).end();
     }
     
     // OGP画像のURL
-    const ogImageUrl = `https://love-tsukuyomi.com/api/moon-og?mode=image&type=${encodeURIComponent(moonType)}`;
+    const ogImageUrl = `https://line-love-edu.vercel.app/api/moon-og?mode=image&type=${encodeURIComponent(moonType)}`;
     
     // 動的OGPページ
     const html = `<!DOCTYPE html>
@@ -209,7 +209,7 @@ module.exports = async (req, res) => {
     <meta property="og:title" content="私は${moonType}タイプでした！ ${data.emoji}">
     <meta property="og:description" content="${data.title} - おつきさま診断で本当の自分がわかる✨">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://love-tsukuyomi.com/api/moon-og?type=${encodeURIComponent(moonType)}">
+    <meta property="og:url" content="https://line-love-edu.vercel.app/api/moon-og?type=${encodeURIComponent(moonType)}">
     <meta property="og:image" content="${ogImageUrl}">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
@@ -269,7 +269,7 @@ module.exports = async (req, res) => {
     <script>
         // 3秒後に診断ページにリダイレクト
         setTimeout(() => {
-            window.location.href = 'https://love-tsukuyomi.com/moon-fortune.html';
+            window.location.href = 'https://line-love-edu.vercel.app/moon-fortune.html';
         }, 3000);
     </script>
 </head>
@@ -279,7 +279,7 @@ module.exports = async (req, res) => {
         <h1>${moonType}タイプ</h1>
         <p>${data.title}</p>
         <p style="font-size: 14px; opacity: 0.7;">このページは自動的に診断ページに移動します...</p>
-        <a href="https://love-tsukuyomi.com/moon-fortune.html" class="btn">今すぐ診断する</a>
+        <a href="https://line-love-edu.vercel.app/moon-fortune.html" class="btn">今すぐ診断する</a>
     </div>
 </body>
 </html>`;
