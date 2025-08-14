@@ -636,14 +636,15 @@ class PDFGeneratorV2 {
   generateDailyActivityPage(data) {
     // 日別データからグラフ用データを生成
     const { statistics } = data.rawData || {};
-    const dailyData = statistics?.dailyActivity || {};
+    const dailyData = statistics?.dailyMessageCounts || [];
     
     // 曜日別の平均メッセージ数を計算
     const weekDays = ['日', '月', '火', '水', '木', '金', '土'];
     const weekDayValues = weekDays.map(() => 0);
     const weekDayCounts = weekDays.map(() => 0);
     
-    Object.entries(dailyData).forEach(([date, count]) => {
+    // 配列形式のデータを処理
+    dailyData.forEach(({ date, count }) => {
       const dayOfWeek = new Date(date).getDay();
       weekDayValues[dayOfWeek] += count;
       weekDayCounts[dayOfWeek]++;
@@ -675,11 +676,16 @@ class PDFGeneratorV2 {
   generateHourlyActivityPage(data) {
     // 時間帯別データからグラフ用データを生成
     const { statistics } = data.rawData || {};
-    const hourlyData = statistics?.hourlyActivity || {};
+    const hourlyData = statistics?.hourlyMessageCounts || [];
     
-    // 24時間のデータを生成
+    // 24時間のデータを生成（配列をオブジェクトに変換）
+    const hourlyMap = {};
+    hourlyData.forEach(({ hour, count }) => {
+      hourlyMap[hour] = count;
+    });
+    
     const hours = Array.from({length: 24}, (_, i) => `${i}時`);
-    const values = Array.from({length: 24}, (_, i) => hourlyData[i] || 0);
+    const values = Array.from({length: 24}, (_, i) => hourlyMap[i] || 0);
     const maxValue = Math.max(...values) || 10;
     
     return `
