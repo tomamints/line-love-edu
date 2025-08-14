@@ -645,12 +645,10 @@ class OrdersDB {
                 // 重要: rawContentも保存（最初の5000文字）
                 rawContentPreview: batchResult.rawContent?.substring(0, 5000),
                 parsedResults: batchResult.parsedResults,
-                // AI Insightsの一部も保存
-                aiInsightsPreview: batchResult.aiInsights ? {
-                  hasPersonality: !!batchResult.aiInsights.personality,
-                  hasInterests: !!batchResult.aiInsights.interests,
-                  relationshipStage: batchResult.aiInsights.relationshipStage
-                } : null
+                // AI Insightsの完全なデータを保存
+                aiInsightsPreview: batchResult.aiInsights || null,
+                // 追加: 完全なAI分析結果も別フィールドに保存
+                aiInsightsFull: batchResult.aiInsights || null
               },
               updated_at: new Date().toISOString()
             })
@@ -727,7 +725,8 @@ class OrdersDB {
               hasAiInsights: latestOrder.batch_debug.hasAiInsights,
               rawContent: latestOrder.batch_debug.rawContentPreview || 'No preview available',
               parsedResults: latestOrder.batch_debug.parsedResults,
-              aiInsights: latestOrder.batch_debug.aiInsightsPreview, // aiInsightsPreviewをaiInsightsとして返す
+              // 完全なAI分析結果を優先的に返す
+              aiInsights: latestOrder.batch_debug.aiInsightsFull || latestOrder.batch_debug.aiInsightsPreview,
               aiInsightsPreview: latestOrder.batch_debug.aiInsightsPreview
             };
           } else {
