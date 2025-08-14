@@ -69,6 +69,8 @@ class ProfilesDB {
         mergedData.gender = info.userGender;
         mergedData.partnerBirthDate = info.partnerBirthdate;
         mergedData.partnerGender = info.partnerGender;
+        mergedData.loveSituation = info.loveSituation;
+        mergedData.wantToKnow = info.wantToKnow;
       }
       
       const upsertData = {
@@ -79,6 +81,8 @@ class ProfilesDB {
         partner_name: mergedData.partnerName || null,
         partner_birth_date: mergedData.partnerBirthDate || null,
         partner_gender: mergedData.partnerGender || null,
+        love_situation: mergedData.loveSituation || null,
+        want_to_know: mergedData.wantToKnow || null,
         updated_at: new Date().toISOString()
       };
       
@@ -228,6 +232,8 @@ class ProfilesDB {
       partnerName: data.partner_name,
       partnerBirthDate: data.partner_birth_date,
       partnerGender: data.partner_gender,
+      loveSituation: data.love_situation,
+      wantToKnow: data.want_to_know,
       createdAt: data.created_at,
       updatedAt: data.updated_at,
       // lastFortuneResultなどの追加データは元のprofileDataから継承
@@ -235,14 +241,16 @@ class ProfilesDB {
     };
     
     // personalInfo形式も追加（FortuneEngineで使用）
-    if (data.birth_date || data.partner_birth_date) {
+    if (data.birth_date || data.partner_birth_date || data.love_situation) {
       profile.personalInfo = {
         userBirthdate: data.birth_date,
         userAge: data.birth_date ? this.calculateAge(data.birth_date) : null,
         userGender: data.gender,
         partnerBirthdate: data.partner_birth_date,
         partnerAge: data.partner_birth_date ? this.calculateAge(data.partner_birth_date) : null,
-        partnerGender: data.partner_gender
+        partnerGender: data.partner_gender,
+        loveSituation: data.love_situation,
+        wantToKnow: data.want_to_know
       };
     }
     

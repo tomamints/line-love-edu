@@ -105,6 +105,11 @@ module.exports = async (req, res) => {
       transition: all 0.3s;
     }
     
+    select option {
+      padding: 10px;
+      line-height: 1.5;
+    }
+    
     input:focus, select:focus {
       outline: none;
       border-color: #667eea;
@@ -340,6 +345,32 @@ module.exports = async (req, res) => {
           </div>
         </div>
         
+        <div class="section">
+          <h2 class="section-title">💭 恋愛状況について</h2>
+          
+          <div class="form-group">
+            <label for="loveSituation">Q1: あなたの恋の状況は、どれに近いですか？</label>
+            <select id="loveSituation" name="loveSituation" required>
+              <option value="">選択してください</option>
+              <option value="beginning" ${existing.loveSituation === 'beginning' ? 'selected' : ''}>恋の始まり・相手との距離感（片想い、気になる人、恋人未満、マッチングアプリでの出会い など）</option>
+              <option value="relationship" ${existing.loveSituation === 'relationship' ? 'selected' : ''}>交際中の相手とのこと（現在の恋人との今後、結婚、マンネリ、すれ違い など）</option>
+              <option value="complicated" ${existing.loveSituation === 'complicated' ? 'selected' : ''}>複雑な事情を抱える恋（禁断の恋、遠距離、障害のある恋、公にできない関係 など）</option>
+              <option value="ending" ${existing.loveSituation === 'ending' ? 'selected' : ''}>復縁・別れ・終わった恋（復縁したい、別れの危機、失恋を乗り越えたい など）</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label for="wantToKnow">Q2: 今、特に何を知りたいですか？</label>
+            <select id="wantToKnow" name="wantToKnow" required>
+              <option value="">選択してください</option>
+              <option value="feelings" ${existing.wantToKnow === 'feelings' ? 'selected' : ''}>相手が今、どんな気持ちなのか</option>
+              <option value="action" ${existing.wantToKnow === 'action' ? 'selected' : ''}>今、自分がどうしたらいいか</option>
+              <option value="past" ${existing.wantToKnow === 'past' ? 'selected' : ''}>過去（出来事）の意味や理由</option>
+              <option value="future" ${existing.wantToKnow === 'future' ? 'selected' : ''}>これからどうなっていくのか</option>
+            </select>
+          </div>
+        </div>
+        
         <button type="submit" class="submit-btn">
           保存する
         </button>
@@ -422,7 +453,7 @@ module.exports = async (req, res) => {
       });
     }
     
-    const { userId, userBirthdate, userAge, userGender, partnerBirthdate, partnerAge, partnerGender } = req.body;
+    const { userId, userBirthdate, userAge, userGender, partnerBirthdate, partnerAge, partnerGender, loveSituation, wantToKnow } = req.body;
     
     if (!userId) {
       return res.status(400).json({ error: 'User ID is required' });
@@ -440,6 +471,8 @@ module.exports = async (req, res) => {
         partnerBirthdate,
         partnerAge: parseInt(partnerAge),
         partnerGender,
+        loveSituation,
+        wantToKnow,
         updatedAt: new Date().toISOString()
       };
       
