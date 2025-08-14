@@ -1866,13 +1866,28 @@ class FortuneCarouselBuilder {
    * 関係性段階検出（v2.0）
    */
   detectRelationshipStage() {
-    // メッセージデータから判定（簡略化版）
-    const messageCount = this.fortune.messageCount || 100;
-    const daysSinceStart = this.fortune.daysSinceStart || 30;
+    const messages = this.messages || [];
+    const analysis = this.fortune?.analysis || {};
     
-    if (daysSinceStart < 90) return '知り合ったばかり';
-    if (daysSinceStart < 365) return '仲良し';
-    return '安定期';
+    // メッセージ数と会話日数から判定
+    const messageCount = messages.length || analysis.totalMessages || 100;
+    const conversationDays = analysis.conversationDays || 30;
+    
+    // メッセージ頻度を計算
+    const messagesPerDay = messageCount / Math.max(conversationDays, 1);
+    
+    // 関係性の段階を判定
+    if (conversationDays < 30 || messageCount < 100) {
+      return '知り合ったばかり';
+    } else if (conversationDays < 90 || messageCount < 500) {
+      return '親密になりつつある';
+    } else if (conversationDays < 180 || messageCount < 1000) {
+      return '仲良し';
+    } else if (conversationDays < 365 || messageCount < 2000) {
+      return '深い関係';
+    } else {
+      return '安定期';
+    }
   }
   
   /**
@@ -1892,6 +1907,18 @@ class FortuneCarouselBuilder {
         共感度: 1.2,
         話題の多様性: 1.5
       },
+      '親密になりつつある': {
+        返信速度相性: 1.3,
+        メッセージ長相性: 1.1,
+        感情表現相性: 1.2,
+        時間帯相性: 1.1,
+        絵文字使用相性: 1.2,
+        会話深度相性: 1.4,
+        未来志向性: 1.2,
+        ポジティブ度相性: 1.3,
+        共感度: 1.3,
+        話題の多様性: 1.3
+      },
       '仲良し': {
         返信速度相性: 1.2,
         メッセージ長相性: 1.0,
@@ -1903,6 +1930,18 @@ class FortuneCarouselBuilder {
         ポジティブ度相性: 1.3,
         共感度: 1.5,
         話題の多様性: 1.0
+      },
+      '深い関係': {
+        返信速度相性: 1.1,
+        メッセージ長相性: 0.9,
+        感情表現相性: 1.4,
+        時間帯相性: 0.9,
+        絵文字使用相性: 1.0,
+        会話深度相性: 1.1,
+        未来志向性: 1.5,
+        ポジティブ度相性: 1.1,
+        共感度: 1.4,
+        話題の多様性: 1.1
       },
       '安定期': {
         返信速度相性: 1.0,
@@ -2793,39 +2832,133 @@ class FortuneCarouselBuilder {
   generatePersonalizedLuckyItems() {
     const messages = this.messages || [];
     
-    // 色の分析
+    // 色の分析 - メッセージから絵文字をカウント
     const colorEmojis = {
-      '❤️': '恋月の紅',          // 恋する月の紅色
-      '💙': '静月の藍',          // 静かな月の藍色
-      '💚': '癒月の碧',          // 癒しの月の碧色
-      '💛': '希月の金',          // 希望の月の金色
-      '💜': '神月の紫',          // 神秘の月の紫色
-      '🧡': '暖月の橙',          // 温かい月の橙色
-      '✨': '輝月の光',          // 輝く月の光
-      '🌟': '煌月の銀'           // 煌めく月の銀色
+      '❤️': '恋月の紅',
+      '💙': '静月の藍',
+      '💚': '癒月の碧',
+      '💛': '希月の金',
+      '💜': '神月の紫',
+      '🧡': '暖月の橙',
+      '✨': '輝月の光',
+      '🌟': '煌月の銀'
     };
     
-    let topColor = '恋月の紅';
-    let colorReason = '「楽しかった❤️」が最多使用';
+    const emojiCounts = {};
+    messages.forEach(msg => {
+      const text = msg.body || msg.text || '';
+      Object.keys(colorEmojis).forEach(emoji => {
+        const count = (text.match(new RegExp(emoji, 'g')) || []).length;
+        if (count > 0) {
+          emojiCounts[emoji] = (emojiCounts[emoji] || 0) + count;
+        }
+      });
+    });
     
-    // 話題分析
-    const topics = {
-      '映画': { item: 'ポップコーン 🍿', keyword: '映画' },
-      'カフェ': { item: 'コーヒー ☕', keyword: 'カフェ' },
-      '音楽': { item: 'イヤホン 🎧', keyword: '音楽' },
-      '旅行': { item: '地図 🗺️', keyword: '旅' }
+    // 最も使われた絵文字を見つける
+    let topEmoji = '❤️';
+    let maxCount = 0;
+    Object.entries(emojiCounts).forEach(([emoji, count]) => {
+      if (count > maxCount) {
+        maxCount = count;
+        topEmoji = emoji;
+      }
+    });
+    
+    const topColor = colorEmojis[topEmoji] || '恋月の紅';
+    const colorReason = maxCount > 0 
+      ? `${topEmoji}を${maxCount}回使用` 
+      : 'メッセージの温かさから導き出された色';
+    
+    // 話題分析 - 実際のメッセージから話題を抽出
+    const topicKeywords = {
+      '映画': { item: 'ポップコーン 🍿', related: ['映画', '観た', '見た', 'シネマ'] },
+      'カフェ': { item: 'コーヒー ☕', related: ['カフェ', 'コーヒー', 'お茶', 'ケーキ'] },
+      '音楽': { item: 'イヤホン 🎧', related: ['音楽', '曲', '歌', 'ライブ', 'アーティスト'] },
+      '旅行': { item: '地図 🗺️', related: ['旅行', '旅', '行った', '観光', '泊まった'] },
+      '食事': { item: 'お箸 🥢', related: ['ごはん', '食べ', 'ランチ', 'ディナー', '美味し'] },
+      'ゲーム': { item: 'コントローラー 🎮', related: ['ゲーム', 'プレイ', '遊んだ', 'クリア'] }
     };
     
-    let topItem = 'ポップコーン 🍿';
-    let itemReason = '映画の話題で盛り上がり度No.1';
+    const topicCounts = {};
+    Object.entries(topicKeywords).forEach(([topic, data]) => {
+      let count = 0;
+      messages.forEach(msg => {
+        const text = (msg.body || msg.text || '').toLowerCase();
+        data.related.forEach(keyword => {
+          if (text.includes(keyword)) {
+            count++;
+          }
+        });
+      });
+      if (count > 0) {
+        topicCounts[topic] = count;
+      }
+    });
     
-    // ラッキーナンバー
-    const peakDay = new Date(messages[0]?.createdAt || new Date()).getDate();
-    const numberReason = `最高の盛り上がりが${peakDay}日の出来事`;
+    // 最も話題になったトピックを見つける
+    let topTopic = '映画';
+    let maxTopicCount = 0;
+    Object.entries(topicCounts).forEach(([topic, count]) => {
+      if (count > maxTopicCount) {
+        maxTopicCount = count;
+        topTopic = topic;
+      }
+    });
     
-    // アクション提案
-    const action = '新しいカフェを探す ☕';
-    const actionReason = 'カフェの話題で返信速度2倍';
+    const topItem = topicKeywords[topTopic]?.item || 'ポップコーン 🍿';
+    const itemReason = maxTopicCount > 0
+      ? `${topTopic}の話題が${maxTopicCount}回登場`
+      : '二人の会話から導き出されたアイテム';
+    
+    // ラッキーナンバー - 最も盛り上がった日
+    let peakDay = 7;
+    if (messages.length > 0) {
+      // 日付ごとのメッセージ数をカウント
+      const dayCount = {};
+      messages.forEach(msg => {
+        try {
+          const dateStr = msg.datetime || msg.createdAt;
+          if (dateStr) {
+            const date = new Date(dateStr.replace(/(\d{4})\/(\d{2})\/(\d{2})/, '$1-$2-$3'));
+            const day = date.getDate();
+            if (!isNaN(day)) {
+              dayCount[day] = (dayCount[day] || 0) + 1;
+            }
+          }
+        } catch (e) {
+          // エラーは無視
+        }
+      });
+      
+      // 最も多くメッセージがあった日を見つける
+      let maxMessages = 0;
+      Object.entries(dayCount).forEach(([day, count]) => {
+        if (count > maxMessages) {
+          maxMessages = count;
+          peakDay = parseInt(day);
+        }
+      });
+    }
+    
+    const numberReason = messages.length > 0
+      ? `${peakDay}日に最高の盛り上がり`
+      : '月の導きによる幸運の数字';
+    
+    // アクション提案 - トピックに基づく
+    const actions = {
+      '映画': '新作映画を一緒に観る 🎬',
+      'カフェ': '新しいカフェを探す ☕',
+      '音楽': 'プレイリストを共有する 🎵',
+      '旅行': '次の旅先を計画する ✈️',
+      '食事': '新しいレストランを予約 🍽️',
+      'ゲーム': '協力プレイを楽しむ 🎮'
+    };
+    
+    const action = actions[topTopic] || '新しい体験を共有する ✨';
+    const actionReason = maxTopicCount > 0
+      ? `${topTopic}で盛り上がる確率高し`
+      : '二人の絆を深めるアクション';
     
     return {
       items: [
@@ -2848,7 +2981,10 @@ class FortuneCarouselBuilder {
     const unfinishedTopics = [];
     const topics = ['映画', 'カフェ', '週末', '趣味'];
     topics.forEach(topic => {
-      const mentions = messages.filter(m => m.text?.includes(topic));
+      const mentions = messages.filter(m => {
+        const text = m.body || m.text || '';
+        return text.includes(topic);
+      });
       if (mentions.length > 0 && mentions.length < 3) {
         unfinishedTopics.push({
           topic,
@@ -2858,25 +2994,28 @@ class FortuneCarouselBuilder {
     });
     
     // 相手の興味分析
-    const partnerInterests = [];
     const keywords = {};
-    messages.filter(m => !m.isUser).forEach(msg => {
-      const words = msg.text?.split(/[、。！？\s]+/) || [];
-      words.forEach(word => {
-        if (word.length > 2) {
-          keywords[word] = (keywords[word] || 0) + 1;
+    messages.forEach(msg => {
+      // senderフィールドを使用して相手のメッセージを判定
+      if (msg.sender && this.fortune?.analysis?.participants) {
+        const isSelf = msg.sender === this.fortune.analysis.participants.self;
+        if (!isSelf) {
+          const text = msg.body || msg.text || '';
+          const words = text.split(/[、。！？\s]+/);
+          words.forEach(word => {
+            if (word.length > 2) {
+              keywords[word] = (keywords[word] || 0) + 1;
+            }
+          });
         }
-      });
+      }
     });
     
     const topKeyword = Object.entries(keywords)
       .sort((a, b) => b[1] - a[1])[0];
     
-    // ネガティブパターン検出
+    // ネガティブパターン検出（返信時間は今は利用不可なのでスキップ）
     const avoidTopics = [];
-    if (messages.some(m => m.text?.includes('仕事') && m.responseTime > 3600)) {
-      avoidTopics.push('仕事の話題は返信が遅くなる傾向');
-    }
     
     const priorities = [
       {
