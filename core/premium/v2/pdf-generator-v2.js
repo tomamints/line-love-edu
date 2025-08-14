@@ -345,40 +345,59 @@ class PDFGeneratorV2 {
         background: #f5f5f5;
         margin: 0;
         padding: 0;
+        font-size: 14px; /* 基本フォントサイズを固定 */
       }
       
       .report-wrapper {
-        width: 100%;
-        max-width: 100%;
-        overflow-x: hidden;
+        width: 794px; /* A4幅 (210mm at 96dpi) */
+        margin: 0 auto;
+        background: white;
+      }
+      
+      /* モバイル表示用の調整 */
+      @media screen and (max-width: 820px) {
+        .report-wrapper {
+          width: 100%;
+          max-width: 794px;
+        }
       }
       
       .page {
-        width: 100%;
-        max-width: 600px;
-        margin: 0 auto 40px;
-        padding: 30px 20px;
+        width: 794px;
+        min-height: 1123px; /* A4高さ (297mm at 96dpi) */
+        padding: 60px 50px;
         background: white;
         position: relative;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        page-break-after: always;
+        page-break-inside: avoid;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+      }
+      
+      /* モバイル表示用 */
+      @media screen and (max-width: 820px) {
+        .page {
+          width: 100%;
+          min-height: auto;
+          padding: 40px 20px;
+          margin-bottom: 20px;
+          box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
       }
       
       /* プリント用スタイル */
       @media print {
+        .report-wrapper {
+          width: 100%;
+        }
         .page {
           width: 210mm;
           min-height: 297mm;
-          padding: 30mm 25mm;
+          padding: 25mm 20mm;
           margin: 0;
           page-break-after: always;
           box-shadow: none;
-        }
-      }
-      
-      /* タブレット以上 */
-      @media (min-width: 768px) {
-        .page {
-          padding: 40px 30px;
         }
       }
       
@@ -390,54 +409,62 @@ class PDFGeneratorV2 {
         justify-content: center;
         align-items: center;
         text-align: center;
-        min-height: 100vh;
-        padding: 40px 20px;
+        width: 794px;
+        min-height: 1123px;
+        padding: 60px 50px;
+      }
+      
+      @media screen and (max-width: 820px) {
+        .cover-page {
+          width: 100%;
+          min-height: 100vh;
+          padding: 40px 20px;
+        }
       }
       
       .cover-title {
-        font-size: 28px;
+        font-size: 42px; /* 固定サイズ */
         font-weight: bold;
-        margin-bottom: 20px;
+        margin-bottom: 30px;
         text-shadow: 0 2px 4px rgba(0,0,0,0.3);
       }
       
       .cover-subtitle {
-        font-size: 16px;
-        margin-bottom: 30px;
+        font-size: 18px; /* 固定サイズ */
+        margin-bottom: 40px;
         opacity: 0.9;
       }
       
       .user-name {
-        font-size: 20px;
-        margin: 20px 0;
-        padding: 15px 30px;
+        font-size: 24px; /* 固定サイズ */
+        margin: 30px 0;
+        padding: 20px 40px;
         border: 2px solid rgba(255,255,255,0.3);
         border-radius: 10px;
         background: rgba(255,255,255,0.1);
       }
       
       .page-title {
-        font-size: 22px;
+        font-size: 28px; /* 固定サイズ */
         color: #764ba2;
-        margin-bottom: 25px;
+        margin-bottom: 30px;
         text-align: center;
         position: relative;
         padding-bottom: 15px;
       }
       
-      @media (min-width: 768px) {
+      @media screen and (max-width: 820px) {
         .cover-title {
-          font-size: 36px;
+          font-size: 32px;
         }
         .cover-subtitle {
-          font-size: 18px;
+          font-size: 16px;
         }
         .user-name {
-          font-size: 24px;
-          padding: 20px 40px;
+          font-size: 20px;
         }
         .page-title {
-          font-size: 28px;
+          font-size: 24px;
         }
       }
       
@@ -462,71 +489,84 @@ class PDFGeneratorV2 {
       }
       
       .score-number {
-        font-size: 56px;
+        font-size: 72px; /* 固定サイズ */
         font-weight: bold;
         background: linear-gradient(135deg, #667eea, #764ba2);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
-        margin-bottom: 10px;
+        margin-bottom: 15px;
       }
       
       .relationship-title {
-        font-size: 24px;
+        font-size: 32px; /* 固定サイズ */
         color: #764ba2;
         text-align: center;
-        margin: 25px 0;
+        margin: 30px 0;
         font-weight: bold;
+      }
+      
+      @media screen and (max-width: 820px) {
+        .score-number {
+          font-size: 56px;
+        }
+        .relationship-title {
+          font-size: 24px;
+        }
       }
       
       .chart-container {
         width: 100%;
-        max-width: 100%;
-        margin: 25px auto;
-        overflow-x: auto;
-        overflow-y: hidden;
+        max-width: 650px; /* A4幅に合わせて固定 */
+        margin: 30px auto;
+        display: flex;
+        justify-content: center;
+        align-items: center;
       }
       
-      @media (min-width: 768px) {
-        .score-number {
-          font-size: 72px;
-        }
-        .relationship-title {
-          font-size: 32px;
+      .chart-container svg {
+        max-width: 100%;
+        height: auto;
+      }
+      
+      @media screen and (max-width: 820px) {
+        .chart-container {
+          max-width: 100%;
+          overflow-x: auto;
         }
       }
       
       .action-card {
         background: linear-gradient(135deg, #f5f3ff, #fff);
         border-radius: 15px;
-        padding: 20px;
-        margin: 15px 0;
+        padding: 25px;
+        margin: 20px 0;
         border-left: 4px solid #764ba2;
       }
       
       .action-title {
-        font-size: 18px;
+        font-size: 20px; /* 固定サイズ */
         color: #764ba2;
-        margin-bottom: 12px;
+        margin-bottom: 15px;
         font-weight: bold;
       }
       
       .action-advice {
-        font-size: 14px;
+        font-size: 16px; /* 固定サイズ */
         color: #555;
         line-height: 1.8;
       }
       
-      @media (min-width: 768px) {
+      @media screen and (max-width: 820px) {
         .action-card {
-          padding: 25px;
-          margin: 20px 0;
+          padding: 20px;
+          margin: 15px 0;
         }
         .action-title {
-          font-size: 20px;
+          font-size: 18px;
         }
         .action-advice {
-          font-size: 16px;
+          font-size: 14px;
         }
       }
       
@@ -542,13 +582,13 @@ class PDFGeneratorV2 {
       }
       
       .future-label {
-        font-size: 14px;
+        font-size: 14px; /* 固定サイズ */
         color: #888;
         margin-bottom: 10px;
       }
       
       .future-level {
-        font-size: 24px;
+        font-size: 24px; /* 固定サイズ */
         font-weight: bold;
         padding: 10px 20px;
         border-radius: 50px;
@@ -570,29 +610,29 @@ class PDFGeneratorV2 {
       }
       
       .poetic-text {
-        font-size: 14px;
-        line-height: 1.9;
+        font-size: 16px; /* 固定サイズ */
+        line-height: 2;
         color: #555;
         text-align: center;
-        margin: 20px 0;
+        margin: 30px 0;
         font-style: italic;
       }
       
       .moon-icon {
-        font-size: 36px;
+        font-size: 48px; /* 固定サイズ */
         text-align: center;
-        margin: 15px 0;
+        margin: 20px 0;
       }
       
-      @media (min-width: 768px) {
+      @media screen and (max-width: 820px) {
         .poetic-text {
-          font-size: 18px;
-          line-height: 2;
-          margin: 30px 0;
+          font-size: 14px;
+          line-height: 1.9;
+          margin: 20px 0;
         }
         .moon-icon {
-          font-size: 48px;
-          margin: 20px 0;
+          font-size: 36px;
+          margin: 15px 0;
         }
       }
     `;
@@ -872,38 +912,38 @@ class PDFGeneratorV2 {
    * 棒グラフをSVGで生成
    */
   generateBarChart(labels, values, maxValue, title) {
-    const width = 350;
-    const height = 250;
-    const barWidth = width / labels.length * 0.7;
-    const barGap = width / labels.length * 0.3;
+    const width = 600; // A4幅に合わせて拡大
+    const height = 350; // 高さも調整
+    const barWidth = width / labels.length * 0.6;
+    const barGap = width / labels.length * 0.4;
     
     return `
-    <svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" style="width: 100%; max-width: 350px; height: auto; display: block; margin: 0 auto;">
+    <svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" style="width: 100%; max-width: 600px; height: auto; display: block; margin: 0 auto;">
       <!-- グラフ背景 -->
       <rect x="0" y="0" width="${width}" height="${height}" fill="#f9f9f9" rx="10"/>
       
       <!-- グリッド線 -->
       ${[0, 25, 50, 75, 100].map(percent => {
-        const y = height - (height * percent / 100) - 30;
+        const y = height - (height * percent / 100) - 50;
         return `
-          <line x1="40" y1="${y}" x2="${width - 20}" y2="${y}" stroke="#e0e0e0" stroke-dasharray="5,5"/>
-          <text x="20" y="${y + 5}" font-size="10" fill="#888">${Math.round(maxValue * percent / 100)}</text>
+          <line x1="60" y1="${y}" x2="${width - 30}" y2="${y}" stroke="#e0e0e0" stroke-dasharray="5,5"/>
+          <text x="35" y="${y + 5}" font-size="12" fill="#888">${Math.round(maxValue * percent / 100)}</text>
         `;
       }).join('')}
       
       <!-- 棒グラフ -->
       ${labels.map((label, i) => {
-        const x = 50 + i * (barWidth + barGap);
-        const barHeight = (values[i] / maxValue) * (height - 60);
-        const y = height - barHeight - 30;
+        const x = 80 + i * (barWidth + barGap);
+        const barHeight = (values[i] / maxValue) * (height - 100);
+        const y = height - barHeight - 50;
         
         return `
           <rect x="${x}" y="${y}" width="${barWidth}" height="${barHeight}" 
                 fill="url(#gradient${i})" rx="5" ry="5"/>
-          <text x="${x + barWidth/2}" y="${height - 10}" 
-                text-anchor="middle" font-size="12" fill="#666">${label}</text>
-          <text x="${x + barWidth/2}" y="${y - 5}" 
-                text-anchor="middle" font-size="11" fill="#764ba2" font-weight="bold">${values[i]}</text>
+          <text x="${x + barWidth/2}" y="${height - 20}" 
+                text-anchor="middle" font-size="14" fill="#666">${label}</text>
+          <text x="${x + barWidth/2}" y="${y - 8}" 
+                text-anchor="middle" font-size="13" fill="#764ba2" font-weight="bold">${values[i]}</text>
           
           <!-- グラデーション定義 -->
           <defs>
@@ -924,14 +964,14 @@ class PDFGeneratorV2 {
    * 折れ線グラフをSVGで生成
    */
   generateLineChart(labels, values, maxValue, title) {
-    const width = 350;
-    const height = 250;
-    const pointGap = (width - 60) / (labels.length - 1);
+    const width = 600; // A4幅に合わせて拡大
+    const height = 350; // 高さも調整
+    const pointGap = (width - 100) / (labels.length - 1);
     
     // ポイント座標を計算
     const points = values.map((value, i) => ({
-      x: 40 + i * pointGap,
-      y: height - 30 - ((value / maxValue) * (height - 60))
+      x: 60 + i * pointGap,
+      y: height - 50 - ((value / maxValue) * (height - 100))
     }));
     
     // パスを生成
@@ -940,19 +980,19 @@ class PDFGeneratorV2 {
     ).join(' ');
     
     // エリアパスを生成
-    const areaPath = pathData + ` L ${points[points.length - 1].x},${height - 30} L ${points[0].x},${height - 30} Z`;
+    const areaPath = pathData + ` L ${points[points.length - 1].x},${height - 50} L ${points[0].x},${height - 50} Z`;
     
     return `
-    <svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" style="width: 100%; max-width: 350px; height: auto; display: block; margin: 0 auto;">
+    <svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" style="width: 100%; max-width: 600px; height: auto; display: block; margin: 0 auto;">
       <!-- グラフ背景 -->
       <rect x="0" y="0" width="${width}" height="${height}" fill="#f9f9f9" rx="10"/>
       
       <!-- グリッド線 -->
       ${[0, 25, 50, 75, 100].map(percent => {
-        const y = height - (height * percent / 100) - 30;
+        const y = height - (height * percent / 100) - 50;
         return `
-          <line x1="40" y1="${y}" x2="${width - 20}" y2="${y}" stroke="#e0e0e0" stroke-dasharray="5,5"/>
-          <text x="20" y="${y + 5}" font-size="10" fill="#888">${Math.round(maxValue * percent / 100)}</text>
+          <line x1="60" y1="${y}" x2="${width - 30}" y2="${y}" stroke="#e0e0e0" stroke-dasharray="5,5"/>
+          <text x="35" y="${y + 5}" font-size="12" fill="#888">${Math.round(maxValue * percent / 100)}</text>
         `;
       }).join('')}
       
@@ -980,13 +1020,13 @@ class PDFGeneratorV2 {
       
       <!-- データポイント -->
       ${points.map((p, i) => `
-        <circle cx="${p.x}" cy="${p.y}" r="4" fill="#764ba2"/>
-        <circle cx="${p.x}" cy="${p.y}" r="2" fill="white"/>
-        ${i % 3 === 0 ? `<text x="${p.x}" y="${height - 10}" text-anchor="middle" font-size="10" fill="#666">${labels[i]}</text>` : ''}
+        <circle cx="${p.x}" cy="${p.y}" r="5" fill="#764ba2"/>
+        <circle cx="${p.x}" cy="${p.y}" r="2.5" fill="white"/>
+        ${i % 3 === 0 ? `<text x="${p.x}" y="${height - 20}" text-anchor="middle" font-size="12" fill="#666">${labels[i]}</text>` : ''}
       `).join('')}
       
       <!-- タイトル -->
-      <text x="${width/2}" y="20" text-anchor="middle" font-size="14" fill="#333" font-weight="bold">${title}</text>
+      <text x="${width/2}" y="25" text-anchor="middle" font-size="16" fill="#333" font-weight="bold">${title}</text>
     </svg>`;
   }
   
@@ -994,11 +1034,11 @@ class PDFGeneratorV2 {
    * レーダーチャートをSVGで生成
    */
   generateRadarChart(labels, values, maxValue = 100) {
-    const width = 320;
-    const height = 320;
+    const width = 450; // A4幅に合わせて拡大
+    const height = 450; // 正方形を維持
     const centerX = width / 2;
     const centerY = height / 2;
-    const radius = 110;
+    const radius = 150; // 半径も拡大
     const angleStep = (Math.PI * 2) / labels.length;
     
     // ポイント座標を計算
@@ -1017,7 +1057,7 @@ class PDFGeneratorV2 {
     const polygonPath = points.map(p => `${p.x},${p.y}`).join(' ');
     
     return `
-    <svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" style="width: 100%; max-width: 320px; height: auto; display: block; margin: 0 auto;">
+    <svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" style="width: 100%; max-width: 450px; height: auto; display: block; margin: 0 auto;">
       <!-- 背景円 -->
       ${[20, 40, 60, 80, 100].map(percent => {
         const r = radius * percent / 100;
@@ -1025,7 +1065,7 @@ class PDFGeneratorV2 {
           <circle cx="${centerX}" cy="${centerY}" r="${r}" 
                   fill="none" stroke="#e0e0e0" stroke-dasharray="5,5"/>
           <text x="${centerX + r + 5}" y="${centerY + 5}" 
-                font-size="10" fill="#888">${percent}</text>
+                font-size="12" fill="#888">${percent}</text>
         `;
       }).join('')}
       
