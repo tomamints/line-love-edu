@@ -20,6 +20,10 @@
     {
       "source": "/api/download-report",
       "destination": "/api/download-report"
+    },
+    {
+      "source": "/moon",
+      "destination": "/moon-fortune.html"
     }
   ],
   "functions": {
