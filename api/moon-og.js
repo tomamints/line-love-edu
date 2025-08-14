@@ -178,7 +178,7 @@ module.exports = async (req, res) => {
     <meta property="og:image" content="https://love-tsukuyomi.com/api/moon-og?mode=image">
     <meta property="og:url" content="https://love-tsukuyomi.com/moon-fortune.html">
     <meta name="twitter:card" content="summary_large_image">
-    <script>window.location.href = '/moon-fortune.html';</script>
+    <script>window.location.href = 'https://love-tsukuyomi.com/moon-fortune.html';</script>
 </head>
 <body>
     <p>診断ページに移動中...</p>
@@ -190,7 +190,7 @@ module.exports = async (req, res) => {
     
     const data = moonTypeData[moonType];
     if (!data) {
-        res.setHeader('Location', '/moon-fortune.html');
+        res.setHeader('Location', 'https://love-tsukuyomi.com/moon-fortune.html');
         return res.status(302).end();
     }
     
@@ -269,7 +269,7 @@ module.exports = async (req, res) => {
     <script>
         // 3秒後に診断ページにリダイレクト
         setTimeout(() => {
-            window.location.href = '/moon-fortune.html';
+            window.location.href = 'https://love-tsukuyomi.com/moon-fortune.html';
         }, 3000);
     </script>
 </head>
@@ -279,7 +279,7 @@ module.exports = async (req, res) => {
         <h1>${moonType}タイプ</h1>
         <p>${data.title}</p>
         <p style="font-size: 14px; opacity: 0.7;">このページは自動的に診断ページに移動します...</p>
-        <a href="/moon-fortune.html" class="btn">今すぐ診断する</a>
+        <a href="https://love-tsukuyomi.com/moon-fortune.html" class="btn">今すぐ診断する</a>
     </div>
 </body>
 </html>`;
