@@ -119,13 +119,16 @@ class FortuneCarouselBuilder {
    * カード1: 運命の扉（オープニング）
    */
   addCard1_OpeningPage() {
-    // v2.0スコア計算ロジック
-    const score = this.calculateWaveScore();
-    const message = score >= 80 ? 
-      '月が囁いています。強い縁で結ばれた二つの魂が、ここに出会いました' :
-      score >= 60 ?
-      '月が告げています。二人の心は少しずつ近づいているようです' :
-      '月が導いています。まだ見ぬ可能性が二人の間に眠っています';
+    // トーク履歴から詳細な分析データを取得
+    const analysis = this.fortune.analysis || {};
+    const messages = this.fortune.messages || [];
+    const totalMessages = messages.length;
+    const avgResponseTime = analysis.avgResponseTime || 0;
+    const conversationDays = analysis.conversationDays || 0;
+    
+    // 関係性の深さを計算
+    const relationshipDepth = this.calculateRelationshipDepth();
+    const stage = this.detectRelationshipStage();
     
     return {
       type: 'bubble',
@@ -138,7 +141,7 @@ class FortuneCarouselBuilder {
         contents: [
           {
             type: 'text',
-            text: '🌙 月の導きが始まります',
+            text: '月の導きが始まります',
             size: 'xl',
             color: '#ffffff',
             weight: 'bold',
@@ -155,20 +158,71 @@ class FortuneCarouselBuilder {
         contents: [
           {
             type: 'text',
-            text: 'おふたりの心に映る月を視させていただきました',
-            size: 'md',
-            color: '#555555',
-            align: 'center',
-            margin: 'lg'
+            text: 'トーク履歴分析完了',
+            size: 'sm',
+            color: '#888888',
+            align: 'center'
           },
           {
-            type: 'text',
-            text: `月の祝福度: ${score}%`,
-            size: 'xxl',
-            weight: 'bold',
-            color: '#764ba2',
-            align: 'center',
-            margin: 'xl'
+            type: 'separator',
+            margin: 'md'
+          },
+          {
+            type: 'box',
+            layout: 'horizontal',
+            contents: [
+              {
+                type: 'box',
+                layout: 'vertical',
+                flex: 1,
+                contents: [
+                  {
+                    type: 'text',
+                    text: '総メッセージ数',
+                    size: 'xs',
+                    color: '#888888',
+                    align: 'center'
+                  },
+                  {
+                    type: 'text',
+                    text: `${totalMessages}`,
+                    size: 'lg',
+                    weight: 'bold',
+                    color: '#764ba2',
+                    align: 'center',
+                    margin: 'xs'
+                  }
+                ]
+              },
+              {
+                type: 'separator',
+                margin: 'md'
+              },
+              {
+                type: 'box',
+                layout: 'vertical',
+                flex: 1,
+                contents: [
+                  {
+                    type: 'text',
+                    text: '会話日数',
+                    size: 'xs',
+                    color: '#888888',
+                    align: 'center'
+                  },
+                  {
+                    type: 'text',
+                    text: `${conversationDays}日`,
+                    size: 'lg',
+                    weight: 'bold',
+                    color: '#764ba2',
+                    align: 'center',
+                    margin: 'xs'
+                  }
+                ]
+              }
+            ],
+            margin: 'lg'
           },
           {
             type: 'separator',
@@ -176,12 +230,43 @@ class FortuneCarouselBuilder {
           },
           {
             type: 'text',
-            text: `「${message}」`,
-            size: 'md',
+            text: '関係性の深さ',
+            size: 'sm',
+            weight: 'bold',
+            color: '#333333',
+            align: 'center',
+            margin: 'lg'
+          },
+          {
+            type: 'text',
+            text: relationshipDepth.level,
+            size: 'xl',
+            weight: 'bold',
+            color: '#764ba2',
+            align: 'center',
+            margin: 'sm'
+          },
+          {
+            type: 'text',
+            text: relationshipDepth.description,
+            size: 'sm',
             color: '#555555',
             align: 'center',
-            margin: 'lg',
+            margin: 'md',
             wrap: true
+          },
+          {
+            type: 'separator',
+            margin: 'lg'
+          },
+          {
+            type: 'text',
+            text: `現在のステージ: ${stage}`,
+            size: 'md',
+            weight: 'bold',
+            color: '#667eea',
+            align: 'center',
+            margin: 'md'
           }
         ]
       },
@@ -192,31 +277,26 @@ class FortuneCarouselBuilder {
    * カード2: 総合運勢（全体評価）
    */
   addCard2_OverallFortunePage() {
-    // v2.0: 関係性段階に応じたメッセージ選択
+    // トーク履歴から各種指標を計算
+    const analysis = this.fortune.analysis || {};
+    const messages = this.fortune.messages || [];
+    
+    // 会話の盛り上がり度分析
+    const messageFrequency = this.analyzeMessageFrequency(messages);
+    const emotionalIntensity = this.analyzeEmotionalIntensity(messages);
+    const topicDiversity = this.analyzeTopicDiversity(messages);
+    
+    // 相性スコアを各指標から総合的に算出
+    const compatibilityScore = Math.round(
+      (messageFrequency.score * 0.3) +
+      (emotionalIntensity.score * 0.3) +
+      (topicDiversity.score * 0.2) +
+      ((analysis.responseRate || 50) * 0.2)
+    );
+    
+    // 恋愛ステージとアドバイスを判定
     const stage = this.detectRelationshipStage();
-    const score = this.calculateWaveScore();
-    const stars = Math.ceil(score / 20); // 100点満点を5段階に変換
-    
-    const messages = {
-      '知り合ったばかり': {
-        high: "月が告げています。新たなる扉が開かれる時",
-        mid: "ゆっくりとお互いを知る大切な時間です",
-        low: "焦らずに自然の流れに身を任せてください"
-      },
-      '仲良し': {
-        high: "月が囁いています。縁が深まる特別な時",
-        mid: "信頼の光をひとつずつ積み重ねる時です",
-        low: "相手の心の声にそっと耳を傾けてください"
-      },
-      '安定期': {
-        high: "月が示す道。新たなる刺激が二人を照らします",
-        mid: "日々の小さな感謝を大切にしてください",
-        low: "初めて出会った頃の純粋な気持ちを思い出してください"
-      }
-    };
-    
-    const scoreLevel = score > 80 ? 'high' : score > 60 ? 'mid' : 'low';
-    const message = messages[stage][scoreLevel];
+    const advice = this.generatePersonalizedAdvice(compatibilityScore, stage);
     
     return {
       type: 'bubble',
@@ -229,7 +309,7 @@ class FortuneCarouselBuilder {
         contents: [
           {
             type: 'text',
-            text: '✨ 月が映す総合運勢',
+            text: '総合分析結果',
             size: 'xl',
             color: '#ffffff',
             weight: 'bold',
@@ -246,27 +326,97 @@ class FortuneCarouselBuilder {
         contents: [
           {
             type: 'text',
-            text: 'おふたりの恋の輝き:',
-            size: 'md',
-            color: '#555555',
+            text: '相性スコア',
+            size: 'sm',
+            color: '#888888',
             align: 'center'
           },
           {
             type: 'text',
-            text: '★'.repeat(stars) + '☆'.repeat(5 - stars),
-            size: 'xxl',
-            color: '#FFD700',
+            text: `${compatibilityScore}点`,
+            size: '80px',
+            weight: 'bold',
+            color: this.getScoreColor(compatibilityScore),
             align: 'center',
             margin: 'md'
           },
           {
-            type: 'text',
-            text: `月の満ち欠け度: ${score}%`,
-            size: 'lg',
-            weight: 'bold',
-            color: '#667eea',
-            align: 'center',
-            margin: 'lg'
+            type: 'box',
+            layout: 'vertical',
+            backgroundColor: '#f5f5f5',
+            cornerRadius: '8px',
+            paddingAll: '12px',
+            margin: 'lg',
+            contents: [
+              {
+                type: 'box',
+                layout: 'horizontal',
+                contents: [
+                  {
+                    type: 'text',
+                    text: '会話の盛り上がり',
+                    size: 'sm',
+                    color: '#555555',
+                    flex: 3
+                  },
+                  {
+                    type: 'text',
+                    text: messageFrequency.label,
+                    size: 'sm',
+                    weight: 'bold',
+                    color: '#667eea',
+                    align: 'end',
+                    flex: 2
+                  }
+                ]
+              },
+              {
+                type: 'box',
+                layout: 'horizontal',
+                margin: 'sm',
+                contents: [
+                  {
+                    type: 'text',
+                    text: '感情の温度',
+                    size: 'sm',
+                    color: '#555555',
+                    flex: 3
+                  },
+                  {
+                    type: 'text',
+                    text: emotionalIntensity.label,
+                    size: 'sm',
+                    weight: 'bold',
+                    color: '#667eea',
+                    align: 'end',
+                    flex: 2
+                  }
+                ]
+              },
+              {
+                type: 'box',
+                layout: 'horizontal',
+                margin: 'sm',
+                contents: [
+                  {
+                    type: 'text',
+                    text: '話題の豊富さ',
+                    size: 'sm',
+                    color: '#555555',
+                    flex: 3
+                  },
+                  {
+                    type: 'text',
+                    text: topicDiversity.label,
+                    size: 'sm',
+                    weight: 'bold',
+                    color: '#667eea',
+                    align: 'end',
+                    flex: 2
+                  }
+                ]
+              }
+            ]
           },
           {
             type: 'separator',
@@ -274,7 +424,7 @@ class FortuneCarouselBuilder {
           },
           {
             type: 'text',
-            text: '月詠からの導き：',
+            text: '現在の関係性',
             size: 'sm',
             weight: 'bold',
             color: '#333333',
@@ -282,11 +432,20 @@ class FortuneCarouselBuilder {
           },
           {
             type: 'text',
-            text: `「${message}」`,
-            size: 'md',
+            text: stage,
+            size: 'lg',
+            weight: 'bold',
+            color: '#667eea',
+            align: 'center',
+            margin: 'sm'
+          },
+          {
+            type: 'text',
+            text: advice,
+            size: 'sm',
             color: '#555555',
             align: 'center',
-            margin: 'sm',
+            margin: 'md',
             wrap: true
           }
         ]
@@ -411,13 +570,25 @@ class FortuneCarouselBuilder {
   }
   
   /**
-   * カード3: おつきさま診断の検証（v2.0深化版）
+   * カード3: 会話パターン分析
    */
   addCard3_MoonValidationPage() {
-    // v2.0: 行動パターン分析による検証
-    const moonPhase = this.getMoonPhase();
-    const behaviorAnalysis = this.analyzeBehaviorPatterns();
-    const partnerPrediction = this.getPartnerPrediction(moonPhase);
+    // トーク履歴から詳細なパターンを分析
+    const messages = this.fortune.messages || [];
+    const analysis = this.fortune.analysis || {};
+    
+    // 時間帯別分析
+    const timePatterns = this.analyzeTimePatterns(messages);
+    const peakHours = timePatterns.peakHours || [];
+    const quietHours = timePatterns.quietHours || [];
+    
+    // 話題分析
+    const topics = this.analyzeTopics(messages);
+    const hotTopics = topics.hot || [];
+    const avoidTopics = topics.avoid || [];
+    
+    // 返信パターン
+    const responsePattern = this.analyzeResponsePattern(messages);
     
     return {
       type: 'bubble',
@@ -430,7 +601,7 @@ class FortuneCarouselBuilder {
         contents: [
           {
             type: 'text',
-            text: '🌙 月が映す真実',
+            text: '会話パターン分析',
             size: 'xl',
             color: '#ffffff',
             weight: 'bold',
@@ -447,20 +618,38 @@ class FortuneCarouselBuilder {
         contents: [
           {
             type: 'text',
-            text: `今宵の月相：${moonPhase.name}`,
-            size: 'lg',
+            text: '最も盛り上がる時間帯',
+            size: 'sm',
             weight: 'bold',
-            color: '#e91e63',
-            align: 'center'
+            color: '#333333'
           },
           {
-            type: 'text',
-            text: `月の導き：「${moonPhase.description}」`,
-            size: 'md',
-            color: '#555555',
-            align: 'center',
-            margin: 'md',
-            wrap: true
+            type: 'box',
+            layout: 'horizontal',
+            margin: 'sm',
+            contents: peakHours.slice(0, 3).map(hour => ({
+              type: 'box',
+              layout: 'vertical',
+              flex: 1,
+              contents: [
+                {
+                  type: 'text',
+                  text: hour.time,
+                  size: 'md',
+                  weight: 'bold',
+                  color: '#e91e63',
+                  align: 'center'
+                },
+                {
+                  type: 'text',
+                  text: `${hour.messageCount}件`,
+                  size: 'xs',
+                  color: '#888888',
+                  align: 'center',
+                  margin: 'xs'
+                }
+              ]
+            }))
           },
           {
             type: 'separator',
@@ -468,20 +657,43 @@ class FortuneCarouselBuilder {
           },
           {
             type: 'text',
-            text: '月が告げる変化の兆し：',
+            text: '盛り上がる話題 TOP3',
             size: 'sm',
             weight: 'bold',
             color: '#333333',
             margin: 'lg'
           },
-          ...behaviorAnalysis.map(pattern => ({
-            type: 'text',
-            text: pattern,
-            size: 'xs',
-            color: pattern.startsWith('✅') ? '#4CAF50' : 
-                   pattern.startsWith('⚠️') ? '#FF9800' : '#666666',
+          ...hotTopics.slice(0, 3).map((topic, index) => ({
+            type: 'box',
+            layout: 'horizontal',
             margin: 'sm',
-            wrap: true
+            contents: [
+              {
+                type: 'text',
+                text: `${index + 1}.`,
+                size: 'sm',
+                color: '#e91e63',
+                flex: 0,
+                weight: 'bold'
+              },
+              {
+                type: 'text',
+                text: topic.name,
+                size: 'sm',
+                color: '#555555',
+                flex: 3,
+                margin: 'sm'
+              },
+              {
+                type: 'text',
+                text: `${topic.excitement}%`,
+                size: 'sm',
+                color: '#e91e63',
+                align: 'end',
+                flex: 1,
+                weight: 'bold'
+              }
+            ]
           })),
           {
             type: 'separator',
@@ -489,26 +701,79 @@ class FortuneCarouselBuilder {
           },
           {
             type: 'text',
-            text: 'お相手の心に映る月：',
+            text: '返信パターン',
             size: 'sm',
             weight: 'bold',
             color: '#333333',
             margin: 'lg'
           },
           {
-            type: 'text',
-            text: `「${partnerPrediction.prediction}」`,
-            size: 'sm',
-            color: '#555555',
+            type: 'box',
+            layout: 'horizontal',
             margin: 'sm',
-            wrap: true
+            contents: [
+              {
+                type: 'box',
+                layout: 'vertical',
+                flex: 1,
+                contents: [
+                  {
+                    type: 'text',
+                    text: '平均返信時間',
+                    size: 'xs',
+                    color: '#888888',
+                    align: 'center'
+                  },
+                  {
+                    type: 'text',
+                    text: responsePattern.avgTime,
+                    size: 'md',
+                    weight: 'bold',
+                    color: '#e91e63',
+                    align: 'center',
+                    margin: 'xs'
+                  }
+                ]
+              },
+              {
+                type: 'separator',
+                margin: 'md'
+              },
+              {
+                type: 'box',
+                layout: 'vertical',
+                flex: 1,
+                contents: [
+                  {
+                    type: 'text',
+                    text: '即レス率',
+                    size: 'xs',
+                    color: '#888888',
+                    align: 'center'
+                  },
+                  {
+                    type: 'text',
+                    text: `${responsePattern.instantRate}%`,
+                    size: 'md',
+                    weight: 'bold',
+                    color: '#e91e63',
+                    align: 'center',
+                    margin: 'xs'
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            type: 'separator',
+            margin: 'lg'
           },
           {
             type: 'text',
-            text: partnerPrediction.actual,
+            text: responsePattern.advice,
             size: 'sm',
-            color: '#4CAF50',
-            margin: 'sm',
+            color: '#555555',
+            margin: 'lg',
             wrap: true
           }
         ]
@@ -1652,6 +1917,270 @@ class FortuneCarouselBuilder {
     if (rate >= 85) return this.styles.auroraGreen;
     if (rate >= 70) return this.styles.gold;
     return this.styles.roseGold;
+  }
+  
+  /**
+   * 関係性の深さを計算
+   */
+  calculateRelationshipDepth() {
+    const messages = this.fortune.messages || [];
+    const totalMessages = messages.length;
+    
+    if (totalMessages > 1000) {
+      return {
+        level: '深い絆',
+        description: '長い時間をかけて築かれた強い信頼関係があります'
+      };
+    } else if (totalMessages > 500) {
+      return {
+        level: '成長期',
+        description: '着実に関係が深まっており、更なる発展が期待できます'
+      };
+    } else if (totalMessages > 100) {
+      return {
+        level: '発展途上',
+        description: 'お互いを知り始め、関係が育まれている段階です'
+      };
+    } else {
+      return {
+        level: '始まったばかり',
+        description: '新しい関係の始まり。これから多くの可能性が開かれます'
+      };
+    }
+  }
+  
+  /**
+   * メッセージ頻度分析
+   */
+  analyzeMessageFrequency(messages) {
+    if (!messages || messages.length === 0) {
+      return { score: 50, label: '分析中' };
+    }
+    
+    const dailyAvg = messages.length / 30; // 30日間の平均と仮定
+    if (dailyAvg > 20) {
+      return { score: 90, label: '非常に活発' };
+    } else if (dailyAvg > 10) {
+      return { score: 75, label: '活発' };
+    } else if (dailyAvg > 5) {
+      return { score: 60, label: '普通' };
+    } else {
+      return { score: 40, label: 'ゆったり' };
+    }
+  }
+  
+  /**
+   * 感情の温度分析
+   */
+  analyzeEmotionalIntensity(messages) {
+    if (!messages || messages.length === 0) {
+      return { score: 50, label: '分析中' };
+    }
+    
+    // 絵文字や感嘆符の使用率をカウント
+    let emotionalCount = 0;
+    messages.forEach(msg => {
+      const text = msg.content || '';
+      if (text.match(/[！!♡♥❤️😊😍🥰]/)) {
+        emotionalCount++;
+      }
+    });
+    
+    const emotionalRate = (emotionalCount / messages.length) * 100;
+    if (emotionalRate > 50) {
+      return { score: 85, label: '熱い' };
+    } else if (emotionalRate > 30) {
+      return { score: 70, label: '温かい' };
+    } else if (emotionalRate > 15) {
+      return { score: 55, label: '穏やか' };
+    } else {
+      return { score: 40, label: 'クール' };
+    }
+  }
+  
+  /**
+   * 話題の多様性分析
+   */
+  analyzeTopicDiversity(messages) {
+    if (!messages || messages.length === 0) {
+      return { score: 50, label: '分析中' };
+    }
+    
+    // 簡易的に話題の多様性を判定
+    const topics = new Set();
+    const keywords = ['仕事', '食事', '映画', '音楽', '週末', '趣味', '家族', '友達', 'デート', '旅行'];
+    
+    messages.forEach(msg => {
+      const text = msg.content || '';
+      keywords.forEach(keyword => {
+        if (text.includes(keyword)) {
+          topics.add(keyword);
+        }
+      });
+    });
+    
+    const diversityScore = (topics.size / keywords.length) * 100;
+    if (diversityScore > 60) {
+      return { score: 80, label: '豊富' };
+    } else if (diversityScore > 40) {
+      return { score: 65, label: '普通' };
+    } else if (diversityScore > 20) {
+      return { score: 50, label: '限定的' };
+    } else {
+      return { score: 35, label: '少ない' };
+    }
+  }
+  
+  /**
+   * スコアに基づく色を取得
+   */
+  getScoreColor(score) {
+    if (score >= 80) return '#4CAF50';
+    if (score >= 60) return '#667eea';
+    if (score >= 40) return '#FF9800';
+    return '#F44336';
+  }
+  
+  /**
+   * パーソナライズされたアドバイスを生成
+   */
+  generatePersonalizedAdvice(score, stage) {
+    if (score >= 80) {
+      return '素晴らしい相性です。このまま自然体で関係を深めていきましょう。';
+    } else if (score >= 60) {
+      return '良好な関係が築けています。もう少し積極的にコミュニケーションを取ってみましょう。';
+    } else if (score >= 40) {
+      return '関係構築の初期段階です。相手のペースを大切にしながら、徐々に距離を縮めていきましょう。';
+    } else {
+      return 'まだお互いを知る段階です。焦らず、共通の話題を見つけることから始めましょう。';
+    }
+  }
+  
+  /**
+   * 時間パターン分析
+   */
+  analyzeTimePatterns(messages) {
+    if (!messages || messages.length === 0) {
+      return { peakHours: [], quietHours: [] };
+    }
+    
+    // 時間帯別にメッセージをカウント
+    const hourCounts = {};
+    messages.forEach(msg => {
+      const date = new Date(msg.timestamp || msg.date);
+      const hour = date.getHours();
+      hourCounts[hour] = (hourCounts[hour] || 0) + 1;
+    });
+    
+    // ピーク時間を特定
+    const sortedHours = Object.entries(hourCounts)
+      .sort((a, b) => b[1] - a[1])
+      .map(([hour, count]) => ({
+        time: `${hour}時台`,
+        messageCount: count
+      }));
+    
+    return {
+      peakHours: sortedHours.slice(0, 3),
+      quietHours: sortedHours.slice(-3)
+    };
+  }
+  
+  /**
+   * 話題分析
+   */
+  analyzeTopics(messages) {
+    if (!messages || messages.length === 0) {
+      return { hot: [], avoid: [] };
+    }
+    
+    // 話題ごとの盛り上がり度を計算（簡易版）
+    const topics = [
+      { name: '仕事・キャリア', keyword: '仕事', excitement: 0 },
+      { name: 'グルメ・食事', keyword: '食', excitement: 0 },
+      { name: 'エンタメ', keyword: '映画', excitement: 0 },
+      { name: '趣味・休日', keyword: '週末', excitement: 0 },
+      { name: '恋愛話', keyword: '好き', excitement: 0 }
+    ];
+    
+    messages.forEach(msg => {
+      const text = msg.content || '';
+      topics.forEach(topic => {
+        if (text.includes(topic.keyword)) {
+          topic.excitement += text.length > 50 ? 2 : 1;
+        }
+      });
+    });
+    
+    // 盛り上がり度を正規化
+    topics.forEach(topic => {
+      topic.excitement = Math.min(95, Math.round((topic.excitement / messages.length) * 100));
+    });
+    
+    const sortedTopics = topics.sort((a, b) => b.excitement - a.excitement);
+    
+    return {
+      hot: sortedTopics.slice(0, 3),
+      avoid: sortedTopics.slice(-2)
+    };
+  }
+  
+  /**
+   * 返信パターン分析
+   */
+  analyzeResponsePattern(messages) {
+    if (!messages || messages.length < 2) {
+      return {
+        avgTime: '計測中',
+        instantRate: 0,
+        advice: 'もう少しメッセージを重ねると詳細な分析ができます'
+      };
+    }
+    
+    // 返信時間を計算（簡易版）
+    let totalResponseTime = 0;
+    let instantResponses = 0;
+    let responseCount = 0;
+    
+    for (let i = 1; i < messages.length; i++) {
+      const timeDiff = new Date(messages[i].timestamp) - new Date(messages[i-1].timestamp);
+      const minutes = timeDiff / 60000;
+      
+      if (minutes < 5) {
+        instantResponses++;
+      }
+      if (minutes < 1440) { // 24時間以内の返信のみカウント
+        totalResponseTime += minutes;
+        responseCount++;
+      }
+    }
+    
+    const avgMinutes = responseCount > 0 ? Math.round(totalResponseTime / responseCount) : 0;
+    const instantRate = Math.round((instantResponses / messages.length) * 100);
+    
+    let avgTimeStr;
+    if (avgMinutes < 60) {
+      avgTimeStr = `${avgMinutes}分`;
+    } else if (avgMinutes < 1440) {
+      avgTimeStr = `${Math.round(avgMinutes / 60)}時間`;
+    } else {
+      avgTimeStr = `${Math.round(avgMinutes / 1440)}日`;
+    }
+    
+    let advice;
+    if (instantRate > 50) {
+      advice = 'リアルタイムでの会話が多く、お互いに強い関心を持っています';
+    } else if (instantRate > 30) {
+      advice = 'バランスの良い返信ペースで、健全な関係が築けています';
+    } else {
+      advice = 'ゆったりとしたペースの会話。もう少し積極的にアプローチしてみても良いでしょう';
+    }
+    
+    return {
+      avgTime: avgTimeStr,
+      instantRate,
+      advice
+    };
   }
   
   /**
