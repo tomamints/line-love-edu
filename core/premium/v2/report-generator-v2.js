@@ -105,7 +105,7 @@ class PremiumReportGeneratorV2 {
     // P.1-2: 表紙・序章
     analysisContext.reportContent.page1 = {
       userName: `${user.name} 様`,
-      partnerName: 'お相手様との絆へ',
+      partnerName: partner.name ? `${partner.name} 様との絆へ` : 'お相手様との絆へ',
       reportId: metadata.reportId,
       generatedDate: new Date(metadata.generatedDate).toLocaleDateString('ja-JP', {
         year: 'numeric',
@@ -116,7 +116,7 @@ class PremiumReportGeneratorV2 {
     
     analysisContext.reportContent.page2 = {
       title: '序章 ～月夜の導き～',
-      body: `${user.name}様、そしてお相手様。\n\n月詠（つくよみ）と申します。\n\n今宵、月が照らし出すのは、お二人が紡いできた言葉の数々。\nそれぞれの言葉に込められた想いを、月の光で優しく包み込み、\nこれからの道筋を照らす羅針盤として、このレポートをお届けします。\n\nどうか、ゆっくりとページをめくりながら、\n二人だけの物語を、心ゆくまでお楽しみください。`
+      body: `${user.name}様。\n\n月詠（つくよみ）と申します。\n\n今宵、月が照らし出すのは、あなたと${partner.name ? partner.name + '様' : 'お相手様'}が紡いできた言葉の数々。\nそれぞれの言葉に込められた想いを、月の光で優しく包み込み、\nこれからの道筋を照らす羅針盤として、このレポートをお届けします。\n\nどうか、ゆっくりとページをめくりながら、\nあなたたち二人だけの物語を、心ゆくまでお楽しみください。`
     };
     
     // P.3: 時系列グラフデータ
@@ -124,7 +124,7 @@ class PremiumReportGeneratorV2 {
       title: '二人の言葉の満ち欠け',
       data: statistics.dailyMessageCounts,
       peakDate: statistics.peakDate,
-      peakComment: aiInsights.peakDateComment || '特別な日の輝き'
+      peakComment: aiInsights.dailyActivityComment || aiInsights.peakDateComment || '特別な日の輝き'
     };
     
     // P.4: 時間帯グラフデータ
@@ -133,16 +133,23 @@ class PremiumReportGeneratorV2 {
       data: statistics.hourlyMessageCounts,
       peakHour: statistics.peakHour,
       peakHourRatio: statistics.peakHourRatio,
-      comment: this.getTimeComment(statistics.peakHour)
+      comment: aiInsights.hourlyActivityComment || this.getTimeComment(statistics.peakHour)
     };
     
     // P.5: 会話の質
     analysisContext.reportContent.page5 = {
       title: '心に灯った感情の星々',
-      positivityRate: statistics.positivityRate,
-      totalEmojis: statistics.totalEmojis,
-      questionRatio: statistics.questionRatio,
-      comment: '二人の会話は、温かい光に包まれています。'
+      positivityRate: statistics.positivityRate || 0,
+      totalEmojis: statistics.totalEmojis || 0,
+      questionRatio: statistics.questionRatio || '0%',
+      responseTimeMedian: statistics.responseTimeMedian || 30,
+      userAvgMessageLength: statistics.userAvgMessageLength || 0,
+      partnerAvgMessageLength: statistics.partnerAvgMessageLength || 0,
+      comment: aiInsights.qualityComment || (statistics.positivityRate > 70 
+        ? '二人の会話は、温かい光に満ち溢れています。'
+        : statistics.positivityRate > 40
+        ? '二人の会話は、穏やかな光に包まれています。'
+        : '二人の会話は、静かな光を宿しています。')
     };
     
     // P.6-7: 総合診断
@@ -158,7 +165,8 @@ class PremiumReportGeneratorV2 {
       title: '絆をかたちづくる五つの光',
       fivePillars: scores.fivePillars,
       strongestPillar: scores.strongestPillar,
-      weakestPillar: scores.weakestPillar
+      weakestPillar: scores.weakestPillar,
+      comment: aiInsights.fivePillarsComment || ''
     };
     
     // P.9-11: アクションプラン

@@ -32,6 +32,9 @@ class AIGenerator {
       // P.12: 未来予測
       await this.generateFutureSigns(analysisContext);
       
+      // 各ページの月詠コメント生成
+      await this.generatePageComments(analysisContext);
+      
     } catch (error) {
       console.error('AI生成エラー:', error);
       // エラー時はデフォルト値を使用
@@ -447,6 +450,119 @@ ${JSON.stringify(inputData, null, 2)}
         challenge: '低'
       };
     }
+  }
+  
+  /**
+   * 各ページの月詠コメントを生成
+   */
+  async generatePageComments(analysisContext) {
+    const { situation, statistics, scores } = analysisContext;
+    
+    // P.3: 曜日別コメント
+    this.generateDailyActivityComment(analysisContext);
+    
+    // P.4: 時間帯別コメント
+    this.generateHourlyActivityComment(analysisContext);
+    
+    // P.5: 会話の質コメント
+    this.generateQualityComment(analysisContext);
+    
+    // P.8: 5つの柱コメント
+    this.generateFivePillarsComment(analysisContext);
+  }
+  
+  /**
+   * P.3: 曜日別活動の月詠コメント
+   */
+  generateDailyActivityComment(analysisContext) {
+    const { situation, statistics } = analysisContext;
+    const loveSituation = situation?.loveSituation || 'beginning';
+    const wantToKnow = situation?.wantToKnow || 'feelings';
+    
+    // 恋愛状況と知りたいことに基づいたコメント生成
+    let comment = '';
+    
+    if (loveSituation === 'beginning' && wantToKnow === 'feelings') {
+      comment = `まだ始まったばかりの関係性の中で、相手の真の気持ちを知りたいあなた。月は告げています、${statistics.peakDate || 'この日'}の活発な会話こそが、相手の心の扉を開く鍵となるでしょう。言葉の温度が高まる時、そこに真実が宿ります。`;
+    } else if (loveSituation === 'relationship' && wantToKnow === 'action') {
+      comment = `交際を深めているお二人。曜日ごとの会話のリズムは、今後の行動の指針となるでしょう。月が示す道は、最も言葉が輝く日に、大切な話を切り出すこと。月の満ち欠けのように、会話にもリズムがあるのです。`;
+    } else if (loveSituation === 'complicated' && wantToKnow === 'past') {
+      comment = `複雑な事情を抱える恋の中で、過去の出来事の意味を知りたいあなた。月は、すべての出来事には意味があると告げています。特に活発だった日の会話に、今の状況を解くヒントが隠されています。`;
+    } else if (loveSituation === 'ending' && wantToKnow === 'future') {
+      comment = `終わりを迎えた関係の未来。月は、新たな始まりの種がすでに蓄かれていることを示しています。過去の会話パターンは、あなたが次に進むべき道を照らす光となるでしょう。`;
+    } else {
+      // デフォルト
+      comment = `月の光が照らし出す、曜日ごとの会話のリズム。${statistics.peakDate || '特別な日'}に最も輝いた言葉たちは、二人の絆の深さを物語っています。月の満ち欠けのように、会話にも自然な波があるのです。`;
+    }
+    
+    analysisContext.aiInsights.dailyActivityComment = comment;
+  }
+  
+  /**
+   * P.4: 時間帯別活動の月詠コメント
+   */
+  generateHourlyActivityComment(analysisContext) {
+    const { situation, statistics } = analysisContext;
+    const loveSituation = situation?.loveSituation || 'beginning';
+    const wantToKnow = situation?.wantToKnow || 'feelings';
+    const peakHour = statistics.peakHour || 21;
+    
+    let comment = '';
+    
+    if (wantToKnow === 'feelings') {
+      comment = `${peakHour}時、月が最も高く昇る頃、相手の本音が最も現れやすい時間です。この時間帯の会話に、相手の真の気持ちが隠されています。月明かりが心の奥底を照らすように、言葉の裏にある真実を読み取りましょう。`;
+    } else if (wantToKnow === 'action') {
+      comment = `活発な${peakHour}時という時間が、今後の行動のヒントを与えています。月は告げています、この時間を大切にすることで、関係性はより深まると。月の光が最も強い時、勇気を持って一歩踏み出しましょう。`;
+    } else {
+      comment = `${peakHour}時に最も輝く言葉たち。月が高く昇るこの時間、二人の心も最も近づいています。夜の静寂がもたらす安心感が、素直な言葉を引き出しているのでしょう。`;
+    }
+    
+    analysisContext.aiInsights.hourlyActivityComment = comment;
+  }
+  
+  /**
+   * P.5: 会話の質の月詠コメント
+   */
+  generateQualityComment(analysisContext) {
+    const { situation, statistics } = analysisContext;
+    const loveSituation = situation?.loveSituation || 'beginning';
+    const wantToKnow = situation?.wantToKnow || 'feelings';
+    const positivityRate = statistics.positivityRate || 0;
+    
+    let comment = '';
+    
+    if (loveSituation === 'ending' && wantToKnow === 'feelings') {
+      comment = `終わりを迎えた関係の中で、相手の真の気持ちを知りたいあなた。${positivityRate}%というポジティブ率は、月が告げています、まだ心に温かい光が残っていることを。絵文字や質問の一つ一つに、未練が隠されているかもしれません。`;
+    } else if (positivityRate > 70) {
+      comment = `${positivityRate}%という高いポジティブ率は、満月のように明るく輝いています。絵文字が舞い、素早い返信が心の距離を縮めています。月は告げています、この温かさを大切に育んでいくことで、さらなる幸福が訪れると。`;
+    } else {
+      comment = `会話の中に宿る感情の星々。月は静かに照らしています、一つ一つの言葉に込められた思いを。絵文字や質問のバランスが、二人の関係性の現在地を示しています。`;
+    }
+    
+    analysisContext.aiInsights.qualityComment = comment;
+  }
+  
+  /**
+   * P.8: 5つの柱の月詠コメント
+   */
+  generateFivePillarsComment(analysisContext) {
+    const { situation, scores } = analysisContext;
+    const loveSituation = situation?.loveSituation || 'beginning';
+    const wantToKnow = situation?.wantToKnow || 'feelings';
+    const strongest = scores.strongestPillar?.name || '心の対話';
+    const weakest = scores.weakestPillar?.name || '生活の調和';
+    
+    let comment = '';
+    
+    if (loveSituation === 'beginning' && wantToKnow === 'action') {
+      comment = `恋の始まりにあるあなたが、今どうすべきかを知りたいのは当然のこと。${strongest}が最も強い光を放つ今、月はこの強みを活かすことを勧めています。${weakest}はまだ新月のように暗いけれど、これから満ちていく可能性を秘めています。`;
+    } else if (loveSituation === 'relationship') {
+      comment = `交際中のお二人の絆を形作る五つの光。${strongest}は満月のように輝き、関係の土台をしっかりと支えています。${weakest}はまだ成長の余地があるけれど、月は告げています、すべてが完璧である必要はないと。`;
+    } else {
+      comment = `五つの光が織りなす、あなたたちの絆の形。${strongest}の輝きは特に強く、関係性の核心を成しています。月は教えています、強みを伸ばすことで、弱みも自然と補われていくと。`;
+    }
+    
+    analysisContext.aiInsights.fivePillarsComment = comment;
   }
 }
 

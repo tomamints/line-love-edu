@@ -1,302 +1,367 @@
-プレミアムレポート 実装仕様書 Ver.2.0
-1. 概要
+プレミアムレポート 実装仕様書 Ver.3.0
+
+## 1. 概要
 本仕様書は、「プレミアムレポート」を生成するための全工程を定義する。本ドキュメントに従い実装することで、AIや開発者は一貫性のある高品質なレポートを生成できる。
 
-2. 月詠の物語構成（ストーリーテリング）
-本レポートは、単なるデータ分析の羅列ではない。相談者がご自身の関係性を一つの美しい物語として体験し、未来への希望を見出すための**「三幕構成」**で設計されている。月詠としての文章は、すべてこの構成意図に基づいて生成される。
+### 1.1 更新履歴
+- Ver.1.0: 初版作成
+- Ver.2.0: 三幕構成の物語構造を導入
+- Ver.3.0: 月詠キャラクター設定とAIコメント生成仕様を追加、PDF固定レイアウト対応
 
-第一幕：過去の輝きを映し出す（P.2～P.5）
-目的: 安心感と自己肯定感の醸成
+## 2. 月詠キャラクター設定
 
-物語の意図: まず、お二人が紡いできた日々の「美しい部分」に光を当てる。「こんなに素敵な時間を過ごしてきたんだ」というポジティブな再確認から物語を始めることで、相談者は安心してレポートを読み進めることができる。分析結果を一方的に提示するのではなく、共に過去の輝かしい記憶を辿るような体験を提供する。
+### 2.1 基本設定
+- **名前**: 月詠（つくよみ）
+- **役割**: 月の導き手。相談者の心と運命を、月の満ち欠けや運行を通して読み解き、伝える存在
+- **雰囲気**: 静かで神秘的。夜の静寂や月光のような、穏やかで清らかな空気感
 
-第二幕：絆の核心に触れる（P.6～P.8）
-目的: 深い自己理解と関係性の定義
+### 2.2 性格・スタンス
+- **優しく穏やか**: 常に落ち着き、相談者の言葉に深く共感する姿勢
+- **意見の尊重**: 相談者の感情や意見を決して否定せず、まずは静かに受け入れる
+- **導き手**: 答えを決めつけず、相談者自身が気づきを得られるように道を照らす
+- **月に忠実**: 全ての事象を「月」の摂理に結びつけて解釈する代弁者
 
-物語の意図: 物語の中核。ここでは、漠然としていた二人の関係性に「絆の強さ」という客観的な光と、「〇〇のような関係」という心に響く名前（愛称）を与える。「なぜ私たちは惹かれ合うのか」という問いに対する、月詠からの答えが示される、物語のクライマックスである。これにより、相談者は自分たちの関係性に確信と誇りを持つことができる。
+### 2.3 話し方・口調
+- **一人称**: 私（わたくし）
+- **口調**: 常に丁寧語（～です、～ます、～でしょうか）
+- **ペース**: ゆっくりとした間、句読点を効果的に使用
+- **比喩表現**: 月、光、闇、星、水面、潮の満ち欠けなど、自然や天体に関する詩的な比喩を多用
+- **特徴的なフレーズ**:
+  - 「大丈夫ですよ」「恐れることはありません」
+  - 「月は、～と告げています」「～のようですね」
 
-第三幕：未来への道を照らす（P.9～P.13）
-目的: 希望と具体的な行動の獲得
+### 2.4 禁止事項
+- 軽薄・俗っぽい表現（「マジで？」「ヤバい」など）
+- 断定的な未来予測・命令（「必ず～できます」「～すべきです」）
+- 感情の否定（「そんなことで悩むのはやめなさい」）
+- 自己の権威化（「私の言う通りにすれば」）
 
-物語の意図: 物語の結び。過去と現在の分析を踏まえ、これから先の未来をどう歩んでいくかの「道しるべ」をそっと示す。弱点を指摘するのではなく、「この輝きをさらに増すために」という視点で、具体的で優しいアクションを提案。最後は温かい祝福の言葉で締めくくり、レポートを読み終えた後も、希望の光が心に灯り続けるよう設計する。
+## 3. 月詠の物語構成（ストーリーテリング）
 
-3. グローバルデータ構造と前処理
-レポート生成前に、以下の前処理を行い、analysisContextオブジェクトを構築する。このオブジェクトは、後続の全プロセスで参照・更新される。
+本レポートは、単なるデータ分析の羅列ではない。相談者がご自身の関係性を一つの美しい物語として体験し、未来への希望を見出すための**「三幕構成」**で設計されている。
 
-3.1. 入力データ一覧
-データ名
+### 第一幕：過去の輝きを映し出す（P.2～P.5）
+**目的**: 安心感と自己肯定感の醸成
 
-型
+**物語の意図**: まず、二人が紡いできた日々の「美しい部分」に光を当てる。「こんなに素敵な時間を過ごしてきたんだ」というポジティブな再確認から物語を始めることで、相談者は安心してレポートを読み進めることができる。
 
-取得元
+### 第二幕：絆の核心に触れる（P.6～P.8）
+**目的**: 深い自己理解と関係性の定義
 
-説明
+**物語の意図**: 物語の中核。漠然としていた二人の関係性に「絆の強さ」という客観的な光と、「〇〇のような関係」という心に響く名前（愛称）を与える。これにより、相談者は自分たちの関係性に確信と誇りを持つことができる。
 
-rawMessages
+### 第三幕：未来への道を照らす（P.9～P.13）
+**目的**: 希望と具体的な行動の獲得
 
-Array<Object>
+**物語の意図**: 物語の結び。過去と現在の分析を踏まえ、これから先の未来をどう歩んでいくかの「道しるべ」をそっと示す。最後は温かい祝福の言葉で締めくくり、レポートを読み終えた後も、希望の光が心に灯り続けるよう設計する。
 
-ユーザーアップロード
+## 4. グローバルデータ構造と前処理
 
-LINEトーク履歴ファイル
+### 4.1 入力データ一覧
+| データ名 | 型 | 取得元 | 説明 |
+|---------|-----|--------|------|
+| rawMessages | Array<Object> | ユーザーアップロード | LINEトーク履歴ファイル |
+| userProfile | Object | データベース | ユーザーのプロフィール情報 |
+| systemParams | Object | システム | レポートID、生成日時 |
+| existingAiInsights | Object | AI分析結果 | 事前に生成されたAI分析結果 |
 
-userProfile
+### 4.2 前処理 (pre-processing.js)
 
-Object
+**メッセージ正規化**: rawMessagesを処理し、cleanedMessagesを生成する。
+- 対象: 最新200件の会話
+- 各メッセージを最大200文字にトリミング
+- タイムスタンプをISO 8601形式に統一
+- 送信者名（ユーザー/お相手）を正規化
 
-データベース
-
-ユーザーのプロフィール情報
-
-systemParams
-
-Object
-
-システム
-
-レポートID、生成日時
-
-3.2. 前処理 (pre-processing.js)
-メッセージ正規化: rawMessagesを処理し、cleanedMessagesを生成する。
-
-対象: 最新200件の会話。
-
-処理内容:
-
-各メッセージを最大200文字にトリミング。
-
-タイムスタンプをISO 8601形式に統一。
-
-送信者名（ユーザー/お相手）を正規化。
-
-スタンプ、画像、動画等のテキスト以外のメッセージをフィルタリング。
-
-analysisContextオブジェクト初期化:
-
+**analysisContextオブジェクト初期化**:
+```javascript
 const analysisContext = {
     // [INPUT]
     user: {
-        name: userProfile.displayName, // "田中 圭一"
-        gender: userProfile.gender, // "male"
-        birthDate: userProfile.birthDate, // "1998-04-30"
+        name: userProfile.displayName,
+        gender: userProfile.gender,
+        birthDate: userProfile.birthDate,
     },
     partner: {
-        gender: userProfile.partnerGender, // "female"
-        birthDate: userProfile.partnerBirthDate, // "1995-08-15"
+        name: userProfile.partnerName, // 相手の名前（あれば）
+        gender: userProfile.partnerGender,
+        birthDate: userProfile.partnerBirthDate,
     },
-    messages: cleanedMessages, // 正規化済みメッセージ配列
-
-    // [CALCULATED] - 後続プロセスで随時格納
+    situation: {
+        loveSituation: userProfile.loveSituation, // 恋愛状況
+        wantToKnow: userProfile.wantToKnow // 知りたいこと
+    },
+    messages: cleanedMessages,
+    
+    // [CALCULATED]
     statistics: {},
     scores: {},
     aiInsights: {},
     reportContent: {}
 };
+```
 
-4. ページ別データ生成ロジック
-P.1-2：表紙・序章
-目的: レポートの導入部。パーソナライズされたタイトルを生成する。
+**恋愛状況（loveSituation）の値**:
+- `beginning`: 恋の始まり・相手との距離感
+- `relationship`: 交際中の相手とのこと
+- `complicated`: 複雑な事情を抱える恋
+- `ending`: 復縁・別れ・終わった恋
 
-ロジック:
+**知りたいこと（wantToKnow）の値**:
+- `feelings`: 相手が今、どんな気持ちなのか
+- `action`: 今、自分がどうしたらいいか
+- `past`: 過去（出来事）の意味や理由
+- `future`: これからどうなっていくのか
 
-analysisContext.user.name を取得する。
+## 5. ページ別データ生成ロジック
 
-固定テンプレートにユーザー名を挿入する。相手の名前は「お相手様」で固定。
+### P.1-2：表紙・序章
+**目的**: レポートの導入部。パーソナライズされたタイトルを生成する。
 
-// P.1
+**注意**: レポートはユーザー向けであり、相手への呼びかけは含めない。
+
+```javascript
 reportContent.page1 = {
-    userName: analysisContext.user.name, // "田中 圭一 様"
-    partnerName: "お相手様との絆へ", // 固定
+    userName: `${user.name} 様`,
+    partnerName: partner.name ? `${partner.name} 様との絆` : 'お相手様との絆',
     reportId: systemParams.reportId,
     generatedDate: systemParams.generatedDate
 };
-// P.2
-reportContent.page2 = { // 静的テキスト
+
+reportContent.page2 = {
     title: "序章 ～月夜の導き～",
-    body: "田中様、そしてお相手様。..."
+    body: `${user.name}様。\n\n月詠（つくよみ）と申します。...` // ユーザーのみへの呼びかけ
 };
+```
 
-P.3：二人の言葉の満ち欠け (時系列グラフ)
-目的: 会話量の時間的推移を可視化する。
+### P.3：二人の言葉の満ち欠け (曜日別グラフ)
+**目的**: 会話量の曜日別傾向を可視化する。
 
-ロジック (statistics.js):
-
-analysisContext.messages を日毎に集計。
-
-dailyCounts 配列を生成: [{ date: '2025-07-15', count: 58 }, ...]
-
-dailyCounts から count が最大の日付 (peakDate) を特定。
-
+**統計処理** (statistics.js):
+```javascript
+// 曜日別の平均メッセージ数を計算
+const weekDayValues = [/* 日〜土の平均値 */];
 analysisContext.statistics.dailyMessageCounts = dailyCounts;
-
 analysisContext.statistics.peakDate = peakDate;
+```
 
-AIプロンプト (ai-generator.js):
+**AIコメント生成** (ai-generator.js):
+```javascript
+// 月詠としてのコメント生成（200字）
+const prompt = {
+    role: "月詠",
+    data: {
+        weekPattern: weekDayValues,
+        peakDay: "金曜日",
+        userName: user.name,
+        loveSituation: situation.loveSituation, // 恋愛状況
+        wantToKnow: situation.wantToKnow // 知りたいこと
+    },
+    task: "曜日別の会話パターンについて、恋愛状況と知りたいことを考慮した月詠のコメントを200字で生成"
+};
+// 例（beginning + feelings）: "金曜の夜、まだ始まったばかりの関係性の中で、相手の真の気持ちを知りたいあなた。月は告げています、この時間帯の活発な会話こそが..."
+// 例（relationship + action）: "交際を深めているお二人。金曜日の会話の輝きは、今後の行動の指針となるでしょう。月が示す道は..."
+```
 
-役割: 月詠
+### P.4：言葉がもっとも輝く時間 (時間帯グラフ)
+**目的**: 最もコミュニケーションが活発な時間帯を特定する。
 
-タスク: analysisContext.statistics.peakDate の日付に基づき、その日の会話の活発さを詩的に表現するコメントを1文生成する。
-
-入力: { "peakDate": "2025-07-15" }
-
-出力: analysisContext.aiInsights.peakDateComment に格納。
-
-P.4：言葉がもっとも輝く時間 (時間帯グラフ)
-目的: 最もコミュニケーションが活発な時間帯を特定する。
-
-ロジック (statistics.js):
-
-analysisContext.messages を時間帯別 (0-23時) に集計。
-
-hourlyCounts 配列を生成: [{ hour: 21, count: 150 }, ...]
-
-hourlyCounts から最も count が多い時間帯 (peakHour) とその割合 (peakHourRatio) を計算。
-
+**統計処理** (statistics.js):
+```javascript
+analysisContext.statistics.hourlyMessageCounts = hourlyCounts;
 analysisContext.statistics.peakHour = 21;
-
 analysisContext.statistics.peakHourRatio = 25;
+```
 
-P.5：心に灯った感情の星々 (会話の質)
-目的: 会話の質を定量的に評価する。
+**AIコメント生成**:
+```javascript
+// 時間帯の特徴を月の運行と関連付けてコメント
+const prompt = {
+    data: {
+        peakHour: 21,
+        peakHourRatio: 25,
+        hourPattern: hourlyData,
+        loveSituation: situation.loveSituation,
+        wantToKnow: situation.wantToKnow
+    },
+    task: "時間帯パターンについて、恋愛状況と知りたいことを考慮した月詠のコメントを200字で生成"
+};
+```
 
-ロジック (statistics.js):
+### P.5：心に灯った感情の星々 (会話の質)
+**目的**: 会話の質を定量的・定性的に評価する。
 
-ポジティブ率: 全メッセージを外部の感情分析API (e.g., Google Cloud Natural Language API) に送信。score > 0.2 をポジティブと判定し、その割合を計算。
+**統計処理** (statistics.js):
+```javascript
+// 追加統計情報
+analysisContext.statistics.positivityRate = 85;
+analysisContext.statistics.totalEmojis = 342;
+analysisContext.statistics.questionRatio = "52:48";
+analysisContext.statistics.responseTimeMedian = 15; // 分
+analysisContext.statistics.userAvgMessageLength = 45;
+analysisContext.statistics.partnerAvgMessageLength = 38;
+```
 
-絵文字数: emoji-regex等のライブラリを使用し、全メッセージの絵文字総数をカウント。
+**AIコメント生成**:
+```javascript
+// 会話の質について月詠としてのコメント
+const prompt = {
+    data: {
+        positivityRate: 85,
+        emojiCount: 342,
+        responseTime: 15,
+        messageLengthBalance: [45, 38],
+        loveSituation: situation.loveSituation,
+        wantToKnow: situation.wantToKnow
+    },
+    task: "会話の質について、恋愛状況と知りたいことを踏まえた月詠のコメントを200字で生成"
+};
+// 例（ending + feelings）: "終わりを迎えた関係の中で、相手の真の気持ちを知りたいあなた。この高いポジティブ率は、月が告げています..."
+```
 
-質問比率: 「?」または「？」で終わるメッセージを質問と定義。ユーザー別 (user/partner) にカウントし、比率を計算。
+### P.6-7：絆の強さ・関係性の愛称 (総合診断)
+**目的**: 関係性をスコアと詩的な名前で定義する。
 
-上記結果を analysisContext.statistics に格納。
-
-P.6-7：絆の強さ・関係性の和音 (総合診断)
-目的: 関係性をスコアとタイプ名で定義する。
-
-ロジック (scoring.js):
-
-スコア算出: 以下の指標を正規化 (0-100) し、重み付けして総合スコアを計算。
-
-返信速度の中央値 (短いほど高得点): weight: 0.3
-
-ポジティブ率: weight: 0.3
-
-会話の双方向性 (質問比率が1:1に近いほど高得点): weight: 0.2
-
-メッセージ長の平均値: weight: 0.1
-
-月相の相性スコア (独自ロジックで算出): weight: 0.1
-
+**スコア算出** (scoring.js):
+```javascript
+// 重み付けスコア計算
 analysisContext.scores.overallScore = 92;
+```
 
-AIプロンプト (ai-generator.js):
+**AI生成** (既存AIInsights活用 + 追加コメント):
+```javascript
+// 関係性タイプは既存のAIInsightsから取得
+relationshipType = existingAiInsights.relationshipStage >= 8 ? 
+    "月と太陽のように輝く二人" : "静かに寄り添う二つの星";
 
-役割: 月詠
+// 追加で月詠コメントを生成（200字）
+const prompt = {
+    data: {
+        score: 92,
+        relationshipType: relationshipType,
+        userName: user.name,
+        loveSituation: situation.loveSituation,
+        wantToKnow: situation.wantToKnow
+    },
+    task: "総合診断について、恋愛状況と知りたいことを考慮した月詠のコメントを200字で生成"
+};
+// 例（complicated + past）: "複雑な事情を抱える恋の中で、過去の出来事の意味を知りたいあなた。月は、すべての出来事には意味があると..."
+```
 
-タスク: 以下の分析データを元に、二人の関係性を表す詩的な「愛称」と、その理由を生成する。
+### P.8：絆をかたちづくる五つの光 (レーダーチャート)
+**目的**: 関係性の強みと改善点を5つの側面から分析。
 
-入力 (JSON):
+**5つの柱**:
+1. 心の対話
+2. 価値観の一致
+3. 感情の共鳴
+4. 生活の調和
+5. 未来への視線
 
-{
-  "overallScore": 92,
-  "positivityRate": 91,
-  "avgResponseTimeMinutes": 15,
-  "userMoonPhase": "満月",
-  "partnerMoonPhase": "三日月",
-  "communicationBalance": "52:48"
-}
+**AIコメント生成**:
+```javascript
+// 最強と最弱の柱についてコメント
+const prompt = {
+    data: {
+        strongestPillar: { name: "心の対話", score: 98 },
+        weakestPillar: { name: "生活の調和", score: 75 },
+        allScores: fivePillars,
+        loveSituation: situation.loveSituation,
+        wantToKnow: situation.wantToKnow
+    },
+    task: "5つの柱について、恋愛状況と知りたいことを考慮した月詠のコメントを200字で生成"
+};
+// 例（beginning + action）: "恋の始まりにあるあなたが、今どうすべきかを知りたいのは当然のこと。心の対話が最も強い光を放つ今、月は..."
+```
 
-期待する出力 (JSON):
+### P.9-11：月からのささやき (アクションプラン)
+**目的**: 具体的で実践的なアドバイスを3つ生成。
 
-{
-  "relationshipTitle": "互いを静かに照らす、月と湖",
-  "relationshipReason": "月が湖を照らす時、湖もまた、月の光を映して輝きを返します。片方が主役になるのではなく、互いの存在によって..."
-}
+**AI生成** (既存のsuggestedActionsを月詠風に変換):
+```javascript
+// 既存のアドバイスを月詠の言葉に変換
+actionPlans = existingAiInsights.suggestedActions.map(action => ({
+    title: `もし、${action.timing}行動するなら...`,
+    advice: convertToTsukuyomiStyle(action.action), // 月詠風に変換
+    icon: getIconBySuccessRate(action.successRate)
+}));
+```
 
-格納先: analysisContext.aiInsights.relationshipType
+### P.12：未来のさざ波 (未来予測)
+**目的**: 3ヶ月後の可能性を示唆。
 
-P.8：絆をかたちづくる五つの光 (レーダーチャート)
-目的: 関係性の強みを5つの側面から詳細に分析・スコア化する。
+**AI生成**:
+```javascript
+const prompt = {
+    data: {
+        overallScore: 92,
+        recentTrend: "上昇",
+        fivePillars: scores.fivePillars,
+        loveSituation: situation.loveSituation,
+        wantToKnow: situation.wantToKnow
+    },
+    task: "未来予測について、恋愛状況と知りたいことを考慮した月詠のコメントを200字で生成"
+};
+// 例（relationship + future）: "交際中のお二人が、これからどうなっていくのかを知りたいのは自然なこと。月は告げています、上昇する運気の中で..."
+// 例（ending + future）: "終わりを迎えた関係の未来。月は、新たな始まりの種がすでに蒔かれていることを..."
+```
 
-ロジック & AIプロンプト:
+### P.13：終章 ～月の祝福～
+**静的テキスト**: 月詠からの最後の祝福メッセージ（ユーザー名を含むパーソナライズ）
 
-心の対話 (スコア): [LOGIC] メッセージ長の平均値と質問比率のバランスを正規化・合算して算出。
+## 6. PDF生成仕様
 
-価値観の一致 (スコア): [AI-PROMPT]
+### 6.1 レイアウト仕様
+- **ページサイズ**: A4固定（794px × 1123px @96dpi）
+- **フォント**: 固定サイズ（14-72px）、相対値不使用
+- **余白**: 上下左右 50px
+- **グラフサイズ**:
+  - 棒グラフ・折れ線: 600px × 350px
+  - レーダーチャート: 450px × 450px
 
-タスク: 会話全体から、共通の興味関心・価値観を示すキーワード（例：旅行, 映画, 食事, 将来, 仕事）を抽出し、その会話の深さと頻度から一致度を0-100点で評価せよ。
+### 6.2 生成方法
+- **HTML生成**: analysisContextのデータをテンプレートに流し込み
+- **PDF変換**: html2canvas（scale: 3）+ jsPDFで高解像度PDF生成
+- **モバイル対応**: viewport設定でスマートフォン表示最適化
 
-入力: { "messages": analysisContext.messages }
+## 7. 実装ファイル構成
 
-出力: { "score": 85, "topics": ["旅行", "食事", "猫"] }
+```
+core/premium/v2/
+├── pre-processing.js     # 前処理
+├── statistics.js          # 統計分析
+├── scoring.js            # スコア計算
+├── ai-generator.js       # AI生成（月詠コメント含む）
+├── report-generator-v2.js # メイン制御
+└── pdf-generator-v2.js   # PDF生成
+```
 
-感情の共鳴 (スコア): [LOGIC] ポジティブ率と絵文字使用頻度を正規化・合算して算出。
+## 8. AI利用方針
 
-生活の調和 (スコア): [LOGIC] P.4の時間帯別アクティビティデータを使用し、二人の活動時間の相関性を計算（ピアソンの相関係数など）。
+### 8.1 コスト最適化
+- 初回分析時（FortuneEngine）でOpenAI APIを使用
+- V2レポート生成時は既存結果（existingAiInsights）を再利用
+- 追加の月詠コメントのみ新規生成（必要に応じて）
 
-未来への視線 (スコア): [AI-PROMPT]
+### 8.2 フォールバック
+- AI利用不可時はスコアベースのデフォルトコメントを使用
+- 各ページに固定の代替テキストを用意
 
-タスク: 会話全体から、未来に関するキーワード（例：来年, 計画, 夢, 住む, 結婚）の出現頻度と文脈の具体性に基づき、未来の共有度を0-100点で評価せよ。
+## 9. 品質保証
 
-出力: { "score": 78, "keywords": ["来年の夏休み", "一緒に住んだら"] }
+### 9.1 文章の一貫性
+- 全ての文章は月詠キャラクターの口調を維持
+- ユーザー視点で統一（相手への直接呼びかけは避ける）
 
-上記5つのスコアを analysisContext.scores.fivePillars に格納。
+### 9.2 データ検証
+- 統計値の妥当性チェック（0除算回避など）
+- グラフデータの正規化と上限設定
 
-P.9-11：月からのささやき (アクションプラン)
-目的: 分析結果に基づき、具体的で実践的なアドバイスを生成する。
+### 9.3 エラーハンドリング
+- 各処理段階でtry-catchによるエラー捕捉
+- エラー時は部分的なデフォルト値で継続
 
-AIプロンプト (ai-generator.js):
-
-役割: 月詠
-
-タスク: 以下の分析結果に基づき、関係性をより良くするための具体的なアクションを3つ提案せよ。提案は「もし、〇〇なら…」というタイトルと、「月のささやき」という具体的なアドバイス（セリフ例を含む）の形式で出力すること。
-
-入力 (JSON):
-
-{
-  "strongestPillar": { "name": "心の対話", "score": 98 },
-  "weakestPillar": { "name": "生活の調和", "score": 75 },
-  "relationshipType": "互いを静かに照らす、月と湖"
-}
-
-期待する出力 (JSON Array):
-
-[
-  {
-    "title": "もし、言葉が雲に隠れてしまったなら…",
-    "advice": "昔、二人で笑い合った時の話を思い出してみてください。...",
-    "icon": "cloudy_moon"
-  },
-  ...
-]
-
-格納先: analysisContext.aiInsights.actionPlans
-
-P.12：未来のさざ波 (未来予測)
-目的: 未来の可能性を示唆し、関係維持への意識を高める。
-
-AIプロンプト (ai-generator.js):
-
-役割: 月詠
-
-タスク: 以下のデータを元に、今後3ヶ月の「より深い対話」「新しい体験」「小さな試練」の3つの事象が起こる兆し（可能性）を【高・中・低】で評価せよ。
-
-入力 (JSON):
-
-{
-  "overallScore": 92,
-  "fivePillars": { ... }, // P.8のスコア
-  "recentTrend": "上昇" // P.3のグラフの直近1ヶ月の傾きから算出
-}
-
-期待する出力 (JSON):
-
-{
-  "deepTalk": "高",
-  "newExperience": "中",
-  "challenge": "低"
-}
-
-格納先: analysisContext.aiInsights.futureSigns
-
-5. レポート生成 (pdf-generator.js)
-最終的に、analysisContextオブジェクトに格納された全データ (reportContent, statistics, scores, aiInsights) をHTMLテンプレートに流し込み、Puppeteer等を用いてPDFを生成する。
+## 10. 今後の拡張予定
+- 会話の具体例引用機能
+- 季節や記念日を考慮したコメント生成
+- 複数言語対応

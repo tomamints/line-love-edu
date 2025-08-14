@@ -24,9 +24,13 @@ class PreProcessor {
         birthDate: userProfile.birthDate || null
       },
       partner: {
-        name: 'お相手様', // プライバシー保護のため固定
+        name: userProfile.partnerName || 'お相手様', // 名前があれば使用
         gender: userProfile.partnerGender || 'unknown',
         birthDate: userProfile.partnerBirthDate || null
+      },
+      situation: {
+        loveSituation: userProfile?.love_situation || userProfile?.loveSituation || 'beginning',
+        wantToKnow: userProfile?.want_to_know || userProfile?.wantToKnow || 'feelings'
       },
       messages: cleanedMessages,
       

@@ -105,10 +105,13 @@ class PDFGeneratorV2 {
         
         for (let i = 0; i < pages.length; i++) {
           const canvas = await html2canvas(pages[i], {
-            scale: 2,
+            scale: 3, // より高解像度に
             useCORS: true,
             logging: false,
-            backgroundColor: '#ffffff'
+            backgroundColor: '#ffffff',
+            width: 794, // A4幅を明示的に指定
+            windowWidth: 794,
+            letterRendering: true
           });
           
           const imgData = canvas.toDataURL('image/png');
@@ -365,7 +368,7 @@ class PDFGeneratorV2 {
       .page {
         width: 794px;
         min-height: 1123px; /* A4高さ (297mm at 96dpi) */
-        padding: 60px 50px;
+        padding: 50px 40px; /* 余白を少し調整 */
         background: white;
         position: relative;
         page-break-after: always;
@@ -373,6 +376,7 @@ class PDFGeneratorV2 {
         margin: 0 auto;
         display: flex;
         flex-direction: column;
+        box-sizing: border-box; /* paddingを含めたサイズ計算 */
       }
       
       /* モバイル表示用 */
@@ -752,23 +756,41 @@ class PDFGeneratorV2 {
     <div class="page">
       <h1 class="page-title">${data.title}</h1>
       <div class="content-section">
-        <div style="display: flex; justify-content: space-around; margin: 40px 0;">
-          <div style="text-align: center;">
-            <div style="font-size: 48px;">😊</div>
-            <div style="font-size: 36px; color: #d63384; font-weight: bold;">${data.positivityRate}%</div>
-            <div style="color: #888;">ポジティブ率</div>
+        <div style="display: flex; justify-content: space-around; margin: 40px 0; width: 100%;">
+          <div style="text-align: center; flex: 1;">
+            <div style="font-size: 48px; line-height: 1;">😊</div>
+            <div style="font-size: 36px; color: #d63384; font-weight: bold; margin: 10px 0;">${data.positivityRate}%</div>
+            <div style="color: #888; font-size: 14px;">ポジティブ率</div>
           </div>
-          <div style="text-align: center;">
-            <div style="font-size: 48px;">✨</div>
-            <div style="font-size: 36px; color: #4a90e2; font-weight: bold;">${data.totalEmojis}</div>
-            <div style="color: #888;">絵文字の数</div>
+          <div style="text-align: center; flex: 1;">
+            <div style="font-size: 48px; line-height: 1;">✨</div>
+            <div style="font-size: 36px; color: #4a90e2; font-weight: bold; margin: 10px 0;">${data.totalEmojis}</div>
+            <div style="color: #888; font-size: 14px;">絵文字の数</div>
           </div>
-          <div style="text-align: center;">
-            <div style="font-size: 48px;">❓</div>
-            <div style="font-size: 36px; color: #764ba2; font-weight: bold;">${data.questionRatio}</div>
-            <div style="color: #888;">質問の比率</div>
+          <div style="text-align: center; flex: 1;">
+            <div style="font-size: 48px; line-height: 1;">❓</div>
+            <div style="font-size: 36px; color: #764ba2; font-weight: bold; margin: 10px 0;">${data.questionRatio}</div>
+            <div style="color: #888; font-size: 14px;">質問の比率</div>
           </div>
         </div>
+        
+        <div style="background: linear-gradient(135deg, #f5f3ff, #fff); border-radius: 15px; padding: 20px; margin: 20px 0;">
+          <h3 style="color: #764ba2; font-size: 18px; margin-bottom: 15px;">詳細な分析</h3>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+            <div style="padding: 10px; background: white; border-radius: 8px;">
+              <span style="color: #888; font-size: 12px;">返信速度（中央値）</span>
+              <div style="font-size: 20px; color: #333; font-weight: bold;">${data.responseTimeMedian || 30}分</div>
+            </div>
+            <div style="padding: 10px; background: white; border-radius: 8px;">
+              <span style="color: #888; font-size: 12px;">平均メッセージ長</span>
+              <div style="font-size: 16px; color: #333;">
+                あなた: ${data.userAvgMessageLength || 0}文字<br>
+                相手: ${data.partnerAvgMessageLength || 0}文字
+              </div>
+            </div>
+          </div>
+        </div>
+        
         <div class="poetic-text">
           <p>${data.comment}</p>
         </div>
