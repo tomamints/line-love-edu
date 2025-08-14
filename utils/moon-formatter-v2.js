@@ -509,114 +509,30 @@ function formatMoonReportV2(moonReport) {
             ] : [])
           ],
           paddingAll: '20px'
-        }
-      },
-      // カード6: より詳しい分析
-      {
-        type: 'bubble',
-        size: 'mega',
-        header: {
+        },
+        footer: {
           type: 'box',
           layout: 'vertical',
+          backgroundColor: '#f8f4ff',
+          paddingAll: '15px',
           contents: [
             {
               type: 'text',
-              text: 'より詳しい分析をご希望の方へ',
-              size: 'lg',
-              color: '#ffffff',
+              text: 'より詳しい分析をご希望の方は',
+              size: 'sm',
+              color: '#764ba2',
               weight: 'bold',
               align: 'center'
-            }
-          ],
-          backgroundColor: '#764ba2',
-          paddingAll: '20px'
-        },
-        body: {
-          type: 'box',
-          layout: 'vertical',
-          spacing: 'md',
-          contents: [
+            },
             {
               type: 'text',
-              text: 'トーク履歴から二人の関係性を\nより深く分析いたします',
-              wrap: true,
-              size: 'md',
+              text: 'トーク履歴を送信してプレミアム診断へ',
+              size: 'xs',
+              color: '#888888',
               align: 'center',
-              color: '#555555',
-              margin: 'lg'
-            },
-            {
-              type: 'separator',
-              margin: 'xl'
-            },
-            {
-              type: 'text',
-              text: '【プレミアム診断の内容】',
-              weight: 'bold',
-              size: 'md',
-              color: '#764ba2',
-              margin: 'lg'
-            },
-            {
-              type: 'text',
-              text: '• トーク履歴から読み取る本音',
-              wrap: true,
-              size: 'sm',
-              margin: 'sm',
-              color: '#555555'
-            },
-            {
-              type: 'text',
-              text: '• コミュニケーションパターンの分析',
-              wrap: true,
-              size: 'sm',
-              margin: 'sm',
-              color: '#555555'
-            },
-            {
-              type: 'text',
-              text: '• 関係改善の具体的アドバイス',
-              wrap: true,
-              size: 'sm',
-              margin: 'sm',
-              color: '#555555'
-            },
-            {
-              type: 'text',
-              text: '• PDF形式の詳細レポート',
-              wrap: true,
-              size: 'sm',
-              margin: 'sm',
-              color: '#555555'
-            },
-            {
-              type: 'separator',
-              margin: 'xl'
-            },
-            {
-              type: 'button',
-              action: {
-                type: 'message',
-                label: '解説を見る',
-                text: '解説'
-              },
-              style: 'primary',
-              color: '#764ba2',
-              margin: 'lg'
-            },
-            {
-              type: 'button',
-              action: {
-                type: 'message',
-                label: 'プレミアム診断を申し込む',
-                text: 'プレミアム診断'
-              },
-              style: 'primary',
-              color: '#e74c3c',
-              margin: 'md'
+              margin: 'xs'
             }
-          ],
-          paddingAll: '20px'
+          ]
         }
       }
     ]
