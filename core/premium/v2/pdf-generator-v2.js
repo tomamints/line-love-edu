@@ -76,10 +76,6 @@ class PDFGeneratorV2 {
       background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
     }
     
-    .pdf-button.tertiary {
-      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-    }
-    
     .pdf-button svg {
       width: 18px;
       height: 18px;
@@ -174,9 +170,6 @@ class PDFGeneratorV2 {
       }
     }
     
-    function printReport() {
-      window.print();
-    }
     
     function showLoading(message = '処理中...') {
       let loadingEl = document.getElementById('pdf-loading');
@@ -268,14 +261,6 @@ class PDFGeneratorV2 {
         <polyline points="21 15 16 10 5 21"></polyline>
       </svg>
       <span>画像保存</span>
-    </button>
-    <button class="pdf-button tertiary" onclick="printReport()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <polyline points="6 9 6 2 18 2 18 9"></polyline>
-        <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
-        <rect x="6" y="14" width="12" height="8"></rect>
-      </svg>
-      <span>印刷</span>
     </button>
   </div>
   
