@@ -490,11 +490,11 @@ module.exports = async (req, res) => {
       console.log('📊 相性診断開始 for user:', userId);
       let fortuneResult = null;
       try {
-        const MoonFortuneEngine = require('../core/moon-fortune');
+        const MoonFortuneEngineV2 = require('../core/moon-fortune-v2');
         
         console.log('🌙 月の相性診断生成開始');
         // 月の相性診断を生成
-        const moonEngine = new MoonFortuneEngine();
+        const moonEngine = new MoonFortuneEngineV2();
         
         // プロファイルオブジェクトを作成
         const userProfile = {
@@ -506,7 +506,7 @@ module.exports = async (req, res) => {
           gender: partnerGender
         };
         
-        fortuneResult = moonEngine.generateFreeReport(userProfile, partnerProfile);
+        fortuneResult = moonEngine.generateCompleteReading(userBirthdate, partnerBirthdate);
         console.log('🌙 診断結果生成完了');
         
         // 診断結果をファイルに保存（データベースには対応カラムがないため）

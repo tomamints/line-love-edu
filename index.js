@@ -37,9 +37,10 @@ const FortuneEngine = require('./core/fortune-engine');
 const { FortuneCarouselBuilder } = require('./core/formatter/fortune-carousel');
 const PaymentHandler = require('./core/premium/payment-handler');
 const WaveFortuneEngine = require('./core/wave-fortune');
-const MoonFortuneEngine = require('./core/moon-fortune');
+const MoonFortuneEngineV2 = require('./core/moon-fortune-v2');
 const UserProfileManager = require('./core/database/profiles-db');
 const ordersDB = require('./core/database/orders-db');
+const { formatMoonReportV2 } = require('./utils/moon-formatter-v2');
 
 // loadHeavyModulesは互換性のために空関数として残す
 function loadHeavyModules() {}
@@ -1127,20 +1128,12 @@ async function sendMoonFortuneResult(replyToken, userId) {
     if (!result) {
       
       loadHeavyModules();
-      const moonEngine = new MoonFortuneEngine();
+      const moonEngine = new MoonFortuneEngineV2();
       
       // おつきさま診断レポートを生成
-      result = moonEngine.generateFreeReport(
-        {
-          birthDate: profile.birthDate,
-          birthTime: profile.birthTime || '00:00',
-          gender: profile.gender
-        },
-        {
-          birthDate: profile.partnerBirthDate,
-          birthTime: profile.partnerBirthTime || '00:00',
-          gender: profile.partnerGender
-        }
+      result = moonEngine.generateCompleteReading(
+        profile.birthDate,
+        profile.partnerBirthDate
       );
       
       // 結果をファイルに保存（エラーを無視）
@@ -1757,7 +1750,7 @@ async function handleFortuneEvent(event) {
     // おつきさま診断も生成
     logger.log('🌙 おつきさま診断を実行中...');
     loadHeavyModules();
-    const moonEngine = new MoonFortuneEngine();
+    const moonEngine = new MoonFortuneEngineV2();
     
     // ユーザープロファイルを取得（エラーを防ぐためtry-catch追加）
     let userProfile = null;
@@ -1781,7 +1774,10 @@ async function handleFortuneEvent(event) {
         birthTime: userProfile.partnerBirthTime || '00:00',
         gender: userProfile.partnerGender
       };
-      moonReport = moonEngine.generateFreeReport(userMoonProfile, partnerMoonProfile);
+      moonReport = moonEngine.generateCompleteReading(
+        userProfile.birthDate,
+        userProfile.partnerBirthDate
+      );
     } else {
       // プロファイルがない場合はテストデータを使用
       const testUserProfile = {
@@ -1794,7 +1790,10 @@ async function handleFortuneEvent(event) {
         birthTime: '12:00',
         gender: 'male'
       };
-      moonReport = moonEngine.generateFreeReport(testUserProfile, testPartnerProfile);
+      moonReport = moonEngine.generateCompleteReading(
+        testUserProfile.birthDate,
+        testPartnerProfile.birthDate
+      );
     }
     
     fortune.moonAnalysis = moonReport;
@@ -2234,499 +2233,22 @@ async function handlePostbackEvent(event) {
       
       // おつきさま診断結果を生成
       loadHeavyModules();
-    const moonEngine = new MoonFortuneEngine();
-      const moonReport = moonEngine.generateFreeReport(
-        {
-          birthDate: profile.birthDate,
-          birthTime: '00:00',
-          gender: profile.gender || 'female'
-        },
-        {
-          birthDate: profile.partnerBirthDate,
-          birthTime: '00:00',
-          gender: value
-        }
+      const moonEngine = new MoonFortuneEngineV2();
+      const moonReport = moonEngine.generateCompleteReading(
+        profile.birthDate,
+        profile.partnerBirthDate
       );
       
-      // 複数カードで充実した結果を送信
-      const compatScore = parseFloat(moonReport.compatibility.score);
-      const starCount = Math.floor(compatScore / 20);
+      // V2フォーマッターを使用して表示
+      const flexMessage = {
+        type: 'flex',
+        altText: '🌙 おつきさま診断の結果',
+        contents: formatMoonReportV2(moonReport)
+      };
       
-      // カルーセルで複数カードを送信
-      await client.replyMessage(event.replyToken, [
-        {
-          type: 'flex',
-          altText: '🌙 おつきさま診断の結果',
-          contents: {
-            type: 'carousel',
-            contents: [
-              // カード1: 総合相性
-              {
-                type: 'bubble',
-                size: 'mega',
-                header: {
-                  type: 'box',
-                  layout: 'vertical',
-                  contents: [
-                    {
-                      type: 'text',
-                      text: '🌙 おつきさま診断',
-                      size: 'xl',
-                      color: '#ffffff',
-                      weight: 'bold',
-                      align: 'center'
-                    },
-                    {
-                      type: 'text',
-                      text: `総合相性: ${compatScore}%`,
-                      size: 'xxl',
-                      color: '#ffd700',
-                      align: 'center',
-                      margin: 'md',
-                      weight: 'bold'
-                    },
-                    {
-                      type: 'text',
-                      text: '★'.repeat(starCount) + '☆'.repeat(5 - starCount),
-                      size: 'xxl',
-                      color: '#ffd700',
-                      align: 'center',
-                      margin: 'sm'
-                    }
-                  ],
-                  backgroundColor: '#764ba2',
-                  paddingAll: '20px'
-                },
-                body: {
-                  type: 'box',
-                  layout: 'vertical',
-                  spacing: 'md',
-                  contents: [
-                    {
-                      type: 'text',
-                      text: `【${moonReport.compatibility.level}】`,
-                      weight: 'bold',
-                      size: 'xl',
-                      color: '#764ba2',
-                      align: 'center'
-                    },
-                    {
-                      type: 'text',
-                      text: moonReport.compatibility.description,
-                      wrap: true,
-                      size: 'md',
-                      margin: 'md'
-                    },
-                    {
-                      type: 'separator',
-                      margin: 'xl'
-                    },
-                    {
-                      type: 'text',
-                      text: '🔮 相性のポイント',
-                      weight: 'bold',
-                      size: 'lg',
-                      color: '#764ba2',
-                      margin: 'xl'
-                    },
-                    {
-                      type: 'text',
-                      text: moonReport.compatibility.advice.slice(0, 2).join('\n\n'),
-                      wrap: true,
-                      size: 'sm',
-                      margin: 'md',
-                      color: '#555555'
-                    }
-                  ],
-                  paddingAll: '20px'
-                }
-              },
-              // カード2: あなたの月相タイプ
-              {
-                type: 'bubble',
-                size: 'mega',
-                header: {
-                  type: 'box',
-                  layout: 'vertical',
-                  contents: [
-                    {
-                      type: 'text',
-                      text: 'あなたのおつきさま',
-                      size: 'lg',
-                      color: '#ffffff',
-                      weight: 'bold',
-                      align: 'center'
-                    },
-                    {
-                      type: 'text',
-                      text: `${moonReport.user.moonPhaseType.symbol}`,
-                      size: '80px',
-                      align: 'center',
-                      margin: 'md'
-                    },
-                    {
-                      type: 'text',
-                      text: moonReport.user.moonPhaseType.name,
-                      size: 'xl',
-                      color: '#ffd700',
-                      align: 'center',
-                      weight: 'bold'
-                    }
-                  ],
-                  backgroundColor: '#667eea',
-                  paddingAll: '20px'
-                },
-                body: {
-                  type: 'box',
-                  layout: 'vertical',
-                  spacing: 'md',
-                  contents: [
-                    {
-                      type: 'text',
-                      text: moonReport.user.moonPhaseType.traits,
-                      weight: 'bold',
-                      size: 'md',
-                      color: '#667eea',
-                      align: 'center'
-                    },
-                    {
-                      type: 'separator',
-                      margin: 'lg'
-                    },
-                    {
-                      type: 'text',
-                      text: moonReport.user.moonPhaseType.description,
-                      wrap: true,
-                      size: 'sm',
-                      margin: 'md'
-                    },
-                    {
-                      type: 'separator',
-                      margin: 'lg'
-                    },
-                    {
-                      type: 'text',
-                      text: '🌟 特徴キーワード',
-                      weight: 'bold',
-                      size: 'md',
-                      color: '#667eea',
-                      margin: 'lg'
-                    },
-                    {
-                      type: 'text',
-                      text: moonReport.user.moonPhaseType.keywords.join(' / '),
-                      wrap: true,
-                      size: 'sm',
-                      margin: 'sm',
-                      align: 'center',
-                      color: '#555555'
-                    },
-                    {
-                      type: 'box',
-                      layout: 'horizontal',
-                      margin: 'lg',
-                      spacing: 'sm',
-                      contents: [
-                        {
-                          type: 'text',
-                          text: '月齢:',
-                          size: 'sm',
-                          flex: 1
-                        },
-                        {
-                          type: 'text',
-                          text: `${moonReport.user.moonAge}日`,
-                          size: 'sm',
-                          align: 'end',
-                          color: '#667eea'
-                        }
-                      ]
-                    },
-                    {
-                      type: 'box',
-                      layout: 'horizontal',
-                      spacing: 'sm',
-                      contents: [
-                        {
-                          type: 'text',
-                          text: '輝面比:',
-                          size: 'sm',
-                          flex: 1
-                        },
-                        {
-                          type: 'text',
-                          text: `${moonReport.user.illumination}%`,
-                          size: 'sm',
-                          align: 'end',
-                          color: '#667eea'
-                        }
-                      ]
-                    }
-                  ],
-                  paddingAll: '20px'
-                }
-              },
-              // カード3: お相手の月相タイプ
-              {
-                type: 'bubble',
-                size: 'mega',
-                header: {
-                  type: 'box',
-                  layout: 'vertical',
-                  contents: [
-                    {
-                      type: 'text',
-                      text: 'お相手のおつきさま',
-                      size: 'lg',
-                      color: '#ffffff',
-                      weight: 'bold',
-                      align: 'center'
-                    },
-                    {
-                      type: 'text',
-                      text: `${moonReport.partner.moonPhaseType.symbol}`,
-                      size: '80px',
-                      align: 'center',
-                      margin: 'md'
-                    },
-                    {
-                      type: 'text',
-                      text: moonReport.partner.moonPhaseType.name,
-                      size: 'xl',
-                      color: '#ffd700',
-                      align: 'center',
-                      weight: 'bold'
-                    }
-                  ],
-                  backgroundColor: '#e91e63',
-                  paddingAll: '20px'
-                },
-                body: {
-                  type: 'box',
-                  layout: 'vertical',
-                  spacing: 'md',
-                  contents: [
-                    {
-                      type: 'text',
-                      text: moonReport.partner.moonPhaseType.traits,
-                      weight: 'bold',
-                      size: 'md',
-                      color: '#e91e63',
-                      align: 'center'
-                    },
-                    {
-                      type: 'separator',
-                      margin: 'lg'
-                    },
-                    {
-                      type: 'text',
-                      text: moonReport.partner.moonPhaseType.description,
-                      wrap: true,
-                      size: 'sm',
-                      margin: 'md'
-                    },
-                    {
-                      type: 'separator',
-                      margin: 'lg'
-                    },
-                    {
-                      type: 'text',
-                      text: '🌟 特徴キーワード',
-                      weight: 'bold',
-                      size: 'md',
-                      color: '#e91e63',
-                      margin: 'lg'
-                    },
-                    {
-                      type: 'text',
-                      text: moonReport.partner.moonPhaseType.keywords.join(' / '),
-                      wrap: true,
-                      size: 'sm',
-                      margin: 'sm',
-                      align: 'center',
-                      color: '#555555'
-                    },
-                    {
-                      type: 'box',
-                      layout: 'horizontal',
-                      margin: 'lg',
-                      spacing: 'sm',
-                      contents: [
-                        {
-                          type: 'text',
-                          text: '月齢:',
-                          size: 'sm',
-                          flex: 1
-                        },
-                        {
-                          type: 'text',
-                          text: `${moonReport.partner.moonAge}日`,
-                          size: 'sm',
-                          align: 'end',
-                          color: '#e91e63'
-                        }
-                      ]
-                    },
-                    {
-                      type: 'box',
-                      layout: 'horizontal',
-                      spacing: 'sm',
-                      contents: [
-                        {
-                          type: 'text',
-                          text: '輝面比:',
-                          size: 'sm',
-                          flex: 1
-                        },
-                        {
-                          type: 'text',
-                          text: `${moonReport.partner.illumination}%`,
-                          size: 'sm',
-                          align: 'end',
-                          color: '#e91e63'
-                        }
-                      ]
-                    }
-                  ],
-                  paddingAll: '20px'
-                }
-              },
-              // カード4: 今月の運勢
-              {
-                type: 'bubble',
-                size: 'mega',
-                header: {
-                  type: 'box',
-                  layout: 'vertical',
-                  contents: [
-                    {
-                      type: 'text',
-                      text: '🌃 今月の恋愛運',
-                      size: 'xl',
-                      color: '#ffffff',
-                      weight: 'bold',
-                      align: 'center'
-                    },
-                    {
-                      type: 'text',
-                      text: `【${moonReport.monthlyFortune.fortune.level}】`,
-                      size: 'lg',
-                      color: '#ffd700',
-                      align: 'center',
-                      margin: 'md',
-                      weight: 'bold'
-                    }
-                  ],
-                  backgroundColor: '#ff6b6b',
-                  paddingAll: '20px'
-                },
-                body: {
-                  type: 'box',
-                  layout: 'vertical',
-                  spacing: 'md',
-                  contents: [
-                    {
-                      type: 'text',
-                      text: '🌙 現在のおつきさま',
-                      weight: 'bold',
-                      size: 'md',
-                      color: '#ff6b6b'
-                    },
-                    {
-                      type: 'text',
-                      text: `${moonReport.monthlyFortune.currentMoonSymbol} ${moonReport.monthlyFortune.currentMoonPhase}`,
-                      size: 'sm',
-                      margin: 'sm',
-                      align: 'center'
-                    },
-                    {
-                      type: 'separator',
-                      margin: 'lg'
-                    },
-                    {
-                      type: 'text',
-                      text: '💫 月からのメッセージ',
-                      weight: 'bold',
-                      size: 'md',
-                      color: '#ff6b6b',
-                      margin: 'lg'
-                    },
-                    {
-                      type: 'text',
-                      text: moonReport.monthlyFortune.fortune.message,
-                      wrap: true,
-                      size: 'sm',
-                      margin: 'md'
-                    },
-                    {
-                      type: 'separator',
-                      margin: 'lg'
-                    },
-                    {
-                      type: 'text',
-                      text: '🌟 ラッキーデー',
-                      weight: 'bold',
-                      size: 'md',
-                      color: '#ff6b6b',
-                      margin: 'lg'
-                    },
-                    {
-                      type: 'text',
-                      text: moonReport.monthlyFortune.luckyDays.length > 0 
-                        ? moonReport.monthlyFortune.luckyDays.slice(0, 3).map(day => 
-                            `${day.date}日 ${day.moonPhase}`
-                          ).join('\n')
-                        : '今月は内面を充実させる時期です',
-                      wrap: true,
-                      size: 'sm',
-                      margin: 'md'
-                    }
-                  ],
-                  paddingAll: '20px'
-                },
-                footer: {
-                  type: 'box',
-                  layout: 'vertical',
-                  spacing: 'md',
-                  backgroundColor: '#f0f0f0',
-                  paddingAll: '15px',
-                  contents: [
-                    {
-                      type: 'text',
-                      text: '🔮 もっと詳しく二人の相性を知りたいですか？',
-                      wrap: true,
-                      size: 'sm',
-                      weight: 'bold',
-                      color: '#333333',
-                      align: 'center'
-                    },
-                    {
-                      type: 'text',
-                      text: '会話パターンから深層心理を分析します',
-                      wrap: true,
-                      size: 'xs',
-                      color: '#666666',
-                      align: 'center',
-                      margin: 'sm'
-                    },
-                    {
-                      type: 'button',
-                      action: {
-                        type: 'postback',
-                        label: '💖 知りたい！',
-                        data: 'action=want_more_analysis'
-                      },
-                      style: 'primary',
-                      color: '#ff6b6b',
-                      height: 'md'
-                    }
-                  ]
-                }
-              }
-            ]
-          }
-        }
-      ]);
+      await client.replyMessage(event.replyToken, flexMessage);
+      
+      logger.log('✨ おつきさま診断を送信しました');
       return;
     }
   }
