@@ -627,23 +627,11 @@ class OrdersDB {
 
   // Batch API結果の保存（デバッグ用）
   async saveBatchResult(orderId, batchResult) {
-    const fs = require('fs').promises;
-    const path = require('path');
-    
     try {
-      // /tmpディレクトリに保存（Vercel環境でも動作）
-      const tempDir = process.env.VERCEL ? '/tmp' : path.join(process.cwd(), 'temp');
-      await fs.mkdir(tempDir, { recursive: true });
-      const batchFile = path.join(tempDir, `batch_${orderId}.json`);
-      
-      // ファイルに保存
-      await fs.writeFile(batchFile, JSON.stringify(batchResult, null, 2));
-      console.log('💾 Batch result saved to:', batchFile);
-      
-      // Supabaseが利用可能な場合は、DBにも保存
+      // Supabaseに直接保存（優先）
       if (this.useDatabase && this.supabase) {
         try {
-          // batch_resultsテーブルがない場合のために、ordersテーブルに保存
+          // ordersテーブルのbatch_debugフィールドに完全なデータを保存
           const { error } = await this.supabase
             .from('orders')
             .update({
@@ -653,18 +641,41 @@ class OrdersDB {
                 status: batchResult.status,
                 hasAiInsights: !!batchResult.aiInsights,
                 parsedResultsCount: batchResult.parsedResults?.length || 0,
-                rawContentLength: batchResult.rawContent?.length || 0
+                rawContentLength: batchResult.rawContent?.length || 0,
+                // 重要: rawContentも保存（最初の5000文字）
+                rawContentPreview: batchResult.rawContent?.substring(0, 5000),
+                parsedResults: batchResult.parsedResults,
+                // AI Insightsの一部も保存
+                aiInsightsPreview: batchResult.aiInsights ? {
+                  hasPersonality: !!batchResult.aiInsights.personality,
+                  hasInterests: !!batchResult.aiInsights.interests,
+                  relationshipStage: batchResult.aiInsights.relationshipStage
+                } : null
               },
               updated_at: new Date().toISOString()
             })
             .eq('id', orderId);
           
           if (!error) {
-            console.log('💾 Batch debug info saved to database');
+            console.log('✅ Batch result saved to database successfully');
+            return true;
+          } else {
+            console.error('❌ Database save error:', error);
           }
         } catch (dbError) {
-          console.error('⚠️ Failed to save to database:', dbError.message);
+          console.error('❌ Failed to save to database:', dbError.message);
         }
+      }
+      
+      // フォールバック: ローカルファイルに保存（開発環境用）
+      if (!process.env.VERCEL) {
+        const fs = require('fs').promises;
+        const path = require('path');
+        const tempDir = path.join(process.cwd(), 'temp');
+        await fs.mkdir(tempDir, { recursive: true });
+        const batchFile = path.join(tempDir, `batch_${orderId}.json`);
+        await fs.writeFile(batchFile, JSON.stringify(batchResult, null, 2));
+        console.log('💾 Batch result saved to local file:', batchFile);
       }
       
       return true;
@@ -676,45 +687,80 @@ class OrdersDB {
 
   // Batch API結果の取得（デバッグ用）
   async getBatchResult(userId) {
-    const fs = require('fs').promises;
-    const path = require('path');
-    
     try {
-      // ユーザーの最新の注文を取得
-      const orders = await this.getUserOrders(userId);
-      if (!orders || orders.length === 0) {
-        console.log('⚠️ No orders found for user');
-        return null;
-      }
+      console.log('🔍 Getting batch result for user:', userId);
       
-      const latestOrder = orders[0];
-      const orderId = latestOrder.id || latestOrder.orderId;
-      
-      // ファイルから読み込み
-      const tempDir = process.env.VERCEL ? '/tmp' : path.join(process.cwd(), 'temp');
-      const batchFile = path.join(tempDir, `batch_${orderId}.json`);
-      
-      try {
-        const content = await fs.readFile(batchFile, 'utf-8');
-        const batchResult = JSON.parse(content);
-        console.log('📄 Batch result loaded from file');
-        return batchResult;
-      } catch (fileError) {
-        console.log('⚠️ Batch file not found, checking database');
-        
-        // DBから取得を試みる
-        if (this.useDatabase && this.supabase && latestOrder.batch_debug) {
-          return {
-            batchId: latestOrder.batch_debug.batchId,
-            timestamp: latestOrder.batch_debug.timestamp,
-            status: latestOrder.batch_debug.status,
-            message: 'Debug info from database (full content not available)',
-            debugInfo: latestOrder.batch_debug
-          };
+      // データベースから直接取得（優先）
+      if (this.useDatabase && this.supabase) {
+        try {
+          // ユーザーの最新の注文を取得
+          const { data: orders, error } = await this.supabase
+            .from('orders')
+            .select('id, batch_debug, created_at, status')
+            .eq('user_id', userId)
+            .order('created_at', { ascending: false })
+            .limit(1);
+          
+          if (error) {
+            console.error('❌ Error fetching orders:', error);
+            return null;
+          }
+          
+          if (!orders || orders.length === 0) {
+            console.log('⚠️ No orders found for user');
+            return null;
+          }
+          
+          const latestOrder = orders[0];
+          console.log('📦 Latest order:', latestOrder.id, 'Status:', latestOrder.status);
+          
+          // batch_debugフィールドから取得
+          if (latestOrder.batch_debug) {
+            console.log('✅ Batch debug data found in database');
+            return {
+              batchId: latestOrder.batch_debug.batchId,
+              orderId: latestOrder.id,
+              timestamp: latestOrder.batch_debug.timestamp,
+              status: latestOrder.batch_debug.status,
+              parsedResultsCount: latestOrder.batch_debug.parsedResultsCount,
+              rawContentLength: latestOrder.batch_debug.rawContentLength,
+              hasAiInsights: latestOrder.batch_debug.hasAiInsights,
+              rawContent: latestOrder.batch_debug.rawContentPreview || 'No preview available',
+              parsedResults: latestOrder.batch_debug.parsedResults,
+              aiInsightsPreview: latestOrder.batch_debug.aiInsightsPreview
+            };
+          } else {
+            console.log('⚠️ No batch debug data in database');
+          }
+        } catch (dbError) {
+          console.error('❌ Database error:', dbError);
         }
-        
-        return null;
       }
+      
+      // フォールバック: ローカルファイルから読み込み（開発環境用）
+      if (!process.env.VERCEL) {
+        const fs = require('fs').promises;
+        const path = require('path');
+        
+        // getUserOrdersを使って注文IDを取得
+        const orders = await this.getUserOrders(userId);
+        if (orders && orders.length > 0) {
+          const orderId = orders[0].id || orders[0].orderId;
+          const tempDir = path.join(process.cwd(), 'temp');
+          const batchFile = path.join(tempDir, `batch_${orderId}.json`);
+          
+          try {
+            const content = await fs.readFile(batchFile, 'utf-8');
+            const batchResult = JSON.parse(content);
+            console.log('📄 Batch result loaded from local file');
+            return batchResult;
+          } catch (fileError) {
+            console.log('⚠️ Local file not found');
+          }
+        }
+      }
+      
+      return null;
     } catch (error) {
       console.error('❌ Error getting batch result:', error.message);
       return null;
