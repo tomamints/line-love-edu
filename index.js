@@ -1260,6 +1260,15 @@ async function handleFortuneEvent(event) {
     // 占い結果に波動診断を追加
     fortune.waveAnalysis = waveResult;
     
+    // カルーセル用にメッセージデータと分析データを追加
+    fortune.messages = messages;
+    fortune.analysis = {
+      totalMessages: messages.length,
+      conversationDays: Math.ceil((new Date(messages[messages.length - 1]?.datetime) - new Date(messages[0]?.datetime)) / (1000 * 60 * 60 * 24)) || 1,
+      avgResponseTime: 0, // TODO: 実装
+      responseRate: 75 // TODO: 実装
+    };
+    
     // パースしたメッセージを保存（プレミアムレポート用）
     try {
       const messagesDB = require('./core/database/messages-db');
