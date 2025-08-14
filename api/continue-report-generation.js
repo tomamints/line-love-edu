@@ -449,7 +449,9 @@ module.exports = async (req, res) => {
                         error: result.error || null
                       });
                       
-                      if (result.custom_id === `order_${orderId}`) {
+                      // custom_idがorderIdを含むかチェック（完全一致ではなく部分一致）
+                      if (result.custom_id === `order_${orderId}` || result.custom_id.includes(orderId)) {
+                        console.log('📄 Found matching order result');
                         if (result.response && result.response.body) {
                           console.log('📄 Found matching result with response');
                           const aiContent = result.response.body.choices[0].message.content;
