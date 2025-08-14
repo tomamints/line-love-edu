@@ -509,30 +509,59 @@ function formatMoonReportV2(moonReport) {
             ] : [])
           ],
           paddingAll: '20px'
-        },
-        footer: {
+        }
+      },
+      // カード6: より詳しい分析
+      {
+        type: 'bubble',
+        size: 'mega',
+        header: {
           type: 'box',
           layout: 'vertical',
-          backgroundColor: '#f8f4ff',
-          paddingAll: '15px',
           contents: [
             {
               type: 'text',
-              text: 'より詳しい分析をご希望の方は',
-              size: 'sm',
-              color: '#764ba2',
+              text: 'さらに詳しく知る',
+              size: 'lg',
+              color: '#ffffff',
               weight: 'bold',
               align: 'center'
-            },
+            }
+          ],
+          backgroundColor: '#764ba2',
+          paddingAll: '20px'
+        },
+        body: {
+          type: 'box',
+          layout: 'vertical',
+          spacing: 'md',
+          contents: [
             {
               type: 'text',
-              text: 'トーク履歴を送信してプレミアム診断へ',
-              size: 'xs',
-              color: '#888888',
+              text: 'おつきさま診断の結果について\nより詳しい解説をご覧いただけます',
+              wrap: true,
+              size: 'md',
               align: 'center',
-              margin: 'xs'
+              color: '#555555',
+              margin: 'lg'
+            },
+            {
+              type: 'separator',
+              margin: 'xl'
+            },
+            {
+              type: 'button',
+              action: {
+                type: 'message',
+                label: '詳しく',
+                text: '解説'
+              },
+              style: 'primary',
+              color: '#764ba2',
+              margin: 'xl'
             }
-          ]
+          ],
+          paddingAll: '20px'
         }
       }
     ]
