@@ -559,23 +559,19 @@ function displayResult(moonType, moonData, birthdate) {
                 </div>
             </div>
             <div class="share-buttons">
-                <a href="https://twitter.com/intent/tweet?text=${encodeURIComponent(`私は${moonType}タイプでした！${moonData.emoji}\n\n${moonData.title}\n\nおつきさま診断で自分の本当の性格と恋愛スタイルがわかる✨\n\n`)}&url=${encodeURIComponent(window.location.href)}" 
-                   target="_blank" 
+                <button onclick="shareWithAutoImage('twitter', '${moonType}')" 
                    class="share-btn share-twitter"
-                   onclick="shareWithImage('twitter', '${moonType}')">
+                   style="border: none; cursor: pointer;">
                     Xでシェア
-                </a>
-                <a href="https://line.me/R/msg/text/?${encodeURIComponent(`私は${moonType}タイプでした！${moonData.emoji}\n\n${moonData.title}\n\nおつきさま診断で自分の本当の性格と恋愛スタイルがわかる✨\n\n${window.location.href}`)}" 
-                   target="_blank" 
-                   class="share-btn share-line"
-                   onclick="shareWithImage('line', '${moonType}')">
-                    LINEでシェア
-                </a>
-            </div>
-            <div style="margin-top: 12px; text-align: center;">
-                <button onclick="downloadShareImage('${moonType}')" style="padding: 8px 16px; background: rgba(118, 75, 162, 0.2); border: 1px solid #764ba2; border-radius: 8px; color: #764ba2; cursor: pointer; font-size: 14px;">
-                    📷 画像を保存してシェア
                 </button>
+                <button onclick="shareWithAutoImage('line', '${moonType}')" 
+                   class="share-btn share-line"
+                   style="border: none; cursor: pointer;">
+                    LINEでシェア
+                </button>
+            </div>
+            <div id="shareImageContainer" style="display: none;">
+                <canvas id="shareCanvas" style="display: none;"></canvas>
             </div>
         </div>
         
@@ -671,59 +667,126 @@ function updateDays() {
     }
 }
 
-// シェア画像を生成してダウンロード
-function downloadShareImage(moonType) {
-    // Canvas要素を作成
-    const canvas = document.createElement('canvas');
+// シェア画像を生成して表示
+function generateAndShowShareImage(moonType) {
+    const moonData = moonTypes[moonType];
+    if (!moonData) return;
+    
+    // 既存のcanvasを取得または作成
+    let canvas = document.getElementById('shareCanvas');
+    if (!canvas) {
+        canvas = document.createElement('canvas');
+        canvas.id = 'shareCanvas';
+    }
     canvas.width = 1200;
     canvas.height = 630;
     const ctx = canvas.getContext('2d');
     
-    // グラデーション背景
+    // グラデーション背景（月タイプごとに色を変える）
+    const gradientColors = {
+        '新月': ['#1a1a2e', '#16213e'],
+        '三日月': ['#0f3460', '#16213e'],
+        '上弦の月': ['#533483', '#764ba2'],
+        '十三夜': ['#e74c3c', '#c0392b'],
+        '満月': ['#f39c12', '#e67e22'],
+        '十六夜': ['#e67e22', '#d35400'],
+        '下弦の月': ['#16a085', '#27ae60'],
+        '暁': ['#34495e', '#2c3e50']
+    };
+    
+    const colors = gradientColors[moonType] || ['#667eea', '#764ba2'];
     const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-    gradient.addColorStop(0, '#667eea');
-    gradient.addColorStop(1, '#764ba2');
+    gradient.addColorStop(0, colors[0]);
+    gradient.addColorStop(1, colors[1]);
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     
-    // 半透明の円形装飾
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+    // 半透明の円形装飾（複数追加）
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.08)';
     ctx.beginPath();
-    ctx.arc(200, 200, 150, 0, Math.PI * 2);
+    ctx.arc(150, 150, 120, 0, Math.PI * 2);
     ctx.fill();
     
     ctx.beginPath();
-    ctx.arc(1000, 450, 200, 0, Math.PI * 2);
+    ctx.arc(1050, 480, 180, 0, Math.PI * 2);
     ctx.fill();
+    
+    ctx.beginPath();
+    ctx.arc(600, 100, 80, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // タイトル背景
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+    ctx.fillRect(0, 60, canvas.width, 120);
     
     // タイトル
     ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 72px "Kiwi Maru", serif';
+    ctx.font = 'bold 64px "Kiwi Maru", sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('おつきさま診断', canvas.width / 2, 150);
+    ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
+    ctx.shadowBlur = 10;
+    ctx.fillText('おつきさま診断', canvas.width / 2, 140);
+    ctx.shadowBlur = 0;
     
-    // 月の絵文字
-    ctx.font = '180px serif';
-    const emoji = getEmojiForType(moonType);
-    ctx.fillText(emoji, canvas.width / 2, 330);
+    // 月の絵文字（背景付き）
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.15)';
+    ctx.beginPath();
+    ctx.arc(canvas.width / 2, 280, 100, 0, Math.PI * 2);
+    ctx.fill();
+    
+    ctx.font = '160px serif';
+    ctx.fillStyle = '#ffffff';
+    ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
+    ctx.shadowBlur = 15;
+    ctx.fillText(moonData.emoji, canvas.width / 2, 320);
+    ctx.shadowBlur = 0;
     
     // 月タイプ名
-    ctx.font = 'bold 56px "Kiwi Maru", serif';
+    ctx.font = 'bold 48px "Kiwi Maru", sans-serif';
     ctx.fillStyle = '#ffd700';
-    ctx.fillText(`${moonType}タイプ`, canvas.width / 2, 430);
+    ctx.shadowColor = 'rgba(0, 0, 0, 0.4)';
+    ctx.shadowBlur = 8;
+    ctx.fillText(`${moonType}タイプ`, canvas.width / 2, 410);
+    ctx.shadowBlur = 0;
+    
+    // キャッチフレーズ（月タイプのタイトルを表示）
+    ctx.font = '28px "Kiwi Maru", sans-serif';
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
+    ctx.fillText(moonData.title, canvas.width / 2, 460);
     
     // サブテキスト
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+    ctx.font = '24px "Kiwi Maru", sans-serif';
+    ctx.fillText('生まれた日の月があなたの', canvas.width / 2, 515);
+    ctx.fillText('本当の性格と恋愛スタイルを教えます', canvas.width / 2, 550);
+    
+    // URL（背景付き）
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+    ctx.fillRect(0, 570, canvas.width, 60);
+    ctx.font = '22px "Kiwi Maru", sans-serif';
     ctx.fillStyle = '#ffffff';
-    ctx.font = '32px "Kiwi Maru", serif';
-    ctx.fillText('生まれた日の月があなたの', canvas.width / 2, 500);
-    ctx.fillText('本当の性格と恋愛スタイルを教えます', canvas.width / 2, 545);
+    ctx.fillText('🌙 love-tsukuyomi.com/moon', canvas.width / 2, 605);
     
-    // URL
-    ctx.font = '24px "Kiwi Maru", serif';
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
-    ctx.fillText('love-tsukuyomi.com/moon', canvas.width / 2, 590);
+    // コンテナを表示
+    const container = document.getElementById('shareImageContainer');
+    if (container) {
+        container.style.display = 'block';
+        // スクロールして画像を表示
+        setTimeout(() => {
+            container.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 100);
+    }
+}
+
+// シェア画像をダウンロード
+function downloadShareImage(moonType) {
+    const canvas = document.getElementById('shareCanvas');
+    if (!canvas) {
+        generateAndShowShareImage(moonType);
+        setTimeout(() => downloadShareImage(moonType), 500);
+        return;
+    }
     
-    // 画像をダウンロード
     canvas.toBlob(function(blob) {
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
@@ -737,6 +800,117 @@ function downloadShareImage(moonType) {
             alert('画像を保存しました！この画像をSNSに投稿してシェアしてください♪');
         }, 100);
     });
+}
+
+// SNSにシェア（画像保存を促す）
+function shareToSNS(platform, moonType) {
+    const moonData = moonTypes[moonType];
+    if (!moonData) return;
+    
+    // まず画像を保存するよう促す
+    alert('まず画像を保存してから、SNSアプリで投稿してください！');
+    
+    // 画像をダウンロード
+    downloadShareImage(moonType);
+    
+    // テキストをコピー
+    const shareText = `私は${moonType}タイプでした！${moonData.emoji}\n\n${moonData.title}\n\nおつきさま診断で自分の本当の性格と恋愛スタイルがわかる✨\n\nlove-tsukuyomi.com/moon`;
+    
+    // クリップボードにコピー
+    if (navigator.clipboard) {
+        navigator.clipboard.writeText(shareText).then(() => {
+            setTimeout(() => {
+                alert('投稿用のテキストをコピーしました！\nSNSアプリを開いて、画像と一緒に投稿してください。');
+                
+                // プラットフォームに応じてリンクを開く
+                if (platform === 'twitter') {
+                    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`, '_blank');
+                } else if (platform === 'line') {
+                    window.open(`https://line.me/R/msg/text/?${encodeURIComponent(shareText)}`, '_blank');
+                }
+            }, 2000);
+        });
+    }
+}
+
+// 画像を自動生成してシェア
+function shareWithAutoImage(platform, moonType) {
+    const moonData = moonTypes[moonType];
+    if (!moonData) return;
+    
+    // まず画像がまだ生成されていない場合は生成
+    const canvas = document.getElementById('shareCanvas');
+    if (!canvas || !canvas.width) {
+        generateAndShowShareImage(moonType);
+    }
+    
+    // 少し待ってから画像をBlobとして取得
+    setTimeout(() => {
+        const canvas = document.getElementById('shareCanvas');
+        if (!canvas) return;
+        
+        canvas.toBlob(async (blob) => {
+            if (!blob) return;
+            
+            // Web Share APIが使える場合（主にモバイル）
+            if (navigator.share && navigator.canShare) {
+                try {
+                    const file = new File([blob], `おつきさま診断_${moonType}タイプ.png`, { type: 'image/png' });
+                    const shareData = {
+                        title: 'おつきさま診断',
+                        text: `私は${moonType}タイプでした！${moonData.emoji}\n\n${moonData.title}\n\nおつきさま診断で自分の本当の性格と恋愛スタイルがわかる✨`,
+                        files: [file],
+                        url: 'https://love-tsukuyomi.com/moon'
+                    };
+                    
+                    if (navigator.canShare(shareData)) {
+                        await navigator.share(shareData);
+                        return;
+                    }
+                } catch (err) {
+                    console.log('Share failed:', err);
+                }
+            }
+            
+            // Web Share APIが使えない場合（主にデスクトップ）
+            // 画像をクリップボードにコピー
+            try {
+                if (navigator.clipboard && window.ClipboardItem) {
+                    const item = new ClipboardItem({ 'image/png': blob });
+                    await navigator.clipboard.write([item]);
+                    
+                    alert('画像をクリップボードにコピーしました！\n\nこのまま次のページでSNSに投稿してください。\n画像は「貼り付け」または「Ctrl+V」で使用できます。');
+                    
+                    // シェアテキストと共にSNSページを開く
+                    const shareText = `私は${moonType}タイプでした！${moonData.emoji}\n\n${moonData.title}\n\nおつきさま診断で自分の本当の性格と恋愛スタイルがわかる✨\n\nhttps://love-tsukuyomi.com/moon`;
+                    
+                    if (platform === 'twitter') {
+                        window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`, '_blank');
+                    } else if (platform === 'line') {
+                        window.open(`https://line.me/R/msg/text/?${encodeURIComponent(shareText)}`, '_blank');
+                    }
+                    return;
+                }
+            } catch (err) {
+                console.log('Clipboard copy failed:', err);
+            }
+            
+            // どちらも使えない場合は従来の方法
+            downloadShareImage(moonType);
+            
+            const shareText = `私は${moonType}タイプでした！${moonData.emoji}\n\n${moonData.title}\n\nおつきさま診断で自分の本当の性格と恋愛スタイルがわかる✨\n\nhttps://love-tsukuyomi.com/moon`;
+            
+            setTimeout(() => {
+                alert('画像を保存しました！\n\nSNSアプリを開いて、保存した画像と一緒に投稿してください。');
+                
+                if (platform === 'twitter') {
+                    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`, '_blank');
+                } else if (platform === 'line') {
+                    window.open(`https://line.me/R/msg/text/?${encodeURIComponent(shareText)}`, '_blank');
+                }
+            }, 500);
+        });
+    }, 500);
 }
 
 // シェア時のトラッキング（オプション）
