@@ -559,12 +559,12 @@ function displayResult(moonType, moonData, birthdate) {
                 </div>
             </div>
             <div class="share-buttons">
-                <a href="https://twitter.com/intent/tweet?text=${encodeURIComponent(`私は${moonType}タイプでした！${moonData.emoji}\n\n${moonData.title}\n\nおつきさま診断で自分の本当の性格と恋愛スタイルがわかる✨\n\n`)}&url=${encodeURIComponent('https://love-tsukuyomi.com/moon-fortune.html')}" 
+                <a href="https://twitter.com/intent/tweet?text=${encodeURIComponent(`私は${moonType}タイプでした！${moonData.emoji}\n\n${moonData.title}\n\nおつきさま診断で自分の本当の性格と恋愛スタイルがわかる✨\n\n`)}&url=${encodeURIComponent('https://love-tsukuyomi.com/moon')}" 
                    target="_blank" 
                    class="share-btn share-twitter">
                     Xでシェア
                 </a>
-                <a href="https://line.me/R/msg/text/?${encodeURIComponent(`私は${moonType}タイプでした！${moonData.emoji}\n\n${moonData.title}\n\nおつきさま診断で自分の本当の性格と恋愛スタイルがわかる✨\n\nhttps://love-tsukuyomi.com/moon-fortune.html`)}" 
+                <a href="https://line.me/R/msg/text/?${encodeURIComponent(`私は${moonType}タイプでした！${moonData.emoji}\n\n${moonData.title}\n\nおつきさま診断で自分の本当の性格と恋愛スタイルがわかる✨\n\nhttps://love-tsukuyomi.com/moon`)}" 
                    target="_blank" 
                    class="share-btn share-line">
                     LINEでシェア
