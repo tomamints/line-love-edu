@@ -758,18 +758,20 @@ class FortuneCarouselBuilder {
                         {
                           type: 'box',
                           layout: 'horizontal',
-                          flex: topic.excitement,
+                          flex: Math.max(1, topic.excitement),
                           backgroundColor: '#ff69b4',
                           height: '6px',
-                          cornerRadius: '3px'
+                          cornerRadius: '3px',
+                          contents: [{type: 'filler'}]
                         },
                         {
                           type: 'box',
                           layout: 'horizontal',
-                          flex: 100 - topic.excitement,
+                          flex: Math.max(1, 100 - topic.excitement),
                           backgroundColor: '#f0f0f0',
                           height: '6px',
-                          cornerRadius: '3px'
+                          cornerRadius: '3px',
+                          contents: [{type: 'filler'}]
                         }
                       ]
                     },
