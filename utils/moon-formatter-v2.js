@@ -344,7 +344,80 @@ function formatMoonReportV2(moonReport) {
           paddingAll: '20px'
         }
       }] : []),
-      // カード4: 今月の恋愛運
+      // カード4: 実践アドバイス
+      {
+        type: 'bubble',
+        size: 'mega',
+        header: {
+          type: 'box',
+          layout: 'vertical',
+          contents: [
+            {
+              type: 'text',
+              text: '実践アドバイス',
+              size: 'lg',
+              color: '#ffffff',
+              weight: 'bold',
+              align: 'center'
+            }
+          ],
+          backgroundColor: '#e74c3c',
+          paddingAll: '20px'
+        },
+        body: {
+          type: 'box',
+          layout: 'vertical',
+          spacing: 'md',
+          contents: [
+            {
+              type: 'text',
+              text: '【今すぐできること】',
+              weight: 'bold',
+              size: 'md',
+              color: '#e74c3c'
+            },
+            ...(moonReport.user?.story?.advice || []).slice(0, 3).map((advice, index) => ({
+              type: 'box',
+              layout: 'vertical',
+              margin: 'lg',
+              contents: [
+                {
+                  type: 'text',
+                  text: `${index + 1}. ${advice}`,
+                  wrap: true,
+                  size: 'sm',
+                  color: '#555555'
+                }
+              ]
+            })),
+            {
+              type: 'separator',
+              margin: 'xl'
+            },
+            {
+              type: 'text',
+              text: '【関係改善のポイント】',
+              weight: 'bold',
+              size: 'md',
+              color: '#e74c3c',
+              margin: 'lg',
+              align: 'center'
+            },
+            {
+              type: 'text',
+              text: moonReport.compatibility?.specific?.advice || 
+                '相性を活かして、より良い関係を築きましょう',
+              wrap: true,
+              size: 'sm',
+              margin: 'md',
+              color: '#666666',
+              align: 'center'
+            }
+          ],
+          paddingAll: '20px'
+        }
+      },
+      // カード5: 今月の恋愛運
       {
         type: 'bubble',
         size: 'mega',
@@ -438,7 +511,7 @@ function formatMoonReportV2(moonReport) {
           paddingAll: '20px'
         }
       },
-      // カード5: アクションアドバイス
+      // カード6: より詳しい分析
       {
         type: 'bubble',
         size: 'mega',
@@ -448,14 +521,14 @@ function formatMoonReportV2(moonReport) {
           contents: [
             {
               type: 'text',
-              text: '実践アドバイス',
+              text: 'より詳しい分析をご希望の方へ',
               size: 'lg',
               color: '#ffffff',
               weight: 'bold',
               align: 'center'
             }
           ],
-          backgroundColor: '#e74c3c',
+          backgroundColor: '#764ba2',
           paddingAll: '20px'
         },
         body: {
@@ -465,74 +538,85 @@ function formatMoonReportV2(moonReport) {
           contents: [
             {
               type: 'text',
-              text: '【今すぐできること】',
-              weight: 'bold',
+              text: 'トーク履歴から二人の関係性を\nより深く分析いたします',
+              wrap: true,
               size: 'md',
-              color: '#e74c3c'
+              align: 'center',
+              color: '#555555',
+              margin: 'lg'
             },
-            ...(moonReport.user?.story?.advice || []).slice(0, 3).map((advice, index) => ({
-              type: 'box',
-              layout: 'vertical',
-              margin: 'lg',
-              contents: [
-                {
-                  type: 'text',
-                  text: `${index + 1}. ${advice}`,
-                  wrap: true,
-                  size: 'sm',
-                  color: '#555555'
-                }
-              ]
-            })),
             {
               type: 'separator',
               margin: 'xl'
             },
             {
               type: 'text',
-              text: '【関係改善のポイント】',
+              text: '【プレミアム診断の内容】',
               weight: 'bold',
               size: 'md',
-              color: '#e74c3c',
-              margin: 'lg',
-              align: 'center'
+              color: '#764ba2',
+              margin: 'lg'
             },
             {
               type: 'text',
-              text: moonReport.compatibility?.specific?.advice || 
-                '相性を活かして、より良い関係を築きましょう',
+              text: '• トーク履歴から読み取る本音',
               wrap: true,
               size: 'sm',
-              margin: 'md',
-              color: '#666666',
-              align: 'center'
+              margin: 'sm',
+              color: '#555555'
+            },
+            {
+              type: 'text',
+              text: '• コミュニケーションパターンの分析',
+              wrap: true,
+              size: 'sm',
+              margin: 'sm',
+              color: '#555555'
+            },
+            {
+              type: 'text',
+              text: '• 関係改善の具体的アドバイス',
+              wrap: true,
+              size: 'sm',
+              margin: 'sm',
+              color: '#555555'
+            },
+            {
+              type: 'text',
+              text: '• PDF形式の詳細レポート',
+              wrap: true,
+              size: 'sm',
+              margin: 'sm',
+              color: '#555555'
+            },
+            {
+              type: 'separator',
+              margin: 'xl'
+            },
+            {
+              type: 'button',
+              action: {
+                type: 'message',
+                label: '解説を見る',
+                text: '解説'
+              },
+              style: 'primary',
+              color: '#764ba2',
+              margin: 'lg'
+            },
+            {
+              type: 'button',
+              action: {
+                type: 'message',
+                label: 'プレミアム診断を申し込む',
+                text: 'プレミアム診断'
+              },
+              style: 'primary',
+              color: '#e74c3c',
+              margin: 'md'
             }
           ],
           paddingAll: '20px'
-        },
-        footer: {
-          type: 'box',
-          layout: 'vertical',
-          backgroundColor: '#f8f4ff',
-          paddingAll: '15px',
-          contents: [
-            {
-              type: 'text',
-              text: 'より詳しい分析をご希望の方は',
-              size: 'sm',
-              color: '#764ba2',
-              weight: 'bold',
-              align: 'center'
-            },
-            {
-              type: 'text',
-              text: 'トーク履歴を送信してプレミアム診断へ',
-              size: 'xs',
-              color: '#888888',
-              align: 'center',
-              margin: 'xs'
-            }
-          ]
         }
       }
     ]
