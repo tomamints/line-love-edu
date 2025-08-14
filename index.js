@@ -422,6 +422,85 @@ app.post('/webhook', middleware(config), async (req, res) => {
               });
             }
             
+            // AI Insightsの内容を整形
+            let aiInsightsInfo = '';
+            let parsedAIContent = null;
+            
+            // Raw contentからAI分析結果を抽出
+            if (batchResult.rawContent) {
+              try {
+                // レスポンス全体をパース
+                const lines = batchResult.rawContent.split('\n').filter(line => line.trim());
+                for (const line of lines) {
+                  try {
+                    const parsed = JSON.parse(line);
+                    if (parsed.response?.body?.choices?.[0]?.message?.content) {
+                      const aiContentStr = parsed.response.body.choices[0].message.content;
+                      parsedAIContent = JSON.parse(aiContentStr);
+                      break;
+                    }
+                  } catch (e) {
+                    // この行はJSONではない、次へ
+                  }
+                }
+              } catch (e) {
+                console.error('Error parsing batch content:', e);
+              }
+            }
+            
+            // AI Insightsの内容を表示用に整形
+            if (parsedAIContent || batchResult.aiInsights || batchResult.aiInsightsPreview) {
+              const insights = parsedAIContent || batchResult.aiInsights || batchResult.aiInsightsPreview;
+              aiInsightsInfo = '\n\n🤖 AI分析結果:';
+              
+              if (insights.emotionalState) {
+                aiInsightsInfo += '\n【感情状態】';
+                if (insights.emotionalState.user) {
+                  const userText = insights.emotionalState.user.substring(0, 80);
+                  aiInsightsInfo += `\n👤 ユーザー: ${userText}...`;
+                }
+                if (insights.emotionalState.partner) {
+                  const partnerText = insights.emotionalState.partner.substring(0, 80);
+                  aiInsightsInfo += `\n💑 相手: ${partnerText}...`;
+                }
+                if (insights.emotionalState.compatibility) {
+                  const compatText = insights.emotionalState.compatibility.substring(0, 80);
+                  aiInsightsInfo += `\n💕 相性: ${compatText}...`;
+                }
+              }
+              
+              if (insights.communicationStyle) {
+                aiInsightsInfo += '\n\n【コミュニケーション】';
+                if (insights.communicationStyle.userPattern) {
+                  const userPattern = insights.communicationStyle.userPattern.substring(0, 80);
+                  aiInsightsInfo += `\n👤 ${userPattern}...`;
+                }
+                if (insights.communicationStyle.partnerPattern) {
+                  const partnerPattern = insights.communicationStyle.partnerPattern.substring(0, 80);
+                  aiInsightsInfo += `\n💑 ${partnerPattern}...`;
+                }
+                if (insights.communicationStyle.recommendations) {
+                  aiInsightsInfo += '\n📝 推奨:';
+                  insights.communicationStyle.recommendations.slice(0, 2).forEach(rec => {
+                    aiInsightsInfo += `\n• ${rec.substring(0, 40)}...`;
+                  });
+                }
+              }
+              
+              if (insights.relationshipStage) {
+                aiInsightsInfo += `\n\n【関係性】 ${insights.relationshipStage}`;
+              }
+              
+              if (insights.futureOutlook) {
+                aiInsightsInfo += '\n\n【将来の展望】';
+                insights.futureOutlook.slice(0, 2).forEach(outlook => {
+                  if (outlook.scenario) {
+                    aiInsightsInfo += `\n• ${outlook.scenario.substring(0, 50)}...`;
+                  }
+                });
+              }
+            }
+            
             // 結果を整形して表示
             const debugInfo = `📦 Batch API Debug Info
 ━━━━━━━━━━━━━━━━━
@@ -431,13 +510,11 @@ app.post('/webhook', middleware(config), async (req, res) => {
 📊 Parsed: ${batchResult.parsedResults?.length || 0} results
 📝 Raw Size: ${Math.round((batchResult.rawContent?.length || 0) / 1024)}KB
 
-${batchResult.aiInsights ? '✅ AI Insights: 取得成功' : '❌ AI Insights: なし'}
-${batchResult.debugInfo ? `\n📊 DB Info: ${JSON.stringify(batchResult.debugInfo, null, 2)}` : ''}
+${parsedAIContent || batchResult.aiInsights || batchResult.aiInsightsPreview ? '✅ AI Insights: 取得成功' : '❌ AI Insights: なし'}${aiInsightsInfo}
 
 ━━━━━━━━━━━━━━━━━
-🔍 Raw Content Preview:
-${batchResult.rawContent ? batchResult.rawContent.substring(0, 500) : 'No content'}
-...`;
+${parsedAIContent ? '✨ AI分析が正常に完了しました' : '🔍 Raw Content (最初の200文字):'}
+${!parsedAIContent && batchResult.rawContent ? batchResult.rawContent.substring(0, 200) + '...' : ''}`;
             
             return client.replyMessage(event.replyToken, {
               type: 'text',
