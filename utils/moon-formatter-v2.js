@@ -19,7 +19,7 @@ function formatMoonReportV2(moonReport) {
           contents: [
             {
               type: 'text',
-              text: '🌙 おつきさま診断',
+              text: 'おつきさま診断',
               size: 'xl',
               color: '#ffffff',
               weight: 'bold',
@@ -72,7 +72,7 @@ function formatMoonReportV2(moonReport) {
             },
             {
               type: 'text',
-              text: '🔮 相性のポイント',
+              text: '相性のポイント',
               weight: 'bold',
               size: 'lg',
               color: '#764ba2',
@@ -92,7 +92,7 @@ function formatMoonReportV2(moonReport) {
             },
             {
               type: 'text',
-              text: '💑 実際の例',
+              text: '実際の例',
               weight: 'bold',
               size: 'md',
               color: '#764ba2',
@@ -184,7 +184,7 @@ function formatMoonReportV2(moonReport) {
             },
             {
               type: 'text',
-              text: '🌟 特徴',
+              text: '特徴',
               weight: 'bold',
               size: 'md',
               color: '#667eea',
@@ -204,7 +204,7 @@ function formatMoonReportV2(moonReport) {
             },
             {
               type: 'text',
-              text: '💖 恋愛スタイル',
+              text: '恋愛スタイル',
               weight: 'bold',
               size: 'md',
               color: '#ff69b4',
@@ -287,7 +287,7 @@ function formatMoonReportV2(moonReport) {
             },
             {
               type: 'text',
-              text: '🌟 特徴',
+              text: '特徴',
               weight: 'bold',
               size: 'md',
               color: '#ff69b4',
@@ -307,7 +307,7 @@ function formatMoonReportV2(moonReport) {
             },
             {
               type: 'text',
-              text: '💖 恋愛スタイル',
+              text: '恋愛スタイル',
               weight: 'bold',
               size: 'md',
               color: '#ff69b4',
@@ -335,7 +335,7 @@ function formatMoonReportV2(moonReport) {
           contents: [
             {
               type: 'text',
-              text: '📅 今月の恋愛運',
+              text: '今月の恋愛運',
               size: 'lg',
               color: '#ffffff',
               weight: 'bold',
@@ -379,7 +379,7 @@ function formatMoonReportV2(moonReport) {
             },
             {
               type: 'text',
-              text: '💫 今月のアドバイス',
+              text: '今月のアドバイス',
               weight: 'bold',
               size: 'md',
               color: '#9b59b6',
@@ -400,7 +400,7 @@ function formatMoonReportV2(moonReport) {
               },
               {
                 type: 'text',
-                text: '🌟 ラッキーデー',
+                text: 'ラッキーデー',
                 weight: 'bold',
                 size: 'md',
                 color: '#9b59b6',
@@ -429,7 +429,7 @@ function formatMoonReportV2(moonReport) {
           contents: [
             {
               type: 'text',
-              text: '✨ 実践アドバイス',
+              text: '実践アドバイス',
               size: 'lg',
               color: '#ffffff',
               weight: 'bold',
@@ -446,7 +446,7 @@ function formatMoonReportV2(moonReport) {
           contents: [
             {
               type: 'text',
-              text: '💪 今すぐできる改善アクション',
+              text: '今すぐできる改善アクション',
               weight: 'bold',
               size: 'md',
               color: '#e74c3c'
@@ -471,7 +471,7 @@ function formatMoonReportV2(moonReport) {
             },
             {
               type: 'text',
-              text: '💝 二人の関係をより良くするために',
+              text: '二人の関係をより良くするために',
               weight: 'bold',
               size: 'md',
               color: '#e74c3c',
@@ -499,7 +499,7 @@ function formatMoonReportV2(moonReport) {
           contents: [
             {
               type: 'text',
-              text: '🎯 より詳しい分析をご希望の方は',
+              text: 'より詳しい分析をご希望の方は',
               size: 'sm',
               color: '#764ba2',
               weight: 'bold',
