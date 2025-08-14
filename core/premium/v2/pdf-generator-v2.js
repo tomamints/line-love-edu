@@ -30,61 +30,252 @@ class PDFGeneratorV2 {
     
     .pdf-controls {
       position: fixed;
-      top: 20px;
-      right: 20px;
+      top: 10px;
+      right: 10px;
       z-index: 1000;
       display: flex;
-      gap: 10px;
+      flex-direction: column;
+      gap: 8px;
       background: white;
       padding: 10px;
-      border-radius: 8px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    }
+    
+    @media (min-width: 768px) {
+      .pdf-controls {
+        flex-direction: row;
+        top: 20px;
+        right: 20px;
+      }
     }
     
     .pdf-button {
-      padding: 8px 16px;
+      padding: 10px 16px;
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: white;
       border: none;
-      border-radius: 6px;
+      border-radius: 8px;
       cursor: pointer;
-      font-size: 14px;
+      font-size: 13px;
       display: flex;
       align-items: center;
-      gap: 8px;
+      justify-content: center;
+      gap: 6px;
+      min-width: 120px;
+      transition: all 0.3s ease;
+      font-weight: 500;
     }
     
     .pdf-button:hover {
-      opacity: 0.9;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(118, 75, 162, 0.3);
+    }
+    
+    .pdf-button.secondary {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    }
+    
+    .pdf-button.tertiary {
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    }
+    
+    .pdf-button svg {
+      width: 18px;
+      height: 18px;
     }
   </style>
+  
+  <!-- jsPDF と html2canvas のCDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  
+  <!-- カスタムPDF生成スクリプト -->
   <script>
-    function saveAsPDF() {
-      window.print();
+    // インラインでPDF生成機能を実装
+    async function generatePDF() {
+      try {
+        showLoading('PDFを生成中...');
+        
+        const controls = document.querySelector('.pdf-controls');
+        if (controls) controls.style.display = 'none';
+        
+        const pages = document.querySelectorAll('.page');
+        const pdf = new jspdf.jsPDF({
+          orientation: 'portrait',
+          unit: 'mm',
+          format: 'a4'
+        });
+        
+        for (let i = 0; i < pages.length; i++) {
+          const canvas = await html2canvas(pages[i], {
+            scale: 2,
+            useCORS: true,
+            logging: false,
+            backgroundColor: '#ffffff'
+          });
+          
+          const imgData = canvas.toDataURL('image/png');
+          const imgWidth = 210;
+          const imgHeight = (canvas.height * imgWidth) / canvas.width;
+          
+          if (i > 0) pdf.addPage();
+          pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, Math.min(imgHeight, 297));
+          
+          updateProgress(Math.round(((i + 1) / pages.length) * 100));
+        }
+        
+        const fileName = \`恋愛レポート_\${new Date().toISOString().slice(0, 10)}.pdf\`;
+        pdf.save(fileName);
+        
+        if (controls) controls.style.display = '';
+        hideLoading();
+        showMessage('PDFを保存しました！');
+        
+      } catch (error) {
+        console.error('PDF生成エラー:', error);
+        hideLoading();
+        alert('PDFの生成に失敗しました。印刷機能をお試しください。');
+        window.print();
+      }
     }
+    
+    async function saveAsImage() {
+      try {
+        showLoading('画像を生成中...');
+        
+        const controls = document.querySelector('.pdf-controls');
+        if (controls) controls.style.display = 'none';
+        
+        const reportWrapper = document.querySelector('.report-wrapper');
+        const canvas = await html2canvas(reportWrapper, {
+          scale: 2,
+          useCORS: true,
+          logging: false,
+          backgroundColor: '#ffffff'
+        });
+        
+        canvas.toBlob(function(blob) {
+          const link = document.createElement('a');
+          link.download = \`恋愛レポート_\${new Date().toISOString().slice(0, 10)}.png\`;
+          link.href = URL.createObjectURL(blob);
+          link.click();
+          URL.revokeObjectURL(link.href);
+        });
+        
+        if (controls) controls.style.display = '';
+        hideLoading();
+        showMessage('画像を保存しました！');
+        
+      } catch (error) {
+        console.error('画像生成エラー:', error);
+        hideLoading();
+        alert('画像の生成に失敗しました');
+      }
+    }
+    
     function printReport() {
       window.print();
+    }
+    
+    function showLoading(message = '処理中...') {
+      let loadingEl = document.getElementById('pdf-loading');
+      if (!loadingEl) {
+        loadingEl = document.createElement('div');
+        loadingEl.id = 'pdf-loading';
+        loadingEl.style.cssText = \`
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: rgba(0, 0, 0, 0.8);
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          z-index: 10000;
+          color: white;
+          font-size: 16px;
+        \`;
+        document.body.appendChild(loadingEl);
+      }
+      
+      loadingEl.innerHTML = \`
+        <div style="margin-bottom: 20px;">\${message}</div>
+        <div style="width: 200px; height: 4px; background: #333; border-radius: 2px; overflow: hidden;">
+          <div id="progress-fill" style="width: 0%; height: 100%; background: linear-gradient(90deg, #667eea, #764ba2); transition: width 0.3s;"></div>
+        </div>
+        <div id="progress-text" style="margin-top: 10px; font-size: 14px;">0%</div>
+      \`;
+      
+      loadingEl.style.display = 'flex';
+    }
+    
+    function updateProgress(percent) {
+      const fill = document.getElementById('progress-fill');
+      const text = document.getElementById('progress-text');
+      if (fill) fill.style.width = percent + '%';
+      if (text) text.textContent = percent + '%';
+    }
+    
+    function hideLoading() {
+      const loadingEl = document.getElementById('pdf-loading');
+      if (loadingEl) loadingEl.style.display = 'none';
+    }
+    
+    function showMessage(text) {
+      const messageEl = document.createElement('div');
+      messageEl.style.cssText = \`
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 12px 24px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        border-radius: 25px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        z-index: 10001;
+        font-size: 14px;
+      \`;
+      messageEl.textContent = text;
+      document.body.appendChild(messageEl);
+      
+      setTimeout(() => {
+        messageEl.style.opacity = '0';
+        messageEl.style.transition = 'opacity 0.3s';
+        setTimeout(() => messageEl.remove(), 300);
+      }, 3000);
     }
   </script>
 </head>
 <body>
   <div class="pdf-controls">
-    <button class="pdf-button" onclick="saveAsPDF()">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <button class="pdf-button" onclick="generatePDF()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
         <polyline points="14 2 14 8 20 8"></polyline>
         <line x1="12" y1="18" x2="12" y2="12"></line>
         <line x1="9" y1="15" x2="15" y2="15"></line>
       </svg>
-      PDFとして保存
+      <span>PDF保存</span>
     </button>
-    <button class="pdf-button" onclick="printReport()">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <button class="pdf-button secondary" onclick="saveAsImage()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+        <circle cx="8.5" cy="8.5" r="1.5"></circle>
+        <polyline points="21 15 16 10 5 21"></polyline>
+      </svg>
+      <span>画像保存</span>
+    </button>
+    <button class="pdf-button tertiary" onclick="printReport()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <polyline points="6 9 6 2 18 2 18 9"></polyline>
         <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
         <rect x="6" y="14" width="12" height="8"></rect>
       </svg>
-      印刷
+      <span>印刷</span>
     </button>
   </div>
   
