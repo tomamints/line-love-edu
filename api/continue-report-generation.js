@@ -126,10 +126,9 @@ module.exports = async (req, res) => {
       if (progress.currentStep >= 3 && progress.data && !progress.data.messages) {
         if (progress.data.messageCount > 0) {
           console.log('📝 DBから復元されたが、messagesだけ再取得が必要');
-          // messagesだけ取得するためStep 1を実行（他のデータは保持）
-          const savedData = { ...progress.data };
-          progress.currentStep = 1;
-          progress.data = savedData;  // 既存データを保持
+          console.log('📝 現在のステップを保持: Step', progress.currentStep);
+          // messagesを再取得するフラグを立てる（currentStepは変更しない）
+          progress.needsMessageRefetch = true;
         } else if (!progress.data.userProfile) {
           // userProfileもない場合は完全に再実行
           console.log('⚠️ データが失われているため、Step 1-2を再実行');
@@ -230,6 +229,26 @@ module.exports = async (req, res) => {
       }
     }
     
+    // メッセージ再取得が必要な場合は先に処理
+    if (progress.needsMessageRefetch) {
+      console.log('🔄 Refetching messages before continuing Step', progress.currentStep);
+      const messagesDB = require('../core/database/messages-db');
+      const savedMessages = await messagesDB.getMessages(order.userId);
+      
+      if (savedMessages && savedMessages.length > 0) {
+        console.log(`📊 Refetched ${savedMessages.length} messages from database`);
+        progress.data.messages = savedMessages;
+      } else {
+        console.log('⚠️ No saved messages found, using default for demo');
+        progress.data.messages = generateDefaultMessages();
+      }
+      
+      // フラグをクリア
+      delete progress.needsMessageRefetch;
+      await ordersDB.saveReportProgress(orderId, progress);
+      console.log('✅ Messages refetched, continuing with Step', progress.currentStep);
+    }
+    
     // タイムアウトまで可能な限りステップを実行
     while (progress.currentStep <= progress.totalSteps && !completed) {
       const elapsed = Date.now() - startTime;
@@ -266,6 +285,12 @@ module.exports = async (req, res) => {
         switch (progress.currentStep) {
           case 1:
             console.log('📊 Step 1: Loading messages and user profile...');
+            
+            // 既にデータがある場合はスキップ
+            if (progress.data.userProfile && progress.data.messages) {
+              console.log('✅ Step 1 already completed, skipping...');
+              break;
+            }
             
             // ユーザープロフィールを取得
             if (!progress.data.userProfile) {
@@ -306,6 +331,13 @@ module.exports = async (req, res) => {
             
           case 2:
             console.log('🔍 Step 2: Basic analysis...');
+            
+            // 既に分析済みの場合はスキップ
+            if (progress.data.fortune) {
+              console.log('✅ Step 2 already completed, skipping...');
+              break;
+            }
+            
             // 基本分析は高速なのでここで実行
             const FortuneEngine = require('../core/fortune-engine/index');
             const engine = new FortuneEngine();
