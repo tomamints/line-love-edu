@@ -16,6 +16,7 @@
   "dependencies": {
     "@line/bot-sdk": "^9.9.0",
     "@supabase/supabase-js": "^2.53.0",
+    "canvas": "^3.1.2",
     "chart.js": "^4.4.9",
     "chartjs-node-canvas": "^5.0.0",
     "chartjs-plugin-datalabels": "^2.2.0",

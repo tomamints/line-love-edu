@@ -559,19 +559,16 @@ function displayResult(moonType, moonData, birthdate) {
                 </div>
             </div>
             <div class="share-buttons">
-                <button onclick="shareWithAutoImage('twitter', '${moonType}')" 
-                   class="share-btn share-twitter"
-                   style="border: none; cursor: pointer;">
+                <a href="https://twitter.com/intent/tweet?text=${encodeURIComponent(`私は${moonType}タイプでした！${moonData.emoji}\n\n${moonData.title}\n\nおつきさま診断で自分の本当の性格と恋愛スタイルがわかる✨\n\n`)}&url=${encodeURIComponent(`https://love-tsukuyomi.com/api/moon-share?type=${encodeURIComponent(moonType)}`)}" 
+                   target="_blank" 
+                   class="share-btn share-twitter">
                     Xでシェア
-                </button>
-                <button onclick="shareWithAutoImage('line', '${moonType}')" 
-                   class="share-btn share-line"
-                   style="border: none; cursor: pointer;">
+                </a>
+                <a href="https://line.me/R/msg/text/?${encodeURIComponent(`私は${moonType}タイプでした！${moonData.emoji}\n\n${moonData.title}\n\nおつきさま診断で自分の本当の性格と恋愛スタイルがわかる✨\n\nhttps://love-tsukuyomi.com/api/moon-share?type=${encodeURIComponent(moonType)}`)}" 
+                   target="_blank" 
+                   class="share-btn share-line">
                     LINEでシェア
-                </button>
-            </div>
-            <div id="shareImageContainer" style="display: none;">
-                <canvas id="shareCanvas" style="display: none;"></canvas>
+                </a>
             </div>
         </div>
         
@@ -667,7 +664,7 @@ function updateDays() {
     }
 }
 
-// シェア画像を生成して表示
+// 画像生成関数（後方互換性のため残す）
 function generateAndShowShareImage(moonType) {
     const moonData = moonTypes[moonType];
     if (!moonData) return;
@@ -833,93 +830,7 @@ function shareToSNS(platform, moonType) {
     }
 }
 
-// 画像を自動生成してシェア
-function shareWithAutoImage(platform, moonType) {
-    const moonData = moonTypes[moonType];
-    if (!moonData) return;
-    
-    // まず画像がまだ生成されていない場合は生成
-    const canvas = document.getElementById('shareCanvas');
-    if (!canvas || !canvas.width) {
-        generateAndShowShareImage(moonType);
-    }
-    
-    // 少し待ってから画像をBlobとして取得
-    setTimeout(() => {
-        const canvas = document.getElementById('shareCanvas');
-        if (!canvas) return;
-        
-        canvas.toBlob(async (blob) => {
-            if (!blob) return;
-            
-            // Web Share APIが使える場合（主にモバイル）
-            if (navigator.share && navigator.canShare) {
-                try {
-                    const file = new File([blob], `おつきさま診断_${moonType}タイプ.png`, { type: 'image/png' });
-                    const shareData = {
-                        title: 'おつきさま診断',
-                        text: `私は${moonType}タイプでした！${moonData.emoji}\n\n${moonData.title}\n\nおつきさま診断で自分の本当の性格と恋愛スタイルがわかる✨`,
-                        files: [file],
-                        url: 'https://love-tsukuyomi.com/moon'
-                    };
-                    
-                    if (navigator.canShare(shareData)) {
-                        await navigator.share(shareData);
-                        return;
-                    }
-                } catch (err) {
-                    console.log('Share failed:', err);
-                }
-            }
-            
-            // Web Share APIが使えない場合（主にデスクトップ）
-            // 画像をクリップボードにコピー
-            try {
-                if (navigator.clipboard && window.ClipboardItem) {
-                    const item = new ClipboardItem({ 'image/png': blob });
-                    await navigator.clipboard.write([item]);
-                    
-                    alert('画像をクリップボードにコピーしました！\n\nこのまま次のページでSNSに投稿してください。\n画像は「貼り付け」または「Ctrl+V」で使用できます。');
-                    
-                    // シェアテキストと共にSNSページを開く
-                    const shareText = `私は${moonType}タイプでした！${moonData.emoji}\n\n${moonData.title}\n\nおつきさま診断で自分の本当の性格と恋愛スタイルがわかる✨\n\nhttps://love-tsukuyomi.com/moon`;
-                    
-                    if (platform === 'twitter') {
-                        window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`, '_blank');
-                    } else if (platform === 'line') {
-                        window.open(`https://line.me/R/msg/text/?${encodeURIComponent(shareText)}`, '_blank');
-                    }
-                    return;
-                }
-            } catch (err) {
-                console.log('Clipboard copy failed:', err);
-            }
-            
-            // どちらも使えない場合は従来の方法
-            downloadShareImage(moonType);
-            
-            const shareText = `私は${moonType}タイプでした！${moonData.emoji}\n\n${moonData.title}\n\nおつきさま診断で自分の本当の性格と恋愛スタイルがわかる✨\n\nhttps://love-tsukuyomi.com/moon`;
-            
-            setTimeout(() => {
-                alert('画像を保存しました！\n\nSNSアプリを開いて、保存した画像と一緒に投稿してください。');
-                
-                if (platform === 'twitter') {
-                    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`, '_blank');
-                } else if (platform === 'line') {
-                    window.open(`https://line.me/R/msg/text/?${encodeURIComponent(shareText)}`, '_blank');
-                }
-            }, 500);
-        });
-    }, 500);
-}
 
-// シェア時のトラッキング（オプション）
-function shareWithImage(platform, moonType) {
-    // Google Analytics等でトラッキングする場合はここに実装
-    console.log(`Shared ${moonType} on ${platform}`);
-    // 実際のシェアはaタグのhrefで行われる
-    return true;
-}
 
 // ページ読み込み時の処理
 document.addEventListener('DOMContentLoaded', function() {
