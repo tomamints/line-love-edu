@@ -552,9 +552,9 @@ function formatMoonReportV2(moonReport) {
             {
               type: 'button',
               action: {
-                type: 'message',
+                type: 'postback',
                 label: '詳しく',
-                text: '解説'
+                data: 'action=want_more_analysis'
               },
               style: 'primary',
               color: '#764ba2',
