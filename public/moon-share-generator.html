@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>おつきさま診断 シェア画像生成</title>
+    <style>
+        body {
+            font-family: 'Kiwi Maru', serif;
+            background: #f0f0f0;
+            padding: 20px;
+        }
+        #canvas {
+            border: 1px solid #ccc;
+            max-width: 100%;
+            margin: 20px 0;
+        }
+        .controls {
+            margin: 20px 0;
+        }
+        select, button {
+            padding: 10px;
+            margin: 5px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <h1>おつきさま診断 シェア画像生成ツール</h1>
+    
+    <div class="controls">
+        <select id="moonType">
+            <option value="">月タイプを選択</option>
+            <option value="新月">新月</option>
+            <option value="三日月">三日月</option>
+            <option value="上弦の月">上弦の月</option>
+            <option value="十三夜">十三夜</option>
+            <option value="満月">満月</option>
+            <option value="十六夜">十六夜</option>
+            <option value="下弦の月">下弦の月</option>
+            <option value="暁">暁</option>
+        </select>
+        <button onclick="generateImage()">画像生成</button>
+        <button onclick="downloadImage()">ダウンロード</button>
+    </div>
+    
+    <canvas id="canvas" width="1200" height="630"></canvas>
+    
+    <script>
+        const moonEmojis = {
+            '新月': '🌑',
+            '三日月': '🌒',
+            '上弦の月': '🌓',
+            '十三夜': '🌔',
+            '満月': '🌕',
+            '十六夜': '🌖',
+            '下弦の月': '🌗',
+            '暁': '🌘'
+        };
+        
+        const moonColors = {
+            '新月': '#2c3e50',
+            '三日月': '#3498db',
+            '上弦の月': '#9b59b6',
+            '十三夜': '#e74c3c',
+            '満月': '#f39c12',
+            '十六夜': '#e67e22',
+            '下弦の月': '#16a085',
+            '暁': '#34495e'
+        };
+        
+        function generateImage() {
+            const canvas = document.getElementById('canvas');
+            const ctx = canvas.getContext('2d');
+            const moonType = document.getElementById('moonType').value;
+            
+            // グラデーション背景
+            const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+            gradient.addColorStop(0, '#667eea');
+            gradient.addColorStop(1, '#764ba2');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // 半透明の円形装飾
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+            ctx.beginPath();
+            ctx.arc(200, 200, 150, 0, Math.PI * 2);
+            ctx.fill();
+            
+            ctx.beginPath();
+            ctx.arc(1000, 450, 200, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // タイトル
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 72px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('おつきさま診断', canvas.width / 2, 150);
+            
+            // 月の絵文字（中央に大きく）
+            if (moonType) {
+                ctx.font = '180px sans-serif';
+                ctx.fillText(moonEmojis[moonType] || '🌙', canvas.width / 2, 330);
+                
+                // 月タイプ名
+                ctx.font = 'bold 56px sans-serif';
+                ctx.fillStyle = '#ffd700';
+                ctx.fillText(`${moonType}タイプ`, canvas.width / 2, 430);
+            } else {
+                // デフォルトの月
+                ctx.font = '180px sans-serif';
+                ctx.fillText('🌙', canvas.width / 2, 350);
+            }
+            
+            // サブテキスト
+            ctx.fillStyle = '#ffffff';
+            ctx.font = '32px sans-serif';
+            ctx.fillText('生まれた日の月があなたの', canvas.width / 2, 500);
+            ctx.fillText('本当の性格と恋愛スタイルを教えます', canvas.width / 2, 545);
+            
+            // URL
+            ctx.font = '24px sans-serif';
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+            ctx.fillText('love-tsukuyomi.com/moon', canvas.width / 2, 590);
+        }
+        
+        function downloadImage() {
+            const canvas = document.getElementById('canvas');
+            const moonType = document.getElementById('moonType').value || 'default';
+            
+            canvas.toBlob(function(blob) {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `moon-share-${moonType}.png`;
+                a.click();
+                URL.revokeObjectURL(url);
+            });
+        }
+        
+        // 初期画像生成
+        generateImage();
+    </script>
+</body>
+</html>
