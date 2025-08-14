@@ -448,78 +448,86 @@ app.post('/webhook', middleware(config), async (req, res) => {
               }
             }
             
-            // AI Insightsの内容を表示用に整形
+            // AI Insightsの内容を表示用に整形（全文表示）
             if (parsedAIContent || batchResult.aiInsights || batchResult.aiInsightsPreview) {
               const insights = parsedAIContent || batchResult.aiInsights || batchResult.aiInsightsPreview;
-              aiInsightsInfo = '\n\n🤖 AI分析結果:';
               
-              if (insights.emotionalState) {
-                aiInsightsInfo += '\n【感情状態】';
-                if (insights.emotionalState.user) {
-                  const userText = insights.emotionalState.user.substring(0, 80);
-                  aiInsightsInfo += `\n👤 ユーザー: ${userText}...`;
-                }
-                if (insights.emotionalState.partner) {
-                  const partnerText = insights.emotionalState.partner.substring(0, 80);
-                  aiInsightsInfo += `\n💑 相手: ${partnerText}...`;
-                }
-                if (insights.emotionalState.compatibility) {
-                  const compatText = insights.emotionalState.compatibility.substring(0, 80);
-                  aiInsightsInfo += `\n💕 相性: ${compatText}...`;
-                }
-              }
+              // 完全な内容をJSON形式で表示（見やすく整形）
+              aiInsightsInfo = '\n\n🤖 === AI分析結果（完全版） ===\n';
+              aiInsightsInfo += JSON.stringify(insights, null, 2);
               
-              if (insights.communicationStyle) {
-                aiInsightsInfo += '\n\n【コミュニケーション】';
-                if (insights.communicationStyle.userPattern) {
-                  const userPattern = insights.communicationStyle.userPattern.substring(0, 80);
-                  aiInsightsInfo += `\n👤 ${userPattern}...`;
-                }
-                if (insights.communicationStyle.partnerPattern) {
-                  const partnerPattern = insights.communicationStyle.partnerPattern.substring(0, 80);
-                  aiInsightsInfo += `\n💑 ${partnerPattern}...`;
-                }
-                if (insights.communicationStyle.recommendations) {
-                  aiInsightsInfo += '\n📝 推奨:';
-                  insights.communicationStyle.recommendations.slice(0, 2).forEach(rec => {
-                    aiInsightsInfo += `\n• ${rec.substring(0, 40)}...`;
-                  });
-                }
-              }
-              
-              if (insights.relationshipStage) {
-                aiInsightsInfo += `\n\n【関係性】 ${insights.relationshipStage}`;
-              }
-              
-              if (insights.futureOutlook) {
-                aiInsightsInfo += '\n\n【将来の展望】';
-                insights.futureOutlook.slice(0, 2).forEach(outlook => {
-                  if (outlook.scenario) {
-                    aiInsightsInfo += `\n• ${outlook.scenario.substring(0, 50)}...`;
-                  }
-                });
+              // LINEの文字数制限（5000文字）を考慮
+              if (aiInsightsInfo.length > 4500) {
+                // 制限に収まるように分割情報を追加
+                const truncated = aiInsightsInfo.substring(0, 4400);
+                aiInsightsInfo = truncated + '\n\n⚠️ 文字数制限により一部省略されています。\n完全な内容は複数回に分けて送信します。';
+                
+                // 残りの部分を保存（後で別メッセージとして送信可能）
+                console.log('📄 AI Insights完全版（コンソール出力）:');
+                console.log(JSON.stringify(insights, null, 2));
               }
             }
             
-            // 結果を整形して表示
-            const debugInfo = `📦 Batch API Debug Info
+            // メッセージを分割して送信する準備
+            const messages = [];
+            
+            // 1. 基本情報
+            const basicInfo = `📦 Batch API Debug Info
 ━━━━━━━━━━━━━━━━━
 🆔 Batch ID: ${batchResult.batchId || 'N/A'}
 📅 Time: ${batchResult.timestamp || 'N/A'}
 ✅ Status: ${batchResult.status || 'N/A'}
 📊 Parsed: ${batchResult.parsedResults?.length || 0} results
 📝 Raw Size: ${Math.round((batchResult.rawContent?.length || 0) / 1024)}KB
-
-${parsedAIContent || batchResult.aiInsights || batchResult.aiInsightsPreview ? '✅ AI Insights: 取得成功' : '❌ AI Insights: なし'}${aiInsightsInfo}
-
-━━━━━━━━━━━━━━━━━
-${parsedAIContent ? '✨ AI分析が正常に完了しました' : '🔍 Raw Content (最初の200文字):'}
-${!parsedAIContent && batchResult.rawContent ? batchResult.rawContent.substring(0, 200) + '...' : ''}`;
+${parsedAIContent || batchResult.aiInsights || batchResult.aiInsightsPreview ? '✅ AI Insights: 取得成功' : '❌ AI Insights: なし'}`;
             
-            return client.replyMessage(event.replyToken, {
-              type: 'text',
-              text: debugInfo
-            });
+            // 2. AI分析結果がある場合は分割して送信
+            if (parsedAIContent || batchResult.aiInsights || batchResult.aiInsightsPreview) {
+              const insights = parsedAIContent || batchResult.aiInsights || batchResult.aiInsightsPreview;
+              const fullJSON = JSON.stringify(insights, null, 2);
+              
+              // 基本情報を最初のメッセージとして追加
+              messages.push({
+                type: 'text',
+                text: basicInfo + '\n\n⬇️ AI分析の完全な内容が続きます...'
+              });
+              
+              // JSONを3500文字ごとに分割（LINEの制限を考慮）
+              const chunkSize = 3500;
+              const chunks = [];
+              for (let i = 0; i < fullJSON.length; i += chunkSize) {
+                chunks.push(fullJSON.substring(i, i + chunkSize));
+              }
+              
+              // 各チャンクをメッセージとして追加
+              chunks.forEach((chunk, index) => {
+                const header = index === 0 
+                  ? '🤖 === AI分析結果 (1/' + chunks.length + ') ===\n' 
+                  : `📄 === 続き (${index + 1}/${chunks.length}) ===\n`;
+                  
+                messages.push({
+                  type: 'text',
+                  text: header + chunk
+                });
+              });
+              
+              // 最大5メッセージまで（LINE APIの制限）
+              if (messages.length > 5) {
+                messages.splice(5);
+                messages[4] = {
+                  type: 'text',
+                  text: messages[4].text + '\n\n⚠️ メッセージ数制限により残りは省略されました。'
+                };
+              }
+            } else {
+              // AI分析結果がない場合
+              messages.push({
+                type: 'text',
+                text: basicInfo + '\n\n❌ AI分析結果が見つかりません'
+              });
+            }
+            
+            return client.replyMessage(event.replyToken, messages);
             
           } catch (error) {
             console.error('Batch debug error:', error);
