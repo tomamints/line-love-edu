@@ -19,7 +19,8 @@ class PDFGeneratorV2 {
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="format-detection" content="telephone=no">
   <title>プレミアムレポート - ${analysisContext.reportContent.page1.userName}</title>
   <style>
     @media print {
@@ -123,7 +124,8 @@ class PDFGeneratorV2 {
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="format-detection" content="telephone=no">
   <title>プレミアムレポート - ${reportContent.page1.userName}</title>
   <style>
     ${this.getStyles()}
@@ -155,21 +157,53 @@ class PDFGeneratorV2 {
         box-sizing: border-box;
       }
       
+      html {
+        -webkit-text-size-adjust: 100%;
+        -ms-text-size-adjust: 100%;
+      }
+      
       body {
         font-family: 'Hiragino Mincho ProN', 'ヒラギノ明朝 ProN', 'Yu Mincho', '游明朝', serif;
         color: #333;
         line-height: 1.8;
         background: #f5f5f5;
+        margin: 0;
+        padding: 0;
+      }
+      
+      .report-wrapper {
+        width: 100%;
+        max-width: 100%;
+        overflow-x: hidden;
       }
       
       .page {
-        width: 210mm;
-        min-height: 297mm;
-        padding: 30mm 25mm;
-        margin: 0 auto;
+        width: 100%;
+        max-width: 600px;
+        margin: 0 auto 40px;
+        padding: 30px 20px;
         background: white;
-        page-break-after: always;
         position: relative;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      }
+      
+      /* プリント用スタイル */
+      @media print {
+        .page {
+          width: 210mm;
+          min-height: 297mm;
+          padding: 30mm 25mm;
+          margin: 0;
+          page-break-after: always;
+          box-shadow: none;
+        }
+      }
+      
+      /* タブレット以上 */
+      @media (min-width: 768px) {
+        .page {
+          padding: 40px 30px;
+        }
       }
       
       .cover-page {
@@ -180,37 +214,55 @@ class PDFGeneratorV2 {
         justify-content: center;
         align-items: center;
         text-align: center;
+        min-height: 100vh;
+        padding: 40px 20px;
       }
       
       .cover-title {
-        font-size: 36px;
+        font-size: 28px;
         font-weight: bold;
         margin-bottom: 20px;
         text-shadow: 0 2px 4px rgba(0,0,0,0.3);
       }
       
       .cover-subtitle {
-        font-size: 18px;
-        margin-bottom: 40px;
+        font-size: 16px;
+        margin-bottom: 30px;
         opacity: 0.9;
       }
       
       .user-name {
-        font-size: 24px;
+        font-size: 20px;
         margin: 20px 0;
-        padding: 20px 40px;
+        padding: 15px 30px;
         border: 2px solid rgba(255,255,255,0.3);
         border-radius: 10px;
         background: rgba(255,255,255,0.1);
       }
       
       .page-title {
-        font-size: 28px;
+        font-size: 22px;
         color: #764ba2;
-        margin-bottom: 30px;
+        margin-bottom: 25px;
         text-align: center;
         position: relative;
         padding-bottom: 15px;
+      }
+      
+      @media (min-width: 768px) {
+        .cover-title {
+          font-size: 36px;
+        }
+        .cover-subtitle {
+          font-size: 18px;
+        }
+        .user-name {
+          font-size: 24px;
+          padding: 20px 40px;
+        }
+        .page-title {
+          font-size: 28px;
+        }
       }
       
       .page-title::after {
@@ -234,47 +286,72 @@ class PDFGeneratorV2 {
       }
       
       .score-number {
-        font-size: 72px;
+        font-size: 56px;
         font-weight: bold;
         background: linear-gradient(135deg, #667eea, #764ba2);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
+        background-clip: text;
         margin-bottom: 10px;
       }
       
       .relationship-title {
-        font-size: 32px;
+        font-size: 24px;
         color: #764ba2;
         text-align: center;
-        margin: 30px 0;
+        margin: 25px 0;
         font-weight: bold;
       }
       
       .chart-container {
         width: 100%;
-        max-width: 500px;
-        margin: 30px auto;
+        max-width: 100%;
+        margin: 25px auto;
+        overflow-x: auto;
+        overflow-y: hidden;
+      }
+      
+      @media (min-width: 768px) {
+        .score-number {
+          font-size: 72px;
+        }
+        .relationship-title {
+          font-size: 32px;
+        }
       }
       
       .action-card {
         background: linear-gradient(135deg, #f5f3ff, #fff);
         border-radius: 15px;
-        padding: 25px;
-        margin: 20px 0;
+        padding: 20px;
+        margin: 15px 0;
         border-left: 4px solid #764ba2;
       }
       
       .action-title {
-        font-size: 20px;
+        font-size: 18px;
         color: #764ba2;
-        margin-bottom: 15px;
+        margin-bottom: 12px;
         font-weight: bold;
       }
       
       .action-advice {
-        font-size: 16px;
+        font-size: 14px;
         color: #555;
         line-height: 1.8;
+      }
+      
+      @media (min-width: 768px) {
+        .action-card {
+          padding: 25px;
+          margin: 20px 0;
+        }
+        .action-title {
+          font-size: 20px;
+        }
+        .action-advice {
+          font-size: 16px;
+        }
       }
       
       .future-indicator {
@@ -317,18 +394,30 @@ class PDFGeneratorV2 {
       }
       
       .poetic-text {
-        font-size: 18px;
-        line-height: 2;
+        font-size: 14px;
+        line-height: 1.9;
         color: #555;
         text-align: center;
-        margin: 30px 0;
+        margin: 20px 0;
         font-style: italic;
       }
       
       .moon-icon {
-        font-size: 48px;
+        font-size: 36px;
         text-align: center;
-        margin: 20px 0;
+        margin: 15px 0;
+      }
+      
+      @media (min-width: 768px) {
+        .poetic-text {
+          font-size: 18px;
+          line-height: 2;
+          margin: 30px 0;
+        }
+        .moon-icon {
+          font-size: 48px;
+          margin: 20px 0;
+        }
       }
     `;
   }
@@ -601,13 +690,13 @@ class PDFGeneratorV2 {
    * 棒グラフをSVGで生成
    */
   generateBarChart(labels, values, maxValue, title) {
-    const width = 500;
-    const height = 300;
+    const width = 350;
+    const height = 250;
     const barWidth = width / labels.length * 0.7;
     const barGap = width / labels.length * 0.3;
     
     return `
-    <svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" style="width: 100%; height: auto;">
+    <svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" style="width: 100%; max-width: 350px; height: auto; display: block; margin: 0 auto;">
       <!-- グラフ背景 -->
       <rect x="0" y="0" width="${width}" height="${height}" fill="#f9f9f9" rx="10"/>
       
@@ -653,13 +742,13 @@ class PDFGeneratorV2 {
    * 折れ線グラフをSVGで生成
    */
   generateLineChart(labels, values, maxValue, title) {
-    const width = 500;
-    const height = 300;
-    const pointGap = (width - 80) / (labels.length - 1);
+    const width = 350;
+    const height = 250;
+    const pointGap = (width - 60) / (labels.length - 1);
     
     // ポイント座標を計算
     const points = values.map((value, i) => ({
-      x: 50 + i * pointGap,
+      x: 40 + i * pointGap,
       y: height - 30 - ((value / maxValue) * (height - 60))
     }));
     
@@ -672,7 +761,7 @@ class PDFGeneratorV2 {
     const areaPath = pathData + ` L ${points[points.length - 1].x},${height - 30} L ${points[0].x},${height - 30} Z`;
     
     return `
-    <svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" style="width: 100%; height: auto;">
+    <svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" style="width: 100%; max-width: 350px; height: auto; display: block; margin: 0 auto;">
       <!-- グラフ背景 -->
       <rect x="0" y="0" width="${width}" height="${height}" fill="#f9f9f9" rx="10"/>
       
@@ -723,11 +812,11 @@ class PDFGeneratorV2 {
    * レーダーチャートをSVGで生成
    */
   generateRadarChart(labels, values, maxValue = 100) {
-    const width = 400;
-    const height = 400;
+    const width = 320;
+    const height = 320;
     const centerX = width / 2;
     const centerY = height / 2;
-    const radius = 150;
+    const radius = 110;
     const angleStep = (Math.PI * 2) / labels.length;
     
     // ポイント座標を計算
@@ -737,8 +826,8 @@ class PDFGeneratorV2 {
       return {
         x: centerX + Math.cos(angle) * r,
         y: centerY + Math.sin(angle) * r,
-        labelX: centerX + Math.cos(angle) * (radius + 30),
-        labelY: centerY + Math.sin(angle) * (radius + 30)
+        labelX: centerX + Math.cos(angle) * (radius + 25),
+        labelY: centerY + Math.sin(angle) * (radius + 25)
       };
     });
     
@@ -746,7 +835,7 @@ class PDFGeneratorV2 {
     const polygonPath = points.map(p => `${p.x},${p.y}`).join(' ');
     
     return `
-    <svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" style="width: 100%; height: auto;">
+    <svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" style="width: 100%; max-width: 320px; height: auto; display: block; margin: 0 auto;">
       <!-- 背景円 -->
       ${[20, 40, 60, 80, 100].map(percent => {
         const r = radius * percent / 100;
