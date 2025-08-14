@@ -48,27 +48,45 @@ module.exports = async (req, res) => {
 <body>
   <div class="container">
     <div class="icon">🌙</div>
-    <div class="title">保存完了！</div>
-    <div class="message">
-      プロフィールを保存しました<br>
-      月の相性診断の準備ができました✨
+    <div class="title">月光に照らされし者よ</div>
+    <div class="message" style="font-size: 18px; line-height: 2; margin-bottom: 30px;">
+      汝の想いは、月の記憶に刻まれた<br>
+      <span style="opacity: 0.8; font-size: 16px;">二つの魂を結ぶ糸が、今、紡がれ始める</span>
     </div>
-    <div class="note" style="background: rgba(255,255,255,0.3); padding: 25px;">
-      <div style="font-size: 20px; font-weight: bold; margin-bottom: 20px;">
-        ✅ 次のステップ
+    
+    <div class="note" style="background: linear-gradient(135deg, rgba(255,255,255,0.15), rgba(255,255,255,0.25)); padding: 30px; border-radius: 15px; backdrop-filter: blur(10px);">
+      <div style="font-size: 20px; margin-bottom: 25px; letter-spacing: 2px;">
+        ✨ 月からの導き
       </div>
-      <div style="font-size: 16px; line-height: 1.8;">
-        1. このページを閉じてLINEに戻る<br>
-        2. 「プロフィール設定」メッセージの<br>
-        　 「🌙 診断結果を見る」ボタンをタップ<br>
-        3. 美しい月の相性カードが届きます✨
-      </div>
-      <div style="margin-top: 20px; padding: 15px; background: rgba(255,255,255,0.2); border-radius: 10px;">
-        <div style="font-size: 14px; opacity: 0.9;">
-          💡 ヒント: LINEトークで「診断結果」と<br>
-          　送信しても結果を見ることができます
+      <div style="font-size: 16px; line-height: 2.2; text-align: left; max-width: 350px; margin: 0 auto;">
+        <div style="margin-bottom: 15px;">
+          🌙 この画面を閉じ、LINEへ戻りなさい
+        </div>
+        <div style="margin-bottom: 15px;">
+          📱 トーク画面で「相性」と送れば<br>
+          　　汝の運命の糸が明かされよう
+        </div>
+        <div style="margin-bottom: 15px;">
+          💭 「会話」と送れば<br>
+          　　二人の言葉に宿る想いを読み解こう
+        </div>
+        <div style="margin-bottom: 15px;">
+          💎 「プレミアム」と送れば<br>
+          　　更なる深淵なる真実へ導かれん
         </div>
       </div>
+      
+      <div style="margin-top: 30px; padding: 20px; background: rgba(147, 51, 234, 0.2); border-radius: 12px; border: 1px solid rgba(255,255,255,0.3);">
+        <div style="font-size: 14px; line-height: 1.8; font-style: italic;">
+          月は満ち欠けを繰り返しながら<br>
+          永遠の愛を見守り続ける<br>
+          <span style="opacity: 0.7; font-size: 12px;">— 月詠より —</span>
+        </div>
+      </div>
+    </div>
+    
+    <div style="margin-top: 30px; font-size: 12px; opacity: 0.6;">
+      このページは自動的に閉じることができます
     </div>
   </div>
 </body>
