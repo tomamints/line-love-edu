@@ -80,13 +80,32 @@ function formatMoonReportV2(moonReport) {
             },
             {
               type: 'text',
-              text: moonReport.compatibility?.specific ? 
-                `${moonReport.compatibility.specific.reason}\n\n${moonReport.compatibility.specific.example}` :
-                '詳細な相性分析が利用可能です',
+              text: moonReport.compatibility?.specific?.reason || '',
               wrap: true,
               size: 'sm',
               margin: 'md',
               color: '#555555'
+            },
+            {
+              type: 'separator',
+              margin: 'lg'
+            },
+            {
+              type: 'text',
+              text: '💑 実際の例',
+              weight: 'bold',
+              size: 'md',
+              color: '#764ba2',
+              margin: 'lg'
+            },
+            {
+              type: 'text',
+              text: moonReport.compatibility?.specific?.example || '',
+              wrap: true,
+              size: 'sm',
+              margin: 'md',
+              color: '#555555',
+              style: 'italic'
             }
           ],
           paddingAll: '20px'
@@ -452,11 +471,20 @@ function formatMoonReportV2(moonReport) {
             },
             {
               type: 'text',
+              text: '💝 二人の関係をより良くするために',
+              weight: 'bold',
+              size: 'md',
+              color: '#e74c3c',
+              margin: 'lg',
+              align: 'center'
+            },
+            {
+              type: 'text',
               text: moonReport.compatibility?.specific?.advice || 
                 '相性を活かして、より良い関係を築きましょう',
               wrap: true,
               size: 'sm',
-              margin: 'lg',
+              margin: 'md',
               color: '#666666',
               align: 'center'
             }
