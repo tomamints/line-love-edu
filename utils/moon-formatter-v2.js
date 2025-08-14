@@ -72,9 +72,9 @@ function formatMoonReportV2(moonReport) {
             },
             {
               type: 'text',
-              text: '相性のポイント',
+              text: '【相性の理由】',
               weight: 'bold',
-              size: 'lg',
+              size: 'md',
               color: '#764ba2',
               margin: 'xl'
             },
@@ -92,7 +92,7 @@ function formatMoonReportV2(moonReport) {
             },
             {
               type: 'text',
-              text: '実際の例',
+              text: '【例えばこんな場面】',
               weight: 'bold',
               size: 'md',
               color: '#764ba2',
@@ -104,8 +104,27 @@ function formatMoonReportV2(moonReport) {
               wrap: true,
               size: 'sm',
               margin: 'md',
-              color: '#555555',
-              style: 'italic'
+              color: '#555555'
+            },
+            {
+              type: 'separator',
+              margin: 'lg'
+            },
+            {
+              type: 'text',
+              text: '【アドバイス】',
+              weight: 'bold',
+              size: 'md',
+              color: '#764ba2',
+              margin: 'lg'
+            },
+            {
+              type: 'text',
+              text: moonReport.compatibility?.specific?.advice || '',
+              wrap: true,
+              size: 'sm',
+              margin: 'md',
+              color: '#555555'
             }
           ],
           paddingAll: '20px'
@@ -184,7 +203,7 @@ function formatMoonReportV2(moonReport) {
             },
             {
               type: 'text',
-              text: '特徴',
+              text: '【あなたの特徴】',
               weight: 'bold',
               size: 'md',
               color: '#667eea',
@@ -204,7 +223,7 @@ function formatMoonReportV2(moonReport) {
             },
             {
               type: 'text',
-              text: '恋愛スタイル',
+              text: '【あなたの恋愛スタイル】',
               weight: 'bold',
               size: 'md',
               color: '#ff69b4',
@@ -287,7 +306,7 @@ function formatMoonReportV2(moonReport) {
             },
             {
               type: 'text',
-              text: '特徴',
+              text: '【お相手の特徴】',
               weight: 'bold',
               size: 'md',
               color: '#ff69b4',
@@ -307,7 +326,7 @@ function formatMoonReportV2(moonReport) {
             },
             {
               type: 'text',
-              text: '恋愛スタイル',
+              text: '【お相手の恋愛スタイル】',
               weight: 'bold',
               size: 'md',
               color: '#ff69b4',
@@ -446,7 +465,7 @@ function formatMoonReportV2(moonReport) {
           contents: [
             {
               type: 'text',
-              text: '今すぐできる改善アクション',
+              text: '【今すぐできること】',
               weight: 'bold',
               size: 'md',
               color: '#e74c3c'
@@ -471,7 +490,7 @@ function formatMoonReportV2(moonReport) {
             },
             {
               type: 'text',
-              text: '二人の関係をより良くするために',
+              text: '【関係改善のポイント】',
               weight: 'bold',
               size: 'md',
               color: '#e74c3c',
