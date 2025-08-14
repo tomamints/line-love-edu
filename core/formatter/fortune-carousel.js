@@ -123,7 +123,6 @@ class FortuneCarouselBuilder {
     const analysis = this.fortune.analysis || {};
     const messages = this.fortune.messages || [];
     const totalMessages = messages.length;
-    const avgResponseTime = analysis.avgResponseTime || 0;
     const conversationDays = analysis.conversationDays || 0;
     
     // 関係性の深さを計算
@@ -141,11 +140,19 @@ class FortuneCarouselBuilder {
         contents: [
           {
             type: 'text',
-            text: '月の導きが始まります',
+            text: 'おつきさま診断',
             size: 'xl',
             color: '#ffffff',
             weight: 'bold',
             align: 'center'
+          },
+          {
+            type: 'text',
+            text: 'トーク履歴分析結果',
+            size: 'md',
+            color: '#ffd700',
+            align: 'center',
+            margin: 'sm'
           }
         ]
       },
@@ -154,119 +161,138 @@ class FortuneCarouselBuilder {
         layout: 'vertical',
         spacing: 'md',
         paddingAll: '20px',
-        backgroundColor: this.styles.bodyBg,
+        backgroundColor: '#ffffff',
         contents: [
           {
-            type: 'text',
-            text: 'トーク履歴分析完了',
-            size: 'sm',
-            color: '#888888',
-            align: 'center'
-          },
-          {
-            type: 'separator',
-            margin: 'md'
-          },
-          {
             type: 'box',
-            layout: 'horizontal',
+            layout: 'vertical',
+            backgroundColor: '#f8f4ff',
+            cornerRadius: '12px',
+            paddingAll: '15px',
             contents: [
               {
                 type: 'box',
-                layout: 'vertical',
-                flex: 1,
+                layout: 'horizontal',
                 contents: [
                   {
-                    type: 'text',
-                    text: '総メッセージ数',
-                    size: 'xs',
-                    color: '#888888',
-                    align: 'center'
+                    type: 'box',
+                    layout: 'vertical',
+                    flex: 1,
+                    contents: [
+                      {
+                        type: 'text',
+                        text: 'メッセージ数',
+                        size: 'xs',
+                        color: '#888888',
+                        align: 'center'
+                      },
+                      {
+                        type: 'text',
+                        text: `${totalMessages}`,
+                        size: 'xxl',
+                        weight: 'bold',
+                        color: '#764ba2',
+                        align: 'center',
+                        margin: 'xs'
+                      }
+                    ]
                   },
                   {
-                    type: 'text',
-                    text: `${totalMessages}`,
-                    size: 'lg',
-                    weight: 'bold',
-                    color: '#764ba2',
-                    align: 'center',
-                    margin: 'xs'
-                  }
-                ]
-              },
-              {
-                type: 'separator',
-                margin: 'md'
-              },
-              {
-                type: 'box',
-                layout: 'vertical',
-                flex: 1,
-                contents: [
-                  {
-                    type: 'text',
-                    text: '会話日数',
-                    size: 'xs',
-                    color: '#888888',
-                    align: 'center'
+                    type: 'separator',
+                    margin: 'md',
+                    color: '#e0e0e0'
                   },
                   {
-                    type: 'text',
-                    text: `${conversationDays}日`,
-                    size: 'lg',
-                    weight: 'bold',
-                    color: '#764ba2',
-                    align: 'center',
-                    margin: 'xs'
+                    type: 'box',
+                    layout: 'vertical',
+                    flex: 1,
+                    contents: [
+                      {
+                        type: 'text',
+                        text: '会話日数',
+                        size: 'xs',
+                        color: '#888888',
+                        align: 'center'
+                      },
+                      {
+                        type: 'text',
+                        text: `${conversationDays}`,
+                        size: 'xxl',
+                        weight: 'bold',
+                        color: '#764ba2',
+                        align: 'center',
+                        margin: 'xs'
+                      },
+                      {
+                        type: 'text',
+                        text: '日間',
+                        size: 'xs',
+                        color: '#888888',
+                        align: 'center'
+                      }
+                    ]
                   }
                 ]
               }
-            ],
-            margin: 'lg'
+            ]
           },
           {
             type: 'separator',
-            margin: 'lg'
+            margin: 'xl',
+            color: '#f0f0f0'
           },
           {
             type: 'text',
-            text: '関係性の深さ',
+            text: '【関係性の深さ】',
             size: 'sm',
             weight: 'bold',
-            color: '#333333',
+            color: '#764ba2',
             align: 'center',
             margin: 'lg'
           },
           {
             type: 'text',
             text: relationshipDepth.level,
-            size: 'xl',
+            size: 'xxl',
             weight: 'bold',
-            color: '#764ba2',
+            color: '#667eea',
             align: 'center',
-            margin: 'sm'
+            margin: 'md'
           },
           {
             type: 'text',
             text: relationshipDepth.description,
             size: 'sm',
-            color: '#555555',
+            color: '#666666',
             align: 'center',
             margin: 'md',
             wrap: true
           },
           {
-            type: 'separator',
-            margin: 'lg'
-          },
-          {
-            type: 'text',
-            text: `現在のステージ: ${stage}`,
-            size: 'md',
-            weight: 'bold',
-            color: '#667eea',
-            align: 'center',
-            margin: 'md'
+            type: 'box',
+            layout: 'vertical',
+            backgroundColor: '#fff0f5',
+            cornerRadius: '8px',
+            paddingAll: '12px',
+            margin: 'xl',
+            contents: [
+              {
+                type: 'text',
+                text: `現在のステージ`,
+                size: 'xs',
+                color: '#888888',
+                align: 'center'
+              },
+              {
+                type: 'text',
+                text: stage,
+                size: 'lg',
+                weight: 'bold',
+                color: '#e91e63',
+                align: 'center',
+                margin: 'sm'
+              }
+            ]
           }
         ]
       },
@@ -294,6 +320,9 @@ class FortuneCarouselBuilder {
       ((analysis.responseRate || 50) * 0.2)
     );
     
+    // 星の数を計算
+    const starCount = Math.floor(compatibilityScore / 20);
+    
     // 恋愛ステージとアドバイスを判定
     const stage = this.detectRelationshipStage();
     const advice = this.generatePersonalizedAdvice(compatibilityScore, stage);
@@ -309,11 +338,28 @@ class FortuneCarouselBuilder {
         contents: [
           {
             type: 'text',
-            text: '総合分析結果',
+            text: '総合相性',
             size: 'xl',
             color: '#ffffff',
             weight: 'bold',
             align: 'center'
+          },
+          {
+            type: 'text',
+            text: `${compatibilityScore}%`,
+            size: 'xxl',
+            color: '#ffd700',
+            align: 'center',
+            margin: 'md',
+            weight: 'bold'
+          },
+          {
+            type: 'text',
+            text: '★'.repeat(starCount) + '☆'.repeat(5 - starCount),
+            size: 'xxl',
+            color: '#ffd700',
+            align: 'center',
+            margin: 'sm'
           }
         ]
       },
@@ -326,27 +372,39 @@ class FortuneCarouselBuilder {
         contents: [
           {
             type: 'text',
-            text: '相性スコア',
-            size: 'sm',
-            color: '#888888',
+            text: `【${stage}】`,
+            weight: 'bold',
+            size: 'xl',
+            color: '#667eea',
             align: 'center'
           },
           {
             type: 'text',
-            text: `${compatibilityScore}点`,
-            size: '80px',
+            text: advice,
+            wrap: true,
+            size: 'md',
+            margin: 'md',
+            color: '#555555',
+            align: 'center'
+          },
+          {
+            type: 'separator',
+            margin: 'xl',
+            color: '#f0f0f0'
+          },
+          {
+            type: 'text',
+            text: '【分析詳細】',
             weight: 'bold',
-            color: this.getScoreColor(compatibilityScore),
-            align: 'center',
-            margin: 'md'
+            size: 'md',
+            color: '#764ba2',
+            margin: 'xl'
           },
           {
             type: 'box',
             layout: 'vertical',
-            backgroundColor: '#f5f5f5',
-            cornerRadius: '8px',
-            paddingAll: '12px',
-            margin: 'lg',
+            spacing: 'md',
+            margin: 'md',
             contents: [
               {
                 type: 'box',
@@ -356,97 +414,83 @@ class FortuneCarouselBuilder {
                     type: 'text',
                     text: '会話の盛り上がり',
                     size: 'sm',
-                    color: '#555555',
+                    color: '#666666',
                     flex: 3
                   },
                   {
-                    type: 'text',
-                    text: messageFrequency.label,
-                    size: 'sm',
-                    weight: 'bold',
-                    color: '#667eea',
-                    align: 'end',
-                    flex: 2
+                    type: 'box',
+                    layout: 'horizontal',
+                    flex: 2,
+                    contents: [
+                      {
+                        type: 'text',
+                        text: messageFrequency.label,
+                        size: 'sm',
+                        weight: 'bold',
+                        color: '#667eea',
+                        align: 'end'
+                      }
+                    ]
                   }
                 ]
               },
               {
                 type: 'box',
                 layout: 'horizontal',
-                margin: 'sm',
                 contents: [
                   {
                     type: 'text',
                     text: '感情の温度',
                     size: 'sm',
-                    color: '#555555',
+                    color: '#666666',
                     flex: 3
                   },
                   {
-                    type: 'text',
-                    text: emotionalIntensity.label,
-                    size: 'sm',
-                    weight: 'bold',
-                    color: '#667eea',
-                    align: 'end',
-                    flex: 2
+                    type: 'box',
+                    layout: 'horizontal',
+                    flex: 2,
+                    contents: [
+                      {
+                        type: 'text',
+                        text: emotionalIntensity.label,
+                        size: 'sm',
+                        weight: 'bold',
+                        color: '#e91e63',
+                        align: 'end'
+                      }
+                    ]
                   }
                 ]
               },
               {
                 type: 'box',
                 layout: 'horizontal',
-                margin: 'sm',
                 contents: [
                   {
                     type: 'text',
                     text: '話題の豊富さ',
                     size: 'sm',
-                    color: '#555555',
+                    color: '#666666',
                     flex: 3
                   },
                   {
-                    type: 'text',
-                    text: topicDiversity.label,
-                    size: 'sm',
-                    weight: 'bold',
-                    color: '#667eea',
-                    align: 'end',
-                    flex: 2
+                    type: 'box',
+                    layout: 'horizontal',
+                    flex: 2,
+                    contents: [
+                      {
+                        type: 'text',
+                        text: topicDiversity.label,
+                        size: 'sm',
+                        weight: 'bold',
+                        color: '#764ba2',
+                        align: 'end'
+                      }
+                    ]
                   }
                 ]
               }
             ]
-          },
-          {
-            type: 'separator',
-            margin: 'lg'
-          },
-          {
-            type: 'text',
-            text: '現在の関係性',
-            size: 'sm',
-            weight: 'bold',
-            color: '#333333',
-            margin: 'lg'
-          },
-          {
-            type: 'text',
-            text: stage,
-            size: 'lg',
-            weight: 'bold',
-            color: '#667eea',
-            align: 'center',
-            margin: 'sm'
-          },
-          {
-            type: 'text',
-            text: advice,
-            size: 'sm',
-            color: '#555555',
-            align: 'center',
-            margin: 'md',
-            wrap: true
           }
         ]
       }
@@ -580,12 +624,10 @@ class FortuneCarouselBuilder {
     // 時間帯別分析
     const timePatterns = this.analyzeTimePatterns(messages);
     const peakHours = timePatterns.peakHours || [];
-    const quietHours = timePatterns.quietHours || [];
     
     // 話題分析
     const topics = this.analyzeTopics(messages);
     const hotTopics = topics.hot || [];
-    const avoidTopics = topics.avoid || [];
     
     // 返信パターン
     const responsePattern = this.analyzeResponsePattern(messages);
@@ -596,7 +638,7 @@ class FortuneCarouselBuilder {
       header: {
         type: 'box',
         layout: 'vertical',
-        backgroundColor: '#e91e63',
+        backgroundColor: '#ff69b4',
         paddingAll: '20px',
         contents: [
           {
@@ -618,26 +660,32 @@ class FortuneCarouselBuilder {
         contents: [
           {
             type: 'text',
-            text: '最も盛り上がる時間帯',
-            size: 'sm',
+            text: '【最も盛り上がる時間帯】',
+            size: 'md',
             weight: 'bold',
-            color: '#333333'
+            color: '#ff69b4',
+            align: 'center',
+            margin: 'md'
           },
           {
             type: 'box',
             layout: 'horizontal',
-            margin: 'sm',
+            margin: 'lg',
+            spacing: 'md',
             contents: peakHours.slice(0, 3).map(hour => ({
               type: 'box',
               layout: 'vertical',
               flex: 1,
+              backgroundColor: '#fff0f8',
+              cornerRadius: '8px',
+              paddingAll: '10px',
               contents: [
                 {
                   type: 'text',
                   text: hour.time,
-                  size: 'md',
+                  size: 'sm',
                   weight: 'bold',
-                  color: '#e91e63',
+                  color: '#ff69b4',
                   align: 'center'
                 },
                 {
@@ -653,73 +701,121 @@ class FortuneCarouselBuilder {
           },
           {
             type: 'separator',
-            margin: 'lg'
+            margin: 'xl',
+            color: '#f0f0f0'
           },
           {
             type: 'text',
-            text: '盛り上がる話題 TOP3',
-            size: 'sm',
+            text: '【盛り上がる話題 TOP3】',
+            size: 'md',
             weight: 'bold',
-            color: '#333333',
-            margin: 'lg'
+            color: '#ff69b4',
+            align: 'center',
+            margin: 'xl'
           },
-          ...hotTopics.slice(0, 3).map((topic, index) => ({
+          {
             type: 'box',
-            layout: 'horizontal',
-            margin: 'sm',
-            contents: [
-              {
-                type: 'text',
-                text: `${index + 1}.`,
-                size: 'sm',
-                color: '#e91e63',
-                flex: 0,
-                weight: 'bold'
-              },
-              {
-                type: 'text',
-                text: topic.name,
-                size: 'sm',
-                color: '#555555',
-                flex: 3,
-                margin: 'sm'
-              },
-              {
-                type: 'text',
-                text: `${topic.excitement}%`,
-                size: 'sm',
-                color: '#e91e63',
-                align: 'end',
-                flex: 1,
-                weight: 'bold'
-              }
-            ]
-          })),
+            layout: 'vertical',
+            spacing: 'sm',
+            margin: 'lg',
+            contents: hotTopics.slice(0, 3).map((topic, index) => ({
+              type: 'box',
+              layout: 'horizontal',
+              contents: [
+                {
+                  type: 'box',
+                  layout: 'vertical',
+                  flex: 0,
+                  width: '30px',
+                  contents: [
+                    {
+                      type: 'text',
+                      text: `${index + 1}`,
+                      size: 'lg',
+                      color: '#ff69b4',
+                      weight: 'bold',
+                      align: 'center'
+                    }
+                  ]
+                },
+                {
+                  type: 'box',
+                  layout: 'vertical',
+                  flex: 1,
+                  contents: [
+                    {
+                      type: 'text',
+                      text: topic.name,
+                      size: 'sm',
+                      color: '#333333',
+                      weight: 'bold'
+                    },
+                    {
+                      type: 'box',
+                      layout: 'horizontal',
+                      margin: 'xs',
+                      contents: [
+                        {
+                          type: 'box',
+                          layout: 'horizontal',
+                          flex: topic.excitement,
+                          backgroundColor: '#ff69b4',
+                          height: '6px',
+                          cornerRadius: '3px'
+                        },
+                        {
+                          type: 'box',
+                          layout: 'horizontal',
+                          flex: 100 - topic.excitement,
+                          backgroundColor: '#f0f0f0',
+                          height: '6px',
+                          cornerRadius: '3px'
+                        }
+                      ]
+                    },
+                    {
+                      type: 'text',
+                      text: `盛り上がり度: ${topic.excitement}%`,
+                      size: 'xxs',
+                      color: '#888888',
+                      margin: 'xs'
+                    }
+                  ]
+                }
+              ]
+            }))
+          },
           {
             type: 'separator',
-            margin: 'lg'
+            margin: 'xl',
+            color: '#f0f0f0'
           },
           {
             type: 'text',
-            text: '返信パターン',
-            size: 'sm',
+            text: '【返信パターン分析】',
+            size: 'md',
             weight: 'bold',
-            color: '#333333',
-            margin: 'lg'
+            color: '#ff69b4',
+            align: 'center',
+            margin: 'xl'
           },
           {
             type: 'box',
             layout: 'horizontal',
-            margin: 'sm',
+            margin: 'lg',
+            spacing: 'md',
             contents: [
               {
                 type: 'box',
                 layout: 'vertical',
                 flex: 1,
+                backgroundColor: '#f8f4ff',
+                cornerRadius: '8px',
+                paddingAll: '12px',
                 contents: [
                   {
                     type: 'text',
-                    text: '平均返信時間',
+                    text: '平均返信',
                     size: 'xs',
                     color: '#888888',
                     align: 'center'
@@ -727,22 +823,21 @@ class FortuneCarouselBuilder {
                   {
                     type: 'text',
                     text: responsePattern.avgTime,
-                    size: 'md',
+                    size: 'lg',
                     weight: 'bold',
-                    color: '#e91e63',
+                    color: '#764ba2',
                     align: 'center',
-                    margin: 'xs'
+                    margin: 'sm'
                   }
                 ]
-              },
-              {
-                type: 'separator',
-                margin: 'md'
               },
               {
                 type: 'box',
                 layout: 'vertical',
                 flex: 1,
+                backgroundColor: '#fff0f8',
+                cornerRadius: '8px',
+                paddingAll: '12px',
                 contents: [
                   {
                     type: 'text',
@@ -754,27 +849,33 @@ class FortuneCarouselBuilder {
                   {
                     type: 'text',
                     text: `${responsePattern.instantRate}%`,
-                    size: 'md',
+                    size: 'lg',
                     weight: 'bold',
-                    color: '#e91e63',
+                    color: '#ff69b4',
                     align: 'center',
-                    margin: 'xs'
+                    margin: 'sm'
                   }
                 ]
               }
             ]
           },
           {
-            type: 'separator',
-            margin: 'lg'
-          },
-          {
-            type: 'text',
-            text: responsePattern.advice,
-            size: 'sm',
-            color: '#555555',
-            margin: 'lg',
-            wrap: true
+            type: 'box',
+            layout: 'vertical',
+            backgroundColor: '#f8f4ff',
+            cornerRadius: '8px',
+            paddingAll: '12px',
+            margin: 'xl',
+            contents: [
+              {
+                type: 'text',
+                text: responsePattern.advice,
+                size: 'sm',
+                color: '#666666',
+                wrap: true,
+                align: 'center'
+              }
+            ]
           }
         ]
       }
