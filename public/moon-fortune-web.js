@@ -547,7 +547,7 @@ function displayResult(moonType, moonData, birthdate) {
         <div style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); border-radius: 20px; padding: 30px; margin: 30px 0; text-align: center; border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
             <div style="color: rgba(255, 255, 255, 0.9); margin-bottom: 20px;">
                 <div style="font-size: 20px; margin-bottom: 18px; font-weight: normal; letter-spacing: 1.5px;">
-                    ✨ より深い月の導きを求めて ✨
+                    気になるあの人との相性を詳しく知りたいあなたへ
                 </div>
                 <div style="font-size: 15px; line-height: 1.8; opacity: 0.85; font-weight: 300;">
                     ${moonType}タイプのあなたへ<br>
@@ -564,7 +564,7 @@ function displayResult(moonType, moonData, birthdate) {
                         🌙 気になるあの人との相性を読み解く<br>
                         💫 二人の会話に隠された真実<br>
                         🔮 日々変わる恋の月相<br>
-                        ✨ 月詠からの個別メッセージ
+                        📜 月詠からの個別メッセージ
                     </div>
                 </div>
                 
