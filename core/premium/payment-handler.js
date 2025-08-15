@@ -37,7 +37,7 @@ class PaymentHandler {
         console.log('📋 レポート生成中の注文あり:', generatingOrder.id);
         return {
           success: false,
-          message: '⏳ 現在レポートを生成中です。\n\n完成まで少々お待ちください（約2-3分）\n完成したら自動的に通知いたします。',
+          message: '⏳ 月詠が占いを行っています。\n\n完成まで少々お待ちください（約2-3分）\n完成したら自動的に通知いたします。',
           isGenerating: true,
           orderId: generatingOrder.id
         };
@@ -129,7 +129,7 @@ class PaymentHandler {
         paidAt: new Date().toISOString()
       });
       
-      console.log('🔮 プレミアムレポート生成開始...');
+      console.log('🔮 月詠の占い開始...');
       
       // userProfileが渡されていない場合はデフォルト値を使用
       const displayName = userProfile?.displayName || 'ユーザー';
@@ -141,11 +141,11 @@ class PaymentHandler {
         displayName
       );
       
-      console.log('📝 レポートデータ生成完了');
+      console.log('📝 占い結果解析完了');
       
-      // PDFを生成して保存
+      // PDFを作成して保存
       const pdfBuffer = await this.pdfGenerator.generatePDF(reportData);
-      console.log('📄 PDF生成完了');
+      console.log('📄 PDF作成完了');
       
       // PDFをファイルシステムに保存
       const fs = require('fs').promises;
@@ -190,7 +190,7 @@ class PaymentHandler {
         fileName,
         reportData,
         pdfBuffer,
-        message: 'プレミアムレポートが完成しました！PDFファイルをダウンロードしてご確認ください。'
+        message: '月詠の特別なる占いが完成しました！PDFファイルをダウンロードしてご確認ください。'
       };
       
     } catch (error) {
@@ -204,7 +204,7 @@ class PaymentHandler {
       
       return {
         success: false,
-        message: 'レポートの生成中にエラーが発生しました。サポートまでお問い合わせください。'
+        message: '占いの途中でエラーが発生しました。サポートまでお問い合わせください。'
       };
     }
   }
@@ -259,8 +259,8 @@ class PaymentHandler {
             price_data: {
               currency: 'jpy',
               product_data: {
-                name: 'プレミアム恋愛レポート',
-                description: 'おつきさま診断が分析した超詳細な恋愛診断書（PDF形式・約20ページ）',
+                name: '月詠の特別なる占い',
+                description: 'おつきさま診断が紐解く、あなたの恋の運命書（PDF形式・約20ページ）',
                 images: ['https://your-app.vercel.app/images/premium-report.png']
               },
               unit_amount: orderInfo.amount
@@ -354,7 +354,7 @@ class PaymentHandler {
     
     return {
       type: 'flex',
-      altText: 'プレミアムレポート決済案内',
+      altText: '月詠の特別なる占い 決済案内',
       contents: {
         type: 'bubble',
         size: 'mega',
@@ -383,7 +383,7 @@ class PaymentHandler {
           contents: [
             {
               type: 'text',
-              text: '🔮 プレミアム恋愛レポート',
+              text: '🌙 月詠の特別なる占い',
               size: 'lg',
               weight: 'bold',
               color: '#FFD700',
@@ -474,11 +474,11 @@ class PaymentHandler {
                 uri: orderResult.paymentUrl
               },
               style: 'primary',
-              color: '#FFD700'
+              color: '#000000'
             },
             {
               type: 'text',
-              text: '決済完了後、レポートを生成してお送りします',
+              text: '決済完了後、月詠があなたの運命を紐解きます',
               size: 'xs',
               color: '#B8E7FC',
               align: 'center',
@@ -506,7 +506,7 @@ class PaymentHandler {
     return [
       {
         type: 'flex',
-        altText: 'プレミアムレポートが完成しました！',
+        altText: '月詠の占いが完成しました！',
         contents: {
           type: 'bubble',
           size: 'mega',
@@ -518,7 +518,7 @@ class PaymentHandler {
             contents: [
               {
                 type: 'text',
-                text: '✨ レポート完成！ ✨',
+                text: '✨ 月詠の占いが完成しました ✨',
                 size: 'xl',
                 weight: 'bold',
                 color: '#FFD700',
@@ -535,7 +535,7 @@ class PaymentHandler {
             contents: [
               {
                 type: 'text',
-                text: '🔮 プレミアム恋愛レポート',
+                text: '🌙 月詠の特別なる占い',
                 size: 'lg',
                 weight: 'bold',
                 color: '#FFD700',
@@ -552,7 +552,7 @@ class PaymentHandler {
               },
               {
                 type: 'text',
-                text: '✅ 生成完了しました！',
+                text: '✅ 月詠の占いが降りました',
                 size: 'lg',
                 color: '#00ff00',
                 align: 'center',
