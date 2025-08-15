@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>OGP確認ツール</title>
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        h1 { color: #333; }
+        .tool-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .tool-link {
+            display: inline-block;
+            padding: 10px 20px;
+            margin: 10px;
+            background: #4267B2;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        .tool-link.twitter { background: #1DA1F2; }
+        .tool-link.line { background: #00B900; }
+        .info {
+            background: #e8f4fd;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        code {
+            background: #f0f0f0;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 OGP確認ツール</h1>
+    
+    <div class="tool-section">
+        <h2>📱 各SNSのデバッグツール</h2>
+        <p>以下のツールでURLを入力して確認してください：</p>
+        <p><code>https://line-love-edu.vercel.app/moon-fortune.html</code></p>
+        
+        <a href="https://developers.facebook.com/tools/debug/" target="_blank" class="tool-link">
+            Facebook Debugger
+        </a>
+        
+        <a href="https://cards-dev.twitter.com/validator" target="_blank" class="tool-link twitter">
+            Twitter Card Validator
+        </a>
+        
+        <div class="info">
+            <strong>💡 LINEの場合：</strong><br>
+            LINEには専用のデバッグツールがないため、実際に送信してテストする必要があります。
+            自分だけのグループを作成してテストすることをお勧めします。
+        </div>
+    </div>
+    
+    <div class="tool-section">
+        <h2>✅ チェックリスト</h2>
+        <ul>
+            <li>URLはHTTPS？ → <strong>Yes</strong> (Vercel自動対応)</li>
+            <li>画像は1200×630px？ → 確認必要</li>
+            <li>画像サイズは5MB以下？ → 確認必要</li>
+            <li>og:title設定済み？ → <strong>Yes</strong></li>
+            <li>og:description設定済み？ → <strong>Yes</strong></li>
+            <li>og:image設定済み？ → <strong>Yes</strong></li>
+            <li>og:url設定済み？ → <strong>Yes</strong></li>
+        </ul>
+    </div>
+    
+    <div class="tool-section">
+        <h2>🚨 トラブルシューティング</h2>
+        <div class="info">
+            <strong>画像が表示されない場合：</strong>
+            <ol>
+                <li>ブラウザのシークレットモードで確認</li>
+                <li>画像URLに直接アクセスして表示確認</li>
+                <li>Facebook Debuggerで「Scrape Again」をクリック</li>
+                <li>24時間待つ（キャッシュの自動更新）</li>
+            </ol>
+        </div>
+        
+        <div class="info">
+            <strong>更新が反映されない場合：</strong>
+            <ol>
+                <li>URLに<code>?v=2</code>などのパラメータを追加</li>
+                <li>各SNSのデバッグツールでキャッシュクリア</li>
+                <li>og:image:secure_urlタグを追加（HTTPS環境）</li>
+            </ol>
+        </div>
+    </div>
+    
+    <div class="tool-section">
+        <h2>📊 現在の画像情報</h2>
+        <p>画像URL: <code>https://line-love-edu.vercel.app/images/moon-share.png</code></p>
+        <p>
+            <img src="https://line-love-edu.vercel.app/images/moon-share.png" 
+                 style="max-width: 100%; border: 1px solid #ddd; border-radius: 5px;"
+                 onerror="this.style.display='none'; document.getElementById('error-msg').style.display='block';">
+        </p>
+        <p id="error-msg" style="display:none; color:red;">
+            ⚠️ 画像が読み込めません。URLを確認してください。
+        </p>
+    </div>
+</body>
+</html>
