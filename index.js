@@ -1766,7 +1766,7 @@ async function handlePostbackEvent(event) {
       await client.replyMessage(event.replyToken, [
         {
           type: 'text',
-          text: '💕 もっと詳しく知りたいんですね！\n\n💬 LINEのトーク履歴を送信すると、会話パターンから二人の深層心理を分析します。\n\n具体的に分かること：\n✨ 会話の相性度\n✨ 感情の温度差\n✨ コミュニケーションパターン\n✨ 関係性の深さ\n✨ 将来の可能性'
+          text: 'もっと詳しく知りたいんですね！\n\n💬 LINEのトーク履歴を送信すると、会話パターンから二人の深層心理を分析します。\n\n具体的に分かること：\n✨ 会話の相性度\n✨ 感情の温度差\n✨ コミュニケーションパターン\n✨ 関係性の深さ\n✨ 将来の可能性'
         },
         {
           type: 'flex',
@@ -1807,7 +1807,7 @@ async function handlePostbackEvent(event) {
                     },
                     {
                       type: 'text',
-                      text: 'トークルームの右上「≡」をタップ',
+                      text: '気になる相手のトーク画面で右上「≡」をタップ',
                       size: 'md',
                       margin: 'md',
                       wrap: true,
@@ -1847,7 +1847,7 @@ async function handlePostbackEvent(event) {
                     },
                     {
                       type: 'text',
-                      text: '「トーク履歴のバックアップ」をタップ',
+                      text: '「トーク履歴のバックアップ」→「トーク履歴を送信」',
                       size: 'md',
                       margin: 'md',
                       wrap: true,
