@@ -543,6 +543,44 @@ function displayResult(moonType, moonData, birthdate) {
             ` : ''}
         </div>
         
+        <!-- LINE公式アカウントへの誘導セクション -->
+        <div style="background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 20px; padding: 30px; margin: 30px 0; text-align: center;">
+            <div style="color: white; margin-bottom: 20px;">
+                <div style="font-size: 28px; margin-bottom: 15px;">
+                    💕 気になる相手との相性診断 💕
+                </div>
+                <div style="font-size: 16px; line-height: 1.6; opacity: 0.95;">
+                    あなたは${moonType}タイプ。<br>
+                    気になるあの人は何タイプ？<br>
+                    二人の本当の相性を詳しく診断します！
+                </div>
+            </div>
+            
+            <div style="background: white; border-radius: 12px; padding: 20px; margin: 20px 0;">
+                <div style="color: #333; margin-bottom: 15px;">
+                    <div style="font-size: 18px; font-weight: bold; color: #764ba2; margin-bottom: 10px;">
+                        🌙 LINE公式アカウントでできること
+                    </div>
+                    <div style="text-align: left; max-width: 400px; margin: 0 auto; font-size: 14px; line-height: 1.8;">
+                        ✅ 相手との詳細な相性診断（無料）<br>
+                        ✅ LINEトーク履歴から二人の関係性を分析<br>
+                        ✅ 毎日の月運勢をお届け<br>
+                        ✅ 恋愛の悩みに月詠が答える
+                    </div>
+                </div>
+                
+                <a href="https://lin.ee/egmCXoG" 
+                   target="_blank"
+                   style="display: inline-block; background: #00B900; color: white; padding: 15px 40px; border-radius: 30px; text-decoration: none; font-weight: bold; font-size: 18px; margin-top: 15px; box-shadow: 0 4px 15px rgba(0,185,0,0.3);">
+                    LINE友だち追加で相性診断
+                </a>
+                
+                <div style="margin-top: 15px; font-size: 12px; color: #666;">
+                    ※完全無料・1分で登録完了
+                </div>
+            </div>
+        </div>
+        
         <div class="share-section">
             <p class="share-text">診断結果をシェアする</p>
             <div style="background: rgba(255,255,255,0.1); border-radius: 12px; padding: 16px; margin-bottom: 16px;">
