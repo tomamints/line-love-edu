@@ -118,7 +118,7 @@ class ReportGeneratorV2Integration {
     // 会話サンプルから具体的な内容を抽出
     const messages = conversationSample.split('\n').slice(0, 20); // 最初の20件を分析
     const hasQuestions = messages.some(m => m.includes('？') || m.includes('?'));
-    const hasEmojis = messages.some(m => /[😀-🙏]|[💀-🗿]|[☀-⛿]/.test(m));
+    const hasEmojis = messages.some(m => /[\u{1F600}-\u{1F64F}]|[\u{1F300}-\u{1F5FF}]|[\u{1F680}-\u{1F6FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/u.test(m));
     const hasLongMessages = messages.some(m => m.length > 50);
     const hasShortReplies = messages.filter(m => m.includes('相手:') && m.length < 20).length > 5;
     
