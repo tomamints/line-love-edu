@@ -50,6 +50,11 @@ class AIGenerator {
     
     const insights = this.existingAiInsights;
     
+    // 序章メッセージを格納
+    if (insights.introductionMessage) {
+      analysisContext.aiInsights.introductionMessage = insights.introductionMessage;
+    }
+    
     // 個別化された手紙を格納（最優先）
     if (insights.personalizedLetter) {
       analysisContext.aiInsights.personalizedLetter = insights.personalizedLetter;
@@ -63,6 +68,11 @@ class AIGenerator {
     // 共感メッセージを格納
     if (insights.empathyMessage) {
       analysisContext.aiInsights.empathyMessage = insights.empathyMessage;
+    }
+    
+    // 終章メッセージを格納
+    if (insights.closingMessage) {
+      analysisContext.aiInsights.closingMessage = insights.closingMessage;
     }
     
     // 月詠コメントを格納

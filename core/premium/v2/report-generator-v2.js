@@ -116,7 +116,7 @@ class PremiumReportGeneratorV2 {
     
     analysisContext.reportContent.page2 = {
       title: '序章 ～月夜の導き～',
-      body: `${user.name}様。\n\n月詠（つくよみ）と申します。\n\n今宵、月が照らし出すのは、あなたと${partner.name ? partner.name + '様' : 'お相手様'}が紡いできた言葉の数々。\nそれぞれの言葉に込められた想いを、月の光で優しく包み込み、\nこれからの道筋を照らす羅針盤として、このレポートをお届けします。\n\nどうか、ゆっくりとページをめくりながら、\nあなたたち二人だけの物語を、心ゆくまでお楽しみください。`
+      body: aiInsights.introductionMessage || this.getDefaultIntroduction(user.name, partner.name, analysisContext.situation)
     };
     
     // P.2.5: 個別化された手紙（新規追加）
@@ -219,7 +219,7 @@ class PremiumReportGeneratorV2 {
     // P.13: 締めくくり
     analysisContext.reportContent.page13 = {
       title: '終章 ～月の祝福～',
-      body: `${user.name}様へ\n\nここまで読んでいただき、ありがとうございました。\n\n月は、いつも変わらず夜空にあります。\n満ちては欠け、欠けては満ちる。\nその繰り返しの中で、私たちに教えてくれるのは、\n「変化することの美しさ」と「続けることの尊さ」。\n\nお二人の関係も、月のように変化しながら、\nそれでも変わらない何かを大切に育んでいってください。\n\n月詠より、愛と祝福を込めて。`
+      body: aiInsights.closingMessage || this.getDefaultClosing(user.name, scores.overallScore, analysisContext.situation)
     };
   }
   
@@ -259,6 +259,68 @@ class PremiumReportGeneratorV2 {
     } else {
       return '月が応援する、これからの関係';
     }
+  }
+  
+  /**
+   * デフォルトの序章メッセージを生成
+   */
+  getDefaultIntroduction(userName, partnerName, situation) {
+    const loveSituation = situation?.loveSituation || 'beginning';
+    const wantToKnow = situation?.wantToKnow || 'feelings';
+    
+    let contextMessage = '';
+    if (loveSituation === 'beginning') {
+      contextMessage = '始まったばかりの恋の物語。その不安と期待、すべてを月は見守っています。';
+    } else if (loveSituation === 'relationship') {
+      contextMessage = '交際という美しい関係の中で、さらなる深まりを求めるあなたの心。';
+    } else if (loveSituation === 'complicated') {
+      contextMessage = '複雑な事情を抱えながらも、真実の愛を求めるあなたの勇気。';
+    } else {
+      contextMessage = '終わりと始まりの狭間で、新たな道を探すあなたの決意。';
+    }
+    
+    let wantMessage = '';
+    if (wantToKnow === 'feelings') {
+      wantMessage = '相手の本当の気持ちを知りたいという、その純粋な想い。';
+    } else if (wantToKnow === 'action') {
+      wantMessage = '次の一歩をどう踏み出すか、その答えを求める真摯な姿勢。';
+    } else if (wantToKnow === 'past') {
+      wantMessage = '過去の出来事の意味を理解し、前に進もうとする強さ。';
+    } else {
+      wantMessage = 'これからの未来に希望を見出そうとする、前向きな心。';
+    }
+    
+    return `${userName}様。\n\n月詠（つくよみ）と申します。\n\n${contextMessage}\n${wantMessage}\n\nすべてを、月は優しく見守っています。\n\n今宵、月が照らし出すのは、あなたと${partnerName ? partnerName + '様' : 'お相手様'}が紡いできた言葉の数々。\nそれぞれの言葉に込められた想いを、月の光で優しく包み込み、\nこれからの道筋を照らす羅針盤として、このレポートをお届けします。\n\nどうか、ゆっくりとページをめくりながら、\nあなたたち二人だけの物語を、心ゆくまでお楽しみください。`;
+  }
+  
+  /**
+   * デフォルトの終章メッセージを生成
+   */
+  getDefaultClosing(userName, overallScore, situation) {
+    const loveSituation = situation?.loveSituation || 'beginning';
+    const wantToKnow = situation?.wantToKnow || 'feelings';
+    
+    let encouragement = '';
+    if (overallScore >= 80) {
+      encouragement = 'お二人の関係は、満月のように美しく輝いています。この輝きを大切に、さらなる高みへ。';
+    } else if (overallScore >= 60) {
+      encouragement = 'お二人の関係は、上弦の月のように成長の途中。これからもっと美しく輝いていくでしょう。';
+    } else {
+      encouragement = 'お二人の関係は、新月から始まる新たな物語。これから少しずつ、でも確実に光を増していきます。';
+    }
+    
+    let futureMessage = '';
+    if (wantToKnow === 'feelings' && loveSituation === 'beginning') {
+      futureMessage = '相手の気持ちは、時とともに明らかになっていきます。月の満ち欠けのように、自然な流れを信じてください。';
+    } else if (wantToKnow === 'action') {
+      futureMessage = '今日お伝えした道筋を、一歩ずつ歩んでいってください。月が必ず正しい方向を照らします。';
+    } else if (wantToKnow === 'past') {
+      futureMessage = '過去を理解したあなたは、もう前を向いて歩き始めています。新しい章が始まります。';
+    } else {
+      futureMessage = '未来は、あなたが思っている以上に明るいものです。月と共に、希望を持って進んでください。';
+    }
+    
+    return `${userName}様へ\n\nここまで読んでいただき、ありがとうございました。\n\n${encouragement}\n\n${futureMessage}\n\n月は、いつも変わらず夜空にあります。\n満ちては欠け、欠けては満ちる。\nその繰り返しの中で、私たちに教えてくれるのは、\n「変化することの美しさ」と「続けることの尊さ」。\n\nお二人の関係も、月のように変化しながら、\nそれでも変わらない何かを大切に育んでいってください。\n\n月詠より、愛と祝福を込めて。`;
   }
   
   /**
