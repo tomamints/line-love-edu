@@ -774,19 +774,22 @@ class PDFGeneratorV2 {
       <div class="content-section">
         <div style="display: flex; justify-content: space-around; margin: 40px 0; width: 100%;">
           <div style="text-align: center; flex: 1;">
-            <div style="font-size: 48px; line-height: 1;">😊</div>
+            <div style="font-size: 48px; line-height: 1;">🌙</div>
             <div style="font-size: 36px; color: #d63384; font-weight: bold; margin: 10px 0;">${data.positivityRate}%</div>
-            <div style="color: #888; font-size: 14px;">ポジティブ率</div>
+            <div style="color: #764ba2; font-size: 14px; font-weight: bold;">月の輝き度</div>
+            <div style="color: #999; font-size: 11px; margin-top: 3px;">ポジティブな言葉の割合</div>
           </div>
           <div style="text-align: center; flex: 1;">
-            <div style="font-size: 48px; line-height: 1;">✨</div>
+            <div style="font-size: 48px; line-height: 1;">⭐</div>
             <div style="font-size: 36px; color: #4a90e2; font-weight: bold; margin: 10px 0;">${data.totalEmojis}</div>
-            <div style="color: #888; font-size: 14px;">絵文字の数</div>
+            <div style="color: #764ba2; font-size: 14px; font-weight: bold;">星の数</div>
+            <div style="color: #999; font-size: 11px; margin-top: 3px;">感情を表す絵文字</div>
           </div>
           <div style="text-align: center; flex: 1;">
-            <div style="font-size: 48px; line-height: 1;">❓</div>
+            <div style="font-size: 48px; line-height: 1;">🔮</div>
             <div style="font-size: 36px; color: #764ba2; font-weight: bold; margin: 10px 0;">${data.questionRatio}</div>
-            <div style="color: #888; font-size: 14px;">質問の比率</div>
+            <div style="color: #764ba2; font-size: 14px; font-weight: bold;">探求の光</div>
+            <div style="color: #999; font-size: 11px; margin-top: 3px;">質問のバランス</div>
           </div>
         </div>
         
@@ -829,6 +832,24 @@ class PDFGeneratorV2 {
       <div class="poetic-text">
         <p>${data.relationshipReason}</p>
         <p style="margin-top: 30px; font-weight: bold;">${data.scoreInterpretation}</p>
+      </div>
+      
+      <!-- スコアの意味を説明 -->
+      <div style="background: linear-gradient(135deg, #f5f3ff, #fff); border-radius: 15px; padding: 25px; margin: 30px 20px;">
+        <h3 style="color: #764ba2; font-size: 16px; margin-bottom: 15px; text-align: center;">🌙 月が示す絆の意味</h3>
+        <div style="font-size: 13px; line-height: 1.8; color: #555;">
+          <p style="margin-bottom: 10px;">このスコアは、二人の会話から読み取れる：</p>
+          <ul style="list-style: none; padding-left: 0;">
+            <li style="margin-bottom: 8px;">✨ 言葉のリズムと調和（返信速度、会話のテンポ）</li>
+            <li style="margin-bottom: 8px;">🌙 感情の共鳴度（ポジティブな表現、共感の言葉）</li>
+            <li style="margin-bottom: 8px;">⭐ 会話の深さ（質問と回答のバランス）</li>
+            <li style="margin-bottom: 8px;">🔮 互いへの関心度（メッセージの長さ、頻度）</li>
+            <li style="margin-bottom: 8px;">🌌 関係性の安定度（会話パターンの一貫性）</li>
+          </ul>
+          <p style="margin-top: 15px; font-style: italic; color: #764ba2;">
+            これら全てを総合して、月が二人の絆の強さを示しています。
+          </p>
+        </div>
       </div>
     </div>`;
   }
@@ -950,10 +971,10 @@ class PDFGeneratorV2 {
    * 棒グラフをSVGで生成
    */
   generateBarChart(labels, values, maxValue, title) {
-    const width = 600; // A4幅に合わせて拡大
+    const width = 650; // 幅を拡大して全曜日が表示されるように
     const height = 350; // 高さも調整
-    const barWidth = width / labels.length * 0.6;
-    const barGap = width / labels.length * 0.4;
+    const barWidth = (width - 120) / labels.length * 0.7; // 左右のマージンを考慮
+    const barGap = (width - 120) / labels.length * 0.3;
     
     return `
     <svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" style="width: 100%; max-width: 600px; height: auto; display: block; margin: 0 auto;">
