@@ -55,6 +55,11 @@ class AIGenerator {
       analysisContext.aiInsights.personalizedLetter = insights.personalizedLetter;
     }
     
+    // 核心的な答えを格納（P9用の新フィールド）
+    if (insights.coreAnswer) {
+      analysisContext.aiInsights.coreAnswer = insights.coreAnswer;
+    }
+    
     // 共感メッセージを格納
     if (insights.empathyMessage) {
       analysisContext.aiInsights.empathyMessage = insights.empathyMessage;

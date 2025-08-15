@@ -319,7 +319,8 @@ class PDFGeneratorV2 {
   ${this.generateQualityPage(reportContent.page5)}
   ${this.generateOverallScorePage(reportContent.page67)}
   ${this.generateFivePillarsPage(reportContent.page8)}
-  ${this.generateActionPlansPage(reportContent.page911)}
+  ${this.generateCoreAnswerPage(reportContent.page9)}
+  ${this.generateActionPlansPage(reportContent.page1011)}
   ${this.generateFuturePage(reportContent.page12)}
   ${this.generateClosingPage(reportContent.page13)}
 </body>
@@ -889,7 +890,29 @@ class PDFGeneratorV2 {
   }
   
   /**
-   * P.9-11: アクションプラン
+   * P.9: 核心的な答え（悩み別の専用ページ）
+   */
+  generateCoreAnswerPage(data) {
+    return `
+    <div class="page">
+      <h1 class="page-title">${data.title}</h1>
+      <div class="content-section">
+        <div class="poetic-text" style="background: linear-gradient(135deg, rgba(118, 75, 162, 0.1), rgba(102, 126, 234, 0.1)); padding: 30px; border-radius: 15px; border: 1px solid rgba(118, 75, 162, 0.2);">
+          <p style="font-size: 16px; line-height: 2; color: #2c3e50; white-space: pre-wrap;">${data.coreAnswer}</p>
+        </div>
+        ${data.tsukuyomiComment ? `
+        <div class="tsukuyomi-comment" style="margin-top: 30px;">
+          <p style="font-style: italic; color: #764ba2; text-align: center;">
+            🌙 ${data.tsukuyomiComment}
+          </p>
+        </div>
+        ` : ''}
+      </div>
+    </div>`;
+  }
+  
+  /**
+   * P.10-11: アクションプラン
    */
   generateActionPlansPage(data) {
     return `
