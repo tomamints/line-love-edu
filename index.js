@@ -899,7 +899,7 @@ async function handleFollowEvent(event) {
                 },
                 {
                   type: 'text',
-                  text: '月詠の占い',
+                  text: 'おつきさま診断',
                   size: 'xl',
                   color: '#ffffff',
                   align: 'center',
@@ -982,7 +982,12 @@ async function handleFollowEvent(event) {
                 },
                 {
                   type: 'text',
-                  text: '三、ふたりの月が織りなす物語をお伝えいたします',
+                  text: '三、ふたりの月が織りなす',
+                  size: 'sm'
+                },
+                {
+                  type: 'text',
+                  text: '　　物語をお伝えいたします',
                   size: 'sm'
                 }
               ]

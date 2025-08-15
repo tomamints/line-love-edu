@@ -63,16 +63,12 @@ module.exports = async (req, res) => {
           🌙 この画面を閉じ、LINEへ戻りなさい
         </div>
         <div style="margin-bottom: 15px;">
-          📱 トーク画面で「相性」と送れば<br>
+          📱 下部メニューの「診断結果」を押せば<br>
           　　汝の運命の糸が明かされよう
         </div>
         <div style="margin-bottom: 15px;">
-          💭 「会話」と送れば<br>
-          　　二人の言葉に宿る想いを読み解こう
-        </div>
-        <div style="margin-bottom: 15px;">
-          💎 「プレミアム」と送れば<br>
-          　　更なる深淵なる真実へ導かれん
+          💫 月の導きに従い<br>
+          　　二人の物語を見届けよう
         </div>
       </div>
       
