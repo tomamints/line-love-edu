@@ -122,7 +122,7 @@ class PremiumReportGeneratorV2 {
     // P.2.5: 個別化された手紙（新規追加）
     analysisContext.reportContent.personalLetter = {
       title: `${user.name}様への特別なメッセージ`,
-      body: aiInsights.personalizedLetter || this.generateDefaultPersonalLetter(user, partner, statistics, scores, metadata)
+      body: aiInsights.personalizedLetter || '月詠からの特別なメッセージをお待ちください...'
     };
     
     // P.3: 時系列グラフデータ
@@ -263,62 +263,6 @@ class PremiumReportGeneratorV2 {
     };
   }
   
-  /**
-   * デフォルトの個別メッセージを生成
-   */
-  generateDefaultPersonalLetter(user, partner, statistics, scores, metadata) {
-    const userName = user.name || 'あなた';
-    const partnerName = partner.name || 'お相手';
-    
-    // 月相に基づく表現
-    const moonPhases = ['新月', '三日月', '上弦の月', '満ちゆく月', '満月', '欠けゆく月', '下弦の月', '鎮静月'];
-    const currentMoonPhase = moonPhases[Math.floor(Math.random() * moonPhases.length)];
-    
-    // 時間帯に基づく月の表現
-    const peakHour = statistics.peakHour || 20;
-    let moonTimeExpression;
-    if (peakHour >= 5 && peakHour < 12) {
-      moonTimeExpression = '朝の残月が空に浮かぶ頃';
-    } else if (peakHour >= 12 && peakHour < 17) {
-      moonTimeExpression = '日中、見えない月が静かに巡る頃';
-    } else if (peakHour >= 17 && peakHour < 20) {
-      moonTimeExpression = '夕月が東の空に昇り始める頃';
-    } else {
-      moonTimeExpression = '月が最も美しく輝く夜の時間';
-    }
-    
-    return `${userName}様へ
-
-月詠（つくよみ）です。
-
-今宵は${currentMoonPhase}。月の光があなたと${partnerName}様の物語を優しく照らしています。
-
-お二人の会話を月明かりの下で読ませていただきました。まるで月の満ち欠けのように、時に活発に、時に静かに、自然なリズムで紡がれる言葉の数々。その中から、お二人だけの特別な輝きを見つけることができました。
-
-特に印象的だったのは、${moonTimeExpression}に交わされる会話です。この時間帯のメッセージには、まるで月の引力に導かれるような、不思議な引き合いを感じます。お互いを想う気持ちが、言葉となって自然に溢れ出ている。そんな美しい瞬間が、幾度となく訪れていました。
-
-あなたの言葉は、時に情熱的な満月のように、時に静かな三日月のように、様々な表情を見せています。一方、${partnerName}様の言葉は、まるで月光のように優しく、あなたの言葉を受け止めています。この絶妙な調和が、お二人の関係を特別なものにしているのでしょう。
-
-月が教えてくれることがあります。それは「待つことの大切さ」と「巡ることの美しさ」。
-
-新月から満月まで約15日。満月から新月まで、また約15日。この自然のリズムのように、お二人の関係も独自のリズムを持っています。急がず、焦らず、月のように穏やかに時を重ねていく。それが、お二人にとって最も自然な形なのかもしれません。
-
-${scores.strongestPillar?.name || '会話の調和'}が特に素晴らしいのは、月と地球のような、程よい距離感を保ちながらも、しっかりと引き合っている証です。月が地球の周りを巡るように、お二人の言葉も美しい軌道を描いています。
-
-一方で、まだ月の光が届いていない部分もあるようです。でも、それは悪いことではありません。月にも必ず影の部分があるように、まだ見えていない可能性が隠れているということ。これから月の光が少しずつその部分を照らしていくでしょう。
-
-あなたが今、相手の気持ちを知りたいと思っているなら、月を見上げてみてください。同じ月を、きっと${partnerName}様も見ているはずです。言葉にしなくても、同じものを見て、同じことを感じる。それも、立派な心の繋がりです。
-
-月は毎夜、形を変えながらも、変わらずに夜空にあります。お二人の関係も、日々変化しながら、でも変わらない何かを大切に育んでいってください。
-
-最後に、月からのメッセージをお伝えします。
-
-「あなたの想いは、月光のように静かに、でも確実に相手の心に届いています。今は見えなくても、必ず照らされる時が来ます。月を信じるように、自分の気持ちを信じてください。」
-
-これからも、月がお二人の道を優しく照らしますように。
-
-月詠より、月の祝福を込めて`;
-  }
   
   /**
    * レポートID生成
