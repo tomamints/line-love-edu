@@ -474,7 +474,7 @@ class PaymentHandler {
                 uri: orderResult.paymentUrl
               },
               style: 'primary',
-              color: '#000000'
+              color: '#FFD700'
             },
             {
               type: 'text',
@@ -590,7 +590,7 @@ class PaymentHandler {
                 type: 'button',
                 action: {
                   type: 'uri',
-                  label: '📄 レポートをブラウザで閲覧',
+                  label: '📄 月詠の占いをブラウザで閲覧',
                   uri: completionResult.reportUrl
                 },
                 style: 'primary',
