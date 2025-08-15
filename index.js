@@ -481,49 +481,146 @@ app.post('/webhook', middleware(config), async (req, res) => {
 📝 Raw Size: ${Math.round((batchResult.rawContent?.length || 0) / 1024)}KB
 ${parsedAIContent || batchResult.aiInsights || batchResult.aiInsightsPreview ? '✅ AI Insights: 取得成功' : '❌ AI Insights: なし'}`;
             
-            // 2. AI分析結果がある場合は分割して送信
+            // 2. AI分析結果がある場合は人間が理解しやすい形式で表示
             if (parsedAIContent || batchResult.aiInsights || batchResult.aiInsightsPreview) {
               const insights = parsedAIContent || batchResult.aiInsights || batchResult.aiInsightsPreview;
-              const fullJSON = JSON.stringify(insights, null, 2);
               
               // 基本情報を最初のメッセージとして追加
               messages.push({
                 type: 'text',
-                text: basicInfo + '\n\n⬇️ AI分析の完全な内容が続きます...'
+                text: basicInfo
               });
               
-              // JSONを3500文字ごとに分割（LINEの制限を考慮）
-              const chunkSize = 3500;
-              const chunks = [];
-              for (let i = 0; i < fullJSON.length; i += chunkSize) {
-                chunks.push(fullJSON.substring(i, i + chunkSize));
+              // 月詠コメントがあるか確認
+              if (insights.tsukuyomiComments) {
+                let tsukuyomiText = '🌙 === 月詠からのメッセージ ===\n\n';
+                const comments = insights.tsukuyomiComments;
+                
+                if (comments.weeklyPattern) {
+                  tsukuyomiText += '【曜日別パターン】\n' + comments.weeklyPattern + '\n\n';
+                }
+                if (comments.hourlyPattern) {
+                  tsukuyomiText += '【時間帯パターン】\n' + comments.hourlyPattern + '\n\n';
+                }
+                if (comments.conversationQuality) {
+                  tsukuyomiText += '【会話の質】\n' + comments.conversationQuality + '\n\n';
+                }
+                if (comments.overallDiagnosis) {
+                  tsukuyomiText += '【総合診断】\n' + comments.overallDiagnosis + '\n\n';
+                }
+                if (comments.fivePillars) {
+                  tsukuyomiText += '【5つの柱】\n' + comments.fivePillars + '\n\n';
+                }
+                if (comments.futurePrediction) {
+                  tsukuyomiText += '【未来予測】\n' + comments.futurePrediction;
+                }
+                
+                // 文字数制限を考慮して分割
+                if (tsukuyomiText.length > 4500) {
+                  const part1 = tsukuyomiText.substring(0, 4400);
+                  const part2 = tsukuyomiText.substring(4400);
+                  messages.push({
+                    type: 'text',
+                    text: part1 + '\n\n（続く...）'
+                  });
+                  if (part2.length > 50) {
+                    messages.push({
+                      type: 'text',
+                      text: '（続き）\n\n' + part2
+                    });
+                  }
+                } else {
+                  messages.push({
+                    type: 'text',
+                    text: tsukuyomiText
+                  });
+                }
               }
               
-              // 各チャンクをメッセージとして追加
-              chunks.forEach((chunk, index) => {
-                const header = index === 0 
-                  ? '🤖 === AI分析結果 (1/' + chunks.length + ') ===\n' 
-                  : `📄 === 続き (${index + 1}/${chunks.length}) ===\n`;
-                  
+              // 関係性タイプ
+              if (insights.relationshipType) {
+                let relationText = '💕 === 関係性の分析 ===\n\n';
+                relationText += `【関係性タイプ】\n${insights.relationshipType.title || '不明'}\n\n`;
+                relationText += `【説明】\n${insights.relationshipType.description || '詳細なし'}\n\n`;
+                
+                if (insights.relationshipStage) {
+                  relationText += `【関係性ステージ】${insights.relationshipStage}/10\n\n`;
+                }
+                
+                if (insights.personality && insights.personality.length > 0) {
+                  relationText += `【性格特徴】\n• ${insights.personality.join('\n• ')}\n\n`;
+                }
+                
+                if (insights.interests && insights.interests.length > 0) {
+                  relationText += `【共通の興味】\n• ${insights.interests.join('\n• ')}\n\n`;
+                }
+                
                 messages.push({
                   type: 'text',
-                  text: header + chunk
+                  text: relationText
                 });
-              });
+              }
+              
+              // アクションプラン
+              if (insights.suggestedActions && insights.suggestedActions.length > 0) {
+                let actionText = '🎯 === アクションプラン ===\n\n';
+                insights.suggestedActions.forEach((action, index) => {
+                  actionText += `【${index + 1}. ${action.title}】\n`;
+                  actionText += `${action.action}\n`;
+                  if (action.moonGuidance) {
+                    actionText += `💫 ${action.moonGuidance}\n`;
+                  }
+                  actionText += `⏰ タイミング: ${action.timing}\n`;
+                  actionText += `📊 成功率: ${action.successRate}%\n\n`;
+                });
+                
+                messages.push({
+                  type: 'text',
+                  text: actionText
+                });
+              }
+              
+              // 未来予測
+              if (insights.futureSigns) {
+                let futureText = '🔮 === 未来予測（3ヶ月後） ===\n\n';
+                if (insights.futureSigns.threeMonthPrediction) {
+                  futureText += insights.futureSigns.threeMonthPrediction + '\n\n';
+                }
+                futureText += `【より深い対話】${insights.futureSigns.deepTalk || '不明'}\n`;
+                futureText += `【新しい始まり】${insights.futureSigns.newBeginning || '不明'}\n`;
+                futureText += `【感情の深まり】${insights.futureSigns.emotionalDepth || '不明'}\n`;
+                
+                messages.push({
+                  type: 'text',
+                  text: futureText
+                });
+              }
               
               // 最大5メッセージまで（LINE APIの制限）
               if (messages.length > 5) {
-                messages.splice(5);
-                messages[4] = {
-                  type: 'text',
-                  text: messages[4].text + '\n\n⚠️ メッセージ数制限により残りは省略されました。'
-                };
+                // 重要な情報を優先して5つに収める
+                const prioritized = [
+                  messages[0], // 基本情報
+                  messages[1], // 月詠コメント
+                  messages[2], // 関係性
+                  messages[3], // アクションプラン
+                  messages[4]  // 未来予測
+                ].filter(msg => msg);
+                
+                messages.splice(0, messages.length, ...prioritized.slice(0, 5));
+                
+                if (messages.length === 5) {
+                  messages[4] = {
+                    type: 'text',
+                    text: messages[4].text + '\n\n📌 完全な分析結果はレポートでご確認ください。'
+                  };
+                }
               }
             } else {
               // AI分析結果がない場合
               messages.push({
                 type: 'text',
-                text: basicInfo + '\n\n❌ AI分析結果が見つかりません'
+                text: basicInfo + '\n\n❌ AI分析結果が見つかりません\n\n考えられる原因:\n• まだAI分析が完了していない\n• バッチ処理でエラーが発生した\n• プロンプトの応答形式に問題がある\n\n「レポート状況」で現在の状態を確認してください。'
               });
             }
             

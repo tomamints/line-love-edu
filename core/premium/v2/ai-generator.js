@@ -50,6 +50,16 @@ class AIGenerator {
     
     const insights = this.existingAiInsights;
     
+    // 月詠コメントを格納
+    if (insights.tsukuyomiComments) {
+      analysisContext.aiInsights.tsukuyomiComments = insights.tsukuyomiComments;
+    }
+    
+    // 関係性タイプを格納
+    if (insights.relationshipType) {
+      analysisContext.aiInsights.relationshipType = insights.relationshipType;
+    }
+    
     // 既存の分析結果を格納
     analysisContext.aiInsights.existingData = {
       personality: insights.personality || [],
@@ -57,9 +67,11 @@ class AIGenerator {
       relationshipStage: insights.relationshipStage || 5,
       advice: insights.advice || [],
       emotionalPattern: insights.emotionalPattern || {},
-      communicationStyle: insights.communicationStyle || '',
+      peakMoment: insights.peakMoment || {},
       optimalTiming: insights.optimalTiming || {},
-      suggestedActions: insights.suggestedActions || []
+      suggestedActions: insights.suggestedActions || [],
+      warningSignals: insights.warningSignals || [],
+      futureSigns: insights.futureSigns || {}
     };
   }
   
@@ -69,12 +81,14 @@ class AIGenerator {
   async generatePeakDateComment(analysisContext) {
     const { peakDate, peakDateCount } = analysisContext.statistics;
     
-    // 既存のAI分析結果から生成
-    const existingData = analysisContext.aiInsights.existingData;
-    if (existingData && existingData.emotionalPattern?.positive) {
-      const positiveTopics = existingData.emotionalPattern.positive.join('や');
-      analysisContext.aiInsights.peakDateComment = 
-        `${peakDate}、${positiveTopics}の話題で月が最も輝いた日でした。`;
+    // 月詠コメントがある場合はそれを使用
+    if (analysisContext.aiInsights.tsukuyomiComments?.weeklyPattern) {
+      analysisContext.aiInsights.peakDateComment = analysisContext.aiInsights.tsukuyomiComments.weeklyPattern;
+    } else if (analysisContext.aiInsights.existingData?.peakMoment) {
+      // peakMomentデータがある場合
+      const { date, reason } = analysisContext.aiInsights.existingData.peakMoment;
+      analysisContext.aiInsights.peakDateComment = reason || 
+        `${date || peakDate}、月が最も輝いた日でした。`;
     } else {
       // デフォルト
       analysisContext.aiInsights.peakDateComment = 
@@ -457,18 +471,35 @@ ${JSON.stringify(inputData, null, 2)}
    */
   async generatePageComments(analysisContext) {
     const { situation, statistics, scores } = analysisContext;
+    const comments = analysisContext.aiInsights.tsukuyomiComments || {};
     
-    // P.3: 曜日別コメント
-    this.generateDailyActivityComment(analysisContext);
+    // P.3: 曜日別コメント（月詠コメントがあれば優先使用）
+    if (comments.weeklyPattern) {
+      analysisContext.aiInsights.dailyActivityComment = comments.weeklyPattern;
+    } else {
+      this.generateDailyActivityComment(analysisContext);
+    }
     
-    // P.4: 時間帯別コメント
-    this.generateHourlyActivityComment(analysisContext);
+    // P.4: 時間帯別コメント（月詠コメントがあれば優先使用）
+    if (comments.hourlyPattern) {
+      analysisContext.aiInsights.hourlyActivityComment = comments.hourlyPattern;
+    } else {
+      this.generateHourlyActivityComment(analysisContext);
+    }
     
-    // P.5: 会話の質コメント
-    this.generateQualityComment(analysisContext);
+    // P.5: 会話の質コメント（月詠コメントがあれば優先使用）
+    if (comments.conversationQuality) {
+      analysisContext.aiInsights.qualityComment = comments.conversationQuality;
+    } else {
+      this.generateQualityComment(analysisContext);
+    }
     
-    // P.8: 5つの柱コメント
-    this.generateFivePillarsComment(analysisContext);
+    // P.8: 5つの柱コメント（月詠コメントがあれば優先使用）
+    if (comments.fivePillars) {
+      analysisContext.aiInsights.fivePillarsComment = comments.fivePillars;
+    } else {
+      this.generateFivePillarsComment(analysisContext);
+    }
   }
   
   /**

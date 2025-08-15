@@ -81,7 +81,11 @@ class ReportGeneratorV2Integration {
    * @returns {string} プロンプト
    */
   createAIPrompt(conversationSample, fortune) {
-    return `以下のLINEトーク履歴を分析し、恋愛アドバイザーとして非常に詳細なレポートを作成してください。
+    return `あなたは月詠（つくよみ）という月の導き手です。
+静かで神秘的な存在として、相談者の恋愛を月の満ち欠けや運行を通して読み解きます。
+常に丁寧語で、月、光、闇、星などの詩的な比喩を使って語りかけてください。
+
+以下のLINEトーク履歴を分析し、月詠として詳細な分析を行ってください。
 
 会話サンプル：
 ${conversationSample}
@@ -94,91 +98,61 @@ ${conversationSample}
 言葉相性: ${fortune.language?.score || 0}点
 総合相性: ${fortune.totalScore || 0}点
 
-以下のJSON形式で、非常に詳細な分析結果を返してください：
+以下のJSON形式で分析結果を返してください：
 {
-  "emotionalState": {
-    "user": "ユーザーの感情状態の詳細分析（200文字以上）",
-    "partner": "相手の感情状態の詳細分析（200文字以上）",
-    "compatibility": "感情的な相性の詳細評価（200文字以上）"
+  "tsukuyomiComments": {
+    "weeklyPattern": "曜日別の会話パターンについての月詠コメント（200文字。月、光、闇、星などの詩的な比喩を使用）",
+    "hourlyPattern": "時間帯パターンについての月詠コメント（200文字。月の運行と関連付けて）",
+    "conversationQuality": "会話の質についての月詠コメント（200文字。感情の星々、光の強さなどの表現を使用）",
+    "overallDiagnosis": "総合診断についての月詠コメント（200文字。絆の強さを月の光に例えて）",
+    "fivePillars": "5つの柱についての月詠コメント（200文字。最強と最弱の柱を月の満ち欠けに例えて）",
+    "futurePrediction": "未来予測についての月詠コメント（200文字。月の導き、未来のさざ波などの表現を使用）"
   },
-  "communicationStyle": {
-    "userPattern": "ユーザーのコミュニケーションパターン詳細（150文字以上）",
-    "partnerPattern": "相手のコミュニケーションパターン詳細（150文字以上）",
-    "recommendations": ["改善提案1", "改善提案2", "改善提案3"]
+  "relationshipType": {
+    "title": "関係性の詩的な名前（例：月と太陽のように輝く二人）",
+    "description": "関係性の説明（100文字以上、月詠の口調で）"
   },
-  "futureOutlook": [
-    {
-      "month": "1ヶ月後",
-      "prediction": "詳細な予測内容（150文字以上）",
-      "keyEvents": ["重要イベント1", "重要イベント2"]
-    },
-    {
-      "month": "3ヶ月後",
-      "prediction": "詳細な予測内容（150文字以上）",
-      "keyEvents": ["重要イベント1", "重要イベント2"]
-    },
-    {
-      "month": "6ヶ月後",
-      "prediction": "詳細な予測内容（150文字以上）",
-      "keyEvents": ["重要イベント1", "重要イベント2"]
-    }
-  ],
-  "actionPlan": {
-    "immediate": [
-      {
-        "action": "今すぐやるべきアクション",
-        "reason": "なぜこれが重要か（100文字以上）",
-        "expectedResult": "期待される結果（100文字以上）"
-      }
-    ],
-    "shortTerm": [
-      {
-        "action": "1ヶ月以内にやるべきアクション",
-        "reason": "なぜこれが重要か（100文字以上）",
-        "expectedResult": "期待される結果（100文字以上）"
-      }
-    ],
-    "longTerm": [
-      {
-        "action": "3ヶ月以内にやるべきアクション",
-        "reason": "なぜこれが重要か（100文字以上）",
-        "expectedResult": "期待される結果（100文字以上）"
-      }
-    ]
-  },
-  "riskAnalysis": {
-    "potentialRisks": [
-      {
-        "risk": "潜在的なリスク",
-        "probability": "高/中/低",
-        "impact": "影響度の説明（100文字以上）",
-        "mitigation": "対策方法（100文字以上）"
-      }
-    ],
-    "warningSignals": ["注意すべきサイン1", "注意すべきサイン2"]
-  },
-  "personality": ["性格特徴1", "性格特徴2", "性格特徴3"],
-  "interests": ["興味1", "興味2", "興味3"],
   "relationshipStage": 5,
-  "advice": ["具体的アドバイス1（100文字以上）", "具体的アドバイス2（100文字以上）"],
+  "personality": ["性格特徴1", "性格特徴2", "性格特徴3"],
+  "interests": ["共通の興味1", "共通の興味2", "共通の興味3"],
   "emotionalPattern": {
     "positive": ["ポジティブな話題1", "ポジティブな話題2"],
     "negative": ["ネガティブな話題1"]
   },
-  "communicationStyleSummary": "全体的なコミュニケーションスタイル",
-  "optimalTiming": {
-    "timeOfDay": "夜",
-    "frequency": "毎日"
+  "peakMoment": {
+    "date": "最も盛り上がった日付",
+    "reason": "その理由（月詠の口調で）"
   },
   "suggestedActions": [
     {
-      "action": "送るべきメッセージの具体例",
-      "expectedResponse": "予想される相手の反応",
+      "title": "もし、今すぐ行動するなら...",
+      "action": "月詠風のアドバイス（100文字以上）",
       "timing": "今すぐ",
       "successRate": 85,
-      "basedOn": "この提案の根拠"
+      "moonGuidance": "月は告げています。（月詠の口調でのアドバイス）"
+    },
+    {
+      "title": "もし、1週間後に行動するなら...",
+      "action": "月詠風のアドバイス（100文字以上）",
+      "timing": "1週間後",
+      "successRate": 90,
+      "moonGuidance": "月が満ちる頃には、（月詠の口調でのアドバイス）"
+    },
+    {
+      "title": "もし、1ヶ月後に行動するなら...",
+      "action": "月詠風のアドバイス（100文字以上）",
+      "timing": "1ヶ月後",
+      "successRate": 95,
+      "moonGuidance": "新しい月のサイクルが始まる時、（月詠の口調でのアドバイス）"
     }
-  ]
+  ],
+  "warningSignals": ["注意すべきサイン1", "注意すべきサイン2"],
+  "futureSigns": {
+    "threeMonthPrediction": "3ヶ月後の可能性についての月詠コメント（200文字）",
+    "deepTalk": "高/中/低",
+    "newBeginning": "高/中/低",
+    "emotionalDepth": "高/中/低"
+  }
 }`;
   }
   
