@@ -238,11 +238,28 @@ module.exports = async (req, res) => {
             // ユーザープロフィールを取得
             if (!progress.data.userProfile) {
               try {
+                // LINE APIからプロフィールを取得
                 progress.data.userProfile = await lineClient.getProfile(order.userId);
                 console.log('👤 User:', progress.data.userProfile.displayName);
+                
+                // データベースから追加の恋愛プロフィール情報を取得
+                const profileManager = require('../core/database/profiles-db');
+                const savedProfile = await profileManager.getProfile(order.userId);
+                if (savedProfile) {
+                  progress.data.userProfile = {
+                    ...progress.data.userProfile,
+                    ...savedProfile
+                  };
+                  console.log('📝 Love situation:', savedProfile.loveSituation);
+                  console.log('📝 Want to know:', savedProfile.wantToKnow);
+                }
               } catch (err) {
                 console.log('⚠️ Using default profile');
-                progress.data.userProfile = { displayName: 'ユーザー' };
+                progress.data.userProfile = { 
+                  displayName: 'ユーザー',
+                  loveSituation: 'beginning',
+                  wantToKnow: 'feelings'
+                };
               }
             }
             
@@ -472,8 +489,8 @@ module.exports = async (req, res) => {
                 console.log('📤 Conversation sample first 500 chars:', conversationSample.substring(0, 500));
                 console.log('📤 Conversation sample contains undefined:', conversationSample.includes('undefined'));
                 
-                // プロンプトを作成（report-generatorから流用）
-                const prompt = reportGenerator.createAIPrompt(conversationSample, progress.data.fortune);
+                // プロンプトを作成（report-generatorから流用、userProfileも渡す）
+                const prompt = reportGenerator.createAIPrompt(conversationSample, progress.data.fortune, progress.data.userProfile);
                 
                 // バッチリクエストを作成
                 const batchRequest = {

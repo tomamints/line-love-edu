@@ -50,14 +50,29 @@ class AIGenerator {
     
     const insights = this.existingAiInsights;
     
+    // 共感メッセージを格納
+    if (insights.empathyMessage) {
+      analysisContext.aiInsights.empathyMessage = insights.empathyMessage;
+    }
+    
     // 月詠コメントを格納
     if (insights.tsukuyomiComments) {
       analysisContext.aiInsights.tsukuyomiComments = insights.tsukuyomiComments;
     }
     
-    // 関係性タイプを格納
+    // 関係性タイプを格納（新しいフィールドも含む）
     if (insights.relationshipType) {
-      analysisContext.aiInsights.relationshipType = insights.relationshipType;
+      analysisContext.aiInsights.relationshipType = {
+        ...insights.relationshipType,
+        strengths: insights.relationshipType.strengths || [],
+        challenges: insights.relationshipType.challenges || [],
+        compatibility: insights.relationshipType.compatibility || ''
+      };
+    }
+    
+    // コミュニケーションスタイルを格納
+    if (insights.communicationStyle) {
+      analysisContext.aiInsights.communicationStyle = insights.communicationStyle;
     }
     
     // 既存の分析結果を格納
@@ -200,28 +215,36 @@ ${JSON.stringify(inputData, null, 2)}
     const { strongestPillar, weakestPillar } = analysisContext.scores;
     const existingData = analysisContext.aiInsights.existingData;
     
-    // 既存のsuggestedActionsを活用
+    // 既存のsuggestedActionsを活用（改善版）
     if (existingData && existingData.suggestedActions && existingData.suggestedActions.length > 0) {
       analysisContext.aiInsights.actionPlans = existingData.suggestedActions.slice(0, 3).map(action => ({
-        title: `もし、${action.timing === '今すぐ' ? '今' : action.timing}行動するなら…`,
+        title: action.title || `もし、${action.timing === '今すぐ' ? '今' : action.timing}行動するなら…`,
         advice: action.action || '素直な気持ちを伝えてみましょう。',
-        icon: action.successRate >= 80 ? 'full_moon' : action.successRate >= 60 ? 'crescent_moon' : 'cloudy_moon'
+        reason: action.reason || 'このタイミングが最適です',
+        example: action.example || '',
+        icon: action.successRate >= 80 ? 'full_moon' : action.successRate >= 60 ? 'crescent_moon' : 'cloudy_moon',
+        timing: action.timing,
+        successRate: action.successRate
       }));
       
       // 不足分をデフォルトで補完
       while (analysisContext.aiInsights.actionPlans.length < 3) {
-        const defaults = this.getDefaultActionPlans();
+        const defaults = this.getDefaultActionPlans(analysisContext);
         analysisContext.aiInsights.actionPlans.push(defaults[analysisContext.aiInsights.actionPlans.length]);
       }
     } else if (existingData && existingData.advice && existingData.advice.length > 0) {
       // adviceを活用
       analysisContext.aiInsights.actionPlans = existingData.advice.slice(0, 3).map((advice, index) => ({
-        title: index === 0 ? 'もし、関係を深めたいなら…' : index === 1 ? 'もし、会話を楽しくしたいなら…' : 'もし、特別な時間を作りたいなら…',
+        title: index === 0 ? '今すぐできること' : index === 1 ? '今週中にやってみること' : '今月の目標',
         advice: advice,
-        icon: index === 0 ? 'full_moon' : index === 1 ? 'crescent_moon' : 'star'
+        reason: '関係を深めるために',
+        example: '',
+        icon: index === 0 ? 'full_moon' : index === 1 ? 'crescent_moon' : 'star',
+        timing: index === 0 ? '今すぐ' : index === 1 ? '今週中' : '今月中',
+        successRate: 80 - (index * 5)
       }));
     } else {
-      // デフォルト
+      // デフォルト（改善版）
       this.setDefaultActionPlans(analysisContext);
     }
     return;
@@ -339,24 +362,100 @@ ${JSON.stringify(inputData, null, 2)}
   }
   
   /**
-   * デフォルトのアクションプランを取得
+   * デフォルトのアクションプランを取得（改善版）
    */
-  getDefaultActionPlans() {
-    return [
+  getDefaultActionPlans(analysisContext) {
+    const { situation } = analysisContext;
+    const loveSituation = situation?.loveSituation || 'beginning';
+    const wantToKnow = situation?.wantToKnow || 'feelings';
+    
+    // 恋愛状況と悩みに応じた具体的なアクションプラン
+    const plans = {
+      beginning: {
+        feelings: [
+          {
+            title: '今すぐできること',
+            advice: '「最近〇〇にハマってるんだけど、知ってる？」など、相手が答えやすい質問から始めてみましょう。相手の反応速度や絵文字の使い方で、興味の度合いが分かります。',
+            reason: '相手の興味を引き出しながら、自然に距離を縮められるから',
+            example: '例：「最近見た映画でおすすめある？」→相手の好みを知れる',
+            icon: 'full_moon',
+            timing: '今すぐ',
+            successRate: 85
+          },
+          {
+            title: '今週中の目標',
+            advice: '毎日同じ時間帯にメッセージを送る習慣を作りましょう。「おはよう」「お疲れさま」など、短くても継続することで、相手の生活リズムに自然に入り込めます。',
+            reason: '規則的なコミュニケーションが信頼関係を築くから',
+            example: '朝8時に「今日も頑張ろうね」、夜10時に「今日もお疲れさま」',
+            icon: 'crescent_moon',
+            timing: '1週間',
+            successRate: 90
+          },
+          {
+            title: '1ヶ月後の大きな一歩',
+            advice: '共通の趣味や興味を見つけて、「一緒に〇〇しない？」と誘ってみましょう。オンラインでも構いません。共有体験が関係を深めます。',
+            reason: '実際に何かを一緒にすることで、メッセージ以上の絆が生まれるから',
+            example: '「来月公開の映画、一緒に見に行かない？」「オンラインで一緒にゲームしない？」',
+            icon: 'star',
+            timing: '1ヶ月後',
+            successRate: 95
+          }
+        ],
+        action: [
+          {
+            title: '今すぐできる行動',
+            advice: 'メッセージの返信時間を少し早めてみましょう。相手より少し早く返すことで、あなたの関心を示せます。ただし、即レスしすぎないよう注意。',
+            reason: '適度な返信速度が相手に安心感を与えるから',
+            example: '相手が30分で返信→20分くらいで返す',
+            icon: 'full_moon',
+            timing: '今すぐ',
+            successRate: 80
+          }
+        ]
+      },
+      relationship: {
+        feelings: [
+          {
+            title: '今夜試してみること',
+            advice: '「最近どう？なんか悩みとかある？」と、相手の本音を引き出す質問をしてみましょう。いつもと違う深い話題が、関係を次のステージへ。',
+            reason: '付き合っていても本音を話す機会は意外と少ないから',
+            example: '「最近仕事どう？何か困ってることあったら聞くよ」',
+            icon: 'full_moon',
+            timing: '今すぐ',
+            successRate: 85
+          }
+        ]
+      }
+    };
+    
+    // 該当するプランを返す、なければ汎用プラン
+    return plans[loveSituation]?.[wantToKnow] || [
       {
-        title: 'もし、会話が途切れてしまったなら…',
-        advice: '「今日はどんな一日だった？」そんなシンプルな問いかけから始めてみてください。相手の日常に興味を持つことが、新しい会話の種になります。',
-        icon: 'cloudy_moon'
+        title: '今日から始められること',
+        advice: '相手のメッセージをよく読んで、スルーしていた小さな話題に反応してみましょう。「そういえば、この前言ってた〇〇どうなった？」など。',
+        reason: '相手の話をちゃんと覚えていることが伝わり、信頼が深まるから',
+        example: '「先週言ってた仕事のプレゼン、うまくいった？」',
+        icon: 'full_moon',
+        timing: '今すぐ',
+        successRate: 85
       },
       {
-        title: 'もし、もっと近づきたいと思ったら…',
-        advice: '自分の素直な気持ちを、短い言葉でも伝えてみましょう。「今日も話せて嬉しかった」その一言が、相手の心を温かくします。',
-        icon: 'full_moon'
+        title: '関係を深める週末の行動',
+        advice: '写真を1枚送ってみましょう。「今日の空きれいだったよ」「美味しそうなの見つけた」など、視覚的な共有が会話を豊かにします。',
+        reason: '写真は千の言葉に勝る。共有体験が増えるから',
+        example: '夕日の写真＋「今日の夕日、君にも見せたかった」',
+        icon: 'crescent_moon',
+        timing: '今週末',
+        successRate: 88
       },
       {
-        title: 'もし、特別な時間を作りたいなら…',
-        advice: '「今度、一緒に月を見ない？」そんな誘いから、二人だけの特別な思い出が生まれます。小さな計画が、大きな幸せにつながるでしょう。',
-        icon: 'crescent_moon'
+        title: '来月への準備',
+        advice: '二人の会話を振り返って、相手が喜んだ話題トップ3をメモしておきましょう。それを深掘りする計画を立てて、自然に会話を広げていきます。',
+        reason: '相手の興味を理解し、それに応えることで信頼が生まれるから',
+        example: '相手が映画好き→新作情報を調べて話題提供',
+        icon: 'star',
+        timing: '1ヶ月',
+        successRate: 92
       }
     ];
   }

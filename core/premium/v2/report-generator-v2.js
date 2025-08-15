@@ -152,12 +152,21 @@ class PremiumReportGeneratorV2 {
         : '二人の会話は、静かな光を宿しています。')
     };
     
-    // P.6-7: 総合診断
+    // P.6-7: 総合診断（関係性の分析を追加）
     analysisContext.reportContent.page67 = {
       overallScore: scores.overallScore,
-      relationshipTitle: aiInsights.relationshipType?.relationshipTitle || '二人の特別な関係',
-      relationshipReason: aiInsights.relationshipType?.relationshipReason || '月が照らす、美しい関係性です。',
-      scoreInterpretation: this.getScoreInterpretation(scores.overallScore)
+      relationshipTitle: aiInsights.relationshipType?.title || aiInsights.relationshipType?.relationshipTitle || '二人の特別な関係',
+      relationshipReason: aiInsights.relationshipType?.description || aiInsights.relationshipType?.relationshipReason || '素晴らしい関係性です。',
+      scoreInterpretation: this.getScoreInterpretation(scores.overallScore),
+      // 新しく追加: 関係性の詳細分析
+      strengths: aiInsights.relationshipType?.strengths || ['信頼関係', '価値観の一致', '自然な会話'],
+      challenges: aiInsights.relationshipType?.challenges || ['もう少し深い話題を', 'タイミングの調整'],
+      compatibility: aiInsights.relationshipType?.compatibility || `総合相性${scores.overallScore}%は、お互いを大切に思う関係性を示しています。`,
+      communicationStyle: aiInsights.communicationStyle || {
+        userStyle: '積極的で親しみやすい',
+        partnerStyle: '思慮深く優しい',
+        compatibility: 'バランスの取れた良い組み合わせ'
+      }
     };
     
     // P.8: レーダーチャート
