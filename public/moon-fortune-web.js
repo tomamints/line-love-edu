@@ -592,7 +592,7 @@ function displayResult(moonType, moonData, birthdate) {
                 </div>
             </div>
             <div class="share-buttons">
-                <a href="https://twitter.com/intent/tweet?text=${encodeURIComponent(`私は${moonType}タイプでした！${moonData.emoji}\n\n${moonData.title}\n\nおつきさま診断で自分の本当の性格と恋愛スタイルがわかる✨\n\n`)}&url=${encodeURIComponent('https://line-love-edu.vercel.app/moon-fortune.html')}" 
+                <a href="https://twitter.com/intent/tweet?text=${encodeURIComponent(`私は${moonType}タイプでした！${moonData.emoji}\n\n${moonData.title}\n\nおつきさま診断で自分の本当の性格と恋愛スタイルがわかる✨`)}&url=${encodeURIComponent('https://line-love-edu.vercel.app/moon-fortune.html')}" 
                    target="_blank" 
                    class="share-btn share-twitter">
                     Xでシェア
