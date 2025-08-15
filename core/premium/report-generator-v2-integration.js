@@ -115,14 +115,22 @@ class ReportGeneratorV2Integration {
     
     const empathy = empathyMessages[loveSituation]?.[wantToKnow] || "あなたの気持ちに寄り添いたいと思います。";
     
+    // 会話サンプルから具体的な内容を抽出
+    const messages = conversationSample.split('\n').slice(0, 20); // 最初の20件を分析
+    const hasQuestions = messages.some(m => m.includes('？') || m.includes('?'));
+    const hasEmojis = messages.some(m => /[😀-🙏]|[💀-🗿]|[☀-⛿]/.test(m));
+    const hasLongMessages = messages.some(m => m.length > 50);
+    const hasShortReplies = messages.filter(m => m.includes('相手:') && m.length < 20).length > 5;
+    
     return `あなたは月詠（つくよみ）という恋愛カウンセラーです。
-相談者の気持ちに共感し、寄り添いながら、具体的で実践的なアドバイスを提供してください。
+相談者の実際のトーク履歴を分析し、具体的な会話内容に基づいた個別化されたアドバイスを提供してください。
 
 重要な指針：
-1. まず相談者の気持ちに共感し、「〜ですよね」「〜と感じているのですね」という理解を示す
-2. 詩的な表現は控えめにし、分かりやすい日本語を使う
-3. 具体的で実践可能なアドバイスを提供する
-4. 相談者の恋愛状況（${loveSituation}）と知りたいこと（${wantToKnow}）に応じたアドバイスをする
+1. 実際の会話内容を引用しながら、具体的な分析を行う
+2. 「〜というメッセージから」「〜という言葉に」など、実際のメッセージを参照する
+3. 相談者の悩み（${wantToKnow}）に直接答える内容にする
+4. 汎用的な言葉ではなく、この二人だけの特別な分析にする
+5. 会話の特徴（質問の有無: ${hasQuestions}, 絵文字使用: ${hasEmojis}, メッセージ長: ${hasLongMessages ? '長い' : '短い'}）を踏まえる
 
 相談者の状況：
 - 恋愛状況: ${loveSituation === 'beginning' ? '恋の始まり' : loveSituation === 'relationship' ? '交際中' : loveSituation === 'complicated' ? '複雑な事情' : '終わり・復縁'}
@@ -142,14 +150,15 @@ ${conversationSample}
 
 以下のJSON形式で分析結果を返してください：
 {
+  "personalizedLetter": "相談者への個別化された手紙（1000文字以上。実際の会話内容を3つ以上引用し、その会話から読み取れる二人の関係性、相手の性格、今後の可能性について具体的に分析。相談者の悩み'${wantToKnow === 'feelings' ? '相手の気持ち' : wantToKnow === 'action' ? 'どう行動すべきか' : wantToKnow === 'past' ? '過去の意味' : 'これからどうなるか'}'に対する明確な答えを含める）",
   "empathyMessage": "相談者への共感メッセージ（150文字。「〜ですよね」「お気持ちよく分かります」など共感を示す）",
   "tsukuyomiComments": {
-    "weeklyPattern": "曜日別パターンの分析（200文字。まず共感を示し、その後具体的な傾向を説明）",
-    "hourlyPattern": "時間帯パターンの分析（200文字。「この時間帯に会話が多いのは〜」など理由を含める）",
-    "conversationQuality": "会話の質の分析（200文字。ポジティブ/ネガティブの理由と改善点を具体的に）",
-    "overallDiagnosis": "総合診断（200文字。二人の関係の現状を優しく説明し、良い点を強調）",
-    "fivePillars": "5つの柱の分析（200文字。強みを褒めて、弱点は改善方法を具体的に提案）",
-    "futurePrediction": "未来予測（200文字。希望を持てる内容で、具体的な可能性を示す）"
+    "weeklyPattern": "曜日別パターンの分析（200文字。実際の会話内容を引用し、その曜日特有の話題や雰囲気を分析）",
+    "hourlyPattern": "時間帯パターンの分析（200文字。実際のメッセージ例を挙げて、なぜその時間帯に盛り上がるのか分析）",
+    "conversationQuality": "会話の質の分析（200文字。具体的なメッセージを引用し、どんな時に盛り上がり、どんな時に沈黙するか）",
+    "overallDiagnosis": "総合診断（200文字。実際の会話から読み取れる二人だけの特別な関係性を説明）",
+    "fivePillars": "5つの柱の分析（200文字。実際の会話例から見える強みと、具体的な改善提案）",
+    "futurePrediction": "未来予測（200文字。過去の会話パターンから予測される具体的な未来）"
   },
   "relationshipType": {
     "title": "関係性を表す分かりやすい名前（例：お互いを大切に思う二人）",
@@ -176,10 +185,15 @@ ${conversationSample}
     "reason": "なぜ盛り上がったか具体的な理由（100文字）",
     "lesson": "この経験から学べること（50文字）"
   },
+  "conversationExamples": {
+    "bestMoment": "最も盛り上がった会話の実例（実際のメッセージを引用）",
+    "typicalPattern": "典型的な会話パターンの実例（実際のメッセージを引用）",
+    "concernPoint": "改善が必要な会話の実例（実際のメッセージを引用）"
+  },
   "suggestedActions": [
     {
       "title": "今すぐできること",
-      "action": "具体的な行動提案（150文字。「明日、〜というメッセージを送ってみる」など具体例を含む）",
+      "action": "実際の会話履歴に基づく具体的な行動提案（150文字。過去に盛り上がった話題の続きなど）",
       "timing": "今すぐ",
       "successRate": 85,
       "reason": "なぜこの行動が効果的か（100文字）",

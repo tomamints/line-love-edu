@@ -313,6 +313,7 @@ class PDFGeneratorV2 {
 <body>
   ${this.generateCoverPage(reportContent.page1)}
   ${this.generateIntroPage(reportContent.page2)}
+  ${reportContent.personalLetter ? this.generatePersonalLetterPage(reportContent.personalLetter) : ''}
   ${this.generateDailyActivityPage({ ...reportContent.page3, rawData: { statistics, scores, aiInsights } })}
   ${this.generateHourlyActivityPage({ ...reportContent.page4, rawData: { statistics, scores, aiInsights } })}
   ${this.generateQualityPage(reportContent.page5)}
@@ -671,6 +672,21 @@ class PDFGeneratorV2 {
         ${data.body.split('\n').map(line => `<p>${line}</p>`).join('')}
       </div>
       <div class="moon-icon">🌙</div>
+    </div>`;
+  }
+  
+  /**
+   * P.2.5: 個別メッセージ（新規追加）
+   */
+  generatePersonalLetterPage(data) {
+    return `
+    <div class="page">
+      <h1 class="page-title">${data.title}</h1>
+      <div style="font-size: 14px; line-height: 1.8; color: #333; text-align: left; padding: 20px; max-width: 600px; margin: 0 auto;">
+        ${data.body.split('\n').map(line => 
+          line.trim() ? `<p style="margin-bottom: 12px;">${line}</p>` : '<br/>'
+        ).join('')}
+      </div>
     </div>`;
   }
   

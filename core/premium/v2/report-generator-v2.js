@@ -119,6 +119,12 @@ class PremiumReportGeneratorV2 {
       body: `${user.name}様。\n\n月詠（つくよみ）と申します。\n\n今宵、月が照らし出すのは、あなたと${partner.name ? partner.name + '様' : 'お相手様'}が紡いできた言葉の数々。\nそれぞれの言葉に込められた想いを、月の光で優しく包み込み、\nこれからの道筋を照らす羅針盤として、このレポートをお届けします。\n\nどうか、ゆっくりとページをめくりながら、\nあなたたち二人だけの物語を、心ゆくまでお楽しみください。`
     };
     
+    // P.2.5: 個別化された手紙（新規追加）
+    analysisContext.reportContent.personalLetter = {
+      title: `${user.name}様への特別なメッセージ`,
+      body: aiInsights.personalizedLetter || this.generateDefaultPersonalLetter(user, partner, statistics, scores, metadata)
+    };
+    
     // P.3: 時系列グラフデータ
     analysisContext.reportContent.page3 = {
       title: '二人の言葉の満ち欠け',
@@ -255,6 +261,47 @@ class PremiumReportGeneratorV2 {
       peakTime: statistics.peakHour,
       totalMessages: analysisContext.messages.length
     };
+  }
+  
+  /**
+   * デフォルトの個別メッセージを生成
+   */
+  generateDefaultPersonalLetter(user, partner, statistics, scores, metadata) {
+    const userName = user.name || 'あなた';
+    const partnerName = partner.name || 'お相手';
+    const overallScore = scores.overallScore || 70;
+    const positivityRate = statistics.positivityRate || 65;
+    const responseTime = statistics.responseTimeMedian || 30;
+    
+    return `${userName}様へ
+
+このレポートを手に取っていただき、ありがとうございます。
+
+あなたと${partnerName}様の会話を分析させていただきました。${statistics.messages?.length || 0}件のメッセージの中から、お二人だけの特別な関係性が見えてきました。
+
+まず、最も印象的だったのは、${statistics.peakHour || 20}時台に交わされる会話の温かさです。この時間帯のメッセージには、日中の忙しさから解放された安らぎと、相手への思いやりが感じられます。特に、${statistics.peakDate || '先週'}に交わされた会話は、お二人の関係の深まりを象徴するような内容でした。
+
+あなたの会話スタイルは、平均${statistics.userAvgMessageLength || 20}文字という長さからも分かるように、相手に対して丁寧に想いを伝えようとする姿勢が表れています。一方、${partnerName}様は平均${statistics.partnerAvgMessageLength || 15}文字と、より簡潔な表現を好む傾向があります。この違いは決して悪いことではありません。むしろ、異なるコミュニケーションスタイルが互いを補完し合い、バランスの取れた関係を築いている証拠です。
+
+総合相性${overallScore}%という数値は、単なる数字以上の意味を持っています。これは、お二人が${positivityRate}%というポジティブな会話率を保ちながら、平均${responseTime}分という適切な間隔でメッセージを交換していることの表れです。急ぎすぎず、かといって放置することもない。この絶妙な距離感が、お二人の関係を心地よいものにしているのです。
+
+特に注目したいのは、${scores.strongestPillar?.name || 'コミュニケーション'}の相性が${scores.strongestPillar?.score || 85}点と高い点です。これは、お二人が自然に会話を楽しめる関係であることを示しています。言葉を選ばなくても、相手に伝わる。そんな安心感が、メッセージの端々から感じられました。
+
+一方で、${scores.weakestPillar?.name || 'タイミング'}の相性が${scores.weakestPillar?.score || 60}点とやや低めなのは、改善の余地があることを示しています。しかし、これは決してネガティブな要素ではありません。むしろ、これから更に関係を深めていく可能性を秘めているということです。
+
+あなたが今、相手の気持ちを知りたいと思っているなら、それは自然なことです。会話の中で相手が使う言葉、返信のタイミング、絵文字の選び方。これらすべてが、相手のあなたへの想いを物語っています。
+
+これから先、お二人の関係がどのように発展していくか。それは、日々の小さな積み重ねによって決まります。今日の「おはよう」が、明日の「会いたい」につながり、いつか「ずっと一緒にいたい」という言葉に変わるかもしれません。
+
+月が満ちては欠け、また満ちるように、関係にも波があるのは当然です。大切なのは、その波を二人で乗り越えていくこと。このレポートが、そのための羅針盤となれば幸いです。
+
+最後に、あなたにお伝えしたいことがあります。
+相手を想う気持ちは、必ず相手に伝わります。
+たとえ今はまだ形になっていなくても、あなたの真摯な想いは、きっと${partnerName}様の心に届いているはずです。
+
+これからも、お二人の物語が素敵なものになりますように。
+
+月詠より、心を込めて`;
   }
   
   /**
