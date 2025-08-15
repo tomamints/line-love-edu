@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>OGP画像生成ツール</title>
+    <link href="https://fonts.googleapis.com/css2?family=Kiwi+Maru:wght@300;400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+    <h1>おつきさま診断 OGP画像生成</h1>
+    <canvas id="ogpCanvas" width="1200" height="630" style="border: 1px solid #000;"></canvas>
+    <br>
+    <button onclick="downloadImage()">画像をダウンロード</button>
+    
+    <script>
+        const canvas = document.getElementById('ogpCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // グラデーション背景
+        const gradient = ctx.createLinearGradient(0, 0, 1200, 630);
+        gradient.addColorStop(0, '#1a1a2e');
+        gradient.addColorStop(1, '#16213e');
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, 1200, 630);
+        
+        // 月のグラデーション円
+        const moonGradient = ctx.createRadialGradient(600, 200, 0, 600, 200, 100);
+        moonGradient.addColorStop(0, 'rgba(255, 255, 255, 0.9)');
+        moonGradient.addColorStop(0.5, 'rgba(255, 255, 224, 0.7)');
+        moonGradient.addColorStop(1, 'rgba(255, 255, 200, 0.3)');
+        ctx.fillStyle = moonGradient;
+        ctx.beginPath();
+        ctx.arc(600, 200, 80, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // 月の光の演出
+        ctx.shadowBlur = 50;
+        ctx.shadowColor = 'rgba(255, 255, 224, 0.5)';
+        ctx.beginPath();
+        ctx.arc(600, 200, 80, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.shadowBlur = 0;
+        
+        // タイトル
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
+        ctx.font = 'bold 72px "Kiwi Maru", sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('おつきさま診断', 600, 350);
+        
+        // サブタイトル
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+        ctx.font = '36px "Kiwi Maru", sans-serif';
+        ctx.fillText('生まれた日の月があなたの', 600, 420);
+        ctx.fillText('本当の性格と恋愛スタイルを教えます', 600, 470);
+        
+        // URL
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+        ctx.font = '24px "Kiwi Maru", sans-serif';
+        ctx.fillText('love-tsukuyomi.com/moon', 600, 560);
+        
+        // 装飾的な星
+        function drawStar(x, y, size) {
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+            ctx.beginPath();
+            ctx.arc(x, y, size, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        
+        // ランダムに星を配置
+        for (let i = 0; i < 30; i++) {
+            const x = Math.random() * 1200;
+            const y = Math.random() * 630;
+            const size = Math.random() * 2 + 1;
+            drawStar(x, y, size);
+        }
+        
+        function downloadImage() {
+            const link = document.createElement('a');
+            link.download = 'moon-share.png';
+            link.href = canvas.toDataURL();
+            link.click();
+        }
+    </script>
+</body>
+</html>
