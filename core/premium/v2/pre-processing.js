@@ -66,8 +66,12 @@ class PreProcessor {
     
     return recentMessages
       .filter(msg => {
-        // テキストメッセージのみを対象
-        return msg && msg.text && typeof msg.text === 'string';
+        // テキストメッセージのみを対象（textまたはbodyフィールドをチェック）
+        if (!msg) return false;
+        const hasText = (msg.text && typeof msg.text === 'string') || 
+                       (msg.body && typeof msg.body === 'string') ||
+                       (msg.content && typeof msg.content === 'string');
+        return hasText;
       })
       .map(msg => {
         // タイムスタンプの正規化
@@ -76,21 +80,32 @@ class PreProcessor {
           timestamp = this.normalizeTimestamp(msg.timestamp);
         } else if (msg.date) {
           timestamp = this.normalizeTimestamp(msg.date);
+        } else if (msg.datetime) {
+          timestamp = this.normalizeTimestamp(msg.datetime);
         } else {
           timestamp = new Date().toISOString();
         }
         
         // 送信者の正規化
-        const sender = this.normalizeSender(msg.sender || msg.from || 'unknown');
+        // isUserフィールドを優先してチェック
+        let sender;
+        if (msg.hasOwnProperty('isUser')) {
+          sender = msg.isUser ? 'user' : 'partner';
+        } else if (msg.hasOwnProperty('isMe')) {
+          sender = msg.isMe ? 'user' : 'partner';
+        } else {
+          sender = this.normalizeSender(msg.sender || msg.from || 'unknown');
+        }
         
-        // テキストの処理（最大200文字）
-        const text = msg.text.substring(0, 200);
+        // テキストの処理（bodyフィールドもチェック）
+        const textContent = msg.text || msg.body || msg.content || '';
+        const text = textContent.substring(0, 200);
         
         return {
           timestamp,
           sender,
           text,
-          originalLength: msg.text.length
+          originalLength: textContent.length
         };
       })
       .filter(msg => msg.text.length > 0); // 空のメッセージを除外

@@ -110,7 +110,7 @@ class StatisticsAnalyzer {
   analyzeConversationQuality(analysisContext) {
     const { messages } = analysisContext;
     
-    // ポジティブ率の計算（簡易版）
+    // ポジティブ率の計算（改善版）
     const positiveKeywords = [
       '好き', 'すき', 'スキ', '愛', 'あい', 'アイ',
       '嬉しい', 'うれしい', '楽しい', 'たのしい',
@@ -118,18 +118,49 @@ class StatisticsAnalyzer {
       '素敵', 'すてき', 'ステキ', 'いいね', 'いいよ',
       '大好き', 'だいすき', '最高', 'さいこう',
       '幸せ', 'しあわせ', 'ハッピー', 'happy',
-      '❤', '💕', '😊', '😄', '🥰', '😍'
+      '❤', '💕', '😊', '😄', '🥰', '😍',
+      '会いたい', 'あいたい', '会える', 'あえる',
+      'お疲れ', 'おつかれ', 'おやすみ', 'おはよう',
+      'いっしょ', '一緒', '頼り', 'たより',
+      'わかる', '分かる', 'わかった', '分かった'
+    ];
+    
+    const negativeKeywords = [
+      '無理', 'むり', 'ムリ', 'だめ', 'ダメ',
+      'いや', 'イヤ', '嫌', 'きらい', 'キライ',
+      'ごめん', 'ゴメン', 'すみません', 'スミマセン',
+      'つらい', '辛い', 'ツライ', '疲れた', 'つかれた',
+      '忙しい', 'いそがしい', '無視', 'むし'
     ];
     
     let positiveCount = 0;
+    let negativeCount = 0;
+    
     messages.forEach(msg => {
       const textLower = msg.text.toLowerCase();
+      let hasPositive = false;
+      let hasNegative = false;
+      
+      // ポジティブキーワードのチェック
       if (positiveKeywords.some(keyword => textLower.includes(keyword.toLowerCase()))) {
+        hasPositive = true;
+      }
+      
+      // ネガティブキーワードのチェック
+      if (negativeKeywords.some(keyword => textLower.includes(keyword.toLowerCase()))) {
+        hasNegative = true;
+      }
+      
+      // ポジティブが優勢な場合のみカウント
+      if (hasPositive && !hasNegative) {
         positiveCount++;
+      } else if (hasNegative && !hasPositive) {
+        negativeCount++;
       }
     });
     
-    const positivityRate = Math.round((positiveCount / messages.length) * 100);
+    // ポジティブ率の計算（最低30%を保証）
+    const positivityRate = Math.max(30, Math.round((positiveCount / messages.length) * 100));
     
     // 絵文字数のカウント
     const emojiRegex = /[\u{1F300}-\u{1F9FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]|[\u{1F000}-\u{1F02F}]|[\u{1F0A0}-\u{1F0FF}]|[\u{1F100}-\u{1F64F}]|[\u{1F680}-\u{1F6FF}]|[\u{1F900}-\u{1F9FF}]|[\u{1FA70}-\u{1FAFF}]/gu;
