@@ -1798,7 +1798,7 @@ async function handlePostbackEvent(event) {
       await client.replyMessage(event.replyToken, [
         {
           type: 'text',
-          text: 'もっと詳しく知りたいんですね！\n\n💬 LINEのトーク履歴を送信すると、会話パターンから二人の深層心理を分析します。\n\n具体的に分かること：\n✨ 会話の相性度\n✨ 感情の温度差\n✨ コミュニケーションパターン\n✨ 関係性の深さ\n✨ 将来の可能性'
+          text: 'もっと詳しく知りたいのですね。\n\n月の光が、二人の会話に秘められた真実を照らし出しましょう。\n\nトーク履歴から読み解けること：\n🌙 会話に宿る相性の輝き\n🌙 心の距離と温度\n🌙 言葉のリズムと調和\n🌙 関係性の深さと質\n🌙 これから訪れる未来の兆し'
         },
         {
           type: 'flex',
