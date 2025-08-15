@@ -275,11 +275,8 @@ module.exports = async (req, res) => {
           <input type="hidden" id="userAge" name="userAge" value="${existing.userAge || ''}">
           
           <div class="form-group">
-            <label for="userGender">
-              性別
-              <span class="optional-tag">任意</span>
-            </label>
-            <select id="userGender" name="userGender">
+            <label for="userGender">性別</label>
+            <select id="userGender" name="userGender" required>
               <option value="">選択してください</option>
               <option value="male" ${existing.userGender === 'male' ? 'selected' : ''}>男性</option>
               <option value="female" ${existing.userGender === 'female' ? 'selected' : ''}>女性</option>
