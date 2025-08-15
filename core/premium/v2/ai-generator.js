@@ -50,6 +50,11 @@ class AIGenerator {
     
     const insights = this.existingAiInsights;
     
+    // 個別化された手紙を格納（最優先）
+    if (insights.personalizedLetter) {
+      analysisContext.aiInsights.personalizedLetter = insights.personalizedLetter;
+    }
+    
     // 共感メッセージを格納
     if (insights.empathyMessage) {
       analysisContext.aiInsights.empathyMessage = insights.empathyMessage;

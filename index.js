@@ -491,6 +491,33 @@ ${parsedAIContent || batchResult.aiInsights || batchResult.aiInsightsPreview ? '
                 text: basicInfo
               });
               
+              // 個別化された手紙があるか確認（最優先で表示）
+              if (insights.personalizedLetter) {
+                let letterText = '🌙 === 月詠からの特別なメッセージ ===\n\n';
+                letterText += insights.personalizedLetter;
+                
+                // 文字数制限を考慮して分割
+                if (letterText.length > 4500) {
+                  const part1 = letterText.substring(0, 4400);
+                  const part2 = letterText.substring(4400);
+                  messages.push({
+                    type: 'text',
+                    text: part1 + '\n\n（続く...）'
+                  });
+                  if (part2.length > 50) {
+                    messages.push({
+                      type: 'text',
+                      text: '（続き）\n\n' + part2
+                    });
+                  }
+                } else {
+                  messages.push({
+                    type: 'text',
+                    text: letterText
+                  });
+                }
+              }
+              
               // 月詠コメントがあるか確認
               if (insights.tsukuyomiComments) {
                 let tsukuyomiText = '🌙 === 月詠からのメッセージ ===\n\n';
