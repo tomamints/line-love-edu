@@ -467,14 +467,25 @@ class PaymentHandler {
           paddingAll: '15px',
           contents: [
             {
-              type: 'button',
+              type: 'box',
+              layout: 'vertical',
+              backgroundColor: '#FFD700',
+              cornerRadius: '8px',
+              paddingAll: '12px',
               action: {
                 type: 'uri',
-                label: '💳 決済を完了する',
                 uri: orderResult.paymentUrl
               },
-              style: 'primary',
-              color: '#FFD700'
+              contents: [
+                {
+                  type: 'text',
+                  text: '💳 決済を完了する',
+                  color: '#000000',
+                  size: 'md',
+                  weight: 'bold',
+                  align: 'center'
+                }
+              ]
             },
             {
               type: 'text',
@@ -587,14 +598,25 @@ class PaymentHandler {
             paddingAll: '15px',
             contents: [
               {
-                type: 'button',
+                type: 'box',
+                layout: 'vertical',
+                backgroundColor: '#FFD700',
+                cornerRadius: '8px',
+                paddingAll: '12px',
                 action: {
                   type: 'uri',
-                  label: '📄 月詠の占いをブラウザで閲覧',
                   uri: completionResult.reportUrl
                 },
-                style: 'primary',
-                color: '#FFD700'
+                contents: [
+                  {
+                    type: 'text',
+                    text: '📄 月詠の占いをブラウザで閲覧',
+                    color: '#000000',
+                    size: 'md',
+                    weight: 'bold',
+                    align: 'center'
+                  }
+                ]
               },
               {
                 type: 'text',
