@@ -231,8 +231,30 @@ class PaymentHandler {
       if (process.env.STRIPE_SECRET_KEY && process.env.STRIPE_SECRET_KEY !== 'sk_test_YOUR_STRIPE_SECRET_KEY') {
         const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
         
+        // PayPayは早期アクセスプログラムが必要な場合があるため、
+        // 利用可能かチェックしてから追加
+        const paymentMethods = ['card'];
+        
+        // PayPayが利用可能な場合のみ追加（環境変数で制御）
+        if (process.env.ENABLE_PAYPAY === 'true') {
+          paymentMethods.push('paypay');
+        }
+        
+        // 銀行振込も日本では人気なので追加可能
+        if (process.env.ENABLE_BANK_TRANSFER === 'true') {
+          paymentMethods.push('customer_balance');
+        }
+        
         const session = await stripe.checkout.sessions.create({
-          payment_method_types: ['card', 'paypay'],
+          payment_method_types: paymentMethods,
+          payment_method_options: {
+            customer_balance: {
+              funding_type: 'bank_transfer',
+              bank_transfer: {
+                type: 'jp_bank_transfer'
+              }
+            }
+          },
           line_items: [{
             price_data: {
               currency: 'jpy',
