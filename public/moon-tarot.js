@@ -174,7 +174,7 @@ function selectSpread(type) {
     document.getElementById('cardArea').style.display = 'block';
     
     // カードの枚数を設定
-    let cardCount = 2;  // dailyも2枚に
+    let cardCount = 1;  // dailyは1枚
     if (type === 'three') cardCount = 3;
     if (type === 'full') cardCount = 3;
     
@@ -211,25 +211,16 @@ function drawCards() {
     
     selectedCards = [];
     
-    if (currentSpread === 'daily') {
-        // 今日の月カード：月相1枚＋神秘1枚
-        const phaseIndex = Math.floor(Math.random() * moonPhaseCards.length);
-        const mysteryIndex = Math.floor(Math.random() * moonMysteryCards.length);
-        
-        selectedCards.push(moonTarotCards[moonPhaseCards[phaseIndex]]);
-        selectedCards.push(moonTarotCards[moonMysteryCards[mysteryIndex]]);
-    } else {
-        // その他：ランダムに選択
-        const allCards = Object.values(moonTarotCards);
-        const usedIndices = new Set();
-        const cardCount = 3;
-        
-        while (selectedCards.length < cardCount) {
-            const randomIndex = Math.floor(Math.random() * allCards.length);
-            if (!usedIndices.has(randomIndex)) {
-                usedIndices.add(randomIndex);
-                selectedCards.push(allCards[randomIndex]);
-            }
+    // カードをランダムに選択
+    const allCards = Object.values(moonTarotCards);
+    const usedIndices = new Set();
+    const cardCount = currentSpread === 'daily' ? 1 : 3;
+    
+    while (selectedCards.length < cardCount) {
+        const randomIndex = Math.floor(Math.random() * allCards.length);
+        if (!usedIndices.has(randomIndex)) {
+            usedIndices.add(randomIndex);
+            selectedCards.push(allCards[randomIndex]);
         }
     }
     
@@ -277,9 +268,7 @@ function showResult() {
     
     selectedCards.forEach((card, index) => {
         let positionLabel = '';
-        if (currentSpread === 'daily') {
-            positionLabel = ['今日のタイミング', '今日起こること'][index] + '：';
-        } else if (currentSpread === 'three') {
+        if (currentSpread === 'three') {
             positionLabel = ['過去', '現在', '未来'][index] + '：';
         } else if (currentSpread === 'full') {
             positionLabel = ['現在の状況', '相手の気持ち', 'これからの展開'][index] + '：';
@@ -333,14 +322,7 @@ function showResult() {
 
 // 総合メッセージを作成
 function createOverallMessage() {
-    if (currentSpread === 'daily') {
-        const phaseCard = selectedCards[0];
-        const mysteryCard = selectedCards[1];
-        return `今日は${phaseCard.name}のタイミング。${phaseCard.keywords[0]}のエネルギーが流れています。
-                そして${mysteryCard.name}が示すのは、${mysteryCard.keywords[0]}の出来事。
-                ${phaseCard.meaning}の時期に、${mysteryCard.meaning}が起こるでしょう。
-                月相と神秘の組み合わせが、今日のあなたの恋愛運を特別なものにします。`;
-    } else if (currentSpread === 'three') {
+    if (currentSpread === 'three') {
         return `過去の${selectedCards[0].name}が教えてくれるのは、${selectedCards[0].keywords[0]}の大切さ。
                 現在の${selectedCards[1].name}は、今まさに${selectedCards[1].keywords[0]}の時期であることを示しています。
                 そして未来の${selectedCards[2].name}は、${selectedCards[2].keywords[0]}への道筋を照らしています。
