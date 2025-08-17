@@ -74,7 +74,7 @@ const moonTarotCards = {
         keywords: ['終わり', '再生', '内省', '準備']
     },
     
-    // 月の神秘カード（8枚）
+    // 月の神秘カード（9枚）
     moonlight: {
         id: 'moonlight',
         name: '月光',
@@ -147,8 +147,6 @@ const moonTarotCards = {
         advice: '自分自身と向き合うことで、真の愛を見つけることができます。内なる声に耳を傾けて。',
         keywords: ['内省', '自己理解', '気づき', '成長']
     },
-    
-    // 特別な月カード
     bloodMoon: {
         id: 'bloodMoon',
         name: 'ブラッドムーン',
@@ -159,6 +157,10 @@ const moonTarotCards = {
         keywords: ['情熱', '衝動', '激情', '本能']
     }
 };
+
+// カードを月相と神秘に分類
+const moonPhaseCards = ['newMoon', 'crescentMoon', 'firstQuarter', 'waxingGibbous', 'fullMoon', 'waningGibbous', 'lastQuarter', 'waningCrescent'];
+const moonMysteryCards = ['moonlight', 'moonShadow', 'moonTears', 'moonSmile', 'eclipse', 'superMoon', 'blueMoon', 'moonMirror', 'bloodMoon'];
 
 // グローバル変数
 let currentSpread = null;
@@ -172,9 +174,9 @@ function selectSpread(type) {
     document.getElementById('cardArea').style.display = 'block';
     
     // カードの枚数を設定
-    let cardCount = 1;
+    let cardCount = 2;  // dailyも2枚に
     if (type === 'three') cardCount = 3;
-    if (type === 'full') cardCount = 3;  // 5枚から3枚に変更
+    if (type === 'full') cardCount = 3;
     
     // カードを表示
     displayCards(cardCount);
@@ -207,18 +209,27 @@ function drawCards() {
     if (isDrawing) return;
     isDrawing = true;
     
-    // カードをランダムに選択
-    const allCards = Object.values(moonTarotCards);
     selectedCards = [];
-    const usedIndices = new Set();
     
-    const cardCount = currentSpread === 'daily' ? 1 : 3;  // すべて3枚に統一
-    
-    while (selectedCards.length < cardCount) {
-        const randomIndex = Math.floor(Math.random() * allCards.length);
-        if (!usedIndices.has(randomIndex)) {
-            usedIndices.add(randomIndex);
-            selectedCards.push(allCards[randomIndex]);
+    if (currentSpread === 'daily') {
+        // 今日の月カード：月相1枚＋神秘1枚
+        const phaseIndex = Math.floor(Math.random() * moonPhaseCards.length);
+        const mysteryIndex = Math.floor(Math.random() * moonMysteryCards.length);
+        
+        selectedCards.push(moonTarotCards[moonPhaseCards[phaseIndex]]);
+        selectedCards.push(moonTarotCards[moonMysteryCards[mysteryIndex]]);
+    } else {
+        // その他：ランダムに選択
+        const allCards = Object.values(moonTarotCards);
+        const usedIndices = new Set();
+        const cardCount = 3;
+        
+        while (selectedCards.length < cardCount) {
+            const randomIndex = Math.floor(Math.random() * allCards.length);
+            if (!usedIndices.has(randomIndex)) {
+                usedIndices.add(randomIndex);
+                selectedCards.push(allCards[randomIndex]);
+            }
         }
     }
     
@@ -266,7 +277,9 @@ function showResult() {
     
     selectedCards.forEach((card, index) => {
         let positionLabel = '';
-        if (currentSpread === 'three') {
+        if (currentSpread === 'daily') {
+            positionLabel = ['今日のタイミング', '今日起こること'][index] + '：';
+        } else if (currentSpread === 'three') {
             positionLabel = ['過去', '現在', '未来'][index] + '：';
         } else if (currentSpread === 'full') {
             positionLabel = ['現在の状況', '相手の気持ち', 'これからの展開'][index] + '：';
@@ -320,7 +333,14 @@ function showResult() {
 
 // 総合メッセージを作成
 function createOverallMessage() {
-    if (currentSpread === 'three') {
+    if (currentSpread === 'daily') {
+        const phaseCard = selectedCards[0];
+        const mysteryCard = selectedCards[1];
+        return `今日は${phaseCard.name}のタイミング。${phaseCard.keywords[0]}のエネルギーが流れています。
+                そして${mysteryCard.name}が示すのは、${mysteryCard.keywords[0]}の出来事。
+                ${phaseCard.meaning}の時期に、${mysteryCard.meaning}が起こるでしょう。
+                月相と神秘の組み合わせが、今日のあなたの恋愛運を特別なものにします。`;
+    } else if (currentSpread === 'three') {
         return `過去の${selectedCards[0].name}が教えてくれるのは、${selectedCards[0].keywords[0]}の大切さ。
                 現在の${selectedCards[1].name}は、今まさに${selectedCards[1].keywords[0]}の時期であることを示しています。
                 そして未来の${selectedCards[2].name}は、${selectedCards[2].keywords[0]}への道筋を照らしています。
