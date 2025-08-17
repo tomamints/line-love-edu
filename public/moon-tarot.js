@@ -146,6 +146,17 @@ const moonTarotCards = {
         love: '相手との関係を通じて、自分自身を見つめ直す時期です。相手はあなたの鏡かもしれません。',
         advice: '自分自身と向き合うことで、真の愛を見つけることができます。内なる声に耳を傾けて。',
         keywords: ['内省', '自己理解', '気づき', '成長']
+    },
+    
+    // 特別な月カード
+    bloodMoon: {
+        id: 'bloodMoon',
+        name: 'ブラッドムーン',
+        emoji: '🔴',
+        meaning: '情熱の爆発',
+        love: '抑えきれない情熱が溢れ出す時。理性を超えた強い感情が、あなたを突き動かします。',
+        advice: '情熱は力になりますが、冷静さも忘れずに。炎のような恋も、時には優しい光に変える必要があります。',
+        keywords: ['情熱', '衝動', '激情', '本能']
     }
 };
 
@@ -163,7 +174,7 @@ function selectSpread(type) {
     // カードの枚数を設定
     let cardCount = 1;
     if (type === 'three') cardCount = 3;
-    if (type === 'full') cardCount = 5;
+    if (type === 'full') cardCount = 3;  // 5枚から3枚に変更
     
     // カードを表示
     displayCards(cardCount);
@@ -201,7 +212,7 @@ function drawCards() {
     selectedCards = [];
     const usedIndices = new Set();
     
-    const cardCount = currentSpread === 'daily' ? 1 : currentSpread === 'three' ? 3 : 5;
+    const cardCount = currentSpread === 'daily' ? 1 : 3;  // すべて3枚に統一
     
     while (selectedCards.length < cardCount) {
         const randomIndex = Math.floor(Math.random() * allCards.length);
@@ -258,7 +269,7 @@ function showResult() {
         if (currentSpread === 'three') {
             positionLabel = ['過去', '現在', '未来'][index] + '：';
         } else if (currentSpread === 'full') {
-            positionLabel = ['あなた', '相手', '関係性', '障害', '結果'][index] + '：';
+            positionLabel = ['現在の状況', '相手の気持ち', 'これからの展開'][index] + '：';
         }
         
         const resultCard = document.createElement('div');
@@ -315,10 +326,10 @@ function createOverallMessage() {
                 そして未来の${selectedCards[2].name}は、${selectedCards[2].keywords[0]}への道筋を照らしています。
                 月の導きに従い、自然な流れに身を任せましょう。`;
     } else if (currentSpread === 'full') {
-        return `あなたを表す${selectedCards[0].name}と、相手を表す${selectedCards[1].name}。
-                二人の関係性は${selectedCards[2].name}のエネルギーに包まれています。
-                ${selectedCards[3].name}という課題はありますが、最終的に${selectedCards[4].name}が示す結末へと向かうでしょう。
-                月はいつもあなたの恋を見守っています。信じる心を大切に。`;
+        return `現在の状況を表す${selectedCards[0].name}は、${selectedCards[0].keywords[0]}のエネルギーに満ちています。
+                相手の気持ちを示す${selectedCards[1].name}からは、${selectedCards[1].keywords[0]}の想いが読み取れます。
+                そしてこれからの展開を示す${selectedCards[2].name}は、${selectedCards[2].keywords[0]}へと向かうことを暗示しています。
+                月はあなたの恋を優しく照らし、導いてくれるでしょう。`;
     }
     return '';
 }
