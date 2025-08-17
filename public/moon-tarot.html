@@ -195,26 +195,41 @@
         }
 
         .card-back {
-            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            background-color: #1a1a2e;
+            background-image: url('images/moon-card-back.jpg');
+            background-size: contain;
+            background-position: center;
+            background-repeat: no-repeat;
             border: 2px solid rgba(255, 215, 0, 0.3);
             transform: rotateY(0deg);
             -webkit-transform: rotateY(0deg);
             opacity: 1;
             visibility: visible;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* 画像の白い部分を暗くするオーバーレイ */
+        .card-back::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, 
+                rgba(26, 26, 46, 0.85), 
+                rgba(22, 33, 62, 0.85));
+            mix-blend-mode: darken;
+            pointer-events: none;
         }
 
         .card-back::before {
-            content: '🌙';
-            font-size: 60px;
-            opacity: 0.3;
-            position: absolute;
+            display: none; /* 月の絵文字を非表示 */
         }
 
         .card-back-text {
-            font-size: 12px;
-            letter-spacing: 1px;
-            z-index: 1;
-            white-space: nowrap;
+            display: none; /* テキストも非表示（画像があるため） */
         }
 
         .card-front {
@@ -399,14 +414,6 @@
                 font-size: 48px;
             }
             
-            .card-back-text {
-                font-size: 11px;
-                letter-spacing: 0.5px;
-            }
-            
-            .card-back::before {
-                font-size: 50px;
-            }
         }
     </style>
 </head>
