@@ -211,9 +211,10 @@
         }
 
         .card-back-text {
-            font-size: 14px;
-            letter-spacing: 2px;
+            font-size: 12px;
+            letter-spacing: 1px;
             z-index: 1;
+            white-space: nowrap;
         }
 
         .card-front {
@@ -396,6 +397,15 @@
             
             .card-emoji {
                 font-size: 48px;
+            }
+            
+            .card-back-text {
+                font-size: 11px;
+                letter-spacing: 0.5px;
+            }
+            
+            .card-back::before {
+                font-size: 50px;
             }
         }
     </style>
