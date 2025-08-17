@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>月タロット占い - 月が導く恋愛の行方</title>
+    <meta name="description" content="月の満ち欠けとタロットカードを組み合わせた神秘的な恋愛占い。今日のあなたの恋愛運を月のカードが教えます。">
+    
+    <!-- OGP設定 -->
+    <meta property="og:title" content="月タロット占い 🌙 月が導く恋愛の行方">
+    <meta property="og:description" content="月の満ち欠けとタロットカードを組み合わせた神秘的な恋愛占い。今日のあなたの恋愛運を月のカードが教えます。">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://line-love-edu.vercel.app/moon-tarot.html">
+    <meta property="og:image" content="https://line-love-edu.vercel.app/images/moon-tarot-ogp.png">
+    <meta property="og:image:secure_url" content="https://line-love-edu.vercel.app/images/moon-tarot-ogp.png">
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kiwi+Maru:wght@300;400;500&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Kiwi Maru', serif;
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            min-height: 100vh;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        /* 星空の背景 */
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 3s infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ヘッダー */
+        .header {
+            text-align: center;
+            padding: 40px 20px;
+            animation: fadeIn 1s ease-out;
+        }
+
+        .title {
+            font-size: 42px;
+            font-weight: 500;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #ffd700, #fff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+        }
+
+        .subtitle {
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.8);
+            letter-spacing: 1px;
+        }
+
+        /* 占い選択セクション */
+        .spread-selection {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 30px;
+            margin: 30px 0;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .spread-title {
+            font-size: 24px;
+            text-align: center;
+            margin-bottom: 30px;
+            color: #ffd700;
+        }
+
+        .spread-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .spread-option {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            padding: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .spread-option:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .spread-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .spread-name {
+            font-size: 20px;
+            font-weight: 500;
+            margin-bottom: 10px;
+        }
+
+        .spread-description {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.6;
+        }
+
+        /* カード表示エリア */
+        .card-area {
+            display: none;
+            margin: 40px 0;
+        }
+
+        .card-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin: 30px 0;
+        }
+
+        .card {
+            width: 150px;
+            height: 250px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .card.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 15px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .card-back {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            border: 2px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .card-back::before {
+            content: '🌙';
+            font-size: 60px;
+            opacity: 0.3;
+            position: absolute;
+        }
+
+        .card-back-text {
+            font-size: 14px;
+            letter-spacing: 2px;
+            z-index: 1;
+        }
+
+        .card-front {
+            background: linear-gradient(135deg, #2a2a3e, #16213e);
+            transform: rotateY(180deg);
+            border: 2px solid rgba(255, 215, 0, 0.5);
+        }
+
+        .card-emoji {
+            font-size: 60px;
+            margin-bottom: 15px;
+        }
+
+        .card-name {
+            font-size: 18px;
+            font-weight: 500;
+            text-align: center;
+        }
+
+        /* 結果表示エリア */
+        .result-area {
+            display: none;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 30px;
+            margin: 30px 0;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .result-title {
+            font-size: 28px;
+            text-align: center;
+            margin-bottom: 30px;
+            color: #ffd700;
+        }
+
+        .result-cards {
+            display: grid;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .result-card {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .result-card-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .result-card-emoji {
+            font-size: 48px;
+        }
+
+        .result-card-info {
+            flex: 1;
+        }
+
+        .result-card-name {
+            font-size: 22px;
+            font-weight: 500;
+            color: #ffd700;
+        }
+
+        .result-card-meaning {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-top: 5px;
+        }
+
+        .result-card-message {
+            font-size: 16px;
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+
+        .result-card-advice {
+            background: rgba(255, 215, 0, 0.1);
+            border-left: 3px solid #ffd700;
+            padding: 15px;
+            border-radius: 5px;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        .result-keywords {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .keyword {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+        }
+
+        /* ボタン */
+        .btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 30px;
+            font-size: 18px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 20px auto;
+            display: block;
+            font-family: 'Kiwi Maru', serif;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-draw {
+            margin-top: 30px;
+        }
+
+        /* アニメーション */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* レスポンシブ */
+        @media (max-width: 768px) {
+            .title {
+                font-size: 32px;
+            }
+            
+            .card {
+                width: 120px;
+                height: 200px;
+            }
+            
+            .card-emoji {
+                font-size: 48px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 星空の背景 -->
+    <div class="stars" id="stars"></div>
+
+    <div class="container">
+        <!-- ヘッダー -->
+        <div class="header">
+            <h1 class="title">月タロット占い</h1>
+            <p class="subtitle">月の満ち欠けが導く、あなたの恋愛の行方</p>
+        </div>
+
+        <!-- 占い選択 -->
+        <div class="spread-selection" id="spreadSelection">
+            <h2 class="spread-title">占い方を選んでください</h2>
+            <div class="spread-options">
+                <div class="spread-option" onclick="selectSpread('daily')">
+                    <div class="spread-icon">🌙</div>
+                    <div class="spread-name">今日の月カード</div>
+                    <div class="spread-description">1枚のカードで今日の恋愛運を占います</div>
+                </div>
+                <div class="spread-option" onclick="selectSpread('three')">
+                    <div class="spread-icon">🌗</div>
+                    <div class="spread-name">月の三相占い</div>
+                    <div class="spread-description">過去・現在・未来の3枚で恋愛の流れを読みます</div>
+                </div>
+                <div class="spread-option" onclick="selectSpread('full')">
+                    <div class="spread-icon">🌕</div>
+                    <div class="spread-name">満月の恋愛占い</div>
+                    <div class="spread-description">5枚のカードで詳細な恋愛分析を行います</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- カード表示エリア -->
+        <div class="card-area" id="cardArea">
+            <div class="card-container" id="cardContainer"></div>
+            <button class="btn btn-draw" onclick="drawCards()">カードを引く</button>
+        </div>
+
+        <!-- 結果表示エリア -->
+        <div class="result-area" id="resultArea">
+            <h2 class="result-title" id="resultTitle"></h2>
+            <div class="result-cards" id="resultCards"></div>
+            <button class="btn" onclick="reset()">もう一度占う</button>
+        </div>
+    </div>
+
+    <script src="moon-tarot.js"></script>
+    <script>
+        // 星空の生成
+        function createStars() {
+            const starsContainer = document.getElementById('stars');
+            for (let i = 0; i < 100; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.width = Math.random() * 3 + 'px';
+                star.style.height = star.style.width;
+                star.style.animationDelay = Math.random() * 3 + 's';
+                starsContainer.appendChild(star);
+            }
+        }
+        createStars();
+    </script>
+</body>
+</html>
