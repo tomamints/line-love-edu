@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>月詠の占い - 月が導くあなたの運命</title>
+    <meta name="description" content="月の満ち欠けがあなたの本当の性格と恋愛を導きます。おつきさま診断と月タロット占いで、月からのメッセージを受け取りましょう。">
+    
+    <!-- OGP設定 -->
+    <meta property="og:title" content="月詠の占い 🌙 月が導くあなたの運命">
+    <meta property="og:description" content="おつきさま診断と月タロット占い。月の満ち欠けがあなたの恋愛と運命を照らします。">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://line-love-edu.vercel.app/">
+    <meta property="og:image" content="https://line-love-edu.vercel.app/images/moon-share.png">
+    <meta property="og:image:secure_url" content="https://line-love-edu.vercel.app/images/moon-share.png">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kiwi+Maru:wght@300;400;500&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Kiwi Maru', serif;
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            min-height: 100vh;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        /* 星空の背景 */
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 3s infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+
+        /* ヘッダー */
+        .header {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            padding: 60px 20px 40px;
+            animation: fadeIn 1s ease-out;
+        }
+
+        .site-title {
+            font-size: 48px;
+            font-weight: 500;
+            margin-bottom: 15px;
+            background: linear-gradient(45deg, #ffd700, #fff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+        }
+
+        .site-subtitle {
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.8);
+            letter-spacing: 2px;
+        }
+
+        /* メインコンテナ */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* メニューカード */
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-top: 50px;
+        }
+
+        .menu-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 40px 30px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .menu-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 215, 0, 0.1) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        .menu-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            border-color: rgba(255, 215, 0, 0.3);
+        }
+
+        .menu-card:hover::before {
+            opacity: 1;
+        }
+
+        .menu-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+            display: block;
+            filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.3));
+        }
+
+        .menu-title {
+            font-size: 28px;
+            font-weight: 500;
+            margin-bottom: 15px;
+            color: #ffd700;
+        }
+
+        .menu-description {
+            font-size: 16px;
+            line-height: 1.6;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 25px;
+        }
+
+        .menu-features {
+            list-style: none;
+            text-align: left;
+            margin-bottom: 25px;
+        }
+
+        .menu-features li {
+            padding: 8px 0;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+        }
+
+        .menu-features li::before {
+            content: '✨';
+            margin-right: 10px;
+        }
+
+        .menu-button {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+
+        .menu-button:hover {
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+            transform: scale(1.05);
+        }
+
+        /* フッター */
+        .footer {
+            text-align: center;
+            padding: 60px 20px 40px;
+            margin-top: 80px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            z-index: 10;
+        }
+
+        .moon-quote {
+            font-size: 20px;
+            color: rgba(255, 255, 255, 0.7);
+            font-style: italic;
+            margin-bottom: 30px;
+            letter-spacing: 1px;
+        }
+
+        .line-cta {
+            background: rgba(0, 185, 0, 0.1);
+            border: 1px solid rgba(0, 185, 0, 0.3);
+            border-radius: 15px;
+            padding: 25px;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .line-cta-title {
+            font-size: 20px;
+            margin-bottom: 15px;
+            color: #00B900;
+        }
+
+        .line-cta-text {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .line-button {
+            background: #00B900;
+            color: white;
+            padding: 12px 30px;
+            border-radius: 25px;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+
+        .line-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(0, 185, 0, 0.4);
+        }
+
+        /* アニメーション */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .menu-card {
+            animation: fadeIn 0.8s ease-out backwards;
+        }
+
+        .menu-card:nth-child(1) {
+            animation-delay: 0.2s;
+        }
+
+        .menu-card:nth-child(2) {
+            animation-delay: 0.4s;
+        }
+
+        /* 月の装飾 */
+        .moon-decoration {
+            position: fixed;
+            width: 150px;
+            height: 150px;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 224, 0.4) 50%, transparent 70%);
+            border-radius: 50%;
+            top: 100px;
+            right: 100px;
+            z-index: 2;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        /* レスポンシブ */
+        @media (max-width: 768px) {
+            .site-title {
+                font-size: 36px;
+            }
+            
+            .menu-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .moon-decoration {
+                width: 100px;
+                height: 100px;
+                top: 50px;
+                right: 50px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 星空の背景 -->
+    <div class="stars" id="stars"></div>
+    
+    <!-- 月の装飾 -->
+    <div class="moon-decoration"></div>
+
+    <!-- ヘッダー -->
+    <header class="header">
+        <h1 class="site-title">月詠の占い</h1>
+        <p class="site-subtitle">月が導く、あなたの運命と恋の行方</p>
+    </header>
+
+    <!-- メインコンテンツ -->
+    <div class="container">
+        <div class="menu-grid">
+            <!-- おつきさま診断 -->
+            <a href="moon-fortune.html" class="menu-card">
+                <span class="menu-icon">🌙</span>
+                <h2 class="menu-title">おつきさま診断</h2>
+                <p class="menu-description">
+                    生まれた日の月があなたの本当の性格と恋愛スタイルを教えます
+                </p>
+                <ul class="menu-features">
+                    <li>8つの月タイプから性格診断</li>
+                    <li>詳細な恋愛傾向分析</li>
+                    <li>他の月タイプとの相性</li>
+                    <li>今すぐできる改善アドバイス</li>
+                </ul>
+                <span class="menu-button">診断を始める</span>
+            </a>
+
+            <!-- 月タロット占い -->
+            <a href="moon-tarot.html" class="menu-card">
+                <span class="menu-icon">🔮</span>
+                <h2 class="menu-title">月タロット占い</h2>
+                <p class="menu-description">
+                    月の満ち欠けとタロットの神秘が今日の恋愛運を導きます
+                </p>
+                <ul class="menu-features">
+                    <li>17枚の月のカード</li>
+                    <li>今日の恋愛運を占う</li>
+                    <li>過去・現在・未来の流れ</li>
+                    <li>月詠からの特別なメッセージ</li>
+                </ul>
+                <span class="menu-button">カードを引く</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- フッター -->
+    <footer class="footer">
+        <p class="moon-quote">
+            「月は、いつもあなたを見守っています」
+        </p>
+        
+        <div class="line-cta">
+            <h3 class="line-cta-title">🌙 月詠とLINEで繋がる</h3>
+            <p class="line-cta-text">
+                毎日の月占い、相性診断、恋愛相談など<br>
+                月詠があなたの恋を導きます
+            </p>
+            <a href="https://lin.ee/egmCXoG" class="line-button">
+                LINE友だち追加
+            </a>
+        </div>
+    </footer>
+
+    <script>
+        // 星空の生成
+        function createStars() {
+            const starsContainer = document.getElementById('stars');
+            for (let i = 0; i < 150; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.width = Math.random() * 3 + 'px';
+                star.style.height = star.style.width;
+                star.style.animationDelay = Math.random() * 3 + 's';
+                starsContainer.appendChild(star);
+            }
+        }
+        createStars();
+    </script>
+</body>
+</html>
