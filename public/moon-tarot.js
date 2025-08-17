@@ -66,7 +66,7 @@ const moonTarotCards = {
     },
     waningCrescent: {
         id: 'waningCrescent',
-        name: '晦日月',
+        name: '暁月',
         emoji: '🌘',
         meaning: '終わりと再生',
         love: '一つのサイクルが終わり、新しいサイクルへの準備期間です。内省と充電の時期。',
