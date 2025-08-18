@@ -33,20 +33,12 @@ function formatMoonReportV2(moonReport) {
               align: 'center'
             },
             {
-              type: 'text', 
-              text: `${userMoonType} × ${partnerMoonType}`,
-              size: 'lg',
-              color: '#ffffff',
-              align: 'center',
-              margin: 'md'
-            },
-            {
               type: 'text',
               text: `総合相性: ${compatScore}点`,
               size: 'xxl',
               color: '#ffd700',
               align: 'center',
-              margin: 'sm',
+              margin: 'md',
               weight: 'bold'
             },
             {
@@ -84,15 +76,6 @@ function formatMoonReportV2(moonReport) {
               align: 'center',
               color: '#764ba2',  // より目立つ紫色
               weight: 'bold'  // 太字を追加
-            },
-            {
-              type: 'text',
-              text: `相性度 ${compatData.score}点`,
-              size: 'lg',
-              color: compatData.score >= 95 ? '#FF1493' : compatData.score >= 85 ? '#FF69B4' : compatData.score >= 70 ? '#FFB6C1' : '#DDA0DD',
-              align: 'center',
-              margin: 'sm',
-              weight: 'bold'
             },
             {
               type: 'separator',
