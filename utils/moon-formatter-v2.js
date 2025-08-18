@@ -33,12 +33,20 @@ function formatMoonReportV2(moonReport) {
               align: 'center'
             },
             {
+              type: 'text', 
+              text: `${userMoonType} × ${partnerMoonType}`,
+              size: 'lg',
+              color: '#ffffff',
+              align: 'center',
+              margin: 'md'
+            },
+            {
               type: 'text',
-              text: `総合相性: ${compatScore}%`,
+              text: `総合相性: ${compatScore}点`,
               size: 'xxl',
               color: '#ffd700',
               align: 'center',
-              margin: 'md',
+              margin: 'sm',
               weight: 'bold'
             },
             {
@@ -58,22 +66,33 @@ function formatMoonReportV2(moonReport) {
           layout: 'vertical',
           spacing: 'md',
           contents: [
-            {
+            // 1〜5位の場合のみ順位を表示
+            ...(compatData.rank && compatData.rank <= 5 ? [{
               type: 'text',
-              text: `【第${compatData.rank || ''}位】`,
+              text: `🏆 第${compatData.rank}位 🏆`,
               weight: 'bold',
               size: 'xl',
-              color: '#764ba2',
+              color: '#FFD700',
               align: 'center'
-            },
+            }] : []),
             {
               type: 'text',
               text: `${userMoonType} × ${partnerMoonType}`,
               wrap: true,
-              size: 'md',
+              size: 'xxl',  // md → xxl に変更して大きく
               margin: 'md',
               align: 'center',
-              color: '#333333'
+              color: '#764ba2',  // より目立つ紫色
+              weight: 'bold'  // 太字を追加
+            },
+            {
+              type: 'text',
+              text: `相性度 ${compatData.score}点`,
+              size: 'lg',
+              color: compatData.score >= 95 ? '#FF1493' : compatData.score >= 85 ? '#FF69B4' : compatData.score >= 70 ? '#FFB6C1' : '#DDA0DD',
+              align: 'center',
+              margin: 'sm',
+              weight: 'bold'
             },
             {
               type: 'separator',
