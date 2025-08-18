@@ -196,6 +196,10 @@
 
         .card-back {
             background-color: #1a1a2e;
+            background-image: url('images/moon-card-back.jpg');
+            background-size: contain;
+            background-position: center;
+            background-repeat: no-repeat;
             border: 2px solid rgba(255, 215, 0, 0.3);
             transform: rotateY(0deg);
             -webkit-transform: rotateY(0deg);
@@ -203,22 +207,6 @@
             visibility: visible;
             position: relative;
             overflow: hidden;
-        }
-        
-        /* 画像を内部要素として配置して回転 */
-        .card-back::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: url('images/moon-card-back.jpg');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            transform: rotate(90deg) scale(1.4);  /* 画像を90度回転して拡大 */
-            -webkit-transform: rotate(90deg) scale(1.4);
         }
         
         /* 画像の白い部分を暗くするオーバーレイ */
@@ -234,7 +222,10 @@
                 rgba(22, 33, 62, 0.85));
             mix-blend-mode: darken;
             pointer-events: none;
-            z-index: 1;
+        }
+
+        .card-back::before {
+            display: none; /* 月の絵文字を非表示 */
         }
 
         .card-back-text {
