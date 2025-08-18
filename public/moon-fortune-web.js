@@ -1,16 +1,7 @@
 // Web版おつきさま診断のJavaScript
 
-// 相性マトリックス
-const compatibilityMatrix = {
-  '新月': { '新月': 95, '三日月': 75, '上弦の月': 75, '十三夜': 75, '満月': 95, '十六夜': 55, '下弦の月': 55, '暁': 55 },
-  '三日月': { '新月': 75, '三日月': 95, '上弦の月': 75, '十三夜': 75, '満月': 75, '十六夜': 75, '下弦の月': 55, '暁': 55 },
-  '上弦の月': { '新月': 75, '三日月': 75, '上弦の月': 95, '十三夜': 75, '満月': 75, '十六夜': 55, '下弦の月': 75, '暁': 55 },
-  '十三夜': { '新月': 75, '三日月': 75, '上弦の月': 75, '十三夜': 95, '満月': 75, '十六夜': 55, '下弦の月': 55, '暁': 75 },
-  '満月': { '新月': 95, '三日月': 75, '上弦の月': 75, '十三夜': 75, '満月': 95, '十六夜': 75, '下弦の月': 55, '暁': 55 },
-  '十六夜': { '新月': 55, '三日月': 75, '上弦の月': 55, '十三夜': 55, '満月': 75, '十六夜': 95, '下弦の月': 75, '暁': 75 },
-  '下弦の月': { '新月': 55, '三日月': 55, '上弦の月': 75, '十三夜': 55, '満月': 55, '十六夜': 75, '下弦の月': 95, '暁': 75 },
-  '暁': { '新月': 55, '三日月': 55, '上弦の月': 55, '十三夜': 75, '満月': 55, '十六夜': 75, '下弦の月': 75, '暁': 95 }
-};
+// 注: compatibilityRankingsとgetCompatibilityDataWebはcompatibility-data-web.jsで定義されている
+// 旧相性マトリックスは動的データに置き換え
 
 // 相性の詳細説明
 const compatibilityDetails = {
@@ -345,16 +336,20 @@ function getCompatibilityList(moonType) {
     moonTypes.forEach(otherType => {
         if (otherType === moonType) return; // 自分自身は除外
         
-        const score = compatibilityMatrix[moonType][otherType];
+        // 動的データから相性情報を取得
+        const compatData = getCompatibilityDataWeb(moonType, otherType);
         const key = `${moonType}-${otherType}`;
-        const details = compatibilityDetails[key] || {};
+        const oldDetails = compatibilityDetails[key] || {};
         
         compatibilities.push({
             type: otherType,
             emoji: getEmojiForType(otherType),
-            score: score,
-            level: score >= 95 ? '◎' : score >= 75 ? '○' : '△',
-            ...details
+            score: compatData.score,
+            rank: compatData.rank,
+            level: compatData.score >= 95 ? '◎' : compatData.score >= 75 ? '○' : '△',
+            reason: compatData.reason || oldDetails.reason,
+            example: compatData.relationship || oldDetails.example,
+            advice: compatData.userAdvice || oldDetails.advice
         });
     });
     
