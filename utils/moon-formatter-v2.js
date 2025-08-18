@@ -1,10 +1,17 @@
 // 月占いV2のフォーマッター
 // 新しいデータ構造に対応した表示用ヘルパー
 
+const { getCompatibilityData, getStarCount } = require('../core/fortune/compatibility-data');
+
 function formatMoonReportV2(moonReport) {
-  // 相性スコアの処理
-  const compatScore = moonReport.compatibility?.score || 0;
-  const starCount = Math.floor(compatScore / 20);
+  // 動的な相性データを取得
+  const userMoonType = moonReport.user?.moonType || '';
+  const partnerMoonType = moonReport.partner?.moonType || '';
+  const compatData = getCompatibilityData(userMoonType, partnerMoonType);
+  
+  // 相性スコアの処理（動的データを優先、なければ既存データを使用）
+  const compatScore = compatData.score || moonReport.compatibility?.score || 0;
+  const starCount = getStarCount(compatScore);
   
   return {
     type: 'carousel',
@@ -53,7 +60,7 @@ function formatMoonReportV2(moonReport) {
           contents: [
             {
               type: 'text',
-              text: `【${moonReport.compatibility?.level || ''}】`,
+              text: `【第${compatData.rank || ''}位】`,
               weight: 'bold',
               size: 'xl',
               color: '#764ba2',
@@ -61,10 +68,12 @@ function formatMoonReportV2(moonReport) {
             },
             {
               type: 'text',
-              text: moonReport.compatibility?.description || '',
+              text: `${userMoonType} × ${partnerMoonType}`,
               wrap: true,
               size: 'md',
-              margin: 'md'
+              margin: 'md',
+              align: 'center',
+              color: '#333333'
             },
             {
               type: 'separator',
@@ -80,7 +89,7 @@ function formatMoonReportV2(moonReport) {
             },
             {
               type: 'text',
-              text: moonReport.compatibility?.specific?.reason || '',
+              text: compatData.reason || moonReport.compatibility?.specific?.reason || '',
               wrap: true,
               size: 'sm',
               margin: 'md',
@@ -92,7 +101,7 @@ function formatMoonReportV2(moonReport) {
             },
             {
               type: 'text',
-              text: '【例えばこんな場面】',
+              text: '【あなたとお相手の関係性】',
               weight: 'bold',
               size: 'md',
               color: '#764ba2',
@@ -100,7 +109,7 @@ function formatMoonReportV2(moonReport) {
             },
             {
               type: 'text',
-              text: moonReport.compatibility?.specific?.example || '',
+              text: compatData.relationship || moonReport.compatibility?.specific?.example || '',
               wrap: true,
               size: 'sm',
               margin: 'md',
@@ -120,7 +129,7 @@ function formatMoonReportV2(moonReport) {
             },
             {
               type: 'text',
-              text: moonReport.compatibility?.specific?.advice || '',
+              text: compatData.userAdvice || moonReport.compatibility?.specific?.advice || '',
               wrap: true,
               size: 'sm',
               margin: 'md',
