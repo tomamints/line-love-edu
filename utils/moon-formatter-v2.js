@@ -3,11 +3,27 @@
 
 const { getCompatibilityData, getStarCount } = require('../core/fortune/compatibility-data');
 
+// 月タイプの絵文字マッピング
+const moonEmojis = {
+  '新月': '🌑',
+  '三日月': '🌒',
+  '上弦の月': '🌓',
+  '十三夜': '🌔',
+  '満月': '🌕',
+  '十六夜': '🌖',
+  '下弦の月': '🌗',
+  '暁': '🌘'
+};
+
 function formatMoonReportV2(moonReport) {
   // 動的な相性データを取得
   const userMoonType = moonReport.user?.moonType || '';
   const partnerMoonType = moonReport.partner?.moonType || '';
   const compatData = getCompatibilityData(userMoonType, partnerMoonType);
+  
+  // 絵文字付きの月タイプ名を作成
+  const userMoonWithEmoji = `${userMoonType}${moonEmojis[userMoonType] || ''}`;
+  const partnerMoonWithEmoji = `${partnerMoonType}${moonEmojis[partnerMoonType] || ''}`;
   
   // 相性スコアの処理（動的データを優先、なければ既存データを使用）
   const compatScore = compatData.score || moonReport.compatibility?.score || 0;
@@ -61,7 +77,7 @@ function formatMoonReportV2(moonReport) {
             // 1〜5位の場合のみ順位を表示
             ...(compatData.rank && compatData.rank <= 5 ? [{
               type: 'text',
-              text: `🏆 第${compatData.rank}位 🏆`,
+              text: `相性No.${compatData.rank}`,
               weight: 'bold',
               size: 'xl',
               color: '#FFD700',
@@ -69,7 +85,7 @@ function formatMoonReportV2(moonReport) {
             }] : []),
             {
               type: 'text',
-              text: `${userMoonType} × ${partnerMoonType}`,
+              text: `${userMoonWithEmoji}×${partnerMoonWithEmoji}`,
               wrap: true,
               size: 'xxl',  // md → xxl に変更して大きく
               margin: 'md',
