@@ -183,10 +183,52 @@ const moonMysteryCards = ['moonlight', 'moonShadow', 'moonTears', 'moonSmile', '
 let currentSpread = null;
 let selectedCards = [];
 let isDrawing = false;
+let imagesPreloaded = false;
+
+// 画像をプリロード
+function preloadImages() {
+    if (imagesPreloaded) return Promise.resolve();
+    
+    const imagePromises = [];
+    const allCards = Object.values(moonTarotCards);
+    
+    // カード裏面の画像をプリロード
+    const backImage = new Image();
+    backImage.src = 'images/moon-card-back-v2.jpg';
+    imagePromises.push(new Promise(resolve => {
+        backImage.onload = resolve;
+        backImage.onerror = resolve; // エラーでも続行
+    }));
+    
+    // 各カードの画像をプリロード
+    allCards.forEach(card => {
+        if (card.image) {
+            const img = new Image();
+            img.src = card.image;
+            imagePromises.push(new Promise(resolve => {
+                img.onload = resolve;
+                img.onerror = resolve; // エラーでも続行
+            }));
+        }
+    });
+    
+    return Promise.all(imagePromises).then(() => {
+        imagesPreloaded = true;
+        console.log('すべての画像のプリロードが完了しました');
+    });
+}
 
 // 占い方法を選択
-function selectSpread(type) {
+async function selectSpread(type) {
     currentSpread = type;
+    
+    // ローディング表示
+    document.getElementById('spreadSelection').innerHTML = '<div style="text-align: center; padding: 50px;"><div style="font-size: 24px; color: #ffd700;">画像を読み込み中...</div><div style="margin-top: 20px;">🌙</div></div>';
+    
+    // 画像をプリロード
+    await preloadImages();
+    
+    // 元に戻す（非表示）
     document.getElementById('spreadSelection').style.display = 'none';
     document.getElementById('cardArea').style.display = 'block';
     
@@ -363,6 +405,28 @@ function reset() {
     currentSpread = null;
     selectedCards = [];
     isDrawing = false;
+    
+    // 選択画面のHTMLを復元
+    document.getElementById('spreadSelection').innerHTML = `
+        <h2 class="spread-title">占い方法を選んでください</h2>
+        <div class="spread-options">
+            <div class="spread-option" onclick="selectSpread('daily')">
+                <div class="spread-icon">🌙</div>
+                <div class="spread-name">今日の月カード</div>
+                <div class="spread-description">1枚のカードで今日の恋愛運を占います</div>
+            </div>
+            <div class="spread-option" onclick="selectSpread('three')">
+                <div class="spread-icon">🌗</div>
+                <div class="spread-name">月の三相占い</div>
+                <div class="spread-description">過去・現在・未来の3枚で恋愛の流れを読みます</div>
+            </div>
+            <div class="spread-option" onclick="selectSpread('full')">
+                <div class="spread-icon">🌕</div>
+                <div class="spread-name">満月の恋愛占い</div>
+                <div class="spread-description">3枚のカードで二人の関係を深く読み解きます</div>
+            </div>
+        </div>
+    `;
     
     document.getElementById('spreadSelection').style.display = 'block';
     document.getElementById('cardArea').style.display = 'none';

@@ -458,6 +458,13 @@
             }
         }
         createStars();
+        
+        // ページ読み込み時に画像をプリロード
+        window.addEventListener('load', () => {
+            preloadImages().then(() => {
+                console.log('初期画像プリロード完了');
+            });
+        });
     </script>
 </body>
 </html>
