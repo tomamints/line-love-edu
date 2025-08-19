@@ -197,7 +197,7 @@
         .card-back {
             background-color: #1a1a2e;
             background-image: url('images/moon-card-back-v2.jpg');
-            background-size: 123% auto;  /* 123%に拡大 */
+            background-size: 122% auto;  /* 122%に拡大 */
             background-position: center center;
             background-repeat: no-repeat;
             border: 2px solid rgba(255, 215, 0, 0.3);
@@ -214,7 +214,7 @@
             transform: rotateY(180deg);
             -webkit-transform: rotateY(180deg);
             border: 2px solid rgba(255, 215, 0, 0.5);
-            background-size: 123% auto;  /* 画像を123%に拡大して切り取り */
+            background-size: 122% auto;  /* 画像を122%に拡大して切り取り */
             background-position: center center;
             background-repeat: no-repeat;
             overflow: hidden;
@@ -286,10 +286,14 @@
         }
         
         .result-card-image {
-            width: 100%;  /* 拡大せずに表示 */
-            height: 100%;
+            width: 122%;  /* 122%に拡大 */
+            height: 122%;
             object-fit: cover;  /* アスペクト比を保ちながらカバー */
             object-position: center;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
         }
 
         .result-card-info {
@@ -402,11 +406,11 @@
             
             /* スマホでも画像拡大設定を維持 */
             .card-front {
-                background-size: 123% auto;
+                background-size: 122% auto;
             }
             
             .card-back {
-                background-size: 123% auto;
+                background-size: 122% auto;
             }
             
             /* 結果表示の画像サイズ調整 */
@@ -416,8 +420,8 @@
             }
             
             .result-card-image {
-                width: 100%;
-                height: 100%;
+                width: 122%;
+                height: 122%;
             }
         }
     </style>
