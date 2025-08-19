@@ -212,22 +212,50 @@ function preloadImages() {
     const imagePromises = [];
     const allCards = Object.values(moonTarotCards);
     
-    // カード裏面の画像をプリロード
-    const backImage = new Image();
-    backImage.src = getImagePath('images/moon-card-back-v2.jpg');
+    // カード裏面の画像をプリロード（両形式）
+    const backImageWebP = new Image();
+    const backImageJPG = new Image();
+    backImageWebP.src = 'images/moon-card-back-v2.webp';
+    backImageJPG.src = 'images/moon-card-back-v2.jpg';
+    
     imagePromises.push(new Promise(resolve => {
-        backImage.onload = resolve;
-        backImage.onerror = resolve; // エラーでも続行
+        let loaded = 0;
+        const checkLoaded = () => {
+            loaded++;
+            if (loaded >= 2) resolve();
+        };
+        backImageWebP.onload = checkLoaded;
+        backImageWebP.onerror = checkLoaded;
+        backImageJPG.onload = checkLoaded;
+        backImageJPG.onerror = checkLoaded;
     }));
     
-    // 各カードの画像をプリロード
+    // 各カードの画像をプリロード（両形式）
     allCards.forEach(card => {
         if (card.image) {
-            const img = new Image();
-            img.src = getImagePath(card.image);
+            const imgWebP = new Image();
+            const imgOriginal = new Image();
+            
+            // WebP版
+            if (card.image.endsWith('.jpg')) {
+                imgWebP.src = card.image.replace('.jpg', '.webp');
+            } else if (card.image.endsWith('.png')) {
+                imgWebP.src = card.image.replace('.png', '.webp');
+            }
+            
+            // オリジナル版
+            imgOriginal.src = card.image;
+            
             imagePromises.push(new Promise(resolve => {
-                img.onload = resolve;
-                img.onerror = resolve; // エラーでも続行
+                let loaded = 0;
+                const checkLoaded = () => {
+                    loaded++;
+                    if (loaded >= 2) resolve();
+                };
+                imgWebP.onload = checkLoaded;
+                imgWebP.onerror = checkLoaded;
+                imgOriginal.onload = checkLoaded;
+                imgOriginal.onerror = checkLoaded;
             }));
         }
     });
@@ -242,7 +270,7 @@ function preloadImages() {
 async function selectSpread(type) {
     currentSpread = type;
     
-    // 月詠風のローディング表示
+    // 月詠風のローディング表示（プログレスバー付き）
     document.getElementById('spreadSelection').innerHTML = `
         <div style="text-align: center; padding: 50px;">
             <div style="font-size: 20px; color: #ffd700; line-height: 1.8;">
@@ -258,11 +286,40 @@ async function selectSpread(type) {
                 <div style="display: inline-block; animation: pulse 1.5s ease-in-out infinite; animation-delay: 0.5s;">✨</div>
                 <div style="display: inline-block; animation: pulse 1.5s ease-in-out infinite; animation-delay: 1s;">✨</div>
             </div>
+            <div style="margin-top: 30px;">
+                <div style="width: 200px; height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; margin: 0 auto; overflow: hidden;">
+                    <div id="loadingProgress" style="width: 0%; height: 100%; background: linear-gradient(90deg, #ffd700, #fff); transition: width 0.3s ease; border-radius: 2px;"></div>
+                </div>
+                <div style="margin-top: 10px; font-size: 14px; color: #aaa;">
+                    <span id="loadingText">準備中...</span>
+                </div>
+            </div>
         </div>
     `;
     
+    // プログレスバーを更新
+    setTimeout(() => {
+        const progress = document.getElementById('loadingProgress');
+        const text = document.getElementById('loadingText');
+        if (progress) {
+            progress.style.width = '30%';
+            if (text) text.textContent = '月の力を集めています...';
+        }
+    }, 100);
+    
     // 画像をプリロード
     await preloadImages();
+    
+    // プログレスバーを完了
+    const progress = document.getElementById('loadingProgress');
+    const text = document.getElementById('loadingText');
+    if (progress) {
+        progress.style.width = '100%';
+        if (text) text.textContent = '準備完了！';
+    }
+    
+    // 少し待ってから画面遷移
+    await new Promise(resolve => setTimeout(resolve, 300));
     
     // 元に戻す（非表示）
     document.getElementById('spreadSelection').style.display = 'none';
@@ -311,9 +368,16 @@ function displayCards(count) {
 }
 
 // カードを引く
-function drawCards() {
+async function drawCards() {
     if (isDrawing) return;
     isDrawing = true;
+    
+    // ボタンを無効化して読み込み中表示
+    const drawButton = document.getElementById('drawButton');
+    if (drawButton) {
+        drawButton.disabled = true;
+        drawButton.textContent = '月の力を借りています...';
+    }
     
     selectedCards = [];
     
@@ -328,6 +392,28 @@ function drawCards() {
             usedIndices.add(randomIndex);
             selectedCards.push(allCards[randomIndex]);
         }
+    }
+    
+    // 選択されたカードの画像を事前に読み込む
+    const preloadPromises = selectedCards.map(card => {
+        if (card.image) {
+            return new Promise(resolve => {
+                const img = new Image();
+                img.src = getImagePath(card.image);
+                img.onload = resolve;
+                img.onerror = resolve;
+            });
+        }
+        return Promise.resolve();
+    });
+    
+    // すべての画像が読み込まれるまで待つ
+    await Promise.all(preloadPromises);
+    
+    // ボタンを元に戻す
+    if (drawButton) {
+        drawButton.disabled = false;
+        drawButton.textContent = 'カードを引く';
     }
     
     // カードをめくるアニメーション
