@@ -197,7 +197,7 @@
         .card-back {
             background-color: #1a1a2e;
             background-image: url('images/moon-card-back-v2.jpg');
-            background-size: 122% auto;  /* 122%に拡大 */
+            background-size: cover;  /* カバーで表示 */
             background-position: center center;
             background-repeat: no-repeat;
             border: 2px solid rgba(255, 215, 0, 0.3);
@@ -214,7 +214,7 @@
             transform: rotateY(180deg);
             -webkit-transform: rotateY(180deg);
             border: 2px solid rgba(255, 215, 0, 0.5);
-            background-size: 122% auto;  /* 画像を122%に拡大して切り取り */
+            background-size: cover;  /* 余白がトリミングされたのでcoverで十分 */
             background-position: center center;
             background-repeat: no-repeat;
             overflow: hidden;
@@ -403,13 +403,13 @@
                 font-size: 48px;
             }
             
-            /* スマホでも画像拡大設定を維持 */
+            /* スマホでも画像設定を維持 */
             .card-front {
-                background-size: 122% auto;
+                background-size: cover;
             }
             
             .card-back {
-                background-size: 122% auto;
+                background-size: cover;
             }
             
             /* 結果表示の画像サイズ調整 */
