@@ -267,6 +267,7 @@
             align-items: center;
             gap: 15px;
             margin-bottom: 20px;
+            position: relative;
         }
 
         .result-card-emoji {
@@ -274,14 +275,25 @@
             display: none; /* 画像を使うので絵文字は非表示 */
         }
         
-        .result-card-image {
+        .result-card-image-container {
             width: 90px;
             height: 120px;  /* 3:4の比率 (90:120) */
             border-radius: 10px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            position: relative;
+            background: #1a1a2e;
+        }
+        
+        .result-card-image {
+            width: 123%;  /* 123%に拡大 */
+            height: 123%;  /* 123%に拡大 */
             object-fit: cover;
             object-position: center;
-            transform: scale(1.23);  /* 結果表示の画像も123%拡大 */
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
         }
 
         .result-card-info {
