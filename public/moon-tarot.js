@@ -344,7 +344,7 @@ function showResult() {
         
         resultCard.innerHTML = `
             <div class="result-card-header">
-                <div class="result-card-emoji">${card.emoji}</div>
+                ${card.image ? `<img class="result-card-image" src="${card.image}" alt="${card.name}">` : `<div class="result-card-emoji">${card.emoji}</div>`}
                 <div class="result-card-info">
                     <div class="result-card-name">${positionLabel}${card.name}</div>
                     <div class="result-card-meaning">${card.meaning}</div>

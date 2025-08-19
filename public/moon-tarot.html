@@ -226,18 +226,7 @@
         }
 
         .card-name {
-            font-size: 20px;
-            font-weight: bold;
-            text-align: center;
-            background: rgba(0, 0, 0, 0.7);
-            color: #ffd700;
-            padding: 10px;
-            border-radius: 10px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
-            position: absolute;
-            bottom: 20px;
-            left: 10px;
-            right: 10px;
+            display: none; /* カード名を非表示 */
         }
 
         /* 結果表示エリア */
@@ -281,6 +270,15 @@
 
         .result-card-emoji {
             font-size: 48px;
+            display: none; /* 画像を使うので絵文字は非表示 */
+        }
+        
+        .result-card-image {
+            width: 100px;
+            height: 167px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            object-fit: cover;
         }
 
         .result-card-info {
