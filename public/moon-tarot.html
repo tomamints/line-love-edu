@@ -166,11 +166,13 @@
         .card-container {
             display: flex;
             justify-content: center;
+            align-items: center;
             gap: 20px;
             flex-wrap: wrap;
-            margin: 30px 0;
+            margin: 30px auto;
             perspective: 1000px;
             -webkit-perspective: 1000px;
+            width: 100%;
         }
 
         .card {
@@ -187,12 +189,24 @@
         }
 
         /* 1枚引きの時は大きく表示 */
+        .single-card {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
         .single-card .card {
             width: 200px;
             height: 300px;  /* 2:3の比率を維持 */
         }
 
         /* 3枚引きの時は標準サイズ */
+        .three-cards {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
         .three-cards .card {
             width: 150px;
             height: 225px;
@@ -460,20 +474,35 @@
                 height: 180px;  /* 2:3の比率を維持 */
             }
             
+            /* コンテナの中央揃えを確実に */
+            .card-container {
+                display: flex !important;
+                justify-content: center !important;
+                align-items: center !important;
+                width: 100% !important;
+                padding: 0 10px;
+            }
+            
             /* 1枚引きの時は画面幅いっぱいに - 最優先 */
+            .card-container.single-card {
+                justify-content: center !important;
+            }
+            
             .card-container.single-card .card {
                 width: 220px !important;
                 height: 330px !important;  /* 2:3の比率を維持 */
+                margin: 0 auto !important;
             }
             
             /* 3枚引きの時は横に並ぶように小さく - 最優先 */
+            .card-container.three-cards {
+                justify-content: center !important;
+                gap: 8px !important;  /* 3枚の時は隙間を狭く */
+            }
+            
             .card-container.three-cards .card {
                 width: 95px !important;
                 height: 142px !important;  /* 2:3の比率を維持 */
-            }
-            
-            .card-container.three-cards {
-                gap: 8px !important;  /* 3枚の時は隙間を狭く */
             }
             
             .cards-container {
