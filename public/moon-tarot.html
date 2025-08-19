@@ -563,7 +563,39 @@
         <div class="result-area" id="resultArea">
             <h2 class="result-title" id="resultTitle"></h2>
             <div class="result-cards" id="resultCards"></div>
-            <button class="btn" onclick="reset()">もう一度占う</button>
+            
+            <!-- ボタンエリア -->
+            <div style="display: flex; flex-direction: column; gap: 15px; margin-top: 30px;">
+                <button class="btn" onclick="reset()">もう一度占う</button>
+                
+                <!-- LINE公式アカウントへの誘導 -->
+                <div style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); border-radius: 20px; padding: 25px; margin: 15px 0; text-align: center; border: 1px solid rgba(255, 255, 255, 0.1);">
+                    <div style="color: rgba(255, 255, 255, 0.9); margin-bottom: 15px;">
+                        <div style="font-size: 18px; margin-bottom: 10px; font-weight: normal; letter-spacing: 1px;">
+                            月詠からの特別なメッセージをお届け
+                        </div>
+                        <div style="font-size: 14px; line-height: 1.6; opacity: 0.85;">
+                            あなたの恋愛運を毎日占い<br>
+                            月の導きで最高の恋を叶えましょう
+                        </div>
+                    </div>
+                    
+                    <a href="https://lin.ee/egmCXoG" 
+                       target="_blank"
+                       style="display: inline-block; background: linear-gradient(135deg, #00b900 0%, #00a000 100%); color: white; padding: 12px 30px; border-radius: 25px; text-decoration: none; font-weight: normal; font-size: 15px; box-shadow: 0 4px 15px rgba(0,185,0,0.3); letter-spacing: 0.5px;">
+                        🌙 LINE友だち追加
+                    </a>
+                </div>
+                
+                <!-- シェアボタン -->
+                <button class="btn" style="background: linear-gradient(135deg, #1da1f2, #1a91da);" onclick="shareResult()">
+                    結果をシェア 📱
+                </button>
+                
+                <a href="index.html" class="btn" style="background: linear-gradient(135deg, #4a4a6a, #3a3a5a); text-decoration: none; display: inline-block; text-align: center;">
+                    トップに戻る
+                </a>
+            </div>
         </div>
     </div>
 

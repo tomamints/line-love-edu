@@ -479,3 +479,44 @@ function reset() {
     document.getElementById('cardArea').style.display = 'none';
     document.getElementById('resultArea').style.display = 'none';
 }
+
+// 結果をシェア
+function shareResult() {
+    if (selectedCards.length === 0) return;
+    
+    let shareText = '🌙 月タロット占いの結果 🌙\n\n';
+    
+    if (currentSpread === 'daily') {
+        shareText += `今日の月カード: ${selectedCards[0].name}\n`;
+        shareText += `${selectedCards[0].meaning}\n\n`;
+    } else if (currentSpread === 'three') {
+        shareText += '月の三相占い\n';
+        shareText += `過去: ${selectedCards[0].name}\n`;
+        shareText += `現在: ${selectedCards[1].name}\n`;
+        shareText += `未来: ${selectedCards[2].name}\n\n`;
+    } else if (currentSpread === 'full') {
+        shareText += '満月の恋愛占い\n';
+        shareText += `現在の状況: ${selectedCards[0].name}\n`;
+        shareText += `相手の気持ち: ${selectedCards[1].name}\n`;
+        shareText += `これからの展開: ${selectedCards[2].name}\n\n`;
+    }
+    
+    shareText += '月が導くあなたの恋愛運を占ってみませんか？\n';
+    shareText += 'https://line-love-edu.vercel.app/moon-tarot.html';
+    
+    // Web Share APIが使える場合
+    if (navigator.share) {
+        navigator.share({
+            title: '月タロット占いの結果',
+            text: shareText,
+            url: 'https://line-love-edu.vercel.app/moon-tarot.html'
+        }).catch(err => {
+            // シェアがキャンセルされた場合は何もしない
+        });
+    } else {
+        // Web Share APIが使えない場合はクリップボードにコピー
+        navigator.clipboard.writeText(shareText).then(() => {
+            alert('結果をクリップボードにコピーしました！');
+        });
+    }
+}
