@@ -210,11 +210,11 @@
         }
 
         .card-front {
-            background: linear-gradient(135deg, #2a2a3e, #16213e);
+            background: #1a1a2e;  /* 背景色を暗くして余白が見えても違和感なく */
             transform: rotateY(180deg);
             -webkit-transform: rotateY(180deg);
             border: 2px solid rgba(255, 215, 0, 0.5);
-            background-size: 120% 120%;  /* 拡大して白い部分を隠す */
+            background-size: contain;  /* 画像全体を表示、アスペクト比を維持 */
             background-position: center;
             background-repeat: no-repeat;
         }
