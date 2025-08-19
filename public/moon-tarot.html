@@ -164,7 +164,7 @@
 
         .card {
             width: 150px;
-            height: 200px;  /* 3:4の比率 (150:200) */
+            height: 215px;  /* 画像の比率1:1.43に近づける */
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             border-radius: 15px;
             position: relative;
@@ -210,13 +210,14 @@
         }
 
         .card-front {
-            background: #1a1a2e;  /* 背景色を暗くして余白が見えても違和感なく */
+            background: #1a1a2e;
             transform: rotateY(180deg);
             -webkit-transform: rotateY(180deg);
             border: 2px solid rgba(255, 215, 0, 0.5);
-            background-size: contain;  /* 画像全体を表示、アスペクト比を維持 */
+            background-size: cover;  /* 余白をなくして全体をカバー */
             background-position: center;
             background-repeat: no-repeat;
+            overflow: hidden;
         }
 
         .card-emoji {
