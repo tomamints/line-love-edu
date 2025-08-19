@@ -286,14 +286,10 @@
         }
         
         .result-card-image {
-            width: 122%;  /* 122%に拡大 */
-            height: 122%;
-            object-fit: cover;  /* アスペクト比を保ちながらカバー */
+            width: 100%;
+            height: 100%;
+            object-fit: cover;  /* カバーして表示 */
             object-position: center;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
         }
 
         .result-card-info {
@@ -420,8 +416,8 @@
             }
             
             .result-card-image {
-                width: 122%;
-                height: 122%;
+                width: 100%;
+                height: 100%;
             }
         }
     </style>
