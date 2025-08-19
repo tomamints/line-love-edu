@@ -5,7 +5,7 @@ const moonTarotCards = {
         id: 'newMoon',
         name: '新月',
         emoji: '🌑',
-        image: 'images/tarot-cards/new-moon.jpg',
+        image: 'images/tarot-cards/new-moon.png',
         meaning: '新しい始まり',
         love: '新しい恋の種が蒔かれる時期です。今はまだ見えないかもしれませんが、素晴らしい可能性が眠っています。',
         advice: '心を開いて、新しい出会いや変化を受け入れる準備をしましょう。過去にとらわれず、まっさらな気持ちで前を向いてください。',
