@@ -278,11 +278,7 @@
         .result-card-image-container {
             width: 90px;
             height: 135px;  /* 2:3の比率 (90:135 = 1:1.5) */
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-            overflow: hidden;
             position: relative;
-            background: #1a1a2e;
         }
         
         .result-card-image {
@@ -290,7 +286,8 @@
             height: 100%;
             object-fit: contain;  /* 画像全体を表示 */
             object-position: center;
-            background: #1a1a2e;  /* 余白部分の背景色 */
+            border-radius: 10px;
+            filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.3));  /* 画像に直接影を付ける */
         }
 
         .result-card-info {
