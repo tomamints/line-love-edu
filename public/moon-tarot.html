@@ -397,13 +397,32 @@
             
             .card {
                 width: 120px;
-                height: 200px;
+                height: 160px;  /* 3:4の比率を維持 */
             }
             
             .card-emoji {
                 font-size: 48px;
             }
             
+            /* スマホでも画像拡大設定を維持 */
+            .card-front {
+                background-size: 123% auto;
+            }
+            
+            .card-back {
+                background-size: 123% auto;
+            }
+            
+            /* 結果表示の画像サイズ調整 */
+            .result-card-image-container {
+                width: 75px;
+                height: 100px;
+            }
+            
+            .result-card-image {
+                width: 123%;
+                height: 123%;
+            }
         }
     </style>
 </head>
