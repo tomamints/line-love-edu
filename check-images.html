@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>タロットカード画像確認</title>
+    <style>
+        body {
+            background: #1a1a2e;
+            color: white;
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        .container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        .card {
+            text-align: center;
+            background: rgba(255,255,255,0.1);
+            padding: 10px;
+            border-radius: 10px;
+        }
+        img {
+            width: 150px;
+            height: 250px;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+        .filename {
+            font-size: 10px;
+            color: #888;
+            word-break: break-all;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>タロットカード画像一覧</h1>
+    <div class="container" id="container"></div>
+    
+    <script>
+        const images = [
+            'Gemini_Generated_Image_1xn55l1xn55l1xn5.jpeg',
+            'Gemini_Generated_Image_35oy1235oy1235oy.jpeg', 
+            'Gemini_Generated_Image_byial0byial0byia.jpeg',
+            'Gemini_Generated_Image_ckttrvckttrvcktt.jpeg',
+            'Gemini_Generated_Image_dkya1ldkya1ldkya.jpeg',
+            'Gemini_Generated_Image_edrtoyedrtoyedrt.jpeg',
+            'Gemini_Generated_Image_getj9jgetj9jgetj.jpeg',
+            'Gemini_Generated_Image_i1u57i1u57i1u57i.jpeg',
+            'Gemini_Generated_Image_ika7stika7stika7.jpeg',
+            'Gemini_Generated_Image_leqtn5leqtn5leqt.jpeg',
+            'Gemini_Generated_Image_n86ny7n86ny7n86n.jpeg',
+            'Gemini_Generated_Image_ncoatzncoatzncoa.jpeg',
+            'Gemini_Generated_Image_on1x2jon1x2jon1x.jpeg',
+            'Gemini_Generated_Image_pp4wa2pp4wa2pp4w.jpeg',
+            'Gemini_Generated_Image_s85l7zs85l7zs85l.jpeg',
+            'Gemini_Generated_Image_u3o3jgu3o3jgu3o3.jpeg',
+            'Gemini_Generated_Image_wjsg12wjsg12wjsg.jpeg',
+            'Gemini_Generated_Image_yb8lmdyb8lmdyb8l.jpeg'
+        ];
+        
+        const container = document.getElementById('container');
+        images.forEach((img, index) => {
+            const div = document.createElement('div');
+            div.className = 'card';
+            div.innerHTML = `
+                <img src="images/tarot-cards/${img}" alt="Card ${index + 1}">
+                <div>Card ${index + 1}</div>
+                <div class="filename">${img}</div>
+            `;
+            container.appendChild(div);
+        });
+    </script>
+</body>
+</html>
