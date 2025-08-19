@@ -1,3 +1,23 @@
+// WebP対応をチェック
+function supportsWebP() {
+    const canvas = document.createElement('canvas');
+    canvas.width = canvas.height = 1;
+    return canvas.toDataURL('image/webp').indexOf('image/webp') === 0;
+}
+
+// 画像パスを取得（WebP対応時はWebPを使用）
+function getImagePath(basePath) {
+    if (supportsWebP()) {
+        // WebPをサポートしている場合
+        if (basePath.endsWith('.jpg')) {
+            return basePath.replace('.jpg', '.webp');
+        } else if (basePath.endsWith('.png')) {
+            return basePath.replace('.png', '.webp');
+        }
+    }
+    return basePath;
+}
+
 // 月タロットカードのデータ
 const moonTarotCards = {
     // 月相カード（8枚）
@@ -194,7 +214,7 @@ function preloadImages() {
     
     // カード裏面の画像をプリロード
     const backImage = new Image();
-    backImage.src = 'images/moon-card-back-v2.jpg';
+    backImage.src = getImagePath('images/moon-card-back-v2.jpg');
     imagePromises.push(new Promise(resolve => {
         backImage.onload = resolve;
         backImage.onerror = resolve; // エラーでも続行
@@ -204,7 +224,7 @@ function preloadImages() {
     allCards.forEach(card => {
         if (card.image) {
             const img = new Image();
-            img.src = card.image;
+            img.src = getImagePath(card.image);
             imagePromises.push(new Promise(resolve => {
                 img.onload = resolve;
                 img.onerror = resolve; // エラーでも続行
@@ -222,8 +242,24 @@ function preloadImages() {
 async function selectSpread(type) {
     currentSpread = type;
     
-    // ローディング表示
-    document.getElementById('spreadSelection').innerHTML = '<div style="text-align: center; padding: 50px;"><div style="font-size: 24px; color: #ffd700;">画像を読み込み中...</div><div style="margin-top: 20px;">🌙</div></div>';
+    // 月詠風のローディング表示
+    document.getElementById('spreadSelection').innerHTML = `
+        <div style="text-align: center; padding: 50px;">
+            <div style="font-size: 20px; color: #ffd700; line-height: 1.8;">
+                月の導きを求めています...<br>
+                <span style="font-size: 16px; color: #ddd;">
+                    静かにお待ちください<br>
+                    月光があなたの運命を照らし出します
+                </span>
+            </div>
+            <div style="margin-top: 30px; font-size: 40px;">🌙</div>
+            <div style="margin-top: 20px;">
+                <div style="display: inline-block; animation: pulse 1.5s ease-in-out infinite;">✨</div>
+                <div style="display: inline-block; animation: pulse 1.5s ease-in-out infinite; animation-delay: 0.5s;">✨</div>
+                <div style="display: inline-block; animation: pulse 1.5s ease-in-out infinite; animation-delay: 1s;">✨</div>
+            </div>
+        </div>
+    `;
     
     // 画像をプリロード
     await preloadImages();
@@ -246,12 +282,23 @@ function displayCards(count) {
     const container = document.getElementById('cardContainer');
     container.innerHTML = '';
     
+    // カード枚数に応じてクラスを追加
+    container.className = 'cards-container';
+    if (count === 1) {
+        container.classList.add('single-card');
+    } else if (count === 3) {
+        container.classList.add('three-cards');
+    }
+    
+    // カード裏面の画像パスを取得
+    const backImagePath = getImagePath('images/moon-card-back-v2.jpg');
+    
     for (let i = 0; i < count; i++) {
         const card = document.createElement('div');
         card.className = 'card';
         card.dataset.index = i;
         card.innerHTML = `
-            <div class="card-face card-back">
+            <div class="card-face card-back" style="background-image: url('${backImagePath}');">
                 <div class="card-back-text">月のカード</div>
             </div>
             <div class="card-face card-front">
@@ -292,9 +339,9 @@ function drawCards() {
             const emoji = frontFace.querySelector('.card-emoji');
             const name = frontFace.querySelector('.card-name');
             
-            // 画像を背景として設定
+            // 画像を背景として設定（WebP対応）
             if (selectedCards[index].image) {
-                frontFace.style.backgroundImage = `url('${selectedCards[index].image}')`;
+                frontFace.style.backgroundImage = `url('${getImagePath(selectedCards[index].image)}')`;
             }
             
             emoji.textContent = selectedCards[index].emoji;
@@ -344,7 +391,7 @@ function showResult() {
         
         resultCard.innerHTML = `
             <div class="result-card-header">
-                ${card.image ? `<div class="result-card-image-container"><img class="result-card-image" src="${card.image}" alt="${card.name}"></div>` : `<div class="result-card-emoji">${card.emoji}</div>`}
+                ${card.image ? `<div class="result-card-image-container"><img class="result-card-image" src="${getImagePath(card.image)}" alt="${card.name}"></div>` : `<div class="result-card-emoji">${card.emoji}</div>`}
                 <div class="result-card-info">
                     <div class="result-card-name">${positionLabel}${card.name}</div>
                     <div class="result-card-meaning">${card.meaning}</div>

@@ -58,6 +58,17 @@
             50% { opacity: 1; }
         }
 
+        @keyframes pulse {
+            0%, 100% { 
+                opacity: 0.4;
+                transform: scale(1);
+            }
+            50% { 
+                opacity: 1;
+                transform: scale(1.2);
+            }
+        }
+
         .container {
             max-width: 900px;
             margin: 0 auto;
@@ -175,6 +186,18 @@
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
         }
 
+        /* 1枚引きの時は大きく表示 */
+        .single-card .card {
+            width: 200px;
+            height: 300px;  /* 2:3の比率を維持 */
+        }
+
+        /* 3枚引きの時は標準サイズ */
+        .three-cards .card {
+            width: 150px;
+            height: 225px;
+        }
+
         .card.flipped {
             transform: rotateY(180deg);
             -webkit-transform: rotateY(180deg);
@@ -196,7 +219,6 @@
 
         .card-back {
             background-color: #1a1a2e;
-            background-image: url('images/moon-card-back-v2.jpg');
             background-size: cover;  /* カバーで表示 */
             background-position: center center;
             background-repeat: no-repeat;
@@ -394,6 +416,18 @@
                 height: 210px;  /* 2:3の比率 (140:210 = 1:1.5) */
             }
             
+            /* 1枚引きの時はスマホでも大きく */
+            .single-card .card {
+                width: 180px;
+                height: 270px;  /* 2:3の比率を維持 */
+            }
+            
+            /* 3枚引きの時は少し小さめ */
+            .three-cards .card {
+                width: 130px;
+                height: 195px;  /* 2:3の比率を維持 */
+            }
+            
             .card-emoji {
                 font-size: 48px;
             }
@@ -424,6 +458,22 @@
             .card {
                 width: 120px;
                 height: 180px;  /* 2:3の比率を維持 */
+            }
+            
+            /* 1枚引きの時は画面幅いっぱいに */
+            .single-card .card {
+                width: 160px;
+                height: 240px;  /* 2:3の比率を維持 */
+            }
+            
+            /* 3枚引きの時は横に並ぶように小さく */
+            .three-cards .card {
+                width: 100px;
+                height: 150px;  /* 2:3の比率を維持 */
+            }
+            
+            .three-cards {
+                gap: 10px;  /* 3枚の時は隙間を狭く */
             }
             
             .cards-container {
