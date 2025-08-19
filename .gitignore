@@ -29,3 +29,7 @@ orders/
 # Google OAuth credentials
 credentials.json
 token.json
+
+# タロットカード画像のバックアップ
+public/images/tarot-cards/original_backup/
+public/images/*_original.jpg
