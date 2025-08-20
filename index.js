@@ -1968,14 +1968,14 @@ async function handlePostbackEvent(event) {
               paddingAll: '20px'
             }
           }
-        },
-        // 動画を直接送信
-        {
-          type: 'video',
-          originalContentUrl: `${process.env.BASE_URL || 'https://line-love-edu.vercel.app'}/videos/talk-history-tutorial.mp4`,
-          previewImageUrl: `${process.env.BASE_URL || 'https://line-love-edu.vercel.app'}/images/video-thumbnail.jpg`,
-          trackingId: 'talk-history-tutorial'
         }
+        // 動画送信を一時的に無効化
+        // {
+        //   type: 'video',
+        //   originalContentUrl: `${process.env.BASE_URL || 'https://line-love-edu.vercel.app'}/videos/talk-history-tutorial.mp4`,
+        //   previewImageUrl: `${process.env.BASE_URL || 'https://line-love-edu.vercel.app'}/images/video-thumbnail.jpg`,
+        //   trackingId: 'talk-history-tutorial'
+        // }
       ]);
       return;
     }
