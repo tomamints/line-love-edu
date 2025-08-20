@@ -894,7 +894,7 @@ async function handleFollowEvent(event) {
                 {
                   type: 'text',
                   text: '🌙',
-                  size: 'xxl',
+                  size: '60px',
                   color: '#ffffff',
                   align: 'center'
                 },
