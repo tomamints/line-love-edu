@@ -598,18 +598,19 @@ function formatMoonReportV2(moonReport) {
           contents: [
             {
               type: 'text',
-              text: '🔮',
-              size: '60px',
+              text: 'この診断は',
+              size: 'md',
+              color: '#ffffff',
               align: 'center'
             },
             {
               type: 'text',
-              text: 'もっと深く知りたい方へ',
+              text: 'まだ序章に過ぎません🌙',
               size: 'lg',
-              color: '#ffffff',
+              color: '#ffd700',
               weight: 'bold',
               align: 'center',
-              margin: 'md'
+              margin: 'sm'
             }
           ],
           backgroundColor: '#764ba2',
@@ -622,47 +623,21 @@ function formatMoonReportV2(moonReport) {
           contents: [
             {
               type: 'text',
-              text: '【トーク履歴から分かること】',
-              weight: 'bold',
-              size: 'md',
-              color: '#764ba2',
-              align: 'center'
+              text: 'おつきさま診断では月タイプと\nあなたとお相手の実際の会話を\n掛け合わせて診断することによって',
+              wrap: true,
+              size: 'sm',
+              color: '#555555',
+              align: 'center',
+              margin: 'md'
             },
             {
-              type: 'box',
-              layout: 'vertical',
-              margin: 'lg',
-              spacing: 'sm',
-              contents: [
-                {
-                  type: 'text',
-                  text: '会話パターンから見る本音',
-                  size: 'sm',
-                  color: '#555555',
-                  align: 'center'
-                },
-                {
-                  type: 'text',
-                  text: '相手の隠れた気持ち',
-                  size: 'sm',
-                  color: '#555555',
-                  align: 'center'
-                },
-                {
-                  type: 'text',
-                  text: '二人の相性度を数値化',
-                  size: 'sm',
-                  color: '#555555',
-                  align: 'center'
-                },
-                {
-                  type: 'text',
-                  text: '関係改善の具体的アドバイス',
-                  size: 'sm',
-                  color: '#555555',
-                  align: 'center'
-                }
-              ]
+              type: 'text',
+              text: 'より本質に近い、あなたとお相手の過去や現在、\nそして未来を診断することができます',
+              wrap: true,
+              size: 'sm',
+              color: '#555555',
+              align: 'center',
+              margin: 'sm'
             },
             {
               type: 'separator',
@@ -670,7 +645,7 @@ function formatMoonReportV2(moonReport) {
             },
             {
               type: 'text',
-              text: '実際のLINEトークから',
+              text: '今、あなたがより知りたいのはどちらでしょう？',
               size: 'md',
               weight: 'bold',
               color: '#764ba2',
@@ -678,24 +653,38 @@ function formatMoonReportV2(moonReport) {
               margin: 'lg'
             },
             {
-              type: 'text',
-              text: '二人だけの特別な分析レポート',
-              size: 'sm',
-              color: '#888888',
-              align: 'center',
-              margin: 'sm'
+              type: 'button',
+              action: {
+                type: 'postback',
+                label: '①お相手に今のあなたの想いが伝わるのかどうか',
+                data: 'action=want_feelings_reach',
+                displayText: 'お相手に今のあなたの想いが伝わるのかどうか知りたい'
+              },
+              style: 'primary',
+              color: '#667eea',
+              margin: 'xl',
+              height: 'md'
             },
             {
               type: 'button',
               action: {
                 type: 'postback',
-                label: '詳しい分析を見る',
-                data: 'action=want_more_analysis'
+                label: '②お相手が今あなたに向ける気持ち',
+                data: 'action=want_partner_feelings',
+                displayText: 'お相手が今あなたに向ける気持ちを知りたい'
               },
               style: 'primary',
-              color: '#764ba2',
-              margin: 'xl',
+              color: '#ff69b4',
+              margin: 'md',
               height: 'md'
+            },
+            {
+              type: 'text',
+              text: 'どちらか選んで\n教えてください🌙',
+              size: 'sm',
+              color: '#888888',
+              align: 'center',
+              margin: 'xl'
             }
           ],
           paddingAll: '20px'
