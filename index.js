@@ -1737,7 +1737,7 @@ async function sendDeepAnalysisResponse(replyToken, type) {
             },
             {
               type: 'image',
-              url: 'https://line-love-edu.vercel.app/images/sample-result.png',
+              url: 'https://line-love-edu.vercel.app/images/sample-result.jpg',
               size: 'full',
               aspectMode: 'fit',
               aspectRatio: '2:1',
