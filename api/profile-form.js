@@ -452,14 +452,33 @@ module.exports = async (req, res) => {
           </div>
           
           <div class="form-group">
-            <label for="wantToKnow"><strong>Q2：今、特に何を知りたいですか？</strong></label>
-            <select id="wantToKnow" name="wantToKnow" required>
-              <option value="">✓ 選択してください</option>
-              <option value="feelings" ${existing.wantToKnow === 'feelings' ? 'selected' : ''}>相手が今、どんな気持ちなのか</option>
-              <option value="action" ${existing.wantToKnow === 'action' ? 'selected' : ''}>今、自分がどうしたらいいか</option>
-              <option value="past" ${existing.wantToKnow === 'past' ? 'selected' : ''}>過去（出来事）の意味や理由</option>
-              <option value="future" ${existing.wantToKnow === 'future' ? 'selected' : ''}>これからどうなっていくのか</option>
-            </select>
+            <label><strong>Q2：今、特に何を知りたいですか？</strong></label>
+            <div class="radio-group">
+              <label class="radio-option ${existing.wantToKnow === 'feelings' ? 'selected' : ''}">
+                <input type="radio" name="wantToKnow" value="feelings" ${existing.wantToKnow === 'feelings' ? 'checked' : ''} required>
+                <div class="radio-label">
+                  <div class="radio-title">相手が今、どんな気持ちなのか</div>
+                </div>
+              </label>
+              <label class="radio-option ${existing.wantToKnow === 'action' ? 'selected' : ''}">
+                <input type="radio" name="wantToKnow" value="action" ${existing.wantToKnow === 'action' ? 'checked' : ''} required>
+                <div class="radio-label">
+                  <div class="radio-title">今、自分がどうしたらいいか</div>
+                </div>
+              </label>
+              <label class="radio-option ${existing.wantToKnow === 'past' ? 'selected' : ''}">
+                <input type="radio" name="wantToKnow" value="past" ${existing.wantToKnow === 'past' ? 'checked' : ''} required>
+                <div class="radio-label">
+                  <div class="radio-title">過去（出来事）の意味や理由</div>
+                </div>
+              </label>
+              <label class="radio-option ${existing.wantToKnow === 'future' ? 'selected' : ''}">
+                <input type="radio" name="wantToKnow" value="future" ${existing.wantToKnow === 'future' ? 'checked' : ''} required>
+                <div class="radio-label">
+                  <div class="radio-title">これからどうなっていくのか</div>
+                </div>
+              </label>
+            </div>
           </div>
         </div>
         
@@ -525,18 +544,23 @@ module.exports = async (req, res) => {
   <script>
     // ラジオボタンの選択状態を管理
     document.addEventListener('DOMContentLoaded', function() {
-      // loveSituationのラジオボタン
-      const loveSituationRadios = document.querySelectorAll('input[name="loveSituation"]');
-      loveSituationRadios.forEach(radio => {
-        radio.addEventListener('change', function() {
-          // すべての選択状態をクリア
-          document.querySelectorAll('.radio-group .radio-option').forEach(option => {
-            option.classList.remove('selected');
+      // すべてのラジオボタングループに対して処理
+      ['loveSituation', 'wantToKnow'].forEach(groupName => {
+        const radios = document.querySelectorAll(`input[name="${groupName}"]`);
+        radios.forEach(radio => {
+          radio.addEventListener('change', function() {
+            // このグループ内のすべての選択状態をクリア
+            const parentGroup = this.closest('.radio-group');
+            if (parentGroup) {
+              parentGroup.querySelectorAll('.radio-option').forEach(option => {
+                option.classList.remove('selected');
+              });
+            }
+            // 選択されたものにselectedクラスを追加
+            if (this.checked) {
+              this.closest('.radio-option').classList.add('selected');
+            }
           });
-          // 選択されたものにselectedクラスを追加
-          if (this.checked) {
-            this.closest('.radio-option').classList.add('selected');
-          }
         });
       });
       
