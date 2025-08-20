@@ -23,7 +23,7 @@ module.exports = async (req, res) => {
       background: rgba(255, 255, 255, 0.95);
       border-radius: 20px;
       padding: 40px 30px;
-      max-width: 400px;
+      max-width: 450px;
       width: 100%;
       box-shadow: 0 20px 60px rgba(0,0,0,0.3);
     }
@@ -35,10 +35,10 @@ module.exports = async (req, res) => {
       margin-bottom: 30px;
     }
     .title {
-      font-size: 22px;
+      font-size: 20px;
       font-weight: bold;
       margin: 0;
-      letter-spacing: 0.5px;
+      white-space: nowrap;
     }
     .message {
       font-size: 16px;
@@ -68,19 +68,13 @@ module.exports = async (req, res) => {
       font-size: 14px;
       line-height: 1.8;
       color: #555;
-      margin-bottom: 12px;
-      padding-left: 20px;
-      position: relative;
+      margin-bottom: 15px;
+      text-align: left;
     }
-    .instruction-step:before {
-      content: "";
-      position: absolute;
-      left: 0;
-      top: 8px;
-      width: 8px;
-      height: 8px;
-      background: #764ba2;
-      border-radius: 50%;
+    .step-number {
+      font-weight: bold;
+      color: #764ba2;
+      margin-right: 5px;
     }
     .line-button {
       display: inline-block;
@@ -116,12 +110,11 @@ module.exports = async (req, res) => {
     <div class="instructions">
       <div class="instruction-title">診断結果の見方を教えます</div>
       <div class="instruction-step">
-        ① 下のボタンを押して、LINEへ戻りなさい
+        <span class="step-number">①</span>下のボタンを押して、LINEへ戻りなさい
       </div>
       <div class="instruction-step">
-        ② 先ほどの下部メニューの<br>
-        　 <span style="font-size: 18px; font-weight: bold; color: #764ba2;">「診断結果を見る」</span>を押してください<br>
-        　 あなたとお相手の関係性をお告げします
+        <span class="step-number">②</span>先ほどの下部メニューの<span style="font-size: 18px; font-weight: bold; color: #764ba2; display: inline-block; margin: 0 3px;">「診断結果を見る」</span>を押してください<br>
+        <span style="margin-left: 22px;">あなたとお相手の関係性をお告げします</span>
       </div>
     </div>
     
