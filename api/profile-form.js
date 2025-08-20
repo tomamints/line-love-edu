@@ -110,6 +110,56 @@ module.exports = async (req, res) => {
       line-height: 1.5;
     }
     
+    /* ラジオボタンのスタイル */
+    .radio-group {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    
+    .radio-option {
+      display: flex;
+      align-items: flex-start;
+      padding: 12px;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .radio-option:hover {
+      border-color: #667eea;
+      background: #f8f9ff;
+    }
+    
+    .radio-option input[type="radio"] {
+      width: auto;
+      margin: 3px 10px 0 0;
+      flex-shrink: 0;
+    }
+    
+    .radio-option.selected {
+      border-color: #667eea;
+      background: #f8f9ff;
+    }
+    
+    .radio-label {
+      flex: 1;
+    }
+    
+    .radio-title {
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 4px;
+      font-size: 15px;
+    }
+    
+    .radio-description {
+      color: #666;
+      font-size: 13px;
+      line-height: 1.4;
+    }
+    
     input:focus, select:focus {
       outline: none;
       border-color: #667eea;
@@ -361,15 +411,44 @@ module.exports = async (req, res) => {
           <h2 class="section-title">🌙 恋愛状況について</h2>
           
           <div class="form-group">
-            <label for="loveSituation"><strong>Q1：あなたの恋の状況は、どれに近いですか？</strong></label>
-            <select id="loveSituation" name="loveSituation" required>
-              <option value="">✓ 選択してください</option>
-              <option value="beginning" ${existing.loveSituation === 'beginning' ? 'selected' : ''}>恋の始まり・相手との距離感（片想い、気になる人、恋人未満、マッチングアプリでの出会いなど）</option>
-              <option value="relationship" ${existing.loveSituation === 'relationship' ? 'selected' : ''}>交際中の相手とのこと（現在の恋人との今後、結婚、マンネリ、すれ違いなど）</option>
-              <option value="marriage" ${existing.loveSituation === 'marriage' ? 'selected' : ''}>夫婦関係（喧嘩、すれ違い、意見の相違、結婚後のギャップ）</option>
-              <option value="complicated" ${existing.loveSituation === 'complicated' ? 'selected' : ''}>複雑な事情を抱える恋（禁断の恋、遠距離、障害のある恋、公にできない関係 など）</option>
-              <option value="ending" ${existing.loveSituation === 'ending' ? 'selected' : ''}>復縁・終わった恋（復縁したい、別れの危機、失恋を乗り越えたいなど）</option>
-            </select>
+            <label><strong>Q1：あなたの恋の状況は、どれに近いですか？</strong></label>
+            <div class="radio-group">
+              <label class="radio-option ${existing.loveSituation === 'beginning' ? 'selected' : ''}">
+                <input type="radio" name="loveSituation" value="beginning" ${existing.loveSituation === 'beginning' ? 'checked' : ''} required>
+                <div class="radio-label">
+                  <div class="radio-title">恋の始まり・相手との距離感</div>
+                  <div class="radio-description">片想い、気になる人、恋人未満、マッチングアプリでの出会いなど</div>
+                </div>
+              </label>
+              <label class="radio-option ${existing.loveSituation === 'relationship' ? 'selected' : ''}">
+                <input type="radio" name="loveSituation" value="relationship" ${existing.loveSituation === 'relationship' ? 'checked' : ''} required>
+                <div class="radio-label">
+                  <div class="radio-title">交際中の相手とのこと</div>
+                  <div class="radio-description">現在の恋人との今後、結婚、マンネリ、すれ違いなど</div>
+                </div>
+              </label>
+              <label class="radio-option ${existing.loveSituation === 'marriage' ? 'selected' : ''}">
+                <input type="radio" name="loveSituation" value="marriage" ${existing.loveSituation === 'marriage' ? 'checked' : ''} required>
+                <div class="radio-label">
+                  <div class="radio-title">夫婦関係</div>
+                  <div class="radio-description">喧嘩、すれ違い、意見の相違、結婚後のギャップ</div>
+                </div>
+              </label>
+              <label class="radio-option ${existing.loveSituation === 'complicated' ? 'selected' : ''}">
+                <input type="radio" name="loveSituation" value="complicated" ${existing.loveSituation === 'complicated' ? 'checked' : ''} required>
+                <div class="radio-label">
+                  <div class="radio-title">複雑な事情を抱える恋</div>
+                  <div class="radio-description">禁断の恋、遠距離、障害のある恋、公にできない関係など</div>
+                </div>
+              </label>
+              <label class="radio-option ${existing.loveSituation === 'ending' ? 'selected' : ''}">
+                <input type="radio" name="loveSituation" value="ending" ${existing.loveSituation === 'ending' ? 'checked' : ''} required>
+                <div class="radio-label">
+                  <div class="radio-title">復縁・終わった恋</div>
+                  <div class="radio-description">復縁したい、別れの危機、失恋を乗り越えたいなど</div>
+                </div>
+              </label>
+            </div>
           </div>
           
           <div class="form-group">
@@ -440,6 +519,39 @@ module.exports = async (req, res) => {
     ['user', 'partner'].forEach(type => {
       ['Year', 'Month', 'Day'].forEach(part => {
         document.getElementById(type + part).addEventListener('change', () => updateBirthdate(type));
+      });
+    });
+  </script>
+  <script>
+    // ラジオボタンの選択状態を管理
+    document.addEventListener('DOMContentLoaded', function() {
+      // loveSituationのラジオボタン
+      const loveSituationRadios = document.querySelectorAll('input[name="loveSituation"]');
+      loveSituationRadios.forEach(radio => {
+        radio.addEventListener('change', function() {
+          // すべての選択状態をクリア
+          document.querySelectorAll('.radio-group .radio-option').forEach(option => {
+            option.classList.remove('selected');
+          });
+          // 選択されたものにselectedクラスを追加
+          if (this.checked) {
+            this.closest('.radio-option').classList.add('selected');
+          }
+        });
+      });
+      
+      // ラベルクリック時の処理（ラベル全体をクリック可能に）
+      document.querySelectorAll('.radio-option').forEach(option => {
+        option.addEventListener('click', function(e) {
+          // ラジオボタン自体のクリックでない場合
+          if (e.target.type !== 'radio') {
+            const radio = this.querySelector('input[type="radio"]');
+            if (radio && !radio.checked) {
+              radio.checked = true;
+              radio.dispatchEvent(new Event('change'));
+            }
+          }
+        });
       });
     });
   </script>
