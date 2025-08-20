@@ -1969,7 +1969,7 @@ async function handlePostbackEvent(event) {
       await client.replyMessage(event.replyToken, [
         {
           type: 'text',
-          text: 'もっと詳しく知りたいのですね。\n\n月の光が、二人の会話に秘められた真実を照らし出しましょう。\n\nトーク履歴から読み解けること：\n🌙 会話に宿る相性の輝き\n🌙 心の距離と温度\n🌙 言葉のリズムと調和\n🌙 関係性の深さと質\n🌙 これから訪れる未来の兆し'
+          text: 'わかりました。\nより詳しくあなたとお相手を診断いたしましょう🧐\n\n診断の方法をお教えします\n\n私に、\nあなたとお相手のLINEの\n最近の会話内容をお見せください\n\n送り方は次の手順でできます👇'
         },
         {
           type: 'flex',
@@ -1999,19 +1999,57 @@ async function handlePostbackEvent(event) {
               spacing: 'md',
               contents: [
                 {
+                  type: 'text',
+                  text: 'トーク履歴の送信方法',
+                  size: 'md',
+                  weight: 'bold',
+                  color: '#764ba2',
+                  align: 'center',
+                  margin: 'md'
+                },
+                {
+                  type: 'separator',
+                  margin: 'md'
+                },
+                {
                   type: 'box',
                   layout: 'horizontal',
                   contents: [
                     {
                       type: 'text',
-                      text: '1️⃣',
-                      size: 'lg',
+                      text: '①',
+                      size: 'md',
+                      color: '#764ba2',
+                      weight: 'bold',
                       flex: 0
                     },
                     {
                       type: 'text',
-                      text: '気になる相手のトーク画面で右上「≡」をタップ',
+                      text: '気になる相手のトーク画面をLINEで開く',
+                      size: 'sm',
+                      margin: 'md',
+                      wrap: true,
+                      flex: 1
+                    }
+                  ],
+                  margin: 'md'
+                },
+                {
+                  type: 'box',
+                  layout: 'horizontal',
+                  contents: [
+                    {
+                      type: 'text',
+                      text: '②',
                       size: 'md',
+                      color: '#764ba2',
+                      weight: 'bold',
+                      flex: 0
+                    },
+                    {
+                      type: 'text',
+                      text: '右上「≡」をタップ',
+                      size: 'sm',
                       margin: 'md',
                       wrap: true,
                       flex: 1
@@ -2024,14 +2062,16 @@ async function handlePostbackEvent(event) {
                   contents: [
                     {
                       type: 'text',
-                      text: '2️⃣',
-                      size: 'lg',
+                      text: '③',
+                      size: 'md',
+                      color: '#764ba2',
+                      weight: 'bold',
                       flex: 0
                     },
                     {
                       type: 'text',
                       text: '「設定」を選択',
-                      size: 'md',
+                      size: 'sm',
                       margin: 'md',
                       wrap: true,
                       flex: 1
@@ -2044,14 +2084,16 @@ async function handlePostbackEvent(event) {
                   contents: [
                     {
                       type: 'text',
-                      text: '3️⃣',
-                      size: 'lg',
+                      text: '④',
+                      size: 'md',
+                      color: '#764ba2',
+                      weight: 'bold',
                       flex: 0
                     },
                     {
                       type: 'text',
-                      text: '「トーク履歴のバックアップ」→「トーク履歴を送信」',
-                      size: 'md',
+                      text: '「トーク履歴を送信」を選択',
+                      size: 'sm',
                       margin: 'md',
                       wrap: true,
                       flex: 1
@@ -2064,14 +2106,16 @@ async function handlePostbackEvent(event) {
                   contents: [
                     {
                       type: 'text',
-                      text: '4️⃣',
-                      size: 'lg',
+                      text: '⑤',
+                      size: 'md',
+                      color: '#764ba2',
+                      weight: 'bold',
                       flex: 0
                     },
                     {
                       type: 'text',
                       text: '「LINE」をタップ',
-                      size: 'md',
+                      size: 'sm',
                       margin: 'md',
                       wrap: true,
                       flex: 1
@@ -2084,14 +2128,16 @@ async function handlePostbackEvent(event) {
                   contents: [
                     {
                       type: 'text',
-                      text: '5️⃣',
-                      size: 'lg',
+                      text: '⑥',
+                      size: 'md',
+                      color: '#764ba2',
+                      weight: 'bold',
                       flex: 0
                     },
                     {
                       type: 'text',
                       text: '「おつきさま診断🌙」をタップして転送',
-                      size: 'md',
+                      size: 'sm',
                       margin: 'md',
                       wrap: true,
                       flex: 1
@@ -2107,16 +2153,17 @@ async function handlePostbackEvent(event) {
                   text: '💡 ポイント',
                   weight: 'bold',
                   size: 'md',
-                  color: '#06c755',
+                  color: '#764ba2',
                   margin: 'lg'
                 },
                 {
                   type: 'text',
-                  text: '• テキストファイル(.txt)が送信されます\n• 1ヶ月分以上のデータがおすすめ\n• 相手との会話が多いほど精度UP！',
+                  text: '相手との会話が多いほど\n診断の的中率が上がります',
                   size: 'sm',
                   color: '#666666',
                   wrap: true,
-                  margin: 'sm'
+                  margin: 'sm',
+                  align: 'center'
                 }
               ],
               paddingAll: '20px'
