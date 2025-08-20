@@ -372,13 +372,6 @@ async function drawCards() {
     if (isDrawing) return;
     isDrawing = true;
     
-    // ボタンを無効化して読み込み中表示
-    const drawButton = document.getElementById('drawButton');
-    if (drawButton) {
-        drawButton.disabled = true;
-        drawButton.textContent = '月の力を借りています...';
-    }
-    
     selectedCards = [];
     
     // カードをランダムに選択
@@ -409,12 +402,6 @@ async function drawCards() {
     
     // すべての画像が読み込まれるまで待つ
     await Promise.all(preloadPromises);
-    
-    // ボタンを元に戻す
-    if (drawButton) {
-        drawButton.disabled = false;
-        drawButton.textContent = 'カードを引く';
-    }
     
     // カードをめくるアニメーション
     const cards = document.querySelectorAll('.card');
