@@ -16,74 +16,117 @@ module.exports = async (req, res) => {
       display: flex;
       align-items: center;
       justify-content: center;
+      padding: 20px;
     }
     .container {
       text-align: center;
-      padding: 40px 20px;
-      color: white;
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 20px;
+      padding: 40px 30px;
+      max-width: 400px;
+      width: 100%;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
     }
-    .icon {
-      font-size: 80px;
-      margin-bottom: 20px;
+    .header {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      padding: 20px;
+      border-radius: 15px;
+      margin-bottom: 30px;
     }
     .title {
-      font-size: 24px;
+      font-size: 20px;
       font-weight: bold;
-      margin-bottom: 20px;
+      margin-bottom: 10px;
     }
     .message {
       font-size: 16px;
-      line-height: 1.6;
-      opacity: 0.9;
-      margin-bottom: 30px;
+      line-height: 1.8;
+      color: #333;
+      margin-bottom: 25px;
     }
-    .note {
+    .moon-emoji {
+      font-size: 24px;
+      margin: 0 5px;
+    }
+    .instructions {
+      background: #f8f9fa;
+      border-radius: 12px;
       padding: 20px;
-      background: rgba(255,255,255,0.2);
-      border-radius: 10px;
+      margin-bottom: 25px;
+      text-align: left;
+    }
+    .instruction-title {
+      font-size: 16px;
+      font-weight: bold;
+      color: #764ba2;
+      margin-bottom: 15px;
+      text-align: center;
+    }
+    .instruction-step {
       font-size: 14px;
+      line-height: 1.8;
+      color: #555;
+      margin-bottom: 12px;
+      padding-left: 20px;
+      position: relative;
+    }
+    .instruction-step:before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 8px;
+      width: 8px;
+      height: 8px;
+      background: #764ba2;
+      border-radius: 50%;
+    }
+    .line-button {
+      display: inline-block;
+      background: #06c755;
+      color: white;
+      padding: 15px 30px;
+      border-radius: 25px;
+      text-decoration: none;
+      font-size: 16px;
+      font-weight: bold;
+      margin-top: 10px;
+      transition: all 0.3s;
+      box-shadow: 0 4px 15px rgba(6, 199, 85, 0.3);
+    }
+    .line-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(6, 199, 85, 0.4);
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <div class="icon">🌙</div>
-    <div class="title">月光に照らされし者よ</div>
-    <div class="message" style="font-size: 18px; line-height: 2; margin-bottom: 30px;">
-      汝の想いは、月の記憶に刻まれた<br>
-      <span style="opacity: 0.8; font-size: 16px;">二つの魂を結ぶ糸が、今、紡がれ始める</span>
+    <div class="header">
+      <div class="title">【おつきさまからお返事です】</div>
     </div>
     
-    <div class="note" style="background: linear-gradient(135deg, rgba(255,255,255,0.15), rgba(255,255,255,0.25)); padding: 30px; border-radius: 15px; backdrop-filter: blur(10px);">
-      <div style="font-size: 20px; margin-bottom: 25px; letter-spacing: 2px;">
-        ✨ 月からの導き
+    <div class="message">
+      あなたが真剣に書いてくれたおかげで<br>
+      詳しく診断ができました<br>
+      教えてくれてありがとう<span class="moon-emoji">🌙</span>
+    </div>
+    
+    <div class="instructions">
+      <div class="instruction-title">診断結果の見方を教えます</div>
+      <div class="instruction-step">
+        ① 下のボタンを押して、LINEへ戻りなさい
       </div>
-      <div style="font-size: 16px; line-height: 2.2; text-align: left; max-width: 350px; margin: 0 auto;">
-        <div style="margin-bottom: 15px;">
-          🌙 この画面を閉じ、LINEへ戻りなさい
-        </div>
-        <div style="margin-bottom: 15px;">
-          📱 下部メニューの「診断結果」を押せば<br>
-          　　汝の運命の糸が明かされよう
-        </div>
-        <div style="margin-bottom: 15px;">
-          💫 月の導きに従い<br>
-          　　二人の物語を見届けよう
-        </div>
-      </div>
-      
-      <div style="margin-top: 30px; padding: 20px; background: rgba(147, 51, 234, 0.2); border-radius: 12px; border: 1px solid rgba(255,255,255,0.3);">
-        <div style="font-size: 14px; line-height: 1.8; font-style: italic;">
-          月は満ち欠けを繰り返しながら<br>
-          永遠の愛を見守り続ける<br>
-          <span style="opacity: 0.7; font-size: 12px;">— 月詠より —</span>
-        </div>
+      <div class="instruction-step">
+        ② 先ほどの下部メニューの<br>
+        　 「診断結果」を押してください<br>
+        　 あなたとお相手の関係性をお告げします
       </div>
     </div>
     
-    <div style="margin-top: 30px; font-size: 12px; opacity: 0.6;">
-      このページは自動的に閉じることができます
-    </div>
+    <a href="https://lin.ee/Kk1OqSm" class="line-button">
+      おつきさま診断LINEに戻る
+    </a>
   </div>
 </body>
 </html>
