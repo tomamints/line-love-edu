@@ -603,6 +603,10 @@ function displayResult(moonType, moonData, birthdate) {
         <button class="btn-retry" onclick="retry()">
             もう一度診断する
         </button>
+        
+        <a href="index.html" style="display: inline-block; margin-top: 16px; padding: 14px 28px; background: linear-gradient(135deg, #4a4a6a, #3a3a5a); color: white; text-decoration: none; border-radius: 25px; font-size: 16px; text-align: center; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); transition: all 0.3s ease;">
+            トップに戻る
+        </a>
     `;
 }
 
