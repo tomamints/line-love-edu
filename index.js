@@ -899,20 +899,11 @@ async function handleFollowEvent(event) {
                 },
                 {
                   type: 'text',
-                  text: 'おつきさま診断へ',
+                  text: 'おつきさま診断へようこそ',
                   size: 'xl',
                   color: '#ffffff',
                   align: 'center',
                   weight: 'bold'
-                },
-                {
-                  type: 'text',
-                  text: 'ようこそ🌙',
-                  size: 'lg',
-                  color: '#ffffff',
-                  align: 'center',
-                  weight: 'bold',
-                  margin: 'sm'
                 }
               ]
             }
@@ -1094,20 +1085,11 @@ async function handleTextMessage(event) {
                   },
                   {
                     type: 'text',
-                    text: 'おつきさま診断へ',
+                    text: 'おつきさま診断へようこそ',
                     size: 'xl',
                     color: '#ffffff',
                     align: 'center',
                     weight: 'bold'
-                  },
-                  {
-                    type: 'text',
-                    text: 'ようこそ🌙',
-                    size: 'lg',
-                    color: '#ffffff',
-                    align: 'center',
-                    weight: 'bold',
-                    margin: 'sm'
                   }
                 ]
               }
