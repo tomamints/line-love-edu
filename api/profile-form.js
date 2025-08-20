@@ -134,8 +134,9 @@ module.exports = async (req, res) => {
     
     .radio-option input[type="radio"] {
       width: auto;
-      margin: 3px 10px 0 0;
+      margin: 0 10px 0 0;
       flex-shrink: 0;
+      align-self: center;
     }
     
     .radio-option.selected {
@@ -456,25 +457,25 @@ module.exports = async (req, res) => {
             <div class="radio-group">
               <label class="radio-option ${existing.wantToKnow === 'feelings' ? 'selected' : ''}">
                 <input type="radio" name="wantToKnow" value="feelings" ${existing.wantToKnow === 'feelings' ? 'checked' : ''} required>
-                <div class="radio-label">
+                <div class="radio-label" style="display: flex; align-items: center; min-height: 40px;">
                   <div class="radio-title">相手が今、どんな気持ちなのか</div>
                 </div>
               </label>
               <label class="radio-option ${existing.wantToKnow === 'action' ? 'selected' : ''}">
                 <input type="radio" name="wantToKnow" value="action" ${existing.wantToKnow === 'action' ? 'checked' : ''} required>
-                <div class="radio-label">
+                <div class="radio-label" style="display: flex; align-items: center; min-height: 40px;">
                   <div class="radio-title">今、自分がどうしたらいいか</div>
                 </div>
               </label>
               <label class="radio-option ${existing.wantToKnow === 'past' ? 'selected' : ''}">
                 <input type="radio" name="wantToKnow" value="past" ${existing.wantToKnow === 'past' ? 'checked' : ''} required>
-                <div class="radio-label">
+                <div class="radio-label" style="display: flex; align-items: center; min-height: 40px;">
                   <div class="radio-title">過去（出来事）の意味や理由</div>
                 </div>
               </label>
               <label class="radio-option ${existing.wantToKnow === 'future' ? 'selected' : ''}">
                 <input type="radio" name="wantToKnow" value="future" ${existing.wantToKnow === 'future' ? 'checked' : ''} required>
-                <div class="radio-label">
+                <div class="radio-label" style="display: flex; align-items: center; min-height: 40px;">
                   <div class="radio-title">これからどうなっていくのか</div>
                 </div>
               </label>
