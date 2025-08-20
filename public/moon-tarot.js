@@ -575,7 +575,6 @@ function shareResult() {
     }
     
     shareText += '月が導くあなたの恋愛運を占ってみませんか？\n';
-    shareText += 'https://line-love-edu.vercel.app/moon-tarot.html';
     
     // Web Share APIが使える場合
     if (navigator.share) {
@@ -588,6 +587,7 @@ function shareResult() {
         });
     } else {
         // Web Share APIが使えない場合はクリップボードにコピー
+        shareText += 'https://line-love-edu.vercel.app/moon-tarot.html';
         navigator.clipboard.writeText(shareText).then(() => {
             alert('結果をクリップボードにコピーしました！');
         });
