@@ -924,7 +924,7 @@ async function handleFollowEvent(event) {
             },
             {
               type: 'text',
-              text: 'あなたと大切な方の',
+              text: 'あなたと大切な方の心に映る',
               size: 'md',
               wrap: true,
               align: 'center',
@@ -932,7 +932,7 @@ async function handleFollowEvent(event) {
             },
             {
               type: 'text',
-              text: '心に映る運命の相性',
+              text: '運命の相性',
               size: 'md',
               wrap: true,
               align: 'center',
@@ -940,15 +940,7 @@ async function handleFollowEvent(event) {
             },
             {
               type: 'text',
-              text: 'ふたりの月が織りなす物語を',
-              size: 'md',
-              wrap: true,
-              align: 'center',
-              margin: 'md'
-            },
-            {
-              type: 'text',
-              text: 'お伝えいたします',
+              text: '月の姿を視させていただきます',
               size: 'md',
               wrap: true,
               align: 'center',
@@ -984,12 +976,12 @@ async function handleFollowEvent(event) {
                 },
                 {
                   type: 'text',
-                  text: '三、ふたりの月が織りなす',
+                  text: '三、ふたりの月が織りなす物語を',
                   size: 'sm'
                 },
                 {
                   type: 'text',
-                  text: '　　物語をお伝えいたします',
+                  text: '　　お伝えいたします',
                   size: 'sm'
                 }
               ]
@@ -1108,7 +1100,7 @@ async function handleTextMessage(event) {
               },
               {
                 type: 'text',
-                text: 'あなたと大切な方の',
+                text: 'あなたと大切な方の心に映る',
                 size: 'md',
                 wrap: true,
                 align: 'center',
@@ -1116,7 +1108,7 @@ async function handleTextMessage(event) {
               },
               {
                 type: 'text',
-                text: '心に映る運命の相性',
+                text: '運命の相性',
                 size: 'md',
                 wrap: true,
                 align: 'center',
@@ -1124,15 +1116,7 @@ async function handleTextMessage(event) {
               },
               {
                 type: 'text',
-                text: 'ふたりの月が織りなす物語を',
-                size: 'md',
-                wrap: true,
-                align: 'center',
-                margin: 'md'
-              },
-              {
-                type: 'text',
-                text: 'お伝えいたします',
+                text: '月の姿を視させていただきます',
                 size: 'md',
                 wrap: true,
                 align: 'center',
@@ -1168,12 +1152,12 @@ async function handleTextMessage(event) {
                   },
                   {
                     type: 'text',
-                    text: '三、ふたりの月が織りなす',
+                    text: '三、ふたりの月が織りなす物語を',
                     size: 'sm'
                   },
                   {
                     type: 'text',
-                    text: '　　物語をお伝えいたします',
+                    text: '　　お伝えいたします',
                     size: 'sm'
                   }
                 ]
