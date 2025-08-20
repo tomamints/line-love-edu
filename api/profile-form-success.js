@@ -30,14 +30,15 @@ module.exports = async (req, res) => {
     .header {
       background: linear-gradient(135deg, #667eea, #764ba2);
       color: white;
-      padding: 20px;
+      padding: 25px 20px;
       border-radius: 15px;
       margin-bottom: 30px;
     }
     .title {
-      font-size: 20px;
+      font-size: 22px;
       font-weight: bold;
-      margin-bottom: 10px;
+      margin: 0;
+      letter-spacing: 0.5px;
     }
     .message {
       font-size: 16px;
@@ -119,7 +120,7 @@ module.exports = async (req, res) => {
       </div>
       <div class="instruction-step">
         ② 先ほどの下部メニューの<br>
-        　 「診断結果を見る」を押してください<br>
+        　 <span style="font-size: 18px; font-weight: bold; color: #764ba2;">「診断結果を見る」</span>を押してください<br>
         　 あなたとお相手の関係性をお告げします
       </div>
     </div>
