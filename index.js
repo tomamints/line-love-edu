@@ -924,7 +924,7 @@ async function handleFollowEvent(event) {
             },
             {
               type: 'text',
-              text: 'あなたと大切な方の心に映る運命の相性',
+              text: 'あなたと大切な方の',
               size: 'md',
               wrap: true,
               align: 'center',
@@ -932,7 +932,23 @@ async function handleFollowEvent(event) {
             },
             {
               type: 'text',
-              text: '月の姿を視させていただきます',
+              text: '心に映る運命の相性',
+              size: 'md',
+              wrap: true,
+              align: 'center',
+              margin: 'sm'
+            },
+            {
+              type: 'text',
+              text: 'ふたりの月が織りなす物語を',
+              size: 'md',
+              wrap: true,
+              align: 'center',
+              margin: 'md'
+            },
+            {
+              type: 'text',
+              text: 'お伝えいたします',
               size: 'md',
               wrap: true,
               align: 'center',
@@ -1092,7 +1108,7 @@ async function handleTextMessage(event) {
               },
               {
                 type: 'text',
-                text: 'あなたと大切な方の心に映る運命の相性',
+                text: 'あなたと大切な方の',
                 size: 'md',
                 wrap: true,
                 align: 'center',
@@ -1100,7 +1116,23 @@ async function handleTextMessage(event) {
               },
               {
                 type: 'text',
-                text: '月の姿を視させていただきます',
+                text: '心に映る運命の相性',
+                size: 'md',
+                wrap: true,
+                align: 'center',
+                margin: 'sm'
+              },
+              {
+                type: 'text',
+                text: 'ふたりの月が織りなす物語を',
+                size: 'md',
+                wrap: true,
+                align: 'center',
+                margin: 'md'
+              },
+              {
+                type: 'text',
+                text: 'お伝えいたします',
                 size: 'md',
                 wrap: true,
                 align: 'center',
