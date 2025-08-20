@@ -2,6 +2,7 @@
 // 新しいデータ構造に対応した表示用ヘルパー
 
 const { getCompatibilityData, getStarCount } = require('../core/fortune/compatibility-data');
+const { getMoonAdvice } = require('../core/fortune/moon-advice-data');
 
 // 月タイプの絵文字マッピング
 const moonEmojis = {
@@ -371,79 +372,128 @@ function formatMoonReportV2(moonReport) {
           paddingAll: '20px'
         }
       }] : []),
-      // カード4: 実践アドバイス
-      {
-        type: 'bubble',
-        size: 'mega',
-        header: {
-          type: 'box',
-          layout: 'vertical',
-          contents: [
-            {
-              type: 'text',
-              text: '実践アドバイス',
-              size: 'lg',
-              color: '#ffffff',
-              weight: 'bold',
-              align: 'center'
-            }
-          ],
-          backgroundColor: '#e74c3c',
-          paddingAll: '20px'
-        },
-        body: {
-          type: 'box',
-          layout: 'vertical',
-          spacing: 'md',
-          contents: [
-            {
-              type: 'text',
-              text: '【今すぐできること】',
-              weight: 'bold',
-              size: 'md',
-              color: '#e74c3c'
-            },
-            ...(moonReport.user?.story?.advice || []).slice(0, 3).map((advice, index) => ({
-              type: 'box',
-              layout: 'vertical',
-              margin: 'lg',
-              contents: [
-                {
-                  type: 'text',
-                  text: `${index + 1}. ${advice}`,
-                  wrap: true,
-                  size: 'sm',
-                  color: '#555555'
-                }
-              ]
-            })),
-            {
-              type: 'separator',
-              margin: 'xl'
-            },
-            {
-              type: 'text',
-              text: '【関係改善のポイント】',
-              weight: 'bold',
-              size: 'md',
-              color: '#e74c3c',
-              margin: 'lg',
-              align: 'center'
-            },
-            {
-              type: 'text',
-              text: moonReport.compatibility?.specific?.advice || 
-                '相性を活かして、より良い関係を築きましょう',
-              wrap: true,
-              size: 'sm',
-              margin: 'md',
-              color: '#666666',
-              align: 'center'
-            }
-          ],
-          paddingAll: '20px'
-        }
-      },
+      // カード4: 実践アドバイス（月相の組み合わせに基づく）
+      (() => {
+        // 月相の組み合わせに基づくアドバイスを取得
+        const advice = getMoonAdvice(userMoonType, partnerMoonType);
+        
+        return {
+          type: 'bubble',
+          size: 'mega',
+          header: {
+            type: 'box',
+            layout: 'vertical',
+            contents: [
+              {
+                type: 'text',
+                text: '🔮 実践アドバイス',
+                size: 'lg',
+                color: '#ffffff',
+                weight: 'bold',
+                align: 'center'
+              },
+              {
+                type: 'text',
+                text: 'こんな行動がおつきさまのオススメです',
+                size: 'sm',
+                color: '#ffd700',
+                align: 'center',
+                margin: 'sm'
+              }
+            ],
+            backgroundColor: '#e74c3c',
+            paddingAll: '20px'
+          },
+          body: {
+            type: 'box',
+            layout: 'vertical',
+            spacing: 'md',
+            contents: [
+              // 関係性のテーマ
+              {
+                type: 'text',
+                text: '【あなたとお相手の関係性のテーマ】',
+                weight: 'bold',
+                size: 'md',
+                color: '#764ba2',
+                align: 'center'
+              },
+              {
+                type: 'text',
+                text: advice.theme,
+                wrap: true,
+                size: 'sm',
+                margin: 'md',
+                color: '#555555',
+                align: 'center'
+              },
+              {
+                type: 'separator',
+                margin: 'lg'
+              },
+              // あなたの運気が上がる行い
+              {
+                type: 'text',
+                text: '🌙 あなたの運気が上がる行い',
+                weight: 'bold',
+                size: 'md',
+                color: '#667eea',
+                margin: 'lg'
+              },
+              {
+                type: 'text',
+                text: advice.yourAction,
+                wrap: true,
+                size: 'sm',
+                margin: 'md',
+                color: '#555555'
+              },
+              {
+                type: 'separator',
+                margin: 'lg'
+              },
+              // お相手に向けて
+              {
+                type: 'text',
+                text: '💕 お相手に向けて',
+                weight: 'bold',
+                size: 'md',
+                color: '#ff69b4',
+                margin: 'lg'
+              },
+              {
+                type: 'text',
+                text: advice.toPartner,
+                wrap: true,
+                size: 'sm',
+                margin: 'md',
+                color: '#555555'
+              },
+              {
+                type: 'separator',
+                margin: 'xl'
+              },
+              // 過去の経験
+              {
+                type: 'text',
+                text: moonReport.partner ? 
+                  `きっと以前も、${advice.toPartner.includes('のではないでしょうか') ? 
+                    advice.toPartner.split('きっと以前も、')[1]?.replace('。', '') || 
+                    'あなたの気持ちを受け止めてくれたのではないでしょうか' : 
+                    'あなたの気持ちを受け止めてくれたのではないでしょうか'}。` : 
+                  'お相手との出会いを大切にしてください。',
+                wrap: true,
+                size: 'xs',
+                margin: 'md',
+                color: '#999999',
+                align: 'center',
+                style: 'italic'
+              }
+            ],
+            paddingAll: '20px'
+          }
+        };
+      })(),
       // カード5: 今月の恋愛運
       {
         type: 'bubble',
