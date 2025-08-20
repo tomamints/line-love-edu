@@ -653,29 +653,45 @@ function formatMoonReportV2(moonReport) {
               margin: 'lg'
             },
             {
-              type: 'button',
-              action: {
-                type: 'postback',
-                label: '①お相手に今のあなたの想いが伝わるのかどうか',
-                data: 'action=want_feelings_reach',
-                displayText: 'お相手に今のあなたの想いが伝わるのかどうか知りたい'
-              },
-              style: 'primary',
+              type: 'text',
+              text: '① お相手に今のあなたの想いが伝わるのかどうか',
+              size: 'sm',
               color: '#667eea',
-              margin: 'xl',
-              height: 'md'
+              align: 'center',
+              margin: 'md'
             },
             {
               type: 'button',
               action: {
                 type: 'postback',
-                label: '②お相手が今あなたに向ける気持ち',
+                label: '① 想いが伝わるか',
+                data: 'action=want_feelings_reach',
+                displayText: 'お相手に今のあなたの想いが伝わるのかどうか知りたい'
+              },
+              style: 'primary',
+              color: '#667eea',
+              margin: 'sm',
+              height: 'md'
+            },
+            {
+              type: 'text',
+              text: '② お相手が今あなたに向ける気持ち',
+              size: 'sm',
+              color: '#ff69b4',
+              align: 'center',
+              margin: 'md'
+            },
+            {
+              type: 'button',
+              action: {
+                type: 'postback',
+                label: '② 相手の気持ち',
                 data: 'action=want_partner_feelings',
                 displayText: 'お相手が今あなたに向ける気持ちを知りたい'
               },
               style: 'primary',
               color: '#ff69b4',
-              margin: 'md',
+              margin: 'sm',
               height: 'md'
             },
             {

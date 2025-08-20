@@ -1634,6 +1634,144 @@ async function handleFortuneEvent(event) {
   }
 }
 
+// 深掘り分析のレスポンスを送信する関数
+async function sendDeepAnalysisResponse(replyToken, type) {
+  const selectedText = type === 'feelings_reach' 
+    ? 'お相手に今のあなたの想いが伝わるのかどうか'
+    : 'お相手が今あなたに向ける気持ち';
+    
+  const details = type === 'feelings_reach' 
+    ? [
+        '・お相手があなたの言葉や態度をどう受け取っているか',
+        '・ふたりの会話から"温度差"や"誤解のポイント"',
+        '・お相手に想いを届けるために、あなたが取るべき一歩'
+      ]
+    : [
+        '・お相手があなたに対して、今どんな気持ちを持っているかが分かります',
+        '・ふたりの会話から"お相手の隠れた感情の動き"を見える化します',
+        '・お相手の気持ちを理解することで、関係を前に進めるヒントが見つかります'
+      ];
+  
+  await client.replyMessage(replyToken, [
+    {
+      type: 'flex',
+      altText: '深掘り診断のご案内',
+      contents: {
+        type: 'bubble',
+        size: 'mega',
+        header: {
+          type: 'box',
+          layout: 'vertical',
+          contents: [
+            {
+              type: 'text',
+              text: 'なるほど。あなたが知りたいのは',
+              size: 'sm',
+              color: '#ffffff',
+              align: 'center'
+            },
+            {
+              type: 'text',
+              text: `「${selectedText}」`,
+              size: 'md',
+              color: '#ffd700',
+              weight: 'bold',
+              align: 'center',
+              margin: 'sm',
+              wrap: true
+            },
+            {
+              type: 'text',
+              text: 'なのですね🌙',
+              size: 'sm',
+              color: '#ffffff',
+              align: 'center',
+              margin: 'sm'
+            }
+          ],
+          backgroundColor: '#764ba2',
+          paddingAll: '20px'
+        },
+        body: {
+          type: 'box',
+          layout: 'vertical',
+          contents: [
+            {
+              type: 'text',
+              text: 'このあとの会話診断では、こんなことが分かりますよ🔮',
+              size: 'sm',
+              color: '#764ba2',
+              weight: 'bold',
+              wrap: true,
+              margin: 'md'
+            },
+            {
+              type: 'separator',
+              margin: 'lg'
+            },
+            {
+              type: 'box',
+              layout: 'vertical',
+              margin: 'lg',
+              spacing: 'sm',
+              contents: details.map(detail => ({
+                type: 'text',
+                text: detail,
+                size: 'sm',
+                color: '#555555',
+                wrap: true
+              }))
+            },
+            {
+              type: 'separator',
+              margin: 'xl'
+            },
+            {
+              type: 'text',
+              text: '実際の診断結果はこんな感じで出てきます✨',
+              size: 'sm',
+              color: '#764ba2',
+              weight: 'bold',
+              margin: 'lg',
+              align: 'center'
+            },
+            {
+              type: 'image',
+              url: 'https://line-love-edu.vercel.app/images/sample-result.png',
+              size: 'full',
+              aspectMode: 'fit',
+              aspectRatio: '2:1',
+              margin: 'lg'
+            },
+            {
+              type: 'text',
+              text: 'あなたも診断してみませんか？',
+              size: 'md',
+              color: '#764ba2',
+              weight: 'bold',
+              margin: 'xl',
+              align: 'center'
+            },
+            {
+              type: 'button',
+              action: {
+                type: 'postback',
+                label: '診断する',
+                data: 'action=want_more_analysis'
+              },
+              style: 'primary',
+              color: '#764ba2',
+              margin: 'lg',
+              height: 'md'
+            }
+          ],
+          paddingAll: '20px'
+        }
+      }
+    }
+  ]);
+}
+
 // ── ⑥ Postbackイベント処理
 async function handlePostbackEvent(event) {
   logger.log('💳 Postback処理開始:', event.postback.data);
@@ -1813,7 +1951,19 @@ async function handlePostbackEvent(event) {
       return;
     }
     
-    // 「知りたい！」ボタンが押された時
+    // 「想いが伝わるか」ボタンが押された時
+    if (action === 'want_feelings_reach') {
+      await sendDeepAnalysisResponse(event.replyToken, 'feelings_reach');
+      return;
+    }
+    
+    // 「相手の気持ち」ボタンが押された時
+    if (action === 'want_partner_feelings') {
+      await sendDeepAnalysisResponse(event.replyToken, 'partner_feelings');
+      return;
+    }
+    
+    // 「知りたい！」ボタンが押された時（既存）
     if (action === 'want_more_analysis') {
       // トーク履歴送信の案内を送信
       await client.replyMessage(event.replyToken, [
