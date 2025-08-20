@@ -899,11 +899,20 @@ async function handleFollowEvent(event) {
                 },
                 {
                   type: 'text',
-                  text: 'おつきさま診断へようこそ🌙',
+                  text: 'おつきさま診断へ',
                   size: 'xl',
                   color: '#ffffff',
                   align: 'center',
                   weight: 'bold'
+                },
+                {
+                  type: 'text',
+                  text: 'ようこそ🌙',
+                  size: 'lg',
+                  color: '#ffffff',
+                  align: 'center',
+                  weight: 'bold',
+                  margin: 'sm'
                 }
               ]
             }
@@ -930,7 +939,7 @@ async function handleFollowEvent(event) {
             },
             {
               type: 'text',
-              text: 'あなたと大切な方の心に映る運命の相性',
+              text: 'あなたと大切な方の心に映る',
               size: 'md',
               wrap: true,
               align: 'center',
@@ -938,11 +947,23 @@ async function handleFollowEvent(event) {
             },
             {
               type: 'text',
-              text: '月の姿を視させていただきます',
+              text: '運命の相性',
               size: 'md',
               wrap: true,
               align: 'center',
-              margin: 'sm'
+              margin: 'sm',
+              weight: 'bold'
+            },
+            {
+              type: 'spacer',
+              size: 'md'
+            },
+            {
+              type: 'text',
+              text: '月の姿を視させていただきます',
+              size: 'md',
+              wrap: true,
+              align: 'center'
             },
             {
               type: 'separator',
@@ -1073,11 +1094,20 @@ async function handleTextMessage(event) {
                   },
                   {
                     type: 'text',
-                    text: 'おつきさま診断へようこそ🌙',
+                    text: 'おつきさま診断へ',
                     size: 'xl',
                     color: '#ffffff',
                     align: 'center',
                     weight: 'bold'
+                  },
+                  {
+                    type: 'text',
+                    text: 'ようこそ🌙',
+                    size: 'lg',
+                    color: '#ffffff',
+                    align: 'center',
+                    weight: 'bold',
+                    margin: 'sm'
                   }
                 ]
               }
@@ -1104,7 +1134,7 @@ async function handleTextMessage(event) {
               },
               {
                 type: 'text',
-                text: 'あなたと大切な方の心に映る運命の相性',
+                text: 'あなたと大切な方の心に映る',
                 size: 'md',
                 wrap: true,
                 align: 'center',
@@ -1112,11 +1142,23 @@ async function handleTextMessage(event) {
               },
               {
                 type: 'text',
-                text: '月の姿を視させていただきます',
+                text: '運命の相性',
                 size: 'md',
                 wrap: true,
                 align: 'center',
-                margin: 'sm'
+                margin: 'sm',
+                weight: 'bold'
+              },
+              {
+                type: 'spacer',
+                size: 'md'
+              },
+              {
+                type: 'text',
+                text: '月の姿を視させていただきます',
+                size: 'md',
+                wrap: true,
+                align: 'center'
               },
               {
                 type: 'separator',
