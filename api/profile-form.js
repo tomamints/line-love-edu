@@ -546,7 +546,7 @@ module.exports = async (req, res) => {
     document.addEventListener('DOMContentLoaded', function() {
       // すべてのラジオボタングループに対して処理
       ['loveSituation', 'wantToKnow'].forEach(groupName => {
-        const radios = document.querySelectorAll(`input[name="${groupName}"]`);
+        const radios = document.querySelectorAll(\`input[name="\${groupName}"]\`);
         radios.forEach(radio => {
           radio.addEventListener('change', function() {
             // このグループ内のすべての選択状態をクリア
