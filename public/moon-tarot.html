@@ -314,9 +314,12 @@
         
         .result-card-image-container {
             width: 120px;
-            height: 180px;  /* 2:3の比率 (120:180 = 1:1.5) */
+            height: 176px;  /* 実際の画像比率1:1.47に合わせる */
             position: relative;
             flex-shrink: 0;  /* 画像サイズを固定 */
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            overflow: hidden;
         }
         
         .result-card-image {
@@ -324,9 +327,7 @@
             height: 100%;
             object-fit: contain;  /* 画像全体を表示 */
             object-position: center;
-            border-radius: 10px;
             filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.3));  /* 画像に直接影を付ける */
-            border: 1px solid rgba(255, 215, 0, 0.2);  /* 淡い金色の枠線 */
         }
 
         .result-card-info {
@@ -470,7 +471,7 @@
             /* 結果表示の画像サイズ調整 - タブレットでも大きめに */
             .result-card-image-container {
                 width: 100px;
-                height: 150px;  /* 2:3の比率 (100:150 = 1:1.5) */
+                height: 147px;  /* 実際の画像比率1:1.47に合わせる */
             }
             
             .result-card-image {
@@ -540,7 +541,7 @@
             
             .result-card-image-container {
                 width: 140px;
-                height: 210px;  /* より大きく表示 */
+                height: 206px;  /* 実際の画像比率1:1.47に合わせる */
                 margin-bottom: 15px;
             }
             
