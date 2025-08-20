@@ -893,11 +893,19 @@ async function handleFollowEvent(event) {
               contents: [
                 {
                   type: 'text',
+                  text: '🌙',
+                  size: 'xxl',
+                  color: '#ffffff',
+                  align: 'center'
+                },
+                {
+                  type: 'text',
                   text: 'おつきさま診断へようこそ',
                   size: 'xl',
                   color: '#ffffff',
                   align: 'center',
-                  weight: 'bold'
+                  weight: 'bold',
+                  margin: 'md'
                 }
               ]
             }
@@ -1069,11 +1077,19 @@ async function handleTextMessage(event) {
                 contents: [
                   {
                     type: 'text',
+                    text: '🌙',
+                    size: 'xxl',
+                    color: '#ffffff',
+                    align: 'center'
+                  },
+                  {
+                    type: 'text',
                     text: 'おつきさま診断へようこそ',
                     size: 'xl',
                     color: '#ffffff',
                     align: 'center',
-                    weight: 'bold'
+                    weight: 'bold',
+                    margin: 'md'
                   }
                 ]
               }
