@@ -222,7 +222,22 @@ module.exports = async (req, res) => {
     
     <div class="form-container">
       <div class="success-message" id="successMessage">
-        ✅ お伝えしました！
+        <div style="font-size: 24px; margin-bottom: 20px;">🌙</div>
+        <div style="font-size: 20px; margin-bottom: 15px; font-weight: bold;">
+          月への祈りが届きました
+        </div>
+        <div style="line-height: 1.8;">
+          あなたとお相手の月の姿を<br>
+          静かに視させていただいております<br><br>
+          
+          ふたりの月が織りなす物語を<br>
+          まもなくお伝えいたします<br><br>
+          
+          <span style="font-size: 14px; opacity: 0.9;">
+            どうぞこのままお待ちください<br>
+            月の導きがあなたに届きますように
+          </span>
+        </div>
       </div>
       
       <form id="profileForm" action="/api/profile-form" method="POST">
