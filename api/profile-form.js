@@ -216,23 +216,23 @@ module.exports = async (req, res) => {
 <body>
   <div class="container">
     <div class="header">
-      <h1>🔮 おつきさま診断</h1>
-      <p>より正確な診断のためにプロフィールを入力してください</p>
+      <h1>おつきさま診断</h1>
+      <p>おつきさまにあなたとお相手のことを教えてください。</p>
     </div>
     
     <div class="form-container">
       <div class="success-message" id="successMessage">
-        ✅ 保存しました！
+        ✅ お伝えしました！
       </div>
       
       <form id="profileForm" action="/api/profile-form" method="POST">
         <input type="hidden" name="userId" value="${userId}">
         
         <div class="section">
-          <h2 class="section-title">👤 あなたの情報</h2>
+          <h2 class="section-title">👤 あなたのこと</h2>
           
           <div class="form-group">
-            <label for="userBirthdate">生年月日</label>
+            <label for="userBirthdate"><strong>生年月日</strong></label>
             <div style="display: flex; gap: 5px;">
               <select id="userYear" style="flex: 1;" required>
                 <option value="">年</option>
@@ -275,7 +275,7 @@ module.exports = async (req, res) => {
           <input type="hidden" id="userAge" name="userAge" value="${existing.userAge || ''}">
           
           <div class="form-group">
-            <label for="userGender">性別</label>
+            <label for="userGender"><strong>性別</strong></label>
             <select id="userGender" name="userGender" required>
               <option value="">選択してください</option>
               <option value="male" ${existing.userGender === 'male' ? 'selected' : ''}>男性</option>
@@ -286,10 +286,10 @@ module.exports = async (req, res) => {
         </div>
         
         <div class="section">
-          <h2 class="section-title">💕 お相手の情報</h2>
+          <h2 class="section-title">💖 お相手のこと</h2>
           
           <div class="form-group">
-            <label for="partnerBirthdate">生年月日</label>
+            <label for="partnerBirthdate"><strong>生年月日</strong></label>
             <div style="display: flex; gap: 5px;">
               <select id="partnerYear" style="flex: 1;" required>
                 <option value="">年</option>
@@ -332,7 +332,7 @@ module.exports = async (req, res) => {
           <input type="hidden" id="partnerAge" name="partnerAge" value="${existing.partnerAge || ''}">
           
           <div class="form-group">
-            <label for="partnerGender">性別</label>
+            <label for="partnerGender"><strong>性別</strong></label>
             <select id="partnerGender" name="partnerGender" required>
               <option value="">選択してください</option>
               <option value="male" ${existing.partnerGender === 'male' ? 'selected' : ''}>男性</option>
@@ -343,23 +343,24 @@ module.exports = async (req, res) => {
         </div>
         
         <div class="section">
-          <h2 class="section-title">💭 恋愛状況について</h2>
+          <h2 class="section-title">🌙 恋愛状況について</h2>
           
           <div class="form-group">
-            <label for="loveSituation">Q1: あなたの恋の状況は、どれに近いですか？</label>
+            <label for="loveSituation"><strong>Q1：あなたの恋の状況は、どれに近いですか？</strong></label>
             <select id="loveSituation" name="loveSituation" required>
-              <option value="">選択してください</option>
-              <option value="beginning" ${existing.loveSituation === 'beginning' ? 'selected' : ''}>恋の始まり・相手との距離感（片想い、気になる人、恋人未満、マッチングアプリでの出会い など）</option>
-              <option value="relationship" ${existing.loveSituation === 'relationship' ? 'selected' : ''}>交際中の相手とのこと（現在の恋人との今後、結婚、マンネリ、すれ違い など）</option>
+              <option value="">✓ 選択してください</option>
+              <option value="beginning" ${existing.loveSituation === 'beginning' ? 'selected' : ''}>恋の始まり・相手との距離感（片想い、気になる人、恋人未満、マッチングアプリでの出会いなど）</option>
+              <option value="relationship" ${existing.loveSituation === 'relationship' ? 'selected' : ''}>交際中の相手とのこと（現在の恋人との今後、結婚、マンネリ、すれ違いなど）</option>
+              <option value="marriage" ${existing.loveSituation === 'marriage' ? 'selected' : ''}>夫婦関係（喧嘩、すれ違い、意見の相違、結婚後のギャップ）</option>
               <option value="complicated" ${existing.loveSituation === 'complicated' ? 'selected' : ''}>複雑な事情を抱える恋（禁断の恋、遠距離、障害のある恋、公にできない関係 など）</option>
-              <option value="ending" ${existing.loveSituation === 'ending' ? 'selected' : ''}>復縁・別れ・終わった恋（復縁したい、別れの危機、失恋を乗り越えたい など）</option>
+              <option value="ending" ${existing.loveSituation === 'ending' ? 'selected' : ''}>復縁・終わった恋（復縁したい、別れの危機、失恋を乗り越えたいなど）</option>
             </select>
           </div>
           
           <div class="form-group">
-            <label for="wantToKnow">Q2: 今、特に何を知りたいですか？</label>
+            <label for="wantToKnow"><strong>Q2：今、特に何を知りたいですか？</strong></label>
             <select id="wantToKnow" name="wantToKnow" required>
-              <option value="">選択してください</option>
+              <option value="">✓ 選択してください</option>
               <option value="feelings" ${existing.wantToKnow === 'feelings' ? 'selected' : ''}>相手が今、どんな気持ちなのか</option>
               <option value="action" ${existing.wantToKnow === 'action' ? 'selected' : ''}>今、自分がどうしたらいいか</option>
               <option value="past" ${existing.wantToKnow === 'past' ? 'selected' : ''}>過去（出来事）の意味や理由</option>
@@ -369,13 +370,13 @@ module.exports = async (req, res) => {
         </div>
         
         <button type="submit" class="submit-btn">
-          保存する
+          おつきさまにお伝えする
         </button>
       </form>
       
       <div class="loading" id="loading">
         <div class="spinner"></div>
-        <p style="margin-top: 10px;">保存中...</p>
+        <p style="margin-top: 10px;">お伝え中...</p>
       </div>
     </div>
   </div>
