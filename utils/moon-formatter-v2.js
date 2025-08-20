@@ -632,7 +632,7 @@ function formatMoonReportV2(moonReport) {
             },
             {
               type: 'text',
-              text: 'より本質に近い、あなたとお相手の過去や現在、\nそして未来を診断することができます',
+              text: 'より本質に近い、\nあなたとお相手の過去や現在、\nそして未来を診断することができます',
               wrap: true,
               size: 'sm',
               color: '#555555',
@@ -645,20 +645,22 @@ function formatMoonReportV2(moonReport) {
             },
             {
               type: 'text',
-              text: '今、あなたがより知りたいのはどちらでしょう？',
+              text: '今、あなたがより知りたいのは\nどちらでしょう？',
               size: 'md',
               weight: 'bold',
               color: '#764ba2',
               align: 'center',
-              margin: 'lg'
+              margin: 'lg',
+              wrap: true
             },
             {
               type: 'text',
-              text: '① お相手に今のあなたの想いが伝わるのかどうか',
+              text: '①お相手に今のあなたの\n　想いが伝わるのかどうか',
               size: 'sm',
               color: '#667eea',
               align: 'center',
-              margin: 'md'
+              margin: 'md',
+              wrap: true
             },
             {
               type: 'button',
@@ -675,11 +677,12 @@ function formatMoonReportV2(moonReport) {
             },
             {
               type: 'text',
-              text: '② お相手が今あなたに向ける気持ち',
+              text: '②お相手が今あなたに\n　向ける気持ち',
               size: 'sm',
               color: '#ff69b4',
               align: 'center',
-              margin: 'md'
+              margin: 'md',
+              wrap: true
             },
             {
               type: 'button',
