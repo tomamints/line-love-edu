@@ -119,7 +119,7 @@ module.exports = async (req, res) => {
       </div>
       <div class="instruction-step">
         ② 先ほどの下部メニューの<br>
-        　 「診断結果」を押してください<br>
+        　 「診断結果を見る」を押してください<br>
         　 あなたとお相手の関係性をお告げします
       </div>
     </div>
