@@ -301,9 +301,9 @@
 
         .result-card-header {
             display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 20px;
+            align-items: flex-start;  /* 上揃えに変更 */
+            gap: 20px;  /* 間隔を広げる */
+            margin-bottom: 25px;
             position: relative;
         }
 
@@ -313,9 +313,10 @@
         }
         
         .result-card-image-container {
-            width: 90px;
-            height: 135px;  /* 2:3の比率 (90:135 = 1:1.5) */
+            width: 120px;
+            height: 180px;  /* 2:3の比率 (120:180 = 1:1.5) */
             position: relative;
+            flex-shrink: 0;  /* 画像サイズを固定 */
         }
         
         .result-card-image {
@@ -325,22 +326,26 @@
             object-position: center;
             border-radius: 10px;
             filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.3));  /* 画像に直接影を付ける */
+            border: 1px solid rgba(255, 215, 0, 0.2);  /* 淡い金色の枠線 */
         }
 
         .result-card-info {
             flex: 1;
+            padding-top: 10px;  /* カード名の位置調整 */
         }
 
         .result-card-name {
-            font-size: 22px;
+            font-size: 24px;  /* 少し大きく */
             font-weight: 500;
             color: #ffd700;
+            margin-bottom: 8px;
         }
 
         .result-card-meaning {
-            font-size: 14px;
-            color: rgba(255, 255, 255, 0.7);
+            font-size: 16px;  /* 少し大きく */
+            color: rgba(255, 255, 255, 0.8);
             margin-top: 5px;
+            line-height: 1.5;
         }
 
         .result-card-message {
@@ -462,15 +467,23 @@
                 background-size: cover;
             }
             
-            /* 結果表示の画像サイズ調整 */
+            /* 結果表示の画像サイズ調整 - タブレットでも大きめに */
             .result-card-image-container {
-                width: 70px;
-                height: 105px;  /* 2:3の比率 (70:105 = 1:1.5) */
+                width: 100px;
+                height: 150px;  /* 2:3の比率 (100:150 = 1:1.5) */
             }
             
             .result-card-image {
                 width: 100%;
                 height: 100%;
+            }
+            
+            .result-card-name {
+                font-size: 20px;
+            }
+            
+            .result-card-meaning {
+                font-size: 14px;
             }
         }
         
@@ -516,6 +529,31 @@
             
             .cards-container {
                 gap: 15px;  /* カード間の隙間を調整 */
+            }
+            
+            /* スマホの結果表示 - レイアウトを縦並びに */
+            .result-card-header {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+            
+            .result-card-image-container {
+                width: 140px;
+                height: 210px;  /* より大きく表示 */
+                margin-bottom: 15px;
+            }
+            
+            .result-card-info {
+                padding-top: 0;
+            }
+            
+            .result-card-name {
+                font-size: 20px;
+            }
+            
+            .result-card-meaning {
+                font-size: 14px;
             }
         }
     </style>
