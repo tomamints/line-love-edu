@@ -24,6 +24,10 @@
     {
       "source": "/moon",
       "destination": "/moon-fortune.html"
+    },
+    {
+      "source": "/lp/otsukisama",
+      "destination": "/docs/LP_otsukisama-production.html"
     }
   ],
   "functions": {
