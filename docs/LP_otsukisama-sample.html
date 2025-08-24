@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>おつきさま診断 - 2025年あなたの運勢</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Hiragino Sans', 'Yu Gothic', sans-serif;
+            background: linear-gradient(180deg, #1a1a2e 0%, #0f0f1e 100%);
+            color: #ffffff;
+            line-height: 1.8;
+        }
+        
+        .stars {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(2px 2px at 20% 30%, white, transparent),
+                radial-gradient(2px 2px at 60% 70%, white, transparent),
+                radial-gradient(1px 1px at 50% 50%, white, transparent);
+            background-size: 200px 200px;
+            opacity: 0.3;
+            pointer-events: none;
+        }
+        
+        .container {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .header {
+            text-align: center;
+            padding: 40px 0;
+            background: radial-gradient(circle at center, rgba(255,255,255,0.1) 0%, transparent 70%);
+        }
+        
+        .moon-icon {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 20px;
+            background: radial-gradient(circle at 30% 30%, #ffffff 0%, #e0e0e0 50%, #c0c0c0 100%);
+            border-radius: 50%;
+            box-shadow: 0 0 50px rgba(255,255,255,0.5);
+            position: relative;
+        }
+        
+        .moon-icon::after {
+            content: '';
+            position: absolute;
+            top: 10%;
+            left: 25%;
+            width: 30%;
+            height: 30%;
+            background: radial-gradient(circle, rgba(200,200,200,0.3) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+        
+        h1 {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-shadow: 0 0 20px rgba(255,255,255,0.5);
+        }
+        
+        .subtitle {
+            font-size: 14px;
+            color: #b8b8ff;
+            margin-bottom: 20px;
+        }
+        
+        .form-section {
+            background: rgba(255,255,255,0.05);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: #e0e0ff;
+        }
+        
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.1);
+            border-radius: 8px;
+            color: white;
+            font-size: 16px;
+        }
+        
+        input[type="text"]::placeholder {
+            color: rgba(255,255,255,0.5);
+        }
+        
+        .date-selects {
+            display: flex;
+            gap: 10px;
+        }
+        
+        select {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.1);
+            border-radius: 8px;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        
+        select option {
+            background: #2a2a3e;
+        }
+        
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .checkbox-group input {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+        
+        .checkbox-group label {
+            margin-bottom: 0;
+            cursor: pointer;
+        }
+        
+        .btn-primary {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 50px;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(102,126,234,0.4);
+            margin-top: 30px;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102,126,234,0.6);
+        }
+        
+        .free-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+        
+        .result-section {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .greeting-box {
+            background: rgba(255,255,255,0.05);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .user-info {
+            font-size: 18px;
+            color: #b8b8ff;
+            margin-bottom: 20px;
+        }
+        
+        .message {
+            line-height: 1.8;
+            font-size: 15px;
+            color: #e0e0ff;
+        }
+        
+        .moon-type-card {
+            background: linear-gradient(135deg, rgba(102,126,234,0.2) 0%, rgba(118,75,162,0.2) 100%);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .moon-type-header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .moon-phase-icon {
+            width: 80px;
+            height: 80px;
+            background: radial-gradient(circle at 30% 30%, #1a1a2e 0%, #1a1a2e 50%, transparent 50%),
+                        radial-gradient(circle at 30% 30%, #ffffff 0%, #e0e0e0 100%);
+            border-radius: 50%;
+            box-shadow: 0 0 30px rgba(255,255,255,0.5);
+        }
+        
+        .moon-type-title h2 {
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+        
+        .moon-type-subtitle {
+            color: #b8b8ff;
+            font-size: 14px;
+        }
+        
+        .moon-type-description {
+            line-height: 1.8;
+            color: #e0e0ff;
+        }
+        
+        .fortune-section {
+            margin-bottom: 30px;
+        }
+        
+        .section-header {
+            background: rgba(255,255,255,0.05);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .section-header h3 {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+        
+        .teaser-content {
+            padding: 20px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .blur-text {
+            filter: blur(3px);
+            user-select: none;
+            color: #888;
+        }
+        
+        .premium-content {
+            display: none;
+            padding: 20px;
+            background: linear-gradient(135deg, rgba(255,215,0,0.1) 0%, rgba(255,105,180,0.1) 100%);
+            border-radius: 15px;
+            margin-top: 20px;
+            border: 1px solid rgba(255,215,0,0.3);
+            animation: fadeIn 0.5s;
+        }
+        
+        .premium-content.show {
+            display: block;
+        }
+        
+        .premium-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #FFD700 0%, #FF69B4 100%);
+            color: #1a1a2e;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        
+        .important-point {
+            background: rgba(255,215,0,0.2);
+            border-left: 4px solid #FFD700;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        
+        .lucky-item {
+            display: inline-block;
+            background: rgba(102,126,234,0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            margin: 5px;
+        }
+        
+        .continue-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            border: none;
+            border-radius: 50px;
+            color: #1a1a2e;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 10px;
+        }
+        
+        .continue-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(250,112,154,0.4);
+        }
+        
+        .price-note {
+            text-align: center;
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 20px;
+        }
+        
+        .moon-calendar {
+            background: rgba(255,255,255,0.05);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .calendar-header {
+            margin-bottom: 20px;
+        }
+        
+        .calendar-dates {
+            font-size: 16px;
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+        
+        .today-moon {
+            background: rgba(102,126,234,0.2);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .moon-age {
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .final-message {
+            background: linear-gradient(135deg, rgba(240,147,251,0.2) 0%, rgba(245,87,108,0.2) 100%);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .sparkle {
+            display: inline-block;
+            animation: sparkle 2s infinite;
+        }
+        
+        @keyframes sparkle {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+    </style>
+</head>
+<body>
+    <div class="stars"></div>
+    
+    <div class="container">
+        <!-- ヘッダー -->
+        <div class="header">
+            <div class="moon-icon"></div>
+            <h1>おつきさま診断</h1>
+            <p class="subtitle">2025年 月が導くあなたの運命</p>
+        </div>
+        
+        <!-- 入力フォーム -->
+        <div class="form-section" id="formSection">
+            <form id="fortuneForm">
+                <div class="form-group">
+                    <label for="name">お名前（8文字まで）</label>
+                    <input type="text" id="name" placeholder="ニックネームでもOK" maxlength="8">
+                </div>
+                
+                <div class="form-group">
+                    <label>生年月日 <span style="color: #fa709a;">*必須</span></label>
+                    <div class="date-selects">
+                        <select id="year" required>
+                            <option value="">年</option>
+                            <option value="1990">1990年</option>
+                            <option value="1991">1991年</option>
+                            <option value="1992">1992年</option>
+                            <option value="1993">1993年</option>
+                            <option value="1994">1994年</option>
+                            <option value="1995">1995年</option>
+                        </select>
+                        <select id="month" required>
+                            <option value="">月</option>
+                            <option value="1">1月</option>
+                            <option value="2">2月</option>
+                            <option value="3">3月</option>
+                            <option value="4">4月</option>
+                            <option value="5">5月</option>
+                            <option value="6">6月</option>
+                        </select>
+                        <select id="day" required>
+                            <option value="">日</option>
+                            <option value="1">1日</option>
+                            <option value="2">2日</option>
+                            <option value="3">3日</option>
+                            <option value="4">4日</option>
+                            <option value="5">5日</option>
+                            <option value="6">6日</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="checkbox-group">
+                    <input type="checkbox" id="save">
+                    <label for="save">入力した情報を記録しますか？</label>
+                </div>
+                
+                <button type="submit" class="btn-primary">
+                    一部無料で鑑定する
+                    <span class="free-badge">無料</span>
+                </button>
+            </form>
+        </div>
+        
+        <!-- 診断結果 -->
+        <div class="result-section" id="resultSection">
+            <!-- 挨拶メッセージ -->
+            <div class="greeting-box">
+                <div class="user-info">
+                    <span id="userName">あなた</span> 
+                    <span id="userBirthdate">1990年1月1日</span>生まれ
+                </div>
+                <div class="message">
+                    今日はあなたの2025年がどんな一年になるのを、月の満ち欠けから占っていきますね。<br>
+                    あなたの生まれた日の月相から、この一年の全体の運気を見て、<br>
+                    そこから恋愛、人間関係、仕事、お金についてのお話をしていこうかと思います。<br>
+                    月のリズムを知ることは、自分の内なるリズムを知ること。<br>
+                    しっかりと最後まで聞いていってくださいね。
+                </div>
+            </div>
+            
+            <!-- 月相タイプ -->
+            <div class="moon-type-card">
+                <div class="moon-type-header">
+                    <div class="moon-phase-icon"></div>
+                    <div class="moon-type-title">
+                        <h2>新月</h2>
+                        <p class="moon-type-subtitle">新しい始まりの力。無限の可能性を秘めた開拓者</p>
+                    </div>
+                </div>
+                <div class="moon-type-description">
+                    あなたは新月の日に生まれた、始まりのエネルギーを持つ人。<br>
+                    何もないところから何かを生み出す力があり、<br>
+                    ゼロから1を作り出すことに長けています。<br>
+                    純粋で素直な心を持ち、新しいことへの好奇心が旺盛。<br>
+                    まだ誰も踏み入れていない道を進むパイオニア精神があります。<br>
+                    時に無鉄砲に見えることもありますが、<br>
+                    その勇気こそがあなたの最大の武器なのです。
+                </div>
+            </div>
+            
+            <!-- 2025年全体運 -->
+            <div class="fortune-section">
+                <div class="section-header">
+                    <h3>✨ まずは、2025年のあなたの月のリズムから見ていきましょう</h3>
+                </div>
+                <div class="teaser-content">
+                    この年は『<span class="blur-text">○○○○</span>の月』のリズム。大きな転機が訪れそうです。<br><br>
+                    2025年は、あなたにとって種まきの年。<br>
+                    新月のエネルギーが最高潮に達し、新しいことを始めるのに最適な時期です。<br>
+                    特に春から夏にかけては、人生を変えるような出会いや機会が...
+                </div>
+                <button class="continue-btn" data-section="overall">続きを見る（有料）</button>
+                <p class="price-note">続きをご覧になるには、1,980円（税込）が必要となります。</p>
+                
+                <div class="premium-content" id="premium-overall">
+                    <span class="premium-badge">プレミアムコンテンツ</span>
+                    <p>この年は『<strong>創造と誕生</strong>の月』のリズム。大きな転機が訪れそうです。</p>
+                    
+                    <p style="margin-top: 15px;">
+                        特に春から夏にかけては、人生を変えるような出会いや機会が次々と訪れます。<br>
+                        4月の新月（4月19日）と7月の新月（7月15日）は特に重要な日。<br>
+                        この日に始めたことは、必ず大きな成果となって返ってくるでしょう。
+                    </p>
+                    
+                    <div class="important-point">
+                        <strong>⭐ 2025年の3つの重要ポイント</strong><br>
+                        1. <strong>始動の春（3-5月）</strong>：新しいプロジェクトや関係性のスタート<br>
+                        2. <strong>成長の夏（6-8月）</strong>：種まきしたものが芽を出し始める<br>
+                        3. <strong>収穫の秋（9-11月）</strong>：努力が実を結び、成果が見える時期
+                    </div>
+                    
+                    <p>
+                        ただし、注意すべきは8月の満月期（8月9日前後）。<br>
+                        この時期は感情が高ぶりやすく、衝動的な決断をしがちです。<br>
+                        大切な決断は、月が欠けていく期間（8月10日以降）まで待つのが賢明です。
+                    </p>
+                    
+                    <p style="margin-top: 15px;">
+                        全体として、2025年はあなたにとって「始まりの年」。<br>
+                        過去にとらわれず、新しい自分として生まれ変わるチャンスです。<br>
+                        月のサイクルと共に、あなたも成長していく一年となるでしょう。
+                    </p>
+                </div>
+            </div>
+            
+            <!-- 恋愛運 -->
+            <div class="fortune-section">
+                <div class="section-header">
+                    <h3>💕 2025年、月が導くあなたの恋の行方は？</h3>
+                </div>
+                <div class="teaser-content">
+                    この年は、<span class="blur-text">ＸＸＸＸ</span>な恋が訪れますよ。<br>
+                    新月タイプのあなたは、相手の心に新しい風を吹き込む存在。<br>
+                    初対面から強い印象を残し、相手の人生に変化をもたらすでしょう。<br>
+                    ただし、その魅力ゆえに複数の人から好意を...
+                </div>
+                <button class="continue-btn" data-section="love">続きを見る（有料）</button>
+                
+                <div class="premium-content" id="premium-love">
+                    <span class="premium-badge">プレミアムコンテンツ</span>
+                    <p>この年は、<strong>運命的で情熱的</strong>な恋が訪れますよ。</p>
+                    
+                    <p style="margin-top: 15px;">
+                        ただし、その魅力ゆえに複数の人から好意を寄せられることになりそう。<br>
+                        特に2月14日（バレンタイン）前後と、5月の満月（5月4日）、<br>
+                        そして9月の新月（9月12日）は、恋愛運が最高潮に達する時期。
+                    </p>
+                    
+                    <div class="important-point">
+                        <strong>💘 恋愛成就の3つの鍵</strong><br>
+                        1. <strong>直感を信じる</strong>：最初の印象を大切に。月の導きを感じたら迷わず行動<br>
+                        2. <strong>素直な気持ち</strong>：新月タイプの純粋さが最大の魅力。飾らない自分で<br>
+                        3. <strong>タイミング</strong>：新月の日に告白すると成功率UP（特に6月2日、10月29日）
+                    </div>
+                    
+                    <p>
+                        <strong>理想の相手の特徴：</strong><br>
+                        ・あなたの冒険心を理解し、一緒に新しいことにチャレンジできる人<br>
+                        ・安定感があり、あなたの衝動的な面を優しく受け止めてくれる人<br>
+                        ・満月タイプか上弦の月タイプの人と特に相性が良い
+                    </p>
+                    
+                    <p style="margin-top: 15px;">
+                        注意点として、8月の満月期は感情が不安定になりやすく、<br>
+                        一時的な感情で大切な人を傷つけてしまう可能性があります。<br>
+                        この時期は新しい恋愛を始めるより、既存の関係を深める時期と捉えましょう。
+                    </p>
+                </div>
+            </div>
+            
+            <!-- 人間関係運 -->
+            <div class="fortune-section">
+                <div class="section-header">
+                    <h3>🤝 2025年、月のリズムが教える人との繋がり</h3>
+                </div>
+                <div class="teaser-content">
+                    新しい仲間との出会いが多い一年。<br>
+                    あなたの持つ開拓者精神に共感する人たちが集まってきて、<br>
+                    一緒に何か新しいことを始めることになりそう。<br>
+                    その中でも特に重要な人物が...
+                </div>
+                <button class="continue-btn" data-section="relationship">続きを見る（有料）</button>
+                
+                <div class="premium-content" id="premium-relationship">
+                    <span class="premium-badge">プレミアムコンテンツ</span>
+                    <p>その中でも特に重要な人物が3人現れます。</p>
+                    
+                    <div class="important-point">
+                        <strong>🌟 2025年に出会う3人のキーパーソン</strong><br>
+                        1. <strong>春（3-4月）のメンター</strong>：あなたに新しい視点を与えてくれる年上の人物<br>
+                        2. <strong>夏（7月）のパートナー</strong>：一緒にプロジェクトを立ち上げる同志<br>
+                        3. <strong>秋（10月）のサポーター</strong>：陰であなたを支えてくれる理解者
+                    </div>
+                    
+                    <p style="margin-top: 15px;">
+                        人間関係で最も重要な時期は、4月19日の新月と10月29日の新月。<br>
+                        この日に出会った人や、この日に深まった関係は、<br>
+                        今後のあなたの人生に大きな影響を与えることになるでしょう。
+                    </p>
+                    
+                    <p>
+                        <strong>人間関係を良好に保つコツ：</strong><br>
+                        ・月が満ちていく期間（新月から満月）は積極的に交流を<br>
+                        ・月が欠けていく期間（満月から新月）は既存の関係を深める<br>
+                        ・満月の夜は感謝の気持ちを伝える絶好のタイミング
+                    </p>
+                    
+                    <p style="margin-top: 15px;">
+                        ただし、11月の水星逆行期（11月9日〜29日）は、<br>
+                        コミュニケーションのすれ違いが起きやすい時期。<br>
+                        大切な話は、この期間を避けるか、より丁寧に伝えることを心がけましょう。
+                    </p>
+                </div>
+            </div>
+            
+            <!-- 仕事運 -->
+            <div class="fortune-section">
+                <div class="section-header">
+                    <h3>💼 2025年、新月パワーで切り開くキャリア</h3>
+                </div>
+                <div class="teaser-content">
+                    起業や独立、転職など、新しいスタートを切るのに最適な年。<br>
+                    あなたのアイデアが形になりやすく、周りからの支援も得られやすい時期。<br>
+                    特に<span class="blur-text">○月</span>と<span class="blur-text">○月</span>は重要な決断の...
+                </div>
+                <button class="continue-btn" data-section="career">続きを見る（有料）</button>
+                
+                <div class="premium-content" id="premium-career">
+                    <span class="premium-badge">プレミアムコンテンツ</span>
+                    <p>特に<strong>4月</strong>と<strong>9月</strong>は重要な決断の時期となります。</p>
+                    
+                    <div class="important-point">
+                        <strong>📈 2025年のキャリア発展カレンダー</strong><br>
+                        <strong>1-3月</strong>：準備期間。スキルアップや資格取得に最適<br>
+                        <strong>4-6月</strong>：始動期。新プロジェクトのスタート、転職活動<br>
+                        <strong>7-9月</strong>：成長期。実績を積み、評価を得る時期<br>
+                        <strong>10-12月</strong>：収穫期。昇進や収入アップのチャンス
+                    </div>
+                    
+                    <p style="margin-top: 15px;">
+                        <strong>特に注目すべき日：</strong><br>
+                        ・4月19日（新月）：新しい仕事やプロジェクトを始める最高の日<br>
+                        ・7月15日（新月）：独立や起業を決断するのに適した日<br>
+                        ・9月12日（新月）：転職の面接や重要な商談に最適<br>
+                        ・12月8日（満月）：一年の成果を振り返り、来年の計画を立てる
+                    </p>
+                    
+                    <p>
+                        <strong>成功のための月のリズム活用法：</strong><br>
+                        ・新月：新規プロジェクトの立ち上げ、企画書の作成<br>
+                        ・上弦の月：積極的な営業活動、プレゼンテーション<br>
+                        ・満月：成果の確認、契約締結、給与交渉<br>
+                        ・下弦の月：振り返りと改善、次の準備
+                    </p>
+                    
+                    <p style="margin-top: 15px;">
+                        あなたの創造力が最も高まるのは、毎月の新月前後3日間。<br>
+                        この期間にアイデアを出し、企画を練ることで、<br>
+                        他の人には思いつかない革新的な提案ができるでしょう。
+                    </p>
+                </div>
+            </div>
+            
+            <!-- 月齢カレンダー -->
+            <div class="moon-calendar">
+                <div class="calendar-header">
+                    <h3>🌙 あなただけの月齢カレンダー</h3>
+                    <p class="calendar-dates">2025年8月24日 ～ 2025年9月6日</p>
+                </div>
+                <div class="today-moon">
+                    <p>今日の月齢</p>
+                    <p class="moon-age">13.2</p>
+                    <p>満月まであと2日</p>
+                </div>
+                <div class="teaser-content">
+                    ここまでお疲れさまでした。<br>
+                    最後に、月のリズムから導き出した、<br>
+                    今日から2週間のあなただけの開運カレンダーをお届けします。<br>
+                    運気のリズムを知って、毎日をもっと豊かに楽しく過ごすためのヒントに...
+                </div>
+                <button class="continue-btn" data-section="calendar">続きを見る（有料）</button>
+                
+                <div class="premium-content" id="premium-calendar">
+                    <span class="premium-badge">プレミアムコンテンツ</span>
+                    
+                    <div class="important-point">
+                        <strong>📅 今日から2週間の開運カレンダー</strong><br><br>
+                        <strong>8/24（土）月齢13.2</strong> - 満月前の高エネルギー期<br>
+                        💫 重要な決断や告白に最適。夜9時が最も運気が高い<br><br>
+                        
+                        <strong>8/26（月）満月</strong> - 願いが叶う特別な日<br>
+                        🌕 感謝の気持ちを伝える。満月の光を浴びてエネルギーチャージ<br><br>
+                        
+                        <strong>8/28（水）月齢17.2</strong> - 振り返りの時期<br>
+                        📝 これまでの成果を確認し、改善点を見つける<br><br>
+                        
+                        <strong>9/2（月）下弦の月</strong> - 手放しの時期<br>
+                        🌗 不要なものを断捨離。人間関係の整理にも最適<br><br>
+                        
+                        <strong>9/6（金）月齢25.2</strong> - 準備期間<br>
+                        🌑 新月に向けて計画を立てる。瞑想や内省に適した日
+                    </div>
+                    
+                    <p style="margin-top: 20px;">
+                        <strong>毎日の開運アクション：</strong><br>
+                        ・朝：月の位置を確認して、今日のテーマを意識<br>
+                        ・昼：月齢に合わせた行動を心がける<br>
+                        ・夜：月を見上げて感謝の気持ちを伝える
+                    </p>
+                    
+                    <p style="margin-top: 15px;">
+                        <strong>ラッキーアイテム：</strong><br>
+                        <span class="lucky-item">ムーンストーン</span>
+                        <span class="lucky-item">銀のアクセサリー</span>
+                        <span class="lucky-item">白い花</span>
+                        <span class="lucky-item">レモンの香り</span>
+                    </p>
+                </div>
+            </div>
+            
+            <!-- 最終メッセージ -->
+            <div class="final-message">
+                <h3>
+                    <span class="sparkle">✨</span>
+                    最後に、2025年を幸せに過ごすための鍵をお伝えします
+                    <span class="sparkle">✨</span>
+                </h3>
+                <div class="teaser-content" style="margin-top: 20px;">
+                    新月のあなたは、常に新しいことへチャレンジする勇気を持っています。<br>
+                    その勇気は素晴らしいものですが、時には立ち止まることも大切。<br>
+                    月が教えてくれる最も重要なメッセージは...
+                </div>
+                <button class="continue-btn" data-section="message">月の女神からのメッセージを見る（有料）</button>
+                <p class="price-note">
+                    続きをご覧になるには、1,980円（税込）が必要となります。<br>
+                    占う前に内容のご確認をお願いします。
+                </p>
+                
+                <div class="premium-content" id="premium-message">
+                    <span class="premium-badge">月の女神からの特別なメッセージ</span>
+                    
+                    <p style="font-size: 18px; margin-top: 20px;">
+                        <strong>「あなたの中に眠る無限の可能性を信じなさい」</strong>
+                    </p>
+                    
+                    <p style="margin-top: 20px;">
+                        月が教えてくれる最も重要なメッセージは、<br>
+                        <strong>「すべては循環している」</strong>ということ。
+                    </p>
+                    
+                    <p>
+                        新月から満月へ、そしてまた新月へ。<br>
+                        月が満ち欠けを繰り返すように、<br>
+                        あなたの人生にも波があることを受け入れましょう。
+                    </p>
+                    
+                    <div class="important-point" style="margin-top: 20px;">
+                        <strong>🌙 2025年を最高の年にする5つの月の教え</strong><br><br>
+                        1. <strong>新月の教え</strong>：「始める勇気を持ちなさい」<br>
+                        　何度失敗しても、また新しく始められる<br><br>
+                        
+                        2. <strong>上弦の月の教え</strong>：「成長を楽しみなさい」<br>
+                        　小さな進歩も大切な一歩<br><br>
+                        
+                        3. <strong>満月の教え</strong>：「感謝を忘れずに」<br>
+                        　得たものに感謝し、分かち合う心を<br><br>
+                        
+                        4. <strong>下弦の月の教え</strong>：「手放す勇気を」<br>
+                        　執着を手放すことで新しいスペースが生まれる<br><br>
+                        
+                        5. <strong>闇月の教え</strong>：「休息も大切」<br>
+                        　充電期間があるからこそ、また輝ける
+                    </div>
+                    
+                    <p style="margin-top: 20px;">
+                        <strong>最後に...</strong><br>
+                        2025年、あなたは多くの「始まり」を経験します。<br>
+                        恋愛、仕事、人間関係、すべてにおいて新しい扉が開かれるでしょう。
+                    </p>
+                    
+                    <p>
+                        恐れずに一歩を踏み出してください。<br>
+                        月はいつもあなたを見守り、導いています。<br>
+                        あなたの内なる光を信じて、輝かしい一年を過ごしてください。
+                    </p>
+                    
+                    <p style="text-align: center; margin-top: 30px; font-size: 20px;">
+                        🌙✨ <strong>May the moon bless your journey</strong> ✨🌙
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.getElementById('fortuneForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // フォームの値を取得
+            const name = document.getElementById('name').value || 'あなた';
+            const year = document.getElementById('year').value;
+            const month = document.getElementById('month').value;
+            const day = document.getElementById('day').value;
+            
+            if (!year || !month || !day) {
+                alert('生年月日を入力してください');
+                return;
+            }
+            
+            // 結果に反映
+            document.getElementById('userName').textContent = name;
+            document.getElementById('userBirthdate').textContent = `${year}年${month}月${day}日`;
+            
+            // フォームを非表示、結果を表示
+            document.getElementById('formSection').style.display = 'none';
+            document.getElementById('resultSection').style.display = 'block';
+            
+            // スクロール
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+        
+        // 続きを見るボタンのクリックイベント
+        document.querySelectorAll('.continue-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const section = this.getAttribute('data-section');
+                if (section) {
+                    const premiumContent = document.getElementById('premium-' + section);
+                    if (premiumContent) {
+                        premiumContent.classList.toggle('show');
+                        if (premiumContent.classList.contains('show')) {
+                            this.textContent = '閉じる';
+                            this.style.background = 'linear-gradient(135deg, #888 0%, #666 100%)';
+                        } else {
+                            this.textContent = '続きを見る（有料）';
+                            this.style.background = 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)';
+                        }
+                    }
+                } else {
+                    alert('ここから先は有料コンテンツです。\n実際のサービスでは決済画面に遷移します。');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
