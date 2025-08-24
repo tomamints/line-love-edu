@@ -27,7 +27,7 @@
     },
     {
       "source": "/lp/otsukisama",
-      "destination": "/docs/LP_otsukisama-production.html"
+      "destination": "/lp-otsukisama.html"
     }
   ],
   "functions": {
