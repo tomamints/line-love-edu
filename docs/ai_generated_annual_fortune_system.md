@@ -217,3 +217,55 @@ class AnnualFortuneGenerator {
 5. **実用性**: 具体的で実践可能なアドバイスが含まれている
 
 このシステムにより、従来の日々変動する運勢から脱却し、人生の大きな流れを理解できる、より説得力のある年間運勢診断が実現されます。
+
+---
+
+## 月齢カレンダー統合システム
+
+### 今日の月相計算ロジック
+```javascript
+/**
+ * 今日の月齢を計算する関数
+ * @param {Date} date - 対象の日付
+ * @returns {Object} 月齢情報
+ */
+function calculateCurrentMoonPhase(date = new Date()) {
+  const baseNewMoon = new Date(2025, 0, 29); // 2025/01/29
+  const millisecondsPerDay = 24 * 60 * 60 * 1000;
+  const lunarCycle = 29.53058868; // 朔望周期（日）
+  
+  const daysDifference = (date.getTime() - baseNewMoon.getTime()) / millisecondsPerDay;
+  const moonAge = ((daysDifference % lunarCycle) + lunarCycle) % lunarCycle;
+  
+  return {
+    moonAge: Math.round(moonAge * 10) / 10,
+    phaseName: getMoonPhaseName(moonAge),
+    phaseEmoji: getMoonPhaseEmoji(moonAge),
+    illumination: calculateIllumination(moonAge),
+    nextPhase: getNextPhaseInfo(moonAge)
+  };
+}
+```
+
+### 2025年重要な月相日付
+```javascript
+const important2025MoonDates = {
+  newMoons: [
+    { date: '2025-01-29', specialNote: '水瓶座新月 - 革新と変化の始まり' },
+    { date: '2025-02-28', specialNote: '魚座新月 - 直感と創造性が高まる' },
+    { date: '2025-03-29', specialNote: '牡羊座新月 - 行動力と勇気の月' }
+    // ... 他の新月日付
+  ],
+  fullMoons: [
+    { date: '2025-01-13', specialNote: '蟹座満月 - 感情の解放と家族運' },
+    { date: '2025-02-12', specialNote: '獅子座満月 - 自信と表現力アップ' }
+    // ... 他の満月日付
+  ]
+};
+```
+
+### 月相サイクル別推奨行動
+- **新月期（月齢0-3.7日）**: 始まり、新プロジェクト立ち上げ
+- **上弦期（月齢3.7-11.1日）**: 成長、積極的行動
+- **満月期（月齢11.1-18.5日）**: 完成、成果確認
+- **下弦期（月齢18.5-26日）**: 整理、手放し、内省
