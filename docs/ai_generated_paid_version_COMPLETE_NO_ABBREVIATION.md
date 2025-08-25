@@ -188,18 +188,18 @@
 </div>
 ```
 
-### 11. 4つの恋愛タイプタイトル
+### 11. 4つの軸タイトル
 
 ```html
 <div style="padding: 35px 0; margin: 50px 0 40px; text-align: center;">
-    <h3 style="font-size: 22px; color: #ffd700; font-weight: bold; margin-bottom: 20px; letter-spacing: 2px; text-shadow: 1px 1px 3px rgba(0,0,0,0.5);">4つの恋愛タイプ</h3>
+    <h3 style="font-size: 22px; color: #ffd700; font-weight: bold; margin-bottom: 20px; letter-spacing: 2px; text-shadow: 1px 1px 3px rgba(0,0,0,0.5);">4つの軸からあなたを紐解く</h3>
     <p style="color: #ffffff; font-size: 18px; font-weight: 600; line-height: 2; text-shadow: 1px 1px 3px rgba(0,0,0,0.5);">
-        ここからは、あなたの恋愛傾向をさらに詳しく分析していきます。感情表現、距離感、価値観、エネルギーの4つの観点から、あなたの恋愛パターンを読み解いていきましょう。
+        ここからは、あなたの恋愛傾向をさらに詳しく分析していきます。感情表現、距離感、価値観、エネルギーという4つの軸から、あなたの恋愛における本質を紐解いていきましょう。
     </p>
 </div>
 ```
 
-### 12. 4つの恋愛タイプ（無料版）
+### 12. 4つの軸（無料版）
 
 ```html
 <div class="love-type-grid">
@@ -268,7 +268,7 @@
     <div class="tsukuyomi-bubble">
         <div class="tsukuyomi-name">月詠</div>
         <p>
-            ここまで、あなたの月相、裏の顔、3つの月の力、そして4つの恋愛タイプを見てきました。これらすべてを踏まえて、いよいよ<span style="color: #ffd700; font-weight: bold; font-size: 20px;">今後12ヶ月のあなたに訪れる運命</span>を読み解いていきます。全体運から始まり、恋愛運、人間関係運、仕事運、金運...月のリズムが教えてくれる、あなただけの12ヶ月のストーリーをお届けしますね。
+            ここまで、あなたの月相、裏の顔、3つの月の力、そして4つの軸から見たあなたの恋愛の本質を見てきました。これらすべてを踏まえて、いよいよ<span style="color: #ffd700; font-weight: bold; font-size: 20px;">今後12ヶ月のあなたに訪れる運命</span>を読み解いていきます。全体運から始まり、恋愛運、人間関係運、仕事運、金運...月のリズムが教えてくれる、あなただけの12ヶ月のストーリーをお届けしますね。
         </p>
     </div>
 </div>
