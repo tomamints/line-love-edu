@@ -442,7 +442,7 @@
             cursor: pointer;
             backdrop-filter: blur(10px);
             box-shadow: 0 0 20px rgba(255,215,0,0.2);
-            overflow: visible;
+            overflow: hidden; /* 円形マスクのため */
             transform: translate(-50%, -50%);
             /* 逆回転で文字を正立させる */
             animation: counterRotate 40s linear infinite;
@@ -461,24 +461,28 @@
         
         /* 月相 - ゴールド */
         .type-item:nth-child(1) {
-            background: radial-gradient(circle at center, rgba(255,215,0,0.2) 0%, rgba(255,200,0,0.05) 50%, transparent 100%);
+            background-image: url('/images/moon/omote-0.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
             border: 3px solid rgba(255,215,0,0.9);
-            box-shadow: 0 0 35px rgba(255,215,0,0.5), inset 0 0 25px rgba(255,215,0,0.2);
+            box-shadow: 0 0 35px rgba(255,215,0,0.5);
         }
         .type-item:nth-child(1):hover {
-            background: radial-gradient(circle at center, rgba(255,215,0,0.4) 0%, rgba(255,200,0,0.15) 50%, transparent 100%);
-            box-shadow: 0 0 50px rgba(255,215,0,0.8), inset 0 0 30px rgba(255,215,0,0.3);
+            box-shadow: 0 0 50px rgba(255,215,0,0.8);
         }
         
         /* 裏月相 - パープル */
         .type-item:nth-child(2) {
-            background: radial-gradient(circle at center, rgba(180,100,255,0.2) 0%, rgba(150,80,220,0.05) 50%, transparent 100%);
+            background-image: url('/images/moon/ura-1.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
             border: 3px solid rgba(180,100,255,0.9);
-            box-shadow: 0 0 35px rgba(180,100,255,0.5), inset 0 0 25px rgba(180,100,255,0.2);
+            box-shadow: 0 0 35px rgba(180,100,255,0.5);
         }
         .type-item:nth-child(2):hover {
-            background: radial-gradient(circle at center, rgba(180,100,255,0.4) 0%, rgba(150,80,220,0.15) 50%, transparent 100%);
-            box-shadow: 0 0 50px rgba(180,100,255,0.8), inset 0 0 30px rgba(180,100,255,0.3);
+            box-shadow: 0 0 50px rgba(180,100,255,0.8);
         }
         
         /* 感情表現 - ピンク */
@@ -1346,15 +1350,13 @@
                 <!-- 要素コンテナ -->
                 <div class="elements-container">
                     <!-- 月相 (0度 - 上) -->
-                    <div class="type-item" style="left: 160px; top: 20px;">
-                        <span class="type-label">月相</span>
-                        <span class="type-result">新月</span>
+                    <div class="type-item moon-phase-item" style="left: 160px; top: 20px;" data-moon-type="omote" data-moon-phase="0">
+                        <span class="type-label" style="position: absolute; bottom: -20px; white-space: nowrap; color: #ffd700; font-weight: bold; text-shadow: 1px 1px 2px rgba(0,0,0,0.8);">月相</span>
                     </div>
                     
                     <!-- 裏月相 (60度) -->
-                    <div class="type-item" style="left: 281px; top: 90px;">
-                        <span class="type-label">裏月相</span>
-                        <span class="type-result">三日月</span>
+                    <div class="type-item moon-phase-item" style="left: 281px; top: 90px;" data-moon-type="ura" data-moon-phase="1">
+                        <span class="type-label" style="position: absolute; bottom: -20px; white-space: nowrap; color: #b464ff; font-weight: bold; text-shadow: 1px 1px 2px rgba(0,0,0,0.8);">裏月相</span>
                     </div>
                     
                     <!-- 感情表現 (120度) -->
