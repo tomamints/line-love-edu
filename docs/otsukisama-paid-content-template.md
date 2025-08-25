@@ -136,22 +136,22 @@
     
     <div style="margin-bottom: 20px;">
         <strong style="color: #917FB3;">【春（3-5月）：出会いと始まり】</strong>
-        <p>新しい出会いや既存の関係の発展に最適な時期。あなたの魅力が最も輝く季節で、運命的な出会いの可能性が高まります。特に4月19日の新月前後は要注目。</p>
+        <p>新しい出会いや既存の関係の発展に最適な時期。あなたの魅力が最も輝く季節で、運命的な出会いの可能性が高まります。特に診断から2ヶ月後の新月前後は要注目。</p>
     </div>
     
     <div style="margin-bottom: 20px;">
         <strong style="color: #917FB3;">【4〜6ヶ月目：情熱と深化】</strong>
-        <p>関係が深まり、お互いを深く理解し合う時期。情熱的でありながら思いやりのあるアプローチで、相手の心を掴みます。8月の満月期は感情が高まるので、告白に最適。</p>
+        <p>関係が深まり、お互いを深く理解し合う時期。情熱的でありながら思いやりのあるアプローチで、相手の心を掴みます。診断から6ヶ月後の満月期は感情が高まるので、告白に最適。</p>
     </div>
     
     <div style="margin-bottom: 20px;">
-        <strong style="color: #917FB3;">【秋（9-11月）：安定と成就】</strong>
-        <p>関係が安定し、将来について真剣に考える時期。お互いの価値観を確認し合い、より深い絆で結ばれます。結婚や同棲など、次のステップを考える最適な時期。</p>
+        <strong style="color: #917FB3;">【7〜9ヶ月目：安定と成就】</strong>
+        <p>関係が安定し、将来について真剣に考える時期。お互いの価値観を確認し合い、より深い絆で結ばれます。結婚や同棲など、次のステップを考える最適な期間。</p>
     </div>
     
     <div style="margin-bottom: 20px;">
-        <strong style="color: #917FB3;">【冬（12-2月）：深い繋がり】</strong>
-        <p>精神的な繋がりが深まり、お互いの成長を支え合う関係へ。来年に向けた二人の計画も具体化してきます。クリスマスや年末年始は特別な思い出を作る絶好の機会。</p>
+        <strong style="color: #917FB3;">【10〜12ヶ月目：深い繋がり】</strong>
+        <p>精神的な繋がりが深まり、お互いの成長を支え合う関係へ。次の1年に向けた二人の計画も具体化してきます。診断から11〜12ヶ月後の特別な日には特別な思い出を作る絶好の機会。</p>
     </div>
     
     <div class="fortune-highlight" style="margin-top: 30px;">
@@ -223,7 +223,7 @@
         <li>表面的な付き合いより、本音で語り合える関係を大切にする</li>
         <li>相手の成長や成功を心から応援し、共に喜びを分かち合う</li>
         <li>コミュニケーションは面倒がらず、こまめにとる</li>
-        <li>水星逆行期（5月10日〜6月2日、11月9日〜29日）は誤解を避けるため、重要な話は文書に残す</li>
+        <li>水星逆行期（年に3回程度発生）は誤解を避けるため、重要な話は文書に残す</li>
     </ul>
     
     <p style="margin-top: 30px; font-size: 18px; color: #333; line-height: 2;">
@@ -237,28 +237,28 @@
 ```html
 <div class="fortune-content">
     <div class="fortune-highlight">
-        <strong>2025年のキャリア運の特徴</strong>
+        <strong>今後12ヶ月のキャリア運の特徴</strong>
         <p>
-            起業や独立、転職など、新しいスタートを切るのに最適な年。あなたのアイデアが形になりやすく、周りからの支援も得られやすい時期です。特に4月と9月は重要な決断の時期となります。
+            起業や独立、転職など、新しいスタートを切るのに最適な12ヶ月間。あなたのアイデアが形になりやすく、周りからの支援も得られやすい時期です。特に診断から2〜3ヶ月後と7〜8ヶ月後は重要な決断の時期となります。
         </p>
     </div>
     
-    <h4 style="color: #739884; margin: 30px 0 20px;">📈 2025年のキャリア発展カレンダー</h4>
+    <h4 style="color: #739884; margin: 30px 0 20px;">📈 12ヶ月間のキャリア発展カレンダー</h4>
     
     <ul class="fortune-list">
-        <li><strong>1-3月：準備期間</strong> - スキルアップや資格取得に最適。新しい技術の習得や人脈作りに集中</li>
-        <li><strong>4-6月：始動期</strong> - 新プロジェクトのスタート、転職活動。あなたの能力が最も発揮される時期</li>
-        <li><strong>7-9月：成長期</strong> - 実績を積み、評価を得る時期。責任あるポジションを任される可能性大</li>
-        <li><strong>10-12月：収穫期</strong> - 昇進、昇給、ボーナスの可能性。一年の成果が形になる</li>
+        <li><strong>開始～3ヶ月：準備期間</strong> - スキルアップや資格取得に最適。新しい技術の習得や人脈作りに集中</li>
+        <li><strong>4～6ヶ月：始動期</strong> - 新プロジェクトのスタート、転職活動。あなたの能力が最も発揮される期間</li>
+        <li><strong>7～9ヶ月：成長期</strong> - 実績を積み、評価を得る時期。責任あるポジションを任される可能性大</li>
+        <li><strong>10～12ヶ月：収穫期</strong> - 昇進、昇給、ボーナスの可能性。この12ヶ月の成果が形になる
     </ul>
     
     <h4 style="color: #739884; margin: 30px 0 20px;">🌟 特に注目すべき重要な日</h4>
     
     <ul class="fortune-list">
-        <li><strong>4月19日（新月）</strong>：新しい仕事やプロジェクトを始める最高の日</li>
-        <li><strong>7月15日（新月）</strong>：独立や起業を決断するのに適した日</li>
-        <li><strong>9月12日（新月）</strong>：転職の面接や重要な商談に最適</li>
-        <li><strong>12月8日（満月）</strong>：一年の成果を振り返り、来年の計画を立てる</li>
+        <li><strong>診断から2ヶ月後の新月</strong>：新しい仕事やプロジェクトを始める最高の日</li>
+        <li><strong>診断から5ヶ月後の新月</strong>：独立や起業を決断するのに適した日</li>
+        <li><strong>診断から7ヶ月後の新月</strong>：転職の面接や重要な商談に最適</li>
+        <li><strong>診断から10ヶ月後の満月</strong>：12ヶ月の成果を振り返り、次の年の計画を立てる
     </ul>
     
     <h4 style="color: #739884; margin: 30px 0 20px;">🌙 成功のための月のリズム活用法</h4>
@@ -310,33 +310,33 @@
     <h4 style="color: #C7A585; margin: 30px 0 20px;">💰 月別金運カレンダー</h4>
     
     <div style="margin-bottom: 20px;">
-        <strong style="color: #C7A585;">1-2月：</strong>出費が多い時期。自己投資と考えて前向きに。スキルアップや設備投資は将来への種まき
+        <strong style="color: #C7A585;">開始～2ヶ月：</strong>出費が多い時期。自己投資と考えて前向きに。スキルアップや設備投資は将来への種まき
     </div>
     
     <div style="margin-bottom: 20px;">
-        <strong style="color: #C7A585;">3-4月：</strong>臨時収入の可能性。宝くじは新月の日（4月19日）に購入を。投資の勉強を始める好時期
+        <strong style="color: #C7A585;">3～4ヶ月：</strong>臨時収入の可能性。宝くじは診断から2ヶ月後の新月に購入を。投資の勉強を始める好期間
     </div>
     
     <div style="margin-bottom: 20px;">
-        <strong style="color: #C7A585;">5-6月：</strong>安定期。貯蓄を始めるのに最適。定期預金や積立投資の開始におすすめ
+        <strong style="color: #C7A585;">5～6ヶ月：</strong>安定期。貯蓄を始めるのに最適。定期預金や積立投資の開始におすすめ
     </div>
     
     <div style="margin-bottom: 20px;">
-        <strong style="color: #C7A585;">7-8月：</strong>大きな買い物のチャンス。満月の日（8月9日）に契約すると吉。不動産や車の購入に適した時期
+        <strong style="color: #C7A585;">7～8ヶ月：</strong>大きな買い物のチャンス。診断から6ヶ月後の満月に契約すると吉。不動産や車の購入に適した期間
     </div>
     
     <div style="margin-bottom: 20px;">
-        <strong style="color: #C7A585;">9-10月：</strong>収入アップの時期。副業や投資の成果が出る。昇給交渉にも適した期間
+        <strong style="color: #C7A585;">9～10ヶ月：</strong>収入アップの時期。副業や投資の成果が出る。昇給交渉にも適した期間
     </div>
     
     <div style="margin-bottom: 20px;">
-        <strong style="color: #C7A585;">11-12月：</strong>ボーナスや臨時収入で潤う。感謝の気持ちを忘れず、寄付や贈り物で運気アップ
+        <strong style="color: #C7A585;">11～12ヶ月：</strong>ボーナスや臨時収入で潤う。感謝の気持ちを忘れず、寄付や贈り物で運気アップ
     </div>
     
     <h4 style="color: #C7A585; margin: 30px 0 20px;">✨ 金運アップの秘訣</h4>
     
     <ul class="fortune-list">
-        <li><strong>新月の日に財布を新調する</strong> - 特に4月19日、7月15日、9月12日がおすすめ</li>
+        <li><strong>新月の日に財布を新調する</strong> - 特に診断から2ヶ月後、5ヶ月後、7ヶ月後の新月がおすすめ</li>
         <li><strong>満月の夜に財布を月光浴させる</strong> - お金のエネルギーをチャージ</li>
         <li><strong>月が欠けていく時期は無駄遣いを控える</strong> - 支出の見直しと節約に最適</li>
         <li><strong>上弦の月の時期は投資や運用を検討</strong> - 成長期のエネルギーを活用</li>
@@ -347,8 +347,8 @@
         <strong style="color: #ffd700;">注意すべき期間</strong>
         <p style="margin-bottom: 15px;">特に注意すべきは、水星逆行期：</p>
         <ul class="fortune-list">
-            <li><strong>5月10日〜6月2日</strong>：契約書の内容を慎重に確認</li>
-            <li><strong>11月9日〜29日</strong>：大きな買い物や投資は避け、既存の資産の見直しに充てる</li>
+            <li><strong>診断から3ヶ月後頃の逆行期</strong>：契約書の内容を慎重に確認</li>
+            <li><strong>診断から9ヶ月後頃の逆行期</strong>：大きな買い物や投資は避け、既存の資産の見直しに充てる</li>
         </ul>
         <p style="margin-top: 15px;">この期間は衝動的な買い物を避け、お金の管理を慎重に行うことが大切です。</p>
     </div>
@@ -379,7 +379,7 @@
     
     <div style="text-align: center; margin-bottom: 30px; padding: 20px; background: rgba(255,215,0,0.1); border-radius: 15px;">
         <p style="color: #333; font-size: 18px; line-height: 2;">
-            <strong>今日：2025年8月24日</strong><br>
+            <strong>今日の日付</strong><br>
             現在の月齢：13.2（満月まであと2日）<br>
             あなたの運気レベル：★★★★☆（高運期）
         </p>
@@ -391,7 +391,7 @@
         <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 10px;">
             <span style="font-size: 24px;">🌔</span>
             <div>
-                <strong style="color: #333; font-size: 18px;">8月24日（土）月齢13.2</strong>
+                <strong style="color: #333; font-size: 18px;">今日の日付　月齢13.2</strong>
                 <p style="color: #666; margin: 5px 0;">満月前の高エネルギー期</p>
             </div>
         </div>
@@ -403,7 +403,7 @@
         <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 10px;">
             <span style="font-size: 24px;">🌕</span>
             <div>
-                <strong style="color: #333; font-size: 18px;">8月26日（月）満月</strong>
+                <strong style="color: #333; font-size: 18px;">今日から2日後　満月</strong>
                 <p style="color: #666; margin: 5px 0;">願いが叶う特別な日</p>
             </div>
         </div>
@@ -415,7 +415,7 @@
         <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 10px;">
             <span style="font-size: 24px;">🌖</span>
             <div>
-                <strong style="color: #333; font-size: 18px;">8月28日（水）月齢17.2</strong>
+                <strong style="color: #333; font-size: 18px;">今日から4日後　月齢17.2</strong>
                 <p style="color: #666; margin: 5px 0;">振り返りの時期</p>
             </div>
         </div>
@@ -427,7 +427,7 @@
         <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 10px;">
             <span style="font-size: 24px;">🌗</span>
             <div>
-                <strong style="color: #333; font-size: 18px;">9月2日（月）下弦の月</strong>
+                <strong style="color: #333; font-size: 18px;">今日から9日後　下弦の月</strong>
                 <p style="color: #666; margin: 5px 0;">手放しの時期</p>
             </div>
         </div>
@@ -439,7 +439,7 @@
         <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 10px;">
             <span style="font-size: 24px;">🌑</span>
             <div>
-                <strong style="color: #333; font-size: 18px;">9月6日（金）月齢25.2</strong>
+                <strong style="color: #333; font-size: 18px;">今日から13日後　月齢25.2</strong>
                 <p style="color: #666; margin: 5px 0;">準備期間</p>
             </div>
         </div>
@@ -491,7 +491,7 @@
 ```html
 <div class="final-message">
     <h3 style="color: #ffd700; text-align: center; font-size: 28px; margin-bottom: 30px;">
-        ✨ 2025年を最高の年にする月からの特別なメッセージ ✨
+        ✨ 今後1年間を最高の12ヶ月にする月からの特別なメッセージ ✨
     </h3>
     
     <div style="text-align: center; margin-bottom: 30px;">
@@ -510,7 +510,7 @@
     
     <div style="margin: 40px 0; padding: 30px; background: linear-gradient(135deg, rgba(255,215,0,0.1) 0%, rgba(232,160,191,0.05) 100%); border-radius: 20px; border: 1px solid rgba(255,255,255,0.1);">
         <h4 style="font-size: 24px; color: #ffd700; margin-bottom: 25px; text-align: center;">
-            🌙 2025年を最高の年にする5つの月の教え 🌙
+            🌙 この12ヶ月を最高の期間にする5つの月の教え 🌙
         </h4>
         
         <div style="margin-bottom: 25px; padding: 20px; background: rgba(255,255,255,0.05); border-radius: 15px; border-left: 4px solid #ffd700;">
@@ -565,11 +565,11 @@
         </div>
         
         <p style="color: #f0f0ff; font-size: 18px; line-height: 2; margin-bottom: 20px;">
-            2025年、あなたは多くの「始まり」を経験します。恋愛、仕事、人間関係、すべてにおいて新しい扉が開かれるでしょう。
+            今後12ヶ月で、あなたは多くの「始まり」を経験します。恋愛、仕事、人間関係、すべてにおいて新しい扉が開かれるでしょう。
         </p>
         
         <p style="color: #f0f0ff; font-size: 18px; line-height: 2; margin-bottom: 30px;">
-            恐れずに一歩を踏み出してください。月はいつもあなたを見守り、導いています。あなたの内なる光を信じて、輝かしい一年を過ごしてください。
+            恐れずに一歩を踏み出してください。月はいつもあなたを見守り、導いています。あなたの内なる光を信じて、輝かしい12ヶ月を過ごしてください。
         </p>
         
         <div style="font-size: 24px; color: #ffd700; margin: 30px 0;">

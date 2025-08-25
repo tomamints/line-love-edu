@@ -381,7 +381,7 @@
             position: absolute;
             width: 100px;
             height: 100px;
-            background: linear-gradient(135deg, rgba(53,80,112,0.9) 0%, rgba(109,89,122,0.85) 100%);
+            background: linear-gradient(135deg, rgba(30,50,70,0.95) 0%, rgba(60,50,80,0.9) 100%);
             border-radius: 15px;
             display: flex;
             flex-direction: column;
@@ -400,9 +400,10 @@
         
         .type-label {
             font-size: 16px;
-            color: #333333;
+            color: #ffffff;
             margin-bottom: 5px;
             font-weight: 600;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
         }
         
         .type-result {
@@ -422,7 +423,7 @@
         .energy-item {
             text-align: center;
             padding: 20px;
-            background: linear-gradient(135deg, rgba(53,80,112,0.9) 0%, rgba(89,98,117,0.85) 100%);
+            background: linear-gradient(135deg, rgba(30,50,70,0.95) 0%, rgba(50,60,80,0.9) 100%);
             border-radius: 15px;
             transition: all 0.3s;
             backdrop-filter: blur(5px);
@@ -430,15 +431,15 @@
         
         /* エネルギータイプごとの色分け */
         .energy-item:nth-child(1) {
-            background: linear-gradient(135deg, rgba(181,101,118,0.9) 0%, rgba(189,128,142,0.85) 100%);
+            background: linear-gradient(135deg, rgba(90,50,60,0.95) 0%, rgba(110,70,80,0.9) 100%);
         }
         
         .energy-item:nth-child(2) {
-            background: linear-gradient(135deg, rgba(109,89,122,0.9) 0%, rgba(145,127,179,0.85) 100%);
+            background: linear-gradient(135deg, rgba(60,45,70,0.95) 0%, rgba(80,65,90,0.9) 100%);
         }
         
         .energy-item:nth-child(3) {
-            background: linear-gradient(135deg, rgba(89,98,117,0.9) 0%, rgba(124,138,172,0.85) 100%);
+            background: linear-gradient(135deg, rgba(40,50,60,0.95) 0%, rgba(60,70,80,0.9) 100%);
         }
         
         .energy-item:hover {
@@ -455,9 +456,10 @@
         
         .energy-description {
             font-size: 15px;
-            color: #333333;
+            color: #ffffff;
             line-height: 1.6;
             font-weight: 600;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
         }
         
         /* 月相カード */
@@ -465,19 +467,19 @@
             padding: 30px 15px;
             margin-bottom: 40px;
             border-left: 4px solid rgba(255,215,0,0.4);
-            background: linear-gradient(90deg, rgba(53,80,112,0.85) 0%, rgba(89,98,117,0.7) 100%);
+            background: linear-gradient(90deg, rgba(20,30,50,0.95) 0%, rgba(40,50,70,0.9) 100%);
             backdrop-filter: blur(8px);
         }
         
         /* 新月用の色 */
         .moon-phase-card.new-moon {
-            background: linear-gradient(90deg, rgba(22,33,62,0.9) 0%, rgba(53,80,112,0.8) 100%);
+            background: linear-gradient(90deg, rgba(15,20,40,0.95) 0%, rgba(30,40,60,0.9) 100%);
             border-left-color: rgba(181,165,214,0.5);
         }
         
         /* 三日月用の色 */
         .moon-phase-card.crescent {
-            background: linear-gradient(90deg, rgba(109,89,122,0.9) 0%, rgba(145,127,179,0.8) 100%);
+            background: linear-gradient(90deg, rgba(60,50,70,0.95) 0%, rgba(80,70,90,0.9) 100%);
             border-left-color: rgba(224,190,255,0.5);
         }
         
@@ -506,15 +508,17 @@
         
         .moon-phase-subtitle {
             font-size: 16px;
-            color: #333333;
+            color: #ffffff;
             font-weight: 600;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
         }
         
         .moon-phase-description {
             font-size: 20px;
             line-height: 2.1;
-            color: #333333;
+            color: #ffffff;
             font-weight: 600;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
         }
         
         /* 恋愛タイプ分析 */
@@ -526,7 +530,7 @@
         }
         
         .love-type-card {
-            background: linear-gradient(135deg, rgba(89,98,117,0.9) 0%, rgba(124,138,172,0.85) 100%);
+            background: linear-gradient(135deg, rgba(40,50,60,0.95) 0%, rgba(60,70,80,0.9) 100%);
             border-radius: 15px;
             padding: 20px;
             backdrop-filter: blur(5px);
@@ -534,19 +538,19 @@
         
         /* 恋愛タイプカードの色分け */
         .love-type-card:nth-child(1) {
-            background: linear-gradient(135deg, rgba(181,101,118,0.9) 0%, rgba(207,143,169,0.85) 100%);
+            background: linear-gradient(135deg, rgba(90,50,60,0.95) 0%, rgba(110,70,80,0.9) 100%);
         }
         
         .love-type-card:nth-child(2) {
-            background: linear-gradient(135deg, rgba(109,89,122,0.9) 0%, rgba(145,127,179,0.85) 100%);
+            background: linear-gradient(135deg, rgba(60,45,70,0.95) 0%, rgba(80,65,90,0.9) 100%);
         }
         
         .love-type-card:nth-child(3) {
-            background: linear-gradient(135deg, rgba(89,98,117,0.9) 0%, rgba(124,138,172,0.85) 100%);
+            background: linear-gradient(135deg, rgba(40,50,60,0.95) 0%, rgba(60,70,80,0.9) 100%);
         }
         
         .love-type-card:nth-child(4) {
-            background: linear-gradient(135deg, rgba(178,135,102,0.9) 0%, rgba(199,165,133,0.85) 100%);
+            background: linear-gradient(135deg, rgba(90,70,50,0.95) 0%, rgba(110,90,70,0.9) 100%);
         }
         
         .love-type-title {
@@ -567,9 +571,10 @@
         
         .love-type-content {
             font-size: 16px;
-            color: #333333;
+            color: #ffffff;
             line-height: 1.8;
             font-weight: 600;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
         }
         
         /* 運勢セクション */
@@ -582,31 +587,31 @@
         
         /* 2025年運命セクション - 紫系 */
         .fortune-section.destiny {
-            background: linear-gradient(135deg, rgba(109,89,122,0.9) 0%, rgba(145,127,179,0.85) 100%);
+            background: linear-gradient(135deg, rgba(60,40,70,0.95) 0%, rgba(80,60,90,0.9) 100%);
             border: 1px solid rgba(181,165,214,0.3);
         }
         
         /* 恋愛運セクション - ピンク系 */
         .fortune-section.love {
-            background: linear-gradient(135deg, rgba(181,101,118,0.9) 0%, rgba(207,143,169,0.85) 100%);
+            background: linear-gradient(135deg, rgba(100,50,60,0.95) 0%, rgba(120,70,80,0.9) 100%);
             border: 1px solid rgba(255,182,193,0.3);
         }
         
         /* 人間関係運セクション - 青系 */
         .fortune-section.relationship {
-            background: linear-gradient(135deg, rgba(53,80,112,0.9) 0%, rgba(89,98,117,0.85) 100%);
+            background: linear-gradient(135deg, rgba(30,50,70,0.95) 0%, rgba(50,60,80,0.9) 100%);
             border: 1px solid rgba(165,180,214,0.3);
         }
         
         /* 仕事運セクション - 緑系 */
         .fortune-section.career {
-            background: linear-gradient(135deg, rgba(81,122,105,0.9) 0%, rgba(115,152,132,0.85) 100%);
+            background: linear-gradient(135deg, rgba(40,60,50,0.95) 0%, rgba(60,80,70,0.9) 100%);
             border: 1px solid rgba(150,255,180,0.3);
         }
         
         /* 金運セクション - ゴールド系 */
         .fortune-section.money {
-            background: linear-gradient(135deg, rgba(178,135,102,0.9) 0%, rgba(199,165,133,0.85) 100%);
+            background: linear-gradient(135deg, rgba(90,70,50,0.95) 0%, rgba(110,90,70,0.9) 100%);
             border: 1px solid rgba(255,215,0,0.3);
         }
         
@@ -625,17 +630,19 @@
         
         .section-header p {
             font-size: 20px;
-            color: #333333;
+            color: #ffffff;
             line-height: 2.1;
             font-weight: 600;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
         }
         
         .fortune-content {
             padding: 0 10px;
             line-height: 2.2;
-            color: #333333;
+            color: #ffffff;
             font-weight: 600;
             font-size: 18px;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
         }
         
         .fortune-highlight {
@@ -654,9 +661,10 @@
             position: relative;
             padding-left: 30px;
             margin-bottom: 15px;
-            color: #333333;
+            color: #ffffff;
             font-weight: 600;
             font-size: 17px;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
         }
         
         .fortune-list li::before {
@@ -668,7 +676,7 @@
         
         /* 月齢カレンダー */
         .monthly-fortune {
-            background: linear-gradient(135deg, rgba(53,80,112,0.9) 0%, rgba(89,98,117,0.85) 100%);
+            background: linear-gradient(135deg, rgba(30,50,70,0.95) 0%, rgba(50,60,80,0.9) 100%);
             border-radius: 15px;
             padding: 20px;
             margin: 40px 0;
@@ -694,9 +702,9 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            background: rgba(255,255,255,0.05);
+            background: rgba(20,30,50,0.8);
             border-radius: 10px;
-            border: 1px solid rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
             transition: all 0.3s;
             min-width: 45px;
         }
@@ -708,9 +716,10 @@
         
         .day-number {
             font-size: 16px;
-            color: #333333;
+            color: #ffffff;
             margin-bottom: 5px;
             font-weight: bold;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
         }
         
         .moon-emoji {
@@ -1099,7 +1108,7 @@
             <!-- 月相説明セクション -->
             <div style="padding: 35px 0; margin: 50px 0 40px; text-align: center;">
                 <h3 style="font-size: 22px; color: #ffd700; margin-bottom: 20px; letter-spacing: 2px;">まずは、あなたの「月相」から見ていきましょう</h3>
-                <p style="color: #333333; font-size: 18px; font-weight: 600; line-height: 2; margin-bottom: 15px;">
+                <p style="color: #ffffff; font-size: 18px; font-weight: 600; line-height: 2; margin-bottom: 15px; text-shadow: 1px 1px 3px rgba(0,0,0,0.5);">
                     月相とは、あなたが生まれた日の月の形。これによって、あなたの基本的な性格や人生のテーマがわかります。あなたの月相は...
                 </p>
             </div>
@@ -1121,7 +1130,7 @@
             <!-- 裏月相説明 -->
             <div style="padding: 30px 0; margin: 40px 0; text-align: center;">
                 <h3 style="font-size: 20px; color: #ffd700; margin-bottom: 15px;">そして、あなたの「裏の顔」も見てみましょう</h3>
-                <p style="color: #333333; font-size: 18px; font-weight: 600; line-height: 1.8;">
+                <p style="color: #ffffff; font-size: 18px; font-weight: 600; line-height: 1.8; text-shadow: 1px 1px 3px rgba(0,0,0,0.5);">
                     表の月相が社会的な顔だとすれば、裏月相はあなたのプライベートな顔。親しい人の前でだけ見せる、もう一つのあなたです。
                 </p>
             </div>
@@ -1142,16 +1151,16 @@
             
             <!-- 3つの月の力 -->
             <div style="padding: 35px 0; margin: 40px 0; text-align: center;">
-                <h3 style="font-size: 22px; color: #333333; font-weight: bold; margin-bottom: 20px; letter-spacing: 2px;">次に、あなたの「裏月相」を見てみましょう</h3>
-                <p style="color: #333333; font-size: 18px; font-weight: 600; line-height: 2;">
+                <h3 style="font-size: 22px; color: #ffd700; font-weight: bold; margin-bottom: 20px; letter-spacing: 2px; text-shadow: 1px 1px 3px rgba(0,0,0,0.5);">次に、あなたの「裏月相」を見てみましょう</h3>
+                <p style="color: #ffffff; font-size: 18px; font-weight: 600; line-height: 2; text-shadow: 1px 1px 3px rgba(0,0,0,0.5);">
                     表の月相が社会的な顔だとすれば、裏月相はあなたのプライベートな顔。誰にも見せない、もう一つの月の姿があるのです。
                 </p>
             </div>
             
             <!-- 3つの月の力セクション -->
             <div style="padding: 35px 0; margin: 50px 0 40px; text-align: center;">
-                <h3 style="font-size: 22px; color: #333333; font-weight: bold; margin-bottom: 20px; letter-spacing: 2px;">3つの月の力</h3>
-                <p style="color: #333333; font-size: 18px; font-weight: 600; line-height: 2;">
+                <h3 style="font-size: 22px; color: #ffd700; font-weight: bold; margin-bottom: 20px; letter-spacing: 2px; text-shadow: 1px 1px 3px rgba(0,0,0,0.5);">3つの月の力</h3>
+                <p style="color: #ffffff; font-size: 18px; font-weight: 600; line-height: 2; text-shadow: 1px 1px 3px rgba(0,0,0,0.5);">
                     さらに深く、あなたの月が持つ特別な力を見ていきましょう。月には3つの力があり、それぞれがあなたの人生を導いています。
                 </p>
             </div>
@@ -1179,8 +1188,8 @@
             
             <!-- 4つの恋愛タイプ -->
             <div style="padding: 35px 0; margin: 50px 0 40px; text-align: center;">
-                <h3 style="font-size: 22px; color: #333333; font-weight: bold; margin-bottom: 20px; letter-spacing: 2px;">4つの恋愛タイプ</h3>
-                <p style="color: #333333; font-size: 18px; font-weight: 600; line-height: 2;">
+                <h3 style="font-size: 22px; color: #ffd700; font-weight: bold; margin-bottom: 20px; letter-spacing: 2px; text-shadow: 1px 1px 3px rgba(0,0,0,0.5);">4つの恋愛タイプ</h3>
+                <p style="color: #ffffff; font-size: 18px; font-weight: 600; line-height: 2; text-shadow: 1px 1px 3px rgba(0,0,0,0.5);">
                     ここからは、あなたの恋愛傾向をさらに詳しく分析していきます。感情表現、距離感、価値観、エネルギーの4つの観点から、あなたの恋愛パターンを読み解いていきましょう。
                 </p>
             </div>
@@ -1344,7 +1353,7 @@
             
             <!-- 月齢カレンダー -->
             <div class="monthly-fortune">
-                <h4 style="color: #333333; font-size: 22px; text-align: center; margin-bottom: 20px; font-weight: bold;">あなただけの月齢カレンダー（1月）</h4>
+                <h4 style="color: #ffd700; font-size: 22px; text-align: center; margin-bottom: 20px; font-weight: bold; text-shadow: 1px 1px 3px rgba(0,0,0,0.5);">あなただけの月齢カレンダー（1月）</h4>
                 <div class="calendar-grid">
                     <div class="calendar-day">
                         <span class="day-number">1日</span>
@@ -1375,7 +1384,7 @@
                         <span class="moon-emoji">🌗</span>
                     </div>
                 </div>
-                <p style="color: #333333; text-align: center; margin-top: 20px; font-size: 16px; font-weight: 600;">
+                <p style="color: #ffffff; text-align: center; margin-top: 20px; font-size: 16px; font-weight: 600; text-shadow: 1px 1px 3px rgba(0,0,0,0.5);">
                     新月の日：新しい出会いのチャンス
                     満月の日：告白に最適
                 </p>
