@@ -412,17 +412,6 @@
             filter: blur(5px);
         }
         
-        .center-moon::after {
-            content: '月';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 40px;
-            color: rgba(255,255,255,0.9);
-            text-shadow: 0 0 20px rgba(255,215,0,0.8);
-            font-weight: bold;
-        }
         
         @keyframes moonPulse {
             0%, 100% { 
@@ -576,9 +565,6 @@
                 height: 100px;
             }
             
-            .center-moon::after {
-                font-size: 28px;
-            }
             
             .type-item {
                 width: 65px;
@@ -1379,38 +1365,38 @@
                 
                 <!-- 要素コンテナ -->
                 <div class="elements-container">
-                    <!-- 月相 (12時の位置) -->
-                    <div class="type-item" style="top: 10px; left: 50%; transform: translateX(-50%);">
+                    <!-- 月相 (0度 - 12時の位置) -->
+                    <div class="type-item" style="top: 0; left: 50%; transform: translateX(-50%) translateY(-50%);">
                         <span class="type-label">月相</span>
                         <span class="type-result">新月</span>
                     </div>
                     
-                    <!-- 裏月相 (2時の位置) -->
-                    <div class="type-item" style="top: 20%; right: 15%;">
+                    <!-- 裏月相 (60度 - 2時の位置) -->
+                    <div class="type-item" style="top: 6.7%; right: 6.7%; transform: translate(50%, -50%);">
                         <span class="type-label">裏月相</span>
                         <span class="type-result">三日月</span>
                     </div>
                     
-                    <!-- 感情表現 (4時の位置) -->
-                    <div class="type-item" style="bottom: 35%; right: 10px;">
+                    <!-- 感情表現 (120度 - 4時の位置) -->
+                    <div class="type-item" style="bottom: 25%; right: 0; transform: translate(50%, 50%);">
                         <span class="type-label">感情表現</span>
                         <span class="type-result">ストレート型</span>
                     </div>
                     
-                    <!-- 距離感 (6時の位置) -->
-                    <div class="type-item" style="bottom: 10px; left: 50%; transform: translateX(-50%);">
+                    <!-- 距離感 (180度 - 6時の位置) -->
+                    <div class="type-item" style="bottom: 0; left: 50%; transform: translateX(-50%) translateY(50%);">
                         <span class="type-label">距離感</span>
                         <span class="type-result">自由マイペース型</span>
                     </div>
                     
-                    <!-- 価値観 (8時の位置) -->
-                    <div class="type-item" style="bottom: 35%; left: 10px;">
+                    <!-- 価値観 (240度 - 8時の位置) -->
+                    <div class="type-item" style="bottom: 25%; left: 0; transform: translate(-50%, 50%);">
                         <span class="type-label">価値観</span>
                         <span class="type-result">ロマンチスト型</span>
                     </div>
                     
-                    <!-- エネルギー (10時の位置) -->
-                    <div class="type-item" style="top: 20%; left: 15%;">
+                    <!-- エネルギー (300度 - 10時の位置) -->
+                    <div class="type-item" style="top: 6.7%; left: 6.7%; transform: translate(-50%, -50%);">
                         <span class="type-label">エネルギー</span>
                         <span class="type-result">燃え上がり型</span>
                     </div>
