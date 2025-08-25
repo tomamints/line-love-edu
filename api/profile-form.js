@@ -483,6 +483,130 @@ module.exports = async (req, res) => {
           </div>
         </div>
         
+        <div class="section">
+          <h2 class="section-title">💝 あなたの恋愛タイプ診断</h2>
+          
+          <div class="form-group">
+            <label><strong>Q1：想いを伝えるときのスタイルは？</strong></label>
+            <div class="radio-group">
+              <label class="radio-option ${existing.emotionalExpression === 'straight' ? 'selected' : ''}">
+                <input type="radio" name="emotionalExpression" value="straight" ${existing.emotionalExpression === 'straight' ? 'checked' : ''} required>
+                <div class="radio-label">
+                  <div class="radio-title">「好き！」と真っ直ぐ伝える</div>
+                </div>
+              </label>
+              <label class="radio-option ${existing.emotionalExpression === 'physical' ? 'selected' : ''}">
+                <input type="radio" name="emotionalExpression" value="physical" ${existing.emotionalExpression === 'physical' ? 'checked' : ''} required>
+                <div class="radio-label">
+                  <div class="radio-title">手をつないだり会いに行く</div>
+                </div>
+              </label>
+              <label class="radio-option ${existing.emotionalExpression === 'subtle' ? 'selected' : ''}">
+                <input type="radio" name="emotionalExpression" value="subtle" ${existing.emotionalExpression === 'subtle' ? 'checked' : ''} required>
+                <div class="radio-label">
+                  <div class="radio-title">プチプレゼントやメッセージで匂わせ</div>
+                </div>
+              </label>
+              <label class="radio-option ${existing.emotionalExpression === 'shy' ? 'selected' : ''}">
+                <input type="radio" name="emotionalExpression" value="shy" ${existing.emotionalExpression === 'shy' ? 'checked' : ''} required>
+                <div class="radio-label">
+                  <div class="radio-title">気持ちはあるのになかなか伝えられない</div>
+                </div>
+              </label>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label><strong>Q2：恋人との距離感で心地いいのは？</strong></label>
+            <div class="radio-group">
+              <label class="radio-option ${existing.distanceStyle === 'close' ? 'selected' : ''}">
+                <input type="radio" name="distanceStyle" value="close" ${existing.distanceStyle === 'close' ? 'checked' : ''} required>
+                <div class="radio-label">
+                  <div class="radio-title">常に繋がっていたい</div>
+                </div>
+              </label>
+              <label class="radio-option ${existing.distanceStyle === 'moderate' ? 'selected' : ''}">
+                <input type="radio" name="distanceStyle" value="moderate" ${existing.distanceStyle === 'moderate' ? 'checked' : ''} required>
+                <div class="radio-label">
+                  <div class="radio-title">1日1回連絡くらいの安心ペースで行きたい</div>
+                </div>
+              </label>
+              <label class="radio-option ${existing.distanceStyle === 'independent' ? 'selected' : ''}">
+                <input type="radio" name="distanceStyle" value="independent" ${existing.distanceStyle === 'independent' ? 'checked' : ''} required>
+                <div class="radio-label">
+                  <div class="radio-title">自分1人の時間や友達、家族との時間も大事にしたい</div>
+                </div>
+              </label>
+              <label class="radio-option ${existing.distanceStyle === 'cautious' ? 'selected' : ''}">
+                <input type="radio" name="distanceStyle" value="cautious" ${existing.distanceStyle === 'cautious' ? 'checked' : ''} required>
+                <div class="radio-label">
+                  <div class="radio-title">慎重に距離を保ちながら少しずつ仲良くなりたい</div>
+                </div>
+              </label>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label><strong>Q3：恋愛で大事にしたいものは？</strong></label>
+            <div class="radio-group">
+              <label class="radio-option ${existing.loveValues === 'romantic' ? 'selected' : ''}">
+                <input type="radio" name="loveValues" value="romantic" ${existing.loveValues === 'romantic' ? 'checked' : ''} required>
+                <div class="radio-label">
+                  <div class="radio-title">理想やドラマみたいな特別感</div>
+                </div>
+              </label>
+              <label class="radio-option ${existing.loveValues === 'realistic' ? 'selected' : ''}">
+                <input type="radio" name="loveValues" value="realistic" ${existing.loveValues === 'realistic' ? 'checked' : ''} required>
+                <div class="radio-label">
+                  <div class="radio-title">安定や現実的な安心感</div>
+                </div>
+              </label>
+              <label class="radio-option ${existing.loveValues === 'excitement' ? 'selected' : ''}">
+                <input type="radio" name="loveValues" value="excitement" ${existing.loveValues === 'excitement' ? 'checked' : ''} required>
+                <div class="radio-label">
+                  <div class="radio-title">新しい体験やドキドキ感</div>
+                </div>
+              </label>
+              <label class="radio-option ${existing.loveValues === 'growth' ? 'selected' : ''}">
+                <input type="radio" name="loveValues" value="growth" ${existing.loveValues === 'growth' ? 'checked' : ''} required>
+                <div class="radio-label">
+                  <div class="radio-title">一緒に成長できる関係</div>
+                </div>
+              </label>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label><strong>Q4：あなたのこれまでの恋愛のペースは？</strong></label>
+            <div class="radio-group">
+              <label class="radio-option ${existing.loveEnergy === 'intense' ? 'selected' : ''}">
+                <input type="radio" name="loveEnergy" value="intense" ${existing.loveEnergy === 'intense' ? 'checked' : ''} required>
+                <div class="radio-label">
+                  <div class="radio-title">一気に燃え上がるタイプ</div>
+                </div>
+              </label>
+              <label class="radio-option ${existing.loveEnergy === 'stable' ? 'selected' : ''}">
+                <input type="radio" name="loveEnergy" value="stable" ${existing.loveEnergy === 'stable' ? 'checked' : ''} required>
+                <div class="radio-label">
+                  <div class="radio-title">安定してコツコツ続くタイプ</div>
+                </div>
+              </label>
+              <label class="radio-option ${existing.loveEnergy === 'fluctuating' ? 'selected' : ''}">
+                <input type="radio" name="loveEnergy" value="fluctuating" ${existing.loveEnergy === 'fluctuating' ? 'checked' : ''} required>
+                <div class="radio-label">
+                  <div class="radio-title">浮き沈みがあるタイプ</div>
+                </div>
+              </label>
+              <label class="radio-option ${existing.loveEnergy === 'cool' ? 'selected' : ''}">
+                <input type="radio" name="loveEnergy" value="cool" ${existing.loveEnergy === 'cool' ? 'checked' : ''} required>
+                <div class="radio-label">
+                  <div class="radio-title">恋愛だけに全振りせず冷静なタイプ</div>
+                </div>
+              </label>
+            </div>
+          </div>
+        </div>
+        
         <button type="submit" class="submit-btn">
           おつきさまにお伝えする
         </button>
@@ -546,7 +670,7 @@ module.exports = async (req, res) => {
     // ラジオボタンの選択状態を管理
     document.addEventListener('DOMContentLoaded', function() {
       // すべてのラジオボタングループに対して処理
-      ['loveSituation', 'wantToKnow'].forEach(groupName => {
+      ['loveSituation', 'wantToKnow', 'emotionalExpression', 'distanceStyle', 'loveValues', 'loveEnergy'].forEach(groupName => {
         const radios = document.querySelectorAll(\`input[name="\${groupName}"]\`);
         radios.forEach(radio => {
           radio.addEventListener('change', function() {
@@ -603,7 +727,12 @@ module.exports = async (req, res) => {
       });
     }
     
-    const { userId, userBirthdate, userAge, userGender, partnerBirthdate, partnerAge, partnerGender, loveSituation, wantToKnow } = req.body;
+    const { 
+      userId, userBirthdate, userAge, userGender, 
+      partnerBirthdate, partnerAge, partnerGender, 
+      loveSituation, wantToKnow,
+      emotionalExpression, distanceStyle, loveValues, loveEnergy 
+    } = req.body;
     
     if (!userId) {
       return res.status(400).json({ error: 'User ID is required' });
@@ -623,6 +752,10 @@ module.exports = async (req, res) => {
         partnerGender,
         loveSituation,
         wantToKnow,
+        emotionalExpression,
+        distanceStyle,
+        loveValues,
+        loveEnergy,
         updatedAt: new Date().toISOString()
       };
       

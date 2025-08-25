@@ -1372,27 +1372,27 @@
                 <div class="love-type-card">
                     <div class="love-type-title">
                         <div class="love-type-icon"></div>
-                        感情表現：ストレート型
+                        感情表現：<span id="emotionalExpressionType">ストレート型</span>
                     </div>
-                    <div class="love-type-content">
+                    <div class="love-type-content" id="emotionalExpressionContent">
                         好きな人には素直に気持ちを伝えるタイプ。駆け引きは苦手で、思ったことがすぐ顔に出てしまいます。その純粋さが、相手の心を動かす最大の魅力。
                     </div>
                 </div>
                 <div class="love-type-card">
                     <div class="love-type-title">
                         <div class="love-type-icon"></div>
-                        距離感：自由マイペース型
+                        距離感：<span id="distanceStyleType">自由マイペース型</span>
                     </div>
-                    <div class="love-type-content">
+                    <div class="love-type-content" id="distanceStyleContent">
                         束縛されることを嫌い、自分のペースを大切にします。相手にも自由を与え、お互いに成長できる関係を理想とします。
                     </div>
                 </div>
                 <div class="love-type-card">
                     <div class="love-type-title">
                         <div class="love-type-icon"></div>
-                        価値観：ロマンチスト型
+                        価値観：<span id="loveValuesType">ロマンチスト型</span>
                     </div>
-                    <div class="love-type-content">
+                    <div class="love-type-content" id="loveValuesContent">
                         あなたは恋愛に夢と理想を求め、映画や小説のような美しい物語を紡ぎたいタイプです。運命の出会い、劇的な告白、記念日のサプライズ、全てにドラマチックな演出を求めます。日常の中にも特別な瞬間を見出し、二人だけの思い出を大切に積み重ねていきます。<br><br>
                         初デートの場所、初めてのキス、プロポーズの瞬間、全てにこだわりを持ち、完璧なシチュエーションを演出したいと考えます。記念日は必ず特別な計画を立て、相手を驚かせ感動させることに喜びを感じます。写真や動画で思い出を記録し、二人の恋愛史を美しく残していきます。<br><br>
                         言葉選びも詩的で、「愛してる」だけでなく「君は僕の太陽だ」「運命の人に出会えた」といったロマンチックな表現を使います。相手にも同じような情熱的な愛情表現を期待し、日常の中に非日常的な愛を求めます。<br><br>
@@ -1402,9 +1402,9 @@
                 <div class="love-type-card">
                     <div class="love-type-title">
                         <div class="love-type-icon"></div>
-                        エネルギー：燃え上がり型
+                        エネルギー：<span id="loveEnergyType">燃え上がり型</span>
                     </div>
-                    <div class="love-type-content">
+                    <div class="love-type-content" id="loveEnergyContent">
                         あなたは恋愛において、一気に感情が燃え上がるタイプです。好きになったら全速力でアプローチし、恋愛モードに入ると他のことが手につかなくなるほど。その情熱的な恋愛スタイルは、まさに恋の炎が激しく燃え上がる様子そのものです。<br><br>
                         出会って「ビビッ」ときたら、すぐに行動開始。相手のSNSを全てチェックし、共通の話題を見つけ、デートに誘うまでが超スピード。付き合い始めたら毎日でも会いたいし、会えない時は一日中相手のことを考えています。仕事中も相手からのLINEが気になって仕方ありません。<br><br>
                         愛情表現も情熱的で、「世界で一番愛してる」「君なしでは生きていけない」といった激しい言葉を使います。プレゼントも奮発し、サプライズも全力投球。相手を喜ばせるためなら、どんな努力も惜しみません。この期間のあなたのエネルギーは、まさに恋愛に全振り状態です。<br><br>
@@ -1887,6 +1887,117 @@
             }
         }
         
+        // URLからユーザーIDを取得
+        function getUserIdFromUrl() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get('userId');
+        }
+        
+        // ユーザーのプロフィールを取得して表示
+        async function loadUserProfile() {
+            const userId = getUserIdFromUrl();
+            if (!userId) {
+                console.log('No userId in URL, using default values');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/api/get-love-profile?userId=${userId}`);
+                const data = await response.json();
+                
+                if (data.success && data.profile) {
+                    // 4つの軸の結果を更新
+                    if (data.profile.emotionalExpression) {
+                        document.getElementById('emotionalExpressionType').textContent = data.profile.emotionalExpression;
+                        updateEmotionalExpressionContent(data.profile.emotionalExpression);
+                    }
+                    if (data.profile.distanceStyle) {
+                        document.getElementById('distanceStyleType').textContent = data.profile.distanceStyle;
+                        updateDistanceStyleContent(data.profile.distanceStyle);
+                    }
+                    if (data.profile.loveValues) {
+                        document.getElementById('loveValuesType').textContent = data.profile.loveValues;
+                        updateLoveValuesContent(data.profile.loveValues);
+                    }
+                    if (data.profile.loveEnergy) {
+                        document.getElementById('loveEnergyType').textContent = data.profile.loveEnergy;
+                        updateLoveEnergyContent(data.profile.loveEnergy);
+                    }
+                    
+                    console.log('User profile loaded:', data.profile);
+                }
+            } catch (error) {
+                console.error('Failed to load user profile:', error);
+            }
+        }
+        
+        // 各タイプの説明を更新する関数
+        function updateEmotionalExpressionContent(type) {
+            const contents = {
+                'ストレート告白型': '好きな人には素直に気持ちを伝えるタイプ。駆け引きは苦手で、思ったことがすぐ顔に出てしまいます。その純粋さが、相手の心を動かす最大の魅力。',
+                'スキンシップ型': '言葉よりも行動で愛を表現するタイプ。手をつなぐ、ハグする、そばにいることで愛情を伝えます。触れ合いを通じて深い絆を築いていきます。',
+                'さりげない気遣い型': '大げさな言葉よりも、日常の小さな優しさで愛を示すタイプ。相手の好みを覚えて、さりげなくプレゼントしたり、疲れた時にそっと寄り添います。',
+                '奥手シャイ型': '心の中では大きな愛を抱えているけれど、なかなか表現できないタイプ。でも、その控えめな愛情表現が、かえって相手の心を掴むことも。'
+            };
+            const content = contents[type];
+            if (content) {
+                document.getElementById('emotionalExpressionContent').textContent = content;
+            }
+        }
+        
+        function updateDistanceStyleContent(type) {
+            const contents = {
+                'ベッタリ依存型': '恋人とは常に繋がっていたいタイプ。毎日会いたいし、連絡も頻繁。二人の世界に浸ることで、最高の幸せを感じます。',
+                '安心セーフ型': '適度な連絡と会う頻度で安心感を得るタイプ。毎日一回は連絡を取り合い、週末はデート。バランスの取れた関係を築きます。',
+                '自由マイペース型': '束縛されることを嫌い、自分のペースを大切にします。相手にも自由を与え、お互いに成長できる関係を理想とします。',
+                '壁あり慎重型': 'すぐには心を開かず、じっくりと距離を縮めていくタイプ。時間をかけて築いた信頼関係は、誰よりも深く強固なものになります。'
+            };
+            const content = contents[type];
+            if (content) {
+                document.getElementById('distanceStyleContent').textContent = content;
+            }
+        }
+        
+        function updateLoveValuesContent(type) {
+            // LP_love-type-descriptions.mdから取得した詳細な説明を使用
+            const element = document.getElementById('loveValuesContent');
+            if (!element) return;
+            
+            // 既存の長い説明をそのまま使用（タイプによって切り替え）
+            // ここでは簡略版を表示（詳細版は別途実装可能）
+            if (type !== 'ロマンチスト型') {
+                element.innerHTML = getLoveValuesDetailedContent(type);
+            }
+        }
+        
+        function updateLoveEnergyContent(type) {
+            const element = document.getElementById('loveEnergyContent');
+            if (!element) return;
+            
+            if (type !== '燃え上がり型') {
+                element.innerHTML = getLoveEnergyDetailedContent(type);
+            }
+        }
+        
+        function getLoveValuesDetailedContent(type) {
+            // 詳細な説明を返す（LP_love-type-descriptions.mdの内容を参照）
+            const contents = {
+                'リアリスト型': '現実的で堅実な恋愛観を持つあなた。愛は日常の積み重ねだと考え、派手な演出よりも確実な幸せを求めます。',
+                '刺激ハンター型': '新しい体験やドキドキを求めるあなた。マンネリは大敵で、常に新鮮な刺激を恋愛に求めます。',
+                '成長パートナー型': '恋愛を通じて共に成長することを重視するあなた。相手と切磋琢磨し、より良い自分になることを目指します。'
+            };
+            return contents[type] || '';
+        }
+        
+        function getLoveEnergyDetailedContent(type) {
+            const contents = {
+                '持続型': '安定した愛情を長く注ぎ続けるタイプ。激しい恋ではないけれど、確実に深まっていく愛を育みます。',
+                '波あり型': '感情の浮き沈みがあるタイプ。時に情熱的、時にクール。その変化が恋愛にスパイスを与えます。',
+                'クール型': '恋愛に全てを捧げず、冷静さを保つタイプ。バランスの取れた大人の恋愛を楽しみます。'
+            };
+            return contents[type] || '';
+        }
+        
         // フォームの送信処理
         document.getElementById('moonForm').addEventListener('submit', function(e) {
             e.preventDefault();
@@ -1907,6 +2018,9 @@
             // フォームを非表示にして結果を表示
             document.getElementById('formSection').style.display = 'none';
             document.getElementById('resultSection').style.display = 'block';
+            
+            // ユーザープロフィールを読み込む
+            loadUserProfile();
             
             // スムーズにスクロール
             window.scrollTo({
