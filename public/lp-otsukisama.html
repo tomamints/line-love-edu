@@ -11,6 +11,11 @@
             box-sizing: border-box;
         }
         
+        html {
+            overflow-x: hidden;
+            width: 100%;
+        }
+        
         body {
             font-family: 'Hiragino Mincho ProN', 'Yu Mincho', serif;
             background: linear-gradient(180deg, #0a0a1e 0%, #1a1a3e 50%, #0f0f2e 100%);
@@ -84,6 +89,8 @@
             padding: 20px;
             position: relative;
             z-index: 1;
+            width: 100%;
+            overflow-x: hidden;
         }
         
         /* ヘッダー */
@@ -353,6 +360,7 @@
             width: 400px;
             height: 400px;
             margin: 50px auto;
+            max-width: calc(100vw - 40px);
         }
         
         .center-moon {
@@ -631,6 +639,8 @@
             padding: 25px;
             margin: 40px 0;
             border: 1px solid rgba(255,255,255,0.08);
+            width: 100%;
+            overflow-x: hidden;
         }
         
         .calendar-grid {
@@ -638,6 +648,10 @@
             grid-template-columns: repeat(7, 1fr);
             gap: 10px;
             margin-top: 20px;
+            width: 100%;
+            overflow-x: auto;
+            overflow-y: hidden;
+            -webkit-overflow-scrolling: touch;
         }
         
         .calendar-day {
@@ -650,6 +664,7 @@
             border-radius: 10px;
             border: 1px solid rgba(255,255,255,0.1);
             transition: all 0.3s;
+            min-width: 45px;
         }
         
         .calendar-day:hover {
@@ -737,8 +752,10 @@
         /* レスポンシブ対応 */
         @media (max-width: 768px) {
             .moon-types-circle {
-                width: 320px;
-                height: 320px;
+                width: calc(100vw - 40px);
+                max-width: 320px;
+                height: calc(100vw - 40px);
+                max-height: 320px;
             }
             
             .type-item {
@@ -778,12 +795,18 @@
             }
             
             .calendar-grid {
-                grid-template-columns: repeat(7, 1fr);
-                gap: 5px;
+                display: flex;
+                flex-wrap: wrap;
+                gap: 8px;
+                justify-content: space-between;
             }
             
             .calendar-day {
-                font-size: 10px;
+                font-size: 11px;
+                width: calc(25% - 6px);
+                min-width: calc(25% - 6px);
+                aspect-ratio: auto;
+                padding: 8px 5px;
             }
             
             .moon-emoji {
