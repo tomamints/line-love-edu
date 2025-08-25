@@ -435,17 +435,16 @@
         /* 要素コンテナ（軌道上を回転） */
         .elements-container {
             position: absolute;
-            top: 50%;
-            left: 50%;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
-            transform: translate(-50%, -50%);
             animation: orbitRotation 40s linear infinite;
         }
         
         @keyframes orbitRotation {
-            from { transform: translate(-50%, -50%) rotate(0deg); }
-            to { transform: translate(-50%, -50%) rotate(360deg); }
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
         }
         
         .type-item {
