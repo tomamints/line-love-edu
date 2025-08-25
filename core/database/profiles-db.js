@@ -37,9 +37,23 @@ class ProfilesDB {
       partner_name TEXT,
       partner_birth_date DATE,
       partner_gender TEXT,
+      love_situation TEXT,
+      want_to_know TEXT,
+      emotional_expression TEXT,
+      distance_style TEXT,
+      love_values TEXT,
+      love_energy TEXT,
       created_at TIMESTAMP DEFAULT NOW(),
       updated_at TIMESTAMP DEFAULT NOW()
     );
+    
+    -- 既存テーブルに新しいカラムを追加する場合：
+    ALTER TABLE profiles ADD COLUMN IF NOT EXISTS love_situation TEXT;
+    ALTER TABLE profiles ADD COLUMN IF NOT EXISTS want_to_know TEXT;
+    ALTER TABLE profiles ADD COLUMN IF NOT EXISTS emotional_expression TEXT;
+    ALTER TABLE profiles ADD COLUMN IF NOT EXISTS distance_style TEXT;
+    ALTER TABLE profiles ADD COLUMN IF NOT EXISTS love_values TEXT;
+    ALTER TABLE profiles ADD COLUMN IF NOT EXISTS love_energy TEXT;
     */
   }
 
@@ -71,6 +85,10 @@ class ProfilesDB {
         mergedData.partnerGender = info.partnerGender;
         mergedData.loveSituation = info.loveSituation;
         mergedData.wantToKnow = info.wantToKnow;
+        mergedData.emotionalExpression = info.emotionalExpression;
+        mergedData.distanceStyle = info.distanceStyle;
+        mergedData.loveValues = info.loveValues;
+        mergedData.loveEnergy = info.loveEnergy;
       }
       
       const upsertData = {
@@ -83,6 +101,10 @@ class ProfilesDB {
         partner_gender: mergedData.partnerGender || null,
         love_situation: mergedData.loveSituation || null,
         want_to_know: mergedData.wantToKnow || null,
+        emotional_expression: mergedData.emotionalExpression || null,
+        distance_style: mergedData.distanceStyle || null,
+        love_values: mergedData.loveValues || null,
+        love_energy: mergedData.loveEnergy || null,
         updated_at: new Date().toISOString()
       };
       
@@ -234,6 +256,10 @@ class ProfilesDB {
       partnerGender: data.partner_gender,
       loveSituation: data.love_situation,
       wantToKnow: data.want_to_know,
+      emotionalExpression: data.emotional_expression,
+      distanceStyle: data.distance_style,
+      loveValues: data.love_values,
+      loveEnergy: data.love_energy,
       createdAt: data.created_at,
       updatedAt: data.updated_at,
       // lastFortuneResultなどの追加データは元のprofileDataから継承
@@ -250,7 +276,11 @@ class ProfilesDB {
         partnerAge: data.partner_birth_date ? this.calculateAge(data.partner_birth_date) : null,
         partnerGender: data.partner_gender,
         loveSituation: data.love_situation,
-        wantToKnow: data.want_to_know
+        wantToKnow: data.want_to_know,
+        emotionalExpression: data.emotional_expression,
+        distanceStyle: data.distance_style,
+        loveValues: data.love_values,
+        loveEnergy: data.love_energy
       };
     }
     
