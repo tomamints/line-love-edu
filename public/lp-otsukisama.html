@@ -440,6 +440,7 @@
             width: 100%;
             height: 100%;
             animation: orbitRotation 40s linear infinite;
+            transform-origin: center center;
         }
         
         @keyframes orbitRotation {
@@ -1365,37 +1366,37 @@
                 <!-- 要素コンテナ -->
                 <div class="elements-container">
                     <!-- 月相 (0度 - 上) -->
-                    <div class="type-item" style="left: 50%; top: calc(50% - 160px); transform: translate(-50%, -50%);">
+                    <div class="type-item" style="left: calc(250px - 40px); top: calc(250px - 160px - 40px);">
                         <span class="type-label">月相</span>
                         <span class="type-result">新月</span>
                     </div>
                     
                     <!-- 裏月相 (60度) -->
-                    <div class="type-item" style="left: calc(50% + 138px); top: calc(50% - 80px); transform: translate(-50%, -50%);">
+                    <div class="type-item" style="left: calc(250px + 138px - 40px); top: calc(250px - 80px - 40px);">
                         <span class="type-label">裏月相</span>
                         <span class="type-result">三日月</span>
                     </div>
                     
                     <!-- 感情表現 (120度) -->
-                    <div class="type-item" style="left: calc(50% + 138px); top: calc(50% + 80px); transform: translate(-50%, -50%);">
+                    <div class="type-item" style="left: calc(250px + 138px - 40px); top: calc(250px + 80px - 40px);">
                         <span class="type-label">感情表現</span>
                         <span class="type-result">ストレート型</span>
                     </div>
                     
                     <!-- 距離感 (180度 - 下) -->
-                    <div class="type-item" style="left: 50%; top: calc(50% + 160px); transform: translate(-50%, -50%);">
+                    <div class="type-item" style="left: calc(250px - 40px); top: calc(250px + 160px - 40px);">
                         <span class="type-label">距離感</span>
                         <span class="type-result">自由マイペース型</span>
                     </div>
                     
                     <!-- 価値観 (240度) -->
-                    <div class="type-item" style="left: calc(50% - 138px); top: calc(50% + 80px); transform: translate(-50%, -50%);">
+                    <div class="type-item" style="left: calc(250px - 138px - 40px); top: calc(250px + 80px - 40px);">
                         <span class="type-label">価値観</span>
                         <span class="type-result">ロマンチスト型</span>
                     </div>
                     
                     <!-- エネルギー (300度) -->
-                    <div class="type-item" style="left: calc(50% - 138px); top: calc(50% - 80px); transform: translate(-50%, -50%);">
+                    <div class="type-item" style="left: calc(250px - 138px - 40px); top: calc(250px - 80px - 40px);">
                         <span class="type-label">エネルギー</span>
                         <span class="type-result">燃え上がり型</span>
                     </div>
