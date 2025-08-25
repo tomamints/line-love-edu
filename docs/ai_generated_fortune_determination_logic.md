@@ -1,172 +1,157 @@
 # 運勢決定ロジック設計書
 
 ## 概要
-おつきさま診断における運勢（全体運・恋愛運・仕事運・金運）の決定メカニズムを定義。月相、日付、個人情報、天文学的要素を組み合わせた多層的なアルゴリズムにより、パーソナライズされた運勢を生成する。
+おつきさま診断における運勢（全体運・恋愛運・仕事運・金運）の決定メカニズムを定義。誕生時の月相と裏月相の組み合わせによる64パターンを基軸とした、年間を通じた長期的な運勢傾向を生成する。
 
 ---
 
 ## 1. 基本アーキテクチャ
 
-### 1.1 運勢決定の4つの要素
+### 1.1 運勢決定の基本要素
 ```
-最終運勢 = 基本月相運勢 × 現在月相補正 × 季節調整 × 個人化係数
+年間運勢パターン = 月相タイプ × 裏月相タイプ × 季節的流れ × 個性調整
 ```
 
 #### 要素詳細
-1. **基本月相運勢**: 誕生時の月相による基本的な性格・運勢傾向
-2. **現在月相補正**: 現在の月相との相性による運勢の変動
-3. **季節調整**: 季節や月による運勢の自然な変化
-4. **個人化係数**: 生年月日の詳細情報による微調整
+1. **月相タイプ**: 誕生時の月相による基本性格（8種類）
+2. **裏月相タイプ**: 内面の月相による隠れた特性（8種類）
+3. **季節的流れ**: 年間を通じた自然なエネルギーの変化
+4. **個性調整**: 恋愛運における個人の特性（エネルギー、価値観、距離感、感情表現）
 
 ### 1.2 システム構成
 ```javascript
 class FortuneEngine {
     constructor() {
-        this.moonEngine = new MoonFortuneEngineV2();
-        this.timeCalculator = new TimeBasedCalculator();
-        this.personalizer = new PersonalizedCalculator();
-        this.contentGenerator = new ContentGenerator();
+        this.moonPatternEngine = new MoonPatternEngine();     // 64パターン管理
+        this.annualFlowEngine = new AnnualFlowEngine();       // 年間運勢流れ
+        this.personalityEngine = new PersonalityEngine();     // 個性要素（恋愛運用）
+        this.contentGenerator = new ContentGenerator();       // コンテンツ生成
     }
 }
 ```
 
 ---
 
-## 2. 月相ベースの基本運勢システム
+## 2. 64パターン月相システム
 
-### 2.1 基本運勢マトリックス
-各月相タイプの基本的な運勢傾向を数値化
+### 2.1 月相×裏月相の基本傾向
+各組み合わせによる性格・運勢の基本パターン（数値化は廃止し、質的な傾向で表現）
 
 ```javascript
-const BASE_FORTUNE_MATRIX = {
+const MOON_PATTERN_MATRIX = {
+    '新月×新月': {
+        overall: '純粋な創造エネルギー。一年を通じて新しいことに挑戦し続ける',
+        love: '一目惚れしやすく、情熱的な恋愛。相手を変化させる力を持つ',
+        career: '起業・独立に最適。革新的なアイデアで業界を変える可能性',
+        money: '投資や新規事業で成功。リスクを恐れない姿勢が幸運を呼ぶ'
+    },
+    '新月×三日月': {
+        overall: '外向的エネルギーと内向的慎重さのバランス。計画的な挑戦者',
+        love: '積極的だが相手を思いやる恋愛。長期的な関係を築くのが得意',
+        career: '新しいことを始めつつ、リスク管理もできる理想的なタイプ',
+        money: '冒険と安定のバランス。堅実な投資で着実に資産を増やす'
+    },
+    // ... 残り62パターンの定義
+};
+```
+
+### 2.2 裏月相の影響パターン
+裏月相は表の月相に深みと複雑さを与える隠れた要素として作用
+
+```javascript
+const HIDDEN_MOON_INFLUENCES = {
     '新月': {
-        overall: 85,    // 全体運：新しい始まり、創造力
-        love: 80,       // 恋愛運：積極的、魅力的
-        career: 90,     // 仕事運：革新的、リーダーシップ
-        money: 75       // 金運：投資、新規事業
+        trait: '純粋性と直感',
+        influence: '表面的な行動の背後にある純粋な動機と強い直感力',
+        effect: '決断が早く、後悔しない。本能的に正しい選択をする'
     },
     '三日月': {
-        overall: 75,    // 全体運：成長、慎重
-        love: 85,       // 恋愛運：優しさ、思いやり
-        career: 70,     // 仕事運：サポート、協調性
-        money: 80       // 金運：貯蓄、安定
+        trait: '慎重さと配慮',
+        influence: '行動する前の丁寧な準備と他者への深い配慮',
+        effect: '失敗が少なく、周りからの信頼を得やすい'
     },
-    '上弦の月': {
-        overall: 85,    // 全体運：決断力、行動力
-        love: 75,       // 恋愛運：計画的、現実的
-        career: 90,     // 仕事運：マネジメント、戦略
-        money: 85       // 金運：投資、資産運用
-    },
-    '十三夜': {
-        overall: 90,    // 全体運：安定、成熟
-        love: 85,       // 恋愛運：深い関係、信頼
-        career: 80,     // 仕事運：継続、品質
-        money: 85       // 金運：長期投資、資産形成
-    },
-    '満月': {
-        overall: 95,    // 全体運：完成、達成
-        love: 90,       // 恋愛運：情熱、魅力
-        career: 85,     // 仕事運：成果、評価
-        money: 80       // 金運：収穫、ボーナス
-    },
-    '十六夜': {
-        overall: 85,    // 全体運：余裕、成熟
-        love: 85,       // 恋愛運：落ち着いた関係
-        career: 80,     // 仕事運：指導、メンター
-        money: 85       // 金運：安定収入、運用
-    },
-    '下弦の月': {
-        overall: 75,    // 全体運：整理、内省
-        love: 70,       // 恋愛運：慎重、質重視  
-        career: 75,     // 仕事運：効率化、改善
-        money: 90       // 金運：節約、管理
-    },
-    '暁': {
-        overall: 80,    // 全体運：変化、準備
-        love: 75,       // 恋愛運：深い繋がり
-        career: 75,     // 仕事運：創作、独立
-        money: 75       // 金運：新しい収入源
-    }
+    // ... 他の月相パターン
 };
-```
-
-### 2.2 裏月相による補正
-裏月相は基本運勢に対して ±5-15% の補正を加える
-
-```javascript
-function applyHiddenMoonCorrection(baseFortune, hiddenMoonType) {
-    const corrections = {
-        '新月': { overall: 1.1, love: 0.95, career: 1.05, money: 1.0 },
-        '三日月': { overall: 1.0, love: 1.1, career: 0.95, money: 1.05 },
-        // ... 他の月相
-    };
-    
-    const correction = corrections[hiddenMoonType];
-    return {
-        overall: Math.round(baseFortune.overall * correction.overall),
-        love: Math.round(baseFortune.love * correction.love),
-        career: Math.round(baseFortune.career * correction.career),
-        money: Math.round(baseFortune.money * correction.money)
-    };
-}
 ```
 
 ---
 
-## 3. 時間要素による動的補正
+## 3. 年間エネルギーフローシステム
 
-### 3.1 現在月相との相性補正
-現在の月相と誕生時月相の相性により、日々の運勢が変動
-
-```javascript
-function calculateCurrentMoonInfluence(birthMoonType, currentDate) {
-    const currentMoonAge = calculateMoonAge(currentDate);
-    const currentMoonType = getMoonTypeFromAge(currentMoonAge);
-    const compatibility = getCompatibilityScore(birthMoonType, currentMoonType.type);
-    
-    // 相性スコアを補正係数に変換
-    const influenceMultiplier = {
-        95: 1.2,  // 最高相性：+20%
-        75: 1.1,  // 良い相性：+10%
-        55: 1.0   // 普通：変化なし
-    };
-    
-    return influenceMultiplier[compatibility] || 1.0;
-}
-```
-
-### 3.2 季節・月による調整
-自然のサイクルに合わせた運勢の変動
+### 3.1 季節による運勢の自然な変化
+一年を通じた運勢の大きな流れ（日単位の変動は除外）
 
 ```javascript
-const SEASONAL_ADJUSTMENTS = {
-    spring: {  // 3-5月：成長と新規開始
-        overall: 1.1, love: 1.15, career: 1.2, money: 1.05
+const ANNUAL_FLOW_PATTERNS = {
+    spring: {  // 3-5月：芽吹きと新たな始まり
+        theme: '種まきと成長の季節',
+        energy: '新月系タイプにとって最高のエネルギー期間',
+        focus: '新しいことを始める、人との出会い、計画の実行'
     },
-    summer: {  // 6-8月：活動と成果
-        overall: 1.2, love: 1.1, career: 1.15, money: 1.1
+    summer: {  // 6-8月：活動と実現
+        theme: '情熱と行動の季節', 
+        energy: '全ての月相タイプが活発になる時期',
+        focus: '恋愛成就、仕事の成果、積極的な行動'
     },
     autumn: {  // 9-11月：収穫と安定
-        overall: 1.15, love: 1.05, career: 1.1, money: 1.2
+        theme: '成果と調和の季節',
+        energy: '満月・下弦系タイプが力を発揮する時期',
+        focus: '関係の深化、成果の確認、将来への準備'
     },
     winter: {  // 12-2月：内省と準備
-        overall: 1.0, love: 1.0, career: 1.05, money: 1.15
+        theme: '静寂と準備の季節',
+        energy: '暁・三日月系タイプが内面を充実させる時期', 
+        focus: '自己理解、スキルアップ、来年への構想'
     }
 };
 ```
 
-### 3.3 特別な日付による大幅補正
-天文学的に重要な日付での運勢ブースト
+### 3.2 月相タイプ別の年間エネルギーカーブ
+各月相タイプが一年を通じてどのような波を描くかの傾向
 
 ```javascript
-const SPECIAL_DATES_2025 = [
-    { date: '2025-04-19', type: 'new_moon', boost: 1.5 },      // 新月
-    { date: '2025-05-04', type: 'full_moon', boost: 1.3 },     // 満月
-    { date: '2025-06-21', type: 'summer_solstice', boost: 1.4 }, // 夏至
-    { date: '2025-08-09', type: 'full_moon', boost: 1.3 },     // 満月
-    { date: '2025-09-12', type: 'new_moon', boost: 1.5 },      // 新月
-    { date: '2025-10-29', type: 'new_moon', boost: 1.5 },      // 新月
-    { date: '2025-12-08', type: 'full_moon', boost: 1.3 }      // 満月
+const MOON_TYPE_ANNUAL_CURVES = {
+    '新月': {
+        peak_seasons: ['spring', 'early_summer'],
+        characteristics: '春の芽吹きと共に最高潮。夏前半まで勢い継続',
+        caution_period: 'late_autumn',
+        advice: '春の計画が秋に実を結ぶ。冬は次の準備期間'
+    },
+    '満月': {
+        peak_seasons: ['summer', 'early_autumn'], 
+        characteristics: '夏の情熱と初秋の豊穣期に最も輝く',
+        caution_period: 'late_winter',
+        advice: '夏の関係が秋に深まる。冬は感情の整理期間'
+    },
+    // ... 他の月相タイプの年間パターン
+};
+```
+
+### 3.3 2025年の重要な転換点
+年間を通じて訪れる大きなエネルギーシフトのタイミング
+
+```javascript
+const ANNUAL_TURNING_POINTS_2025 = [
+    { 
+        period: '春分〜4月末', 
+        theme: '新生と決断の時', 
+        effect: '新月系タイプに大きなチャンス。人生の方向性が決まる'
+    },
+    {
+        period: '夏至前後（6月）',
+        theme: '情熱と成就の頂点',
+        effect: '恋愛・仕事共に最高潮。満月系タイプに特に有利'
+    },
+    {
+        period: '秋分〜10月',
+        theme: '収穫と安定の確立', 
+        effect: '春に始めたことが実を結ぶ。関係性の深化'
+    },
+    {
+        period: '冬至〜年末',
+        theme: '統合と来年への準備',
+        effect: '一年の成果を統合し、新たなステージへの準備期間'
+    }
 ];
 ```
 

@@ -146,13 +146,13 @@
         
         /* フォームセクション */
         .form-section {
-            background: linear-gradient(135deg, rgba(60,60,120,0.3) 0%, rgba(80,80,160,0.2) 100%);
+            background: linear-gradient(135deg, rgba(30,30,70,0.85) 0%, rgba(40,40,90,0.8) 100%);
             border-radius: 30px;
             padding: 40px 30px;
             margin-bottom: 40px;
             backdrop-filter: blur(20px);
             border: 1px solid rgba(255,255,255,0.15);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
         }
         
         .form-title {
@@ -380,7 +380,7 @@
             position: absolute;
             width: 100px;
             height: 100px;
-            background: linear-gradient(135deg, rgba(150,150,255,0.3) 0%, rgba(200,150,255,0.2) 100%);
+            background: linear-gradient(135deg, rgba(40,40,100,0.9) 0%, rgba(50,40,110,0.85) 100%);
             border-radius: 15px;
             display: flex;
             flex-direction: column;
@@ -389,6 +389,7 @@
             border: 1px solid rgba(255,255,255,0.3);
             transition: all 0.3s;
             cursor: pointer;
+            backdrop-filter: blur(5px);
         }
         
         .type-item:hover {
@@ -420,10 +421,24 @@
         .energy-item {
             text-align: center;
             padding: 25px;
-            background: linear-gradient(135deg, rgba(100,100,200,0.2) 0%, rgba(150,100,200,0.15) 100%);
+            background: linear-gradient(135deg, rgba(35,35,80,0.9) 0%, rgba(45,35,90,0.85) 100%);
             border-radius: 20px;
             border: 1px solid rgba(255,255,255,0.2);
             transition: all 0.3s;
+            backdrop-filter: blur(5px);
+        }
+        
+        /* エネルギータイプごとの色分け */
+        .energy-item:nth-child(1) {
+            background: linear-gradient(135deg, rgba(80,30,30,0.9) 0%, rgba(90,40,40,0.85) 100%);
+        }
+        
+        .energy-item:nth-child(2) {
+            background: linear-gradient(135deg, rgba(30,50,80,0.9) 0%, rgba(40,60,90,0.85) 100%);
+        }
+        
+        .energy-item:nth-child(3) {
+            background: linear-gradient(135deg, rgba(50,30,80,0.9) 0%, rgba(60,40,90,0.85) 100%);
         }
         
         .energy-item:hover {
@@ -449,7 +464,21 @@
             padding: 30px 20px;
             margin-bottom: 40px;
             border-left: 3px solid rgba(255,215,0,0.3);
-            background: linear-gradient(90deg, rgba(120,100,200,0.08) 0%, transparent 100%);
+            background: linear-gradient(90deg, rgba(40,35,80,0.85) 0%, rgba(35,30,70,0.7) 100%);
+            backdrop-filter: blur(8px);
+            border-radius: 15px;
+        }
+        
+        /* 新月用の色 */
+        .moon-phase-card.new-moon {
+            background: linear-gradient(90deg, rgba(20,20,50,0.9) 0%, rgba(30,25,60,0.8) 100%);
+            border-left-color: rgba(150,150,255,0.5);
+        }
+        
+        /* 三日月用の色 */
+        .moon-phase-card.crescent {
+            background: linear-gradient(90deg, rgba(40,30,70,0.9) 0%, rgba(50,40,80,0.8) 100%);
+            border-left-color: rgba(200,180,255,0.5);
         }
         
         .moon-phase-header {
@@ -495,10 +524,28 @@
         }
         
         .love-type-card {
-            background: linear-gradient(135deg, rgba(100,100,200,0.2) 0%, rgba(150,100,200,0.15) 100%);
+            background: linear-gradient(135deg, rgba(40,30,70,0.9) 0%, rgba(50,35,80,0.85) 100%);
             border-radius: 20px;
             padding: 25px;
             border: 1px solid rgba(255,255,255,0.15);
+            backdrop-filter: blur(5px);
+        }
+        
+        /* 恋愛タイプカードの色分け */
+        .love-type-card:nth-child(1) {
+            background: linear-gradient(135deg, rgba(70,30,50,0.9) 0%, rgba(80,40,60,0.85) 100%);
+        }
+        
+        .love-type-card:nth-child(2) {
+            background: linear-gradient(135deg, rgba(40,30,70,0.9) 0%, rgba(50,40,80,0.85) 100%);
+        }
+        
+        .love-type-card:nth-child(3) {
+            background: linear-gradient(135deg, rgba(30,50,70,0.9) 0%, rgba(40,60,80,0.85) 100%);
+        }
+        
+        .love-type-card:nth-child(4) {
+            background: linear-gradient(135deg, rgba(50,40,30,0.9) 0%, rgba(60,50,40,0.85) 100%);
         }
         
         .love-type-title {
@@ -526,7 +573,39 @@
         /* 運勢セクション */
         .fortune-section {
             margin-bottom: 50px;
-            padding: 20px 0;
+            padding: 30px;
+            border-radius: 20px;
+            backdrop-filter: blur(8px);
+        }
+        
+        /* 2025年運命セクション - 紫系 */
+        .fortune-section.destiny {
+            background: linear-gradient(135deg, rgba(60,30,90,0.9) 0%, rgba(70,40,100,0.85) 100%);
+            border: 1px solid rgba(200,150,255,0.3);
+        }
+        
+        /* 恋愛運セクション - ピンク系 */
+        .fortune-section.love {
+            background: linear-gradient(135deg, rgba(80,30,60,0.9) 0%, rgba(90,40,70,0.85) 100%);
+            border: 1px solid rgba(255,150,200,0.3);
+        }
+        
+        /* 人間関係運セクション - 青系 */
+        .fortune-section.relationship {
+            background: linear-gradient(135deg, rgba(30,50,80,0.9) 0%, rgba(40,60,90,0.85) 100%);
+            border: 1px solid rgba(150,200,255,0.3);
+        }
+        
+        /* 仕事運セクション - 緑系 */
+        .fortune-section.career {
+            background: linear-gradient(135deg, rgba(30,60,40,0.9) 0%, rgba(40,70,50,0.85) 100%);
+            border: 1px solid rgba(150,255,150,0.3);
+        }
+        
+        /* 金運セクション - ゴールド系 */
+        .fortune-section.money {
+            background: linear-gradient(135deg, rgba(70,50,30,0.9) 0%, rgba(80,60,40,0.85) 100%);
+            border: 1px solid rgba(255,215,0,0.3);
         }
         
         .section-header {
@@ -634,13 +713,14 @@
         
         /* 月齢カレンダー */
         .monthly-fortune {
-            background: linear-gradient(135deg, rgba(100,100,200,0.1) 0%, rgba(150,100,200,0.06) 100%);
+            background: linear-gradient(135deg, rgba(30,30,60,0.9) 0%, rgba(40,30,70,0.85) 100%);
             border-radius: 15px;
             padding: 25px;
             margin: 40px 0;
-            border: 1px solid rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.15);
             width: 100%;
             overflow-x: hidden;
+            backdrop-filter: blur(8px);
         }
         
         .calendar-grid {
@@ -839,12 +919,13 @@
         
         .tsukuyomi-bubble {
             flex: 1;
-            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(200,200,255,0.05) 100%);
+            background: linear-gradient(135deg, rgba(30,30,60,0.95) 0%, rgba(40,40,80,0.9) 100%);
             border-radius: 20px;
             padding: 20px 25px;
             position: relative;
             border: 1px solid rgba(255,255,255,0.2);
-            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.4);
+            backdrop-filter: blur(10px);
         }
         
         .tsukuyomi-bubble::before {
@@ -1068,7 +1149,7 @@
             </div>
             
             <!-- 月相タイプ -->
-            <div class="moon-phase-card">
+            <div class="moon-phase-card new-moon">
                 <div class="moon-phase-header">
                     <div class="moon-phase-visual"></div>
                     <div class="moon-phase-info">
@@ -1090,7 +1171,7 @@
             </div>
             
             <!-- 裏月相 -->
-            <div class="moon-phase-card">
+            <div class="moon-phase-card crescent">
                 <div class="moon-phase-header">
                     <div class="moon-phase-visual" style="background: radial-gradient(circle at 40% 40%, #1a1a3e 0%, #1a1a3e 20%, transparent 20%), radial-gradient(circle at 30% 30%, #ffffff 0%, #e0e0ff 100%);"></div>
                     <div class="moon-phase-info">
@@ -1217,7 +1298,7 @@
             <h2 class="banner-title">2025年 あなたの運命</h2>
             
             <!-- 2025年全体運 -->
-            <div class="fortune-section">
+            <div class="fortune-section destiny">
                 <div class="section-header">
                     <h3>全体運</h3>
                     <p>
@@ -1267,7 +1348,7 @@
             <h2 class="banner-title">恋愛運</h2>
             
             <!-- 恋愛運 -->
-            <div class="fortune-section">
+            <div class="fortune-section love">
                 <div class="section-header">
                     <h3>恋愛運</h3>
                     <p>
@@ -1373,7 +1454,7 @@
             <h2 class="banner-title">人間関係運</h2>
             
             <!-- 人間関係運 -->
-            <div class="fortune-section">
+            <div class="fortune-section relationship">
                 <div class="section-header">
                     <h3>人間関係運</h3>
                     <p>
@@ -1431,7 +1512,7 @@
             <h2 class="banner-title">仕事運・キャリア</h2>
             
             <!-- 仕事運 -->
-            <div class="fortune-section">
+            <div class="fortune-section career">
                 <div class="section-header">
                     <h3>仕事運</h3>
                     <p>
@@ -1501,7 +1582,7 @@
             <h2 class="banner-title">金運・財運</h2>
             
             <!-- 金運・財運 -->
-            <div class="fortune-section">
+            <div class="fortune-section money">
                 <div class="section-header">
                     <h3>金運・財運</h3>
                     <p>
