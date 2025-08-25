@@ -10,17 +10,17 @@ const LOVE_TYPES = {
         description: '気持ちは隠さず真っ直ぐ伝える',
         icon: '/images/love-types/emotional/straight.png'
       },
-      skinship: {
-        id: 'skinship', 
+      physical: {
+        id: 'physical', 
         name: 'スキンシップ型',
         description: '触れ合いや行動で愛を示す',
-        icon: '/images/love-types/emotional/skinship.png'
+        icon: '/images/love-types/emotional/physical.png'
       },
-      caring: {
-        id: 'caring',
+      subtle: {
+        id: 'subtle',
         name: 'さりげない気遣い型',
         description: '小さな優しさで伝える',
-        icon: '/images/love-types/emotional/caring.png'
+        icon: '/images/love-types/emotional/subtle.png'
       },
       shy: {
         id: 'shy',
@@ -35,23 +35,23 @@ const LOVE_TYPES = {
     name: '距離感',
     color: '#32ffb4',
     types: {
-      dependent: {
-        id: 'dependent',
+      close: {
+        id: 'close',
         name: 'ベッタリ依存型',
         description: '常に繋がっていたい',
-        icon: '/images/love-types/distance/dependent.png'
+        icon: '/images/love-types/distance/close.png'
       },
-      safe: {
-        id: 'safe',
+      moderate: {
+        id: 'moderate',
         name: '安心セーフ型',
         description: '適度な連絡で安心を求める',
-        icon: '/images/love-types/distance/safe.png'
+        icon: '/images/love-types/distance/moderate.png'
       },
-      free: {
-        id: 'free',
+      independent: {
+        id: 'independent',
         name: '自由マイペース型',
         description: '恋も自分の時間も大事にしたい',
-        icon: '/images/love-types/distance/free.png'
+        icon: '/images/love-types/distance/independent.png'
       },
       cautious: {
         id: 'cautious',
@@ -78,11 +78,11 @@ const LOVE_TYPES = {
         description: '現実的で堅実な関係を求める',
         icon: '/images/love-types/values/realistic.png'
       },
-      thrilling: {
-        id: 'thrilling',
+      excitement: {
+        id: 'excitement',
         name: '刺激ハンター型',
         description: '新鮮さやドキドキを追い求める',
-        icon: '/images/love-types/values/thrilling.png'
+        icon: '/images/love-types/values/excitement.png'
       },
       growth: {
         id: 'growth',
@@ -97,23 +97,23 @@ const LOVE_TYPES = {
     name: 'エネルギー',
     color: '#ff7832',
     types: {
-      burning: {
-        id: 'burning',
+      intense: {
+        id: 'intense',
         name: '燃え上がり型',
         description: '一気にのめり込む',
-        icon: '/images/love-types/energy/burning.png'
+        icon: '/images/love-types/energy/intense.png'
       },
-      sustained: {
-        id: 'sustained',
+      stable: {
+        id: 'stable',
         name: '持続型',
         description: '安定してずっと熱を注ぐ',
-        icon: '/images/love-types/energy/sustained.png'
+        icon: '/images/love-types/energy/stable.png'
       },
-      wavy: {
-        id: 'wavy',
+      fluctuating: {
+        id: 'fluctuating',
         name: '波あり型',
         description: '気持ちの浮き沈みがある',
-        icon: '/images/love-types/energy/wavy.png'
+        icon: '/images/love-types/energy/fluctuating.png'
       },
       cool: {
         id: 'cool',
@@ -125,47 +125,12 @@ const LOVE_TYPES = {
   }
 };
 
-// マッピング関数（質問の回答からタイプを判定）
-const mapAnswerToType = {
-  emotional: (answer) => {
-    switch(answer) {
-      case 'a': return 'straight';
-      case 'b': return 'skinship';
-      case 'c': return 'caring';
-      case 'd': return 'shy';
-      default: return 'straight';
-    }
-  },
-  
-  distance: (answer) => {
-    switch(answer) {
-      case 'a': return 'dependent';
-      case 'b': return 'safe';
-      case 'c': return 'free';
-      case 'd': return 'cautious';
-      default: return 'free';
-    }
-  },
-  
-  values: (answer) => {
-    switch(answer) {
-      case 'a': return 'romantic';
-      case 'b': return 'realistic';
-      case 'c': return 'thrilling';
-      case 'd': return 'growth';
-      default: return 'romantic';
-    }
-  },
-  
-  energy: (answer) => {
-    switch(answer) {
-      case 'a': return 'burning';
-      case 'b': return 'sustained';
-      case 'c': return 'wavy';
-      case 'd': return 'cool';
-      default: return 'burning';
-    }
-  }
+// データベースの値とマッピング
+const DATABASE_VALUES = {
+  emotional: ['straight', 'physical', 'subtle', 'shy'],
+  distance: ['close', 'moderate', 'independent', 'cautious'],
+  values: ['romantic', 'realistic', 'excitement', 'growth'],
+  energy: ['intense', 'stable', 'fluctuating', 'cool']
 };
 
 module.exports = {

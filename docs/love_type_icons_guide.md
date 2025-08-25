@@ -109,29 +109,29 @@
 - 価値観: スカイブルー系（#64c8ff）
 - エネルギー: オレンジレッド系（#ff7832）
 
-## ファイル名規則
+## ファイル名規則（データベースの値に対応）
 ```
 /public/images/love-types/
 ├── emotional/
-│   ├── straight.png
-│   ├── skinship.png
-│   ├── caring.png
-│   └── shy.png
+│   ├── straight.png      # ストレート告白型
+│   ├── physical.png      # スキンシップ型
+│   ├── subtle.png        # さりげない気遣い型
+│   └── shy.png           # 奥手シャイ型
 ├── distance/
-│   ├── dependent.png
-│   ├── safe.png
-│   ├── free.png
-│   └── cautious.png
+│   ├── close.png         # ベッタリ依存型
+│   ├── moderate.png      # 安心セーフ型
+│   ├── independent.png   # 自由マイペース型
+│   └── cautious.png      # 壁あり慎重型
 ├── values/
-│   ├── romantic.png
-│   ├── realistic.png
-│   ├── thrilling.png
-│   └── growth.png
+│   ├── romantic.png      # ロマンチスト型
+│   ├── realistic.png     # リアリスト型
+│   ├── excitement.png    # 刺激ハンター型
+│   └── growth.png        # 成長パートナー型
 └── energy/
-    ├── burning.png
-    ├── sustained.png
-    ├── wavy.png
-    └── cool.png
+    ├── intense.png       # 燃え上がり型
+    ├── stable.png        # 持続型
+    ├── fluctuating.png   # 波あり型
+    └── cool.png          # クール型
 ```
 
 ## 実装時の注意点
