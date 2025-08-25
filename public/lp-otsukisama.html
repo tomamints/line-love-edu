@@ -448,6 +448,33 @@
             animation: counterRotate 40s linear infinite;
         }
         
+        /* 月相画像専用のスタイル */
+        .moon-phase-item {
+            background: transparent !important;
+            backdrop-filter: none !important;
+        }
+        
+        .moon-phase-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            z-index: -1;
+        }
+        
+        .moon-phase-item[data-moon-type="omote"][data-moon-phase="0"]::before {
+            background-image: url('/images/moon/omote-0.png');
+        }
+        
+        .moon-phase-item[data-moon-type="ura"][data-moon-phase="1"]::before {
+            background-image: url('/images/moon/ura-1.png');
+        }
+        
         @keyframes counterRotate {
             from { transform: translate(-50%, -50%) rotate(0deg); }
             to { transform: translate(-50%, -50%) rotate(-360deg); }
@@ -461,10 +488,6 @@
         
         /* 月相 - ゴールド */
         .type-item:nth-child(1) {
-            background-image: url('/images/moon/omote-0.png');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
             border: 3px solid rgba(255,215,0,0.9);
             box-shadow: 0 0 35px rgba(255,215,0,0.5);
         }
@@ -474,10 +497,6 @@
         
         /* 裏月相 - パープル */
         .type-item:nth-child(2) {
-            background-image: url('/images/moon/ura-1.png');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
             border: 3px solid rgba(180,100,255,0.9);
             box-shadow: 0 0 35px rgba(180,100,255,0.5);
         }
