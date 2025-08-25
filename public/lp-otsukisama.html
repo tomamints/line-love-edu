@@ -398,6 +398,7 @@
             cursor: pointer;
             backdrop-filter: blur(10px);
             box-shadow: 0 0 20px rgba(255,215,0,0.2);
+            overflow: visible;
         }
         
         .type-item:hover {
@@ -472,19 +473,51 @@
         
         .type-label {
             font-size: 12px;
-            color: #ffd700;
             margin-bottom: 5px;
             font-weight: 600;
             text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
             letter-spacing: 1px;
             text-transform: uppercase;
+            white-space: nowrap;
         }
         
         .type-result {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: bold;
-            color: #ffffff;
-            text-shadow: 0 0 10px rgba(255,255,255,0.5);
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
+            white-space: nowrap;
+            padding: 0 5px;
+        }
+        
+        /* 各要素の文字色を対応する色に */
+        .type-item:nth-child(1) .type-label,
+        .type-item:nth-child(1) .type-result {
+            color: #ffd700;
+        }
+        
+        .type-item:nth-child(2) .type-label,
+        .type-item:nth-child(2) .type-result {
+            color: #b464ff;
+        }
+        
+        .type-item:nth-child(3) .type-label,
+        .type-item:nth-child(3) .type-result {
+            color: #ff64b4;
+        }
+        
+        .type-item:nth-child(4) .type-label,
+        .type-item:nth-child(4) .type-result {
+            color: #32ffb4;
+        }
+        
+        .type-item:nth-child(5) .type-label,
+        .type-item:nth-child(5) .type-result {
+            color: #64c8ff;
+        }
+        
+        .type-item:nth-child(6) .type-label,
+        .type-item:nth-child(6) .type-result {
+            color: #ff7832;
         }
         
         /* エネルギータイプの説明 */
