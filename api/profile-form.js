@@ -481,13 +481,9 @@ module.exports = async (req, res) => {
               </label>
             </div>
           </div>
-        </div>
-        
-        <div class="section">
-          <h2 class="section-title">💝 あなたの恋愛タイプ診断</h2>
           
           <div class="form-group">
-            <label><strong>Q1：想いを伝えるときのスタイルは？</strong></label>
+            <label><strong>Q3：想いを伝えるときのスタイルは？</strong></label>
             <div class="radio-group">
               <label class="radio-option ${existing.emotionalExpression === 'straight' ? 'selected' : ''}">
                 <input type="radio" name="emotionalExpression" value="straight" ${existing.emotionalExpression === 'straight' ? 'checked' : ''} required>
@@ -517,7 +513,7 @@ module.exports = async (req, res) => {
           </div>
           
           <div class="form-group">
-            <label><strong>Q2：恋人との距離感で心地いいのは？</strong></label>
+            <label><strong>Q4：恋人との距離感で心地いいのは？</strong></label>
             <div class="radio-group">
               <label class="radio-option ${existing.distanceStyle === 'close' ? 'selected' : ''}">
                 <input type="radio" name="distanceStyle" value="close" ${existing.distanceStyle === 'close' ? 'checked' : ''} required>
@@ -547,7 +543,7 @@ module.exports = async (req, res) => {
           </div>
           
           <div class="form-group">
-            <label><strong>Q3：恋愛で大事にしたいものは？</strong></label>
+            <label><strong>Q5：恋愛で大事にしたいものは？</strong></label>
             <div class="radio-group">
               <label class="radio-option ${existing.loveValues === 'romantic' ? 'selected' : ''}">
                 <input type="radio" name="loveValues" value="romantic" ${existing.loveValues === 'romantic' ? 'checked' : ''} required>
@@ -577,7 +573,7 @@ module.exports = async (req, res) => {
           </div>
           
           <div class="form-group">
-            <label><strong>Q4：あなたのこれまでの恋愛のペースは？</strong></label>
+            <label><strong>Q6：あなたのこれまでの恋愛のペースは？</strong></label>
             <div class="radio-group">
               <label class="radio-option ${existing.loveEnergy === 'intense' ? 'selected' : ''}">
                 <input type="radio" name="loveEnergy" value="intense" ${existing.loveEnergy === 'intense' ? 'checked' : ''} required>
