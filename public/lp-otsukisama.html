@@ -453,15 +453,15 @@
             background: transparent !important;
             backdrop-filter: none !important;
             overflow: hidden !important; /* 円形マスクを適用 */
+            position: relative;
         }
         
         .moon-phase-item img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            position: absolute;
-            top: 0;
-            left: 0;
+            position: relative;
+            z-index: 1;
         }
         
         @keyframes counterRotate {
@@ -1433,7 +1433,7 @@
             <!-- 月相タイプ -->
             <div class="moon-phase-card new-moon">
                 <div class="moon-phase-header">
-                    <div class="moon-phase-visual"></div>
+                    <div class="moon-phase-visual" style="background-image: url('/images/moon/omote-0.png'); background-size: cover; background-position: center;"></div>
                     <div class="moon-phase-info">
                         <h2>新月</h2>
                         <p class="moon-phase-subtitle">新しい始まりの力。無限の可能性を秘めた開拓者</p>
@@ -1455,7 +1455,7 @@
             <!-- 裏月相 -->
             <div class="moon-phase-card crescent">
                 <div class="moon-phase-header">
-                    <div class="moon-phase-visual" style="background: radial-gradient(circle at 40% 40%, #1a1a3e 0%, #1a1a3e 20%, transparent 20%), radial-gradient(circle at 30% 30%, #ffffff 0%, #e0e0ff 100%);"></div>
+                    <div class="moon-phase-visual" style="background-image: url('/images/moon/ura-1.png'); background-size: cover; background-position: center;"></div>
                     <div class="moon-phase-info">
                         <h2>三日月（裏の顔）</h2>
                         <p class="moon-phase-subtitle">内なる繊細さと慎重さを秘めた策士</p>
