@@ -1,7 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "WebFetch(domain:honkaku-ccln.com)"
+      "WebFetch(domain:honkaku-ccln.com)",
+      "Bash(grep:*)"
     ],
     "deny": [],
     "ask": []

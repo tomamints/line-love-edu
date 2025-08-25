@@ -135,6 +135,7 @@
             color: #c0c0ff;
             letter-spacing: 2px;
             margin-bottom: 10px;
+            font-weight: 500;
         }
         
         .sub-description {
@@ -142,6 +143,7 @@
             color: #a0a0e0;
             margin-top: 20px;
             line-height: 1.6;
+            font-weight: 500;
         }
         
         /* フォームセクション */
@@ -159,6 +161,7 @@
             color: #e0e0ff;
             margin-bottom: 30px;
             letter-spacing: 1px;
+            font-weight: 500;
         }
         
         .form-group {
@@ -171,6 +174,7 @@
             font-size: 15px;
             color: #d0d0ff;
             letter-spacing: 1px;
+            font-weight: 500;
         }
         
         .required {
@@ -296,6 +300,7 @@
             color: #d0d0ff;
             letter-spacing: 0.5px;
             line-height: 2;
+            font-weight: 600;
         }
         
         /* バナースタイル共通 */
@@ -379,7 +384,7 @@
             position: absolute;
             width: 100px;
             height: 100px;
-            background: rgba(255,255,255,0.95);
+            background: linear-gradient(135deg, rgba(53,80,112,0.9) 0%, rgba(109,89,122,0.85) 100%);
             border-radius: 15px;
             display: flex;
             flex-direction: column;
@@ -388,20 +393,19 @@
             transition: all 0.3s;
             cursor: pointer;
             backdrop-filter: blur(5px);
-            border: 2px solid rgba(109,89,122,0.4);
         }
         
         .type-item:hover {
             transform: scale(1.1);
-            background: rgba(255,255,255,1);
+            background: linear-gradient(135deg, rgba(150,150,255,0.5) 0%, rgba(200,150,255,0.4) 100%);
             box-shadow: 0 0 30px rgba(150,150,255,0.5);
-            border-color: rgba(150,150,255,0.8);
         }
         
         .type-label {
             font-size: 14px;
-            color: #666666;
+            color: #ffffff;
             margin-bottom: 5px;
+            font-weight: 500;
         }
         
         .type-result {
@@ -421,27 +425,23 @@
         .energy-item {
             text-align: center;
             padding: 20px;
-            background: rgba(255,255,255,0.95);
+            background: linear-gradient(135deg, rgba(53,80,112,0.9) 0%, rgba(89,98,117,0.85) 100%);
             border-radius: 15px;
             transition: all 0.3s;
             backdrop-filter: blur(5px);
-            border: 1px solid rgba(89,98,117,0.3);
         }
         
         /* エネルギータイプごとの色分け */
         .energy-item:nth-child(1) {
-            background: rgba(255,255,255,0.95);
-            border-left: 4px solid rgba(181,101,118,0.8);
+            background: linear-gradient(135deg, rgba(181,101,118,0.9) 0%, rgba(189,128,142,0.85) 100%);
         }
         
         .energy-item:nth-child(2) {
-            background: rgba(255,255,255,0.95);
-            border-left: 4px solid rgba(145,127,179,0.8);
+            background: linear-gradient(135deg, rgba(109,89,122,0.9) 0%, rgba(145,127,179,0.85) 100%);
         }
         
         .energy-item:nth-child(3) {
-            background: rgba(255,255,255,0.95);
-            border-left: 4px solid rgba(124,138,172,0.8);
+            background: linear-gradient(135deg, rgba(89,98,117,0.9) 0%, rgba(124,138,172,0.85) 100%);
         }
         
         .energy-item:hover {
@@ -458,30 +458,30 @@
         
         .energy-description {
             font-size: 13px;
-            color: #555555;
+            color: #ffffff;
             line-height: 1.6;
+            font-weight: 500;
         }
         
         /* 月相カード */
         .moon-phase-card {
             padding: 30px 15px;
             margin-bottom: 40px;
-            border-left: 4px solid rgba(255,215,0,0.6);
-            background: rgba(255,255,255,0.95);
+            border-left: 4px solid rgba(255,215,0,0.4);
+            background: linear-gradient(90deg, rgba(53,80,112,0.85) 0%, rgba(89,98,117,0.7) 100%);
             backdrop-filter: blur(8px);
-            color: #333333;
         }
         
         /* 新月用の色 */
         .moon-phase-card.new-moon {
-            background: rgba(255,255,255,0.95);
-            border-left-color: rgba(109,89,122,0.8);
+            background: linear-gradient(90deg, rgba(22,33,62,0.9) 0%, rgba(53,80,112,0.8) 100%);
+            border-left-color: rgba(181,165,214,0.5);
         }
         
         /* 三日月用の色 */
         .moon-phase-card.crescent {
-            background: rgba(255,255,255,0.95);
-            border-left-color: rgba(145,127,179,0.8);
+            background: linear-gradient(90deg, rgba(109,89,122,0.9) 0%, rgba(145,127,179,0.8) 100%);
+            border-left-color: rgba(224,190,255,0.5);
         }
         
         .moon-phase-header {
@@ -510,12 +510,14 @@
         .moon-phase-subtitle {
             font-size: 14px;
             color: #c0c0ff;
+            font-weight: 600;
         }
         
         .moon-phase-description {
             font-size: 18px;
             line-height: 2.1;
-            color: #555555;
+            color: #ffffff;
+            font-weight: 500;
         }
         
         /* 恋愛タイプ分析 */
@@ -527,32 +529,27 @@
         }
         
         .love-type-card {
-            background: rgba(255,255,255,0.95);
+            background: linear-gradient(135deg, rgba(89,98,117,0.9) 0%, rgba(124,138,172,0.85) 100%);
             border-radius: 15px;
             padding: 20px;
             backdrop-filter: blur(5px);
-            border: 1px solid rgba(89,98,117,0.3);
         }
         
-        /* 恋愛タイプカードの色分け - 左ボーダーで差別化 */
+        /* 恋愛タイプカードの色分け */
         .love-type-card:nth-child(1) {
-            background: rgba(255,255,255,0.95);
-            border-left: 4px solid rgba(181,101,118,0.8);
+            background: linear-gradient(135deg, rgba(181,101,118,0.9) 0%, rgba(207,143,169,0.85) 100%);
         }
         
         .love-type-card:nth-child(2) {
-            background: rgba(255,255,255,0.95);
-            border-left: 4px solid rgba(145,127,179,0.8);
+            background: linear-gradient(135deg, rgba(109,89,122,0.9) 0%, rgba(145,127,179,0.85) 100%);
         }
         
         .love-type-card:nth-child(3) {
-            background: rgba(255,255,255,0.95);
-            border-left: 4px solid rgba(89,98,117,0.8);
+            background: linear-gradient(135deg, rgba(89,98,117,0.9) 0%, rgba(124,138,172,0.85) 100%);
         }
         
         .love-type-card:nth-child(4) {
-            background: rgba(255,255,255,0.95);
-            border-left: 4px solid rgba(178,135,102,0.8);
+            background: linear-gradient(135deg, rgba(178,135,102,0.9) 0%, rgba(199,165,133,0.85) 100%);
         }
         
         .love-type-title {
@@ -573,8 +570,9 @@
         
         .love-type-content {
             font-size: 14px;
-            color: #555555;
+            color: #ffffff;
             line-height: 1.8;
+            font-weight: 500;
         }
         
         /* 運勢セクション */
@@ -583,43 +581,36 @@
             padding: 30px;
             border-radius: 20px;
             backdrop-filter: blur(8px);
-            background: rgba(255,255,255,0.95);
-            color: #333333;
         }
         
         /* 2025年運命セクション - 紫系 */
         .fortune-section.destiny {
-            background: rgba(255,255,255,0.95);
-            border: 2px solid rgba(145,127,179,0.4);
-            border-left: 5px solid rgba(145,127,179,0.8);
+            background: linear-gradient(135deg, rgba(109,89,122,0.9) 0%, rgba(145,127,179,0.85) 100%);
+            border: 1px solid rgba(181,165,214,0.3);
         }
         
         /* 恋愛運セクション - ピンク系 */
         .fortune-section.love {
-            background: rgba(255,255,255,0.95);
-            border: 2px solid rgba(207,143,169,0.4);
-            border-left: 5px solid rgba(207,143,169,0.8);
+            background: linear-gradient(135deg, rgba(181,101,118,0.9) 0%, rgba(207,143,169,0.85) 100%);
+            border: 1px solid rgba(255,182,193,0.3);
         }
         
         /* 人間関係運セクション - 青系 */
         .fortune-section.relationship {
-            background: rgba(255,255,255,0.95);
-            border: 2px solid rgba(89,98,117,0.4);
-            border-left: 5px solid rgba(89,98,117,0.8);
+            background: linear-gradient(135deg, rgba(53,80,112,0.9) 0%, rgba(89,98,117,0.85) 100%);
+            border: 1px solid rgba(165,180,214,0.3);
         }
         
         /* 仕事運セクション - 緑系 */
         .fortune-section.career {
-            background: rgba(255,255,255,0.95);
-            border: 2px solid rgba(115,152,132,0.4);
-            border-left: 5px solid rgba(115,152,132,0.8);
+            background: linear-gradient(135deg, rgba(81,122,105,0.9) 0%, rgba(115,152,132,0.85) 100%);
+            border: 1px solid rgba(150,255,180,0.3);
         }
         
         /* 金運セクション - ゴールド系 */
         .fortune-section.money {
-            background: rgba(255,255,255,0.95);
-            border: 2px solid rgba(199,165,133,0.4);
-            border-left: 5px solid rgba(199,165,133,0.8);
+            background: linear-gradient(135deg, rgba(178,135,102,0.9) 0%, rgba(199,165,133,0.85) 100%);
+            border: 1px solid rgba(255,215,0,0.3);
         }
         
         .section-header {
@@ -638,23 +629,24 @@
         
         .section-header p {
             font-size: 18px;
-            color: #666666;
+            color: #ffffff;
             line-height: 2.1;
+            font-weight: 500;
         }
         
         .fortune-content {
             padding: 20px;
             line-height: 2;
-            color: #444444;
+            color: #ffffff;
+            font-weight: 500;
         }
         
         .fortune-highlight {
-            background: rgba(255,248,220,0.5);
+            background: linear-gradient(135deg, rgba(255,215,0,0.2) 0%, rgba(255,215,0,0.1) 100%);
             border-left: 3px solid #ffd700;
             padding: 20px;
             margin: 30px 0;
             border-radius: 10px;
-            color: #333333;
         }
         
         .fortune-list {
@@ -667,7 +659,8 @@
             position: relative;
             padding-left: 30px;
             margin-bottom: 15px;
-            color: #555555;
+            color: #ffffff;
+            font-weight: 500;
         }
         
         .fortune-list li::before {
@@ -679,15 +672,13 @@
         
         /* 月齢カレンダー */
         .monthly-fortune {
-            background: rgba(255,255,255,0.95);
+            background: linear-gradient(135deg, rgba(53,80,112,0.9) 0%, rgba(89,98,117,0.85) 100%);
             border-radius: 15px;
             padding: 20px;
             margin: 40px 0;
             width: 100%;
             overflow-x: hidden;
             backdrop-filter: blur(8px);
-            border: 2px solid rgba(89,98,117,0.3);
-            color: #333333;
         }
         
         .calendar-grid {
@@ -707,22 +698,21 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            background: rgba(255,255,255,0.9);
+            background: rgba(255,255,255,0.05);
             border-radius: 10px;
-            border: 1px solid rgba(89,98,117,0.2);
+            border: 1px solid rgba(255,255,255,0.1);
             transition: all 0.3s;
             min-width: 45px;
         }
         
         .calendar-day:hover {
-            background: rgba(255,248,220,0.95);
+            background: rgba(255,215,0,0.2);
             transform: scale(1.05);
-            border-color: rgba(255,215,0,0.5);
         }
         
         .day-number {
             font-size: 14px;
-            color: #333333;
+            color: #ffffff;
             margin-bottom: 5px;
             font-weight: bold;
         }
@@ -753,6 +743,7 @@
             color: #e0e0ff;
             margin-bottom: 30px;
             line-height: 1.8;
+            font-weight: 600;
         }
         
         .cta-button {
@@ -796,6 +787,7 @@
             color: #d0d0ff;
             line-height: 2;
             margin-bottom: 15px;
+            font-weight: 600;
         }
         
         /* レスポンシブ対応 */
