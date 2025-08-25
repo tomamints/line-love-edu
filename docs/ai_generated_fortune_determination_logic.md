@@ -547,23 +547,72 @@ class OtsukisamaFortuneEngine {
 
 ---
 
-## 10. モニタリングと改善
+## 10. 継続的改善とフィードバック統合
 
-### 10.1 ユーザー満足度の追跡
+### 10.1 パターンの有効性追跡
 ```javascript
-class FortuneFeedbackTracker {
-    trackUserSatisfaction(userId, fortuneId, rating, feedback) {
-        // 満足度データの蓄積
-        // A/Bテストのための分析
-        // アルゴリズムの改善点の発見
+class PatternEffectivenessTracker {
+    constructor() {
+        this.patternFeedback = new Map();
+        this.personalityAccuracy = new Map();
+    }
+    
+    trackPatternResonance(userId, patternKey, resonanceLevel, specificFeedback) {
+        // 各64パターンの的中率と共感度を追跡
+        if (!this.patternFeedback.has(patternKey)) {
+            this.patternFeedback.set(patternKey, {
+                total_evaluations: 0,
+                positive_resonance: 0,
+                negative_resonance: 0,
+                neutral_resonance: 0,
+                improvement_suggestions: []
+            });
+        }
+        
+        const feedback = this.patternFeedback.get(patternKey);
+        feedback.total_evaluations++;
+        feedback[`${resonanceLevel}_resonance`]++;
+        
+        if (specificFeedback) {
+            feedback.improvement_suggestions.push(specificFeedback);
+        }
+    }
+    
+    analyzePersonalityIntegrationSuccess(userId, traits, satisfactionScore) {
+        // 個性要素の統合がどの程度ユーザーに響いているかを分析
+        const traitCombination = this.generateTraitSignature(traits);
+        
+        if (!this.personalityAccuracy.has(traitCombination)) {
+            this.personalityAccuracy.set(traitCombination, {
+                samples: 0,
+                average_satisfaction: 0,
+                satisfaction_scores: []
+            });
+        }
+        
+        const data = this.personalityAccuracy.get(traitCombination);
+        data.samples++;
+        data.satisfaction_scores.push(satisfactionScore);
+        data.average_satisfaction = data.satisfaction_scores.reduce((a, b) => a + b) / data.samples;
     }
 }
 ```
 
-### 10.2 パフォーマンスメトリクス
-- 運勢計算の平均処理時間
-- キャッシュヒット率
-- ユーザーの再訪問率
-- 有料転換率（LP用途）
+### 10.2 システム品質指標
+- **パターン網羅性**: 64パターン全ての実装完了率
+- **内容一貫性**: 同一ユーザーの年間運勢の論理的一貫性
+- **個性統合精度**: 恋愛運における個性要素の自然な統合度
+- **ユーザー共感度**: パターンマッチングの的中感
+- **長期継続性**: 年間を通じた運勢内容の説得力維持
 
-この運勢決定ロジックにより、科学的根拠と占いの神秘性を両立させた、魅力的で個人化されたおつきさま診断が実現されます。
+### 10.3 新しいアプローチの特徴
+
+この改訂版運勢決定ロジックは以下の特徴を持ちます：
+
+1. **スコア依存の脱却**: 数値による運勢判定を廃止し、質的な表現に移行
+2. **64パターン基盤**: 月相×裏月相の全組み合わせによる豊富なバリエーション
+3. **年間一貫性**: 日単位の変動ではなく、年間を通じた大きな流れを重視
+4. **恋愛運の個人化**: 4つの個性要素による恋愛運のパーソナライゼーション
+5. **季節との調和**: 自然のリズムに合わせた運勢の表現
+
+これにより、より説得力があり、個人に寄り添った、長期的な視点を持つ運勢診断システムが実現されます。

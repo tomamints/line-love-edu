@@ -20,9 +20,9 @@
             font-family: 'Hiragino Mincho ProN', 'Yu Mincho', serif;
             background: linear-gradient(180deg, #0a0a1e 0%, #1a1a3e 50%, #0f0f2e 100%);
             color: #ffffff;
-            line-height: 1.8;
+            line-height: 2;
             overflow-x: hidden;
-            font-size: 16px;
+            font-size: 18px;
         }
         
         @media (max-width: 768px) {
@@ -84,7 +84,7 @@
         
         /* メインコンテナ */
         .container {
-            max-width: 720px;
+            max-width: 900px;
             margin: 0 auto;
             padding: 20px;
             position: relative;
@@ -147,12 +147,10 @@
         /* フォームセクション */
         .form-section {
             background: linear-gradient(135deg, rgba(30,30,70,0.85) 0%, rgba(40,40,90,0.8) 100%);
-            border-radius: 30px;
-            padding: 40px 30px;
+            border-radius: 20px;
+            padding: 40px 20px;
             margin-bottom: 40px;
             backdrop-filter: blur(20px);
-            border: 1px solid rgba(255,255,255,0.15);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
         }
         
         .form-title {
@@ -294,20 +292,21 @@
         
         .section-description {
             text-align: center;
-            font-size: 14px;
+            font-size: 17px;
             color: #e0e0ff;
             letter-spacing: 0.5px;
+            line-height: 2;
         }
         
         /* バナースタイル共通 */
         .banner-title {
             position: relative;
             text-align: center;
-            font-size: 28px;
+            font-size: 38px;
             margin: 80px 0 60px;
-            padding: 30px 20px;
+            padding: 35px 20px;
             color: #ffffff;
-            letter-spacing: 4px;
+            letter-spacing: 5px;
             background: linear-gradient(90deg, 
                 transparent 0%, 
                 rgba(147, 112, 219, 0.3) 15%,
@@ -342,10 +341,10 @@
         
         @media (max-width: 768px) {
             .banner-title {
-                font-size: 18px;
+                font-size: 26px;
                 margin: 60px 0 40px;
-                padding: 20px 10px;
-                letter-spacing: 2px;
+                padding: 25px 10px;
+                letter-spacing: 3px;
             }
             
             .banner-title::before,
@@ -386,7 +385,6 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            border: 1px solid rgba(255,255,255,0.3);
             transition: all 0.3s;
             cursor: pointer;
             backdrop-filter: blur(5px);
@@ -399,13 +397,13 @@
         }
         
         .type-label {
-            font-size: 12px;
+            font-size: 14px;
             color: #b0b0ff;
             margin-bottom: 5px;
         }
         
         .type-result {
-            font-size: 14px;
+            font-size: 16px;
             font-weight: bold;
             color: #ffd700;
         }
@@ -420,10 +418,9 @@
         
         .energy-item {
             text-align: center;
-            padding: 25px;
+            padding: 20px;
             background: linear-gradient(135deg, rgba(35,35,80,0.9) 0%, rgba(45,35,90,0.85) 100%);
-            border-radius: 20px;
-            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 15px;
             transition: all 0.3s;
             backdrop-filter: blur(5px);
         }
@@ -461,12 +458,11 @@
         
         /* 月相カード */
         .moon-phase-card {
-            padding: 30px 20px;
+            padding: 30px 15px;
             margin-bottom: 40px;
-            border-left: 3px solid rgba(255,215,0,0.3);
+            border-left: 4px solid rgba(255,215,0,0.4);
             background: linear-gradient(90deg, rgba(40,35,80,0.85) 0%, rgba(35,30,70,0.7) 100%);
             backdrop-filter: blur(8px);
-            border-radius: 15px;
         }
         
         /* 新月用の色 */
@@ -510,8 +506,8 @@
         }
         
         .moon-phase-description {
-            font-size: 15px;
-            line-height: 2;
+            font-size: 18px;
+            line-height: 2.1;
             color: #e0e0ff;
         }
         
@@ -525,9 +521,8 @@
         
         .love-type-card {
             background: linear-gradient(135deg, rgba(40,30,70,0.9) 0%, rgba(50,35,80,0.85) 100%);
-            border-radius: 20px;
-            padding: 25px;
-            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 15px;
+            padding: 20px;
             backdrop-filter: blur(5px);
         }
         
@@ -616,16 +611,16 @@
         }
         
         .section-header h3 {
-            font-size: 24px;
+            font-size: 28px;
             color: #ffd700;
             margin-bottom: 10px;
             letter-spacing: 2px;
         }
         
         .section-header p {
-            font-size: 14px;
+            font-size: 18px;
             color: #c0c0ff;
-            line-height: 1.8;
+            line-height: 2.1;
         }
         
         .fortune-content {
@@ -693,10 +688,10 @@
         }
         
         .premium-description {
-            font-size: 14px;
+            font-size: 17px;
             color: #e0e0ff;
             margin-bottom: 20px;
-            line-height: 1.8;
+            line-height: 2.1;
         }
         
         .premium-price {
@@ -715,9 +710,8 @@
         .monthly-fortune {
             background: linear-gradient(135deg, rgba(30,30,60,0.9) 0%, rgba(40,30,70,0.85) 100%);
             border-radius: 15px;
-            padding: 25px;
+            padding: 20px;
             margin: 40px 0;
-            border: 1px solid rgba(255,255,255,0.15);
             width: 100%;
             overflow-x: hidden;
             backdrop-filter: blur(8px);
@@ -923,7 +917,6 @@
             border-radius: 20px;
             padding: 20px 25px;
             position: relative;
-            border: 1px solid rgba(255,255,255,0.2);
             box-shadow: 0 5px 20px rgba(0,0,0,0.4);
             backdrop-filter: blur(10px);
         }
@@ -948,9 +941,9 @@
         }
         
         .tsukuyomi-bubble p {
-            font-size: 15px;
-            line-height: 1.8;
-            color: #e0e0ff;
+            font-size: 18px;
+            line-height: 2.1;
+            color: #f0f0ff;
         }
         
         /* 右側配置のキャラクター */
@@ -1018,8 +1011,8 @@
             }
             
             .tsukuyomi-bubble p {
-                font-size: 14px;
-                line-height: 1.8;
+                font-size: 16px;
+                line-height: 2;
             }
             
             .tsukuyomi-name {
