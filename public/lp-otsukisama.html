@@ -326,18 +326,18 @@
             position: absolute;
             top: 50%;
             transform: translateY(-50%);
-            width: 80px;
+            width: 100px;
             height: 1px;
-            background: linear-gradient(90deg, transparent, #ffd700);
+            background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.6));
         }
         
         .banner-title::before {
-            left: 10px;
+            left: -110px;
         }
         
         .banner-title::after {
-            right: 10px;
-            background: linear-gradient(90deg, #ffd700, transparent);
+            right: -110px;
+            background: linear-gradient(90deg, rgba(255, 215, 0, 0.6), transparent);
         }
         
         @media (max-width: 768px) {
@@ -350,7 +350,7 @@
             
             .banner-title::before,
             .banner-title::after {
-                width: 40px;
+                display: none;
             }
         }
         
