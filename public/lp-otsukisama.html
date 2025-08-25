@@ -500,8 +500,15 @@
         }
         
         .love-type-item img {
-            padding: 10px;
+            padding: 2px;
             filter: brightness(1.1) contrast(1.1);
+            width: 95% !important;
+            height: 95% !important;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            object-fit: contain !important;
         }
         
         /* 感情表現 - ピンク */
@@ -815,6 +822,13 @@
             gap: 10px;
             font-weight: bold;
             text-shadow: 0 0 10px rgba(255,255,255,0.5);
+        }
+        
+        .love-type-title img {
+            width: 42px;
+            height: 42px;
+            object-fit: contain;
+            filter: brightness(1.2) contrast(1.1);
         }
         
         .love-type-icon {
@@ -1500,7 +1514,7 @@
             <div class="love-type-grid">
                 <div class="love-type-card">
                     <div class="love-type-title">
-                        <div class="love-type-icon"></div>
+                        <img src="/images/love-types/emotional/straight.png" alt="ストレート型">
                         感情表現：<span id="emotionalExpressionType">ストレート型</span>
                     </div>
                     <div class="love-type-content" id="emotionalExpressionContent">
@@ -1509,7 +1523,7 @@
                 </div>
                 <div class="love-type-card">
                     <div class="love-type-title">
-                        <div class="love-type-icon"></div>
+                        <img src="/images/love-types/distance/independent.png" alt="自由マイペース型">
                         距離感：<span id="distanceStyleType">自由マイペース型</span>
                     </div>
                     <div class="love-type-content" id="distanceStyleContent">
@@ -1518,7 +1532,7 @@
                 </div>
                 <div class="love-type-card">
                     <div class="love-type-title">
-                        <div class="love-type-icon"></div>
+                        <img src="/images/love-types/values/romantic.png" alt="ロマンチスト型">
                         価値観：<span id="loveValuesType">ロマンチスト型</span>
                     </div>
                     <div class="love-type-content" id="loveValuesContent">
@@ -1530,7 +1544,7 @@
                 </div>
                 <div class="love-type-card">
                     <div class="love-type-title">
-                        <div class="love-type-icon"></div>
+                        <img src="/images/love-types/energy/intense.png" alt="燃え上がり型">
                         エネルギー：<span id="loveEnergyType">燃え上がり型</span>
                     </div>
                     <div class="love-type-content" id="loveEnergyContent">
