@@ -22,10 +22,6 @@
       "destination": "/api/download-report"
     },
     {
-      "source": "/moon",
-      "destination": "/moon-fortune.html"
-    },
-    {
       "source": "/lp/otsukisama",
       "destination": "/lp-otsukisama.html"
     }
