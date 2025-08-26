@@ -1678,6 +1678,65 @@
                 </div>
             </div>
             
+            <!-- 運勢グラフセクション -->
+            <div class="tsukuyomi-section">
+                <div class="tsukuyomi-character">
+                    <img src="/images/tsukuyomi/6.png" alt="月詠">
+                </div>
+                <div class="tsukuyomi-bubble">
+                    <div class="tsukuyomi-name">月詠</div>
+                    <p>
+                        では、あなたの直近3ヶ月の運勢の流れを、グラフで視覚的に見てみましょう。月のリズムに合わせた運勢の波を確認してくださいね。
+                    </p>
+                </div>
+            </div>
+            
+            <div class="fortune-graph-section">
+                <h3 style="text-align: center; color: #ffd700; margin: 30px 0; font-size: 24px; letter-spacing: 2px;">直近3ヶ月の運勢グラフ</h3>
+                
+                <!-- メイングラフ -->
+                <div class="main-graph-container" style="background: rgba(0,0,0,0.3); padding: 30px; border-radius: 15px; margin: 20px auto; max-width: 800px;">
+                    <h4 style="color: #ffd700; margin-bottom: 20px; text-align: center;">総合運の推移</h4>
+                    <canvas id="mainFortuneChart" width="800" height="300"></canvas>
+                    
+                    <div class="graph-legend" style="display: flex; justify-content: center; margin-top: 20px; gap: 30px;">
+                        <div><span style="color: #ff6b6b;">● </span><span style="color: white;">絶好調</span></div>
+                        <div><span style="color: #ffd700;">● </span><span style="color: white;">好調</span></div>
+                        <div><span style="color: #4ecdc4;">● </span><span style="color: white;">普通</span></div>
+                        <div><span style="color: #95a5a6;">● </span><span style="color: white;">低調</span></div>
+                    </div>
+                </div>
+                
+                <!-- サブグラフ -->
+                <div class="sub-graphs" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin: 40px auto; max-width: 800px;">
+                    <div class="sub-graph" style="background: rgba(0,0,0,0.3); padding: 20px; border-radius: 10px;">
+                        <h5 style="color: #ff64b4; margin-bottom: 15px; text-align: center;">恋愛運</h5>
+                        <canvas id="loveChart" width="350" height="150"></canvas>
+                    </div>
+                    <div class="sub-graph" style="background: rgba(0,0,0,0.3); padding: 20px; border-radius: 10px;">
+                        <h5 style="color: #32ffb4; margin-bottom: 15px; text-align: center;">人間関係運</h5>
+                        <canvas id="relationChart" width="350" height="150"></canvas>
+                    </div>
+                    <div class="sub-graph" style="background: rgba(0,0,0,0.3); padding: 20px; border-radius: 10px;">
+                        <h5 style="color: #64c8ff; margin-bottom: 15px; text-align: center;">仕事運</h5>
+                        <canvas id="careerChart" width="350" height="150"></canvas>
+                    </div>
+                    <div class="sub-graph" style="background: rgba(0,0,0,0.3); padding: 20px; border-radius: 10px;">
+                        <h5 style="color: #ff7832; margin-bottom: 15px; text-align: center;">金運</h5>
+                        <canvas id="moneyChart" width="350" height="150"></canvas>
+                    </div>
+                </div>
+                
+                <!-- 重要な時期の説明 -->
+                <div class="key-dates" style="background: rgba(147, 112, 219, 0.2); padding: 25px; border-radius: 10px; margin: 30px auto; max-width: 800px; border: 1px solid rgba(255, 215, 0, 0.3);">
+                    <h4 style="color: #ffd700; margin-bottom: 15px;">📅 重要な時期</h4>
+                    <ul style="color: #ffffff; line-height: 2;">
+                        <li><strong style="color: #ff6b6b;">ピーク期間：</strong>診断から2週目、6週目、9週目 - この時期に重要な行動を起こすと大きな成果が期待できます</li>
+                        <li><strong style="color: #ffd700;">注意期間：</strong>診断から5週目、11週目 - 慎重に行動し、大きな決断は避けましょう</li>
+                    </ul>
+                </div>
+            </div>
+            
             <!-- 月詠による月齢カレンダーへの移行 -->
             <div class="tsukuyomi-section">
                 <div class="tsukuyomi-character">
@@ -2189,6 +2248,131 @@
         // 初期化
         createStars();
         initDateSelects();
+    </script>
+    
+    <!-- Chart.jsライブラリの読み込み -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- グラフ描画スクリプト -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // サンプルデータ（実際は64パターンから選択）
+        const fortuneData = {
+            overall: [4,5,5,4, 3,4,5,5, 5,4,3,4], // 12週間のデータ
+            love: [5,5,4,3, 4,5,5,4, 3,4,5,5],
+            relationship: [4,4,5,5, 4,3,4,5, 5,4,4,3],
+            career: [5,5,5,4, 3,3,4,5, 5,5,4,4],
+            money: [3,4,5,5, 4,3,3,4, 5,5,4,3]
+        };
+        
+        // グラフ共通設定
+        const chartOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    min: 0,
+                    max: 5,
+                    ticks: {
+                        stepSize: 1,
+                        color: '#ffffff',
+                        callback: function(value) {
+                            const labels = ['', '低調', 'やや低調', '普通', '好調', '絶好調'];
+                            return labels[value];
+                        }
+                    },
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.1)'
+                    }
+                },
+                x: {
+                    ticks: {
+                        color: '#ffffff'
+                    },
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.1)'
+                    }
+                }
+            }
+        };
+        
+        // 週ラベル
+        const weekLabels = ['1週', '2週', '3週', '4週', '5週', '6週', '7週', '8週', '9週', '10週', '11週', '12週'];
+        
+        // メイングラフ描画
+        const mainCtx = document.getElementById('mainFortuneChart');
+        if (mainCtx) {
+            new Chart(mainCtx, {
+                type: 'line',
+                data: {
+                    labels: weekLabels,
+                    datasets: [{
+                        data: fortuneData.overall,
+                        borderColor: '#ffd700',
+                        backgroundColor: 'rgba(255, 215, 0, 0.1)',
+                        borderWidth: 3,
+                        tension: 0.4,
+                        fill: true,
+                        pointRadius: 5,
+                        pointBackgroundColor: '#ffd700',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2
+                    }]
+                },
+                options: chartOptions
+            });
+        }
+        
+        // サブグラフ描画関数
+        function createSubChart(canvasId, data, color) {
+            const ctx = document.getElementById(canvasId);
+            if (ctx) {
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: weekLabels,
+                        datasets: [{
+                            data: data,
+                            borderColor: color,
+                            backgroundColor: color + '33',
+                            borderWidth: 2,
+                            tension: 0.4,
+                            fill: true,
+                            pointRadius: 3
+                        }]
+                    },
+                    options: {
+                        ...chartOptions,
+                        scales: {
+                            ...chartOptions.scales,
+                            x: {
+                                ...chartOptions.scales.x,
+                                display: false
+                            },
+                            y: {
+                                ...chartOptions.scales.y,
+                                ticks: {
+                                    ...chartOptions.scales.y.ticks,
+                                    display: false
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+        
+        // 各サブグラフを描画
+        createSubChart('loveChart', fortuneData.love, '#ff64b4');
+        createSubChart('relationChart', fortuneData.relationship, '#32ffb4');
+        createSubChart('careerChart', fortuneData.career, '#64c8ff');
+        createSubChart('moneyChart', fortuneData.money, '#ff7832');
+    });
     </script>
 </body>
 </html>
