@@ -280,11 +280,64 @@
 <h2 class="banner-title">直近3ヶ月 あなたの運命</h2>
 ```
 
+### 16. 3ヶ月運勢グラフ（有料版）
+
+```html
+<!-- 運勢グラフセクション -->
+<div class="fortune-graph-section">
+    <div class="fortune-graph-container">
+        <canvas id="fortuneGraph" width="800" height="400"></canvas>
+    </div>
+    
+    <!-- カスタム凡例 -->
+    <div class="graph-legend">
+        <div class="legend-title">運勢の種類</div>
+        <div class="legend-items">
+            <div class="legend-item active" data-category="overall">
+                <span class="legend-color" style="background: #ffd700;"></span>
+                <span class="legend-label">全体運</span>
+            </div>
+            <div class="legend-item active" data-category="love">
+                <span class="legend-color" style="background: #ff69b4;"></span>
+                <span class="legend-label">恋愛運</span>
+            </div>
+            <div class="legend-item active" data-category="relationship">
+                <span class="legend-color" style="background: #32cd32;"></span>
+                <span class="legend-label">人間関係運</span>
+            </div>
+            <div class="legend-item active" data-category="career">
+                <span class="legend-color" style="background: #4169e1;"></span>
+                <span class="legend-label">仕事運</span>
+            </div>
+            <div class="legend-item active" data-category="money">
+                <span class="legend-color" style="background: #ff8c00;"></span>
+                <span class="legend-label">金運</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- グラフの説明 -->
+    <div class="graph-description">
+        <p style="color: #ffffff; text-align: center; font-size: 16px; margin: 20px 0; line-height: 1.6;">
+            上のグラフは、あなたの直近3ヶ月（12週間）の運勢の変化を表しています。<br>
+            凡例の項目をクリックすると、その運勢の表示/非表示を切り替えできます。<br>
+            グラフの点にマウスを合わせると、詳細な運勢レベルを確認できます。
+        </p>
+    </div>
+</div>
+
+<!-- グラフ用JavaScript（実装時に追加） -->
+<script>
+// fortuneGraphData変数には64パターンから生成されたデータが入る
+// 実装例：fortuneGraphData = {overall: [4,5,3,4,...], love: [3,4,5,3,...], ...}
+</script>
+```
+
 ---
 
 ## 💰 有料版（1,980円）の完全文章
 
-### 16. 全体運（有料版完全文章）
+### 17. 全体運（有料版完全文章）
 
 ```html
 <div class="fortune-section destiny">
@@ -333,7 +386,7 @@
 </div>
 ```
 
-### 17. 恋愛運への移行（月詠）
+### 18. 恋愛運への移行（月詠）
 
 ```html
 <div class="tsukuyomi-section">
@@ -349,13 +402,13 @@
 </div>
 ```
 
-### 18. 恋愛運バナー
+### 19. 恋愛運バナー
 
 ```html
 <h2 class="banner-title">恋愛運</h2>
 ```
 
-### 19. 恋愛運（有料版完全文章）
+### 20. 恋愛運（有料版完全文章）
 
 ```html
 <div class="fortune-section love">
@@ -402,7 +455,7 @@
 </div>
 ```
 
-### 20. 月齢カレンダーへの移行（月詠）
+### 21. 月齢カレンダーへの移行（月詠）
 
 ```html
 <div class="tsukuyomi-section">
@@ -418,7 +471,7 @@
 </div>
 ```
 
-### 21. 月齢カレンダー（有料版詳細版）
+### 22. 月齢カレンダー（有料版詳細版）
 
 ```html
 <div class="monthly-fortune">
@@ -504,7 +557,7 @@
 </div>
 ```
 
-### 22. 人間関係運への移行（月詠）
+### 23. 人間関係運への移行（月詠）
 
 ```html
 <div class="tsukuyomi-section right">
@@ -520,13 +573,13 @@
 </div>
 ```
 
-### 23. 人間関係運バナー
+### 24. 人間関係運バナー
 
 ```html
 <h2 class="banner-title">人間関係運</h2>
 ```
 
-### 24. 人間関係運（有料版完全文章）
+### 25. 人間関係運（有料版完全文章）
 
 ```html
 <div class="fortune-section relationship">
@@ -577,7 +630,7 @@
 </div>
 ```
 
-### 25. 仕事運への移行（月詠）
+### 26. 仕事運への移行（月詠）
 
 ```html
 <div class="tsukuyomi-section">
@@ -593,13 +646,13 @@
 </div>
 ```
 
-### 26. 仕事運バナー
+### 27. 仕事運バナー
 
 ```html
 <h2 class="banner-title">仕事運</h2>
 ```
 
-### 27. 仕事運（有料版完全文章）
+### 28. 仕事運（有料版完全文章）
 
 ```html
 <div class="fortune-section career">
@@ -661,7 +714,7 @@
 </div>
 ```
 
-### 28. 金運への移行（月詠）
+### 29. 金運への移行（月詠）
 
 ```html
 <div class="tsukuyomi-section right">
@@ -677,13 +730,13 @@
 </div>
 ```
 
-### 29. 金運バナー
+### 30. 金運バナー
 
 ```html
 <h2 class="banner-title">金運</h2>
 ```
 
-### 30. 金運（有料版完全文章）
+### 31. 金運（有料版完全文章）
 
 ```html
 <div class="fortune-section money">
@@ -751,7 +804,7 @@
 </div>
 ```
 
-### 31. 最終メッセージ（月詠からの締めくくり）
+### 32. 最終メッセージ（月詠からの締めくくり）
 
 ```html
 <div class="tsukuyomi-section">
@@ -793,7 +846,7 @@
 </div>
 ```
 
-### 32. 診断結果の保存オプション
+### 33. 診断結果の保存オプション
 
 ```html
 <div class="save-options">
