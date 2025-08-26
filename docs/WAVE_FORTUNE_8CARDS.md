@@ -481,7 +481,7 @@ const detectRelationshipStage = () => {
       emojiUsage: 'moderate' // 絵文字は控えめ
     },
     
-    // 仲良し（3-12ヶ月）
+    // 仲良し（3-3ヶ月）
     friend: {
       messageFrequency: 'medium', // 1日10-50通
       topicDiversity: 'balanced', // 定番話題と新規話題
@@ -492,7 +492,7 @@ const detectRelationshipStage = () => {
       insideJokes: 'present' // 内輪ネタあり
     },
     
-    // 安定期（12ヶ月以上）
+    // 安定期（3ヶ月以上）
     stable: {
       messageFrequency: 'consistent', // 安定した頻度
       topicDiversity: 'routine', // ルーティン化

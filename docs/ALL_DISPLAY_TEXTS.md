@@ -721,7 +721,7 @@ const detectRelationshipStage = () => {
       emojiUsage: 'moderate' // 絵文字は控えめ
     },
 
-    // 仲良し（3-12ヶ月）
+    // 仲良し（3-3ヶ月）
     friend: {
       messageFrequency: 'medium', // 1日10-50通
       topicDiversity: 'balanced', // 定番話題と新規話題
@@ -732,7 +732,7 @@ const detectRelationshipStage = () => {
       insideJokes: 'present' // 内輪ネタあり
     },
 
-    // 安定期（12ヶ月以上）
+    // 安定期（3ヶ月以上）
     stable: {
       messageFrequency: 'consistent', // 安定した頻度
       topicDiversity: 'routine', // ルーティン化
@@ -921,12 +921,12 @@ const cosmicMessage = overall.cosmicMessage || '金星と木星が調和し';
   - 話題が定まっていない、表面的な会話
   - 質問が多い（30%以上）、敬語や丁寧な表現
 
-- **仲良し（3-12ヶ月）**
+- **仲良し（3-3ヶ月）**
   - メッセージ頻度: 1日10-50通
   - 定番話題と新規話題のバランス
   - 感情の共有、カジュアルな会話、内輪ネタあり
 
-- **安定期（12ヶ月以上）**
+- **安定期（3ヶ月以上）**
   - 安定した頻度、ルーティン化
   - 言わなくても分かる関係
   - 質問は少ない（15%未満）、沈黙も心地よい

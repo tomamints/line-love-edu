@@ -31,7 +31,7 @@
 **現在の表示（無料版）:**
 ```html
 <p>
-    今後1年間は『<span style="filter: blur(3px);">○○○○</span>の月』のリズム。大きな転機が訪れそうです。これからの12ヶ月は、あなたにとって種まきの期間。新月のエネルギーが最高潮に達し、新しいことを始めるのに最適な時期です。
+    今後1年間は『<span style="filter: blur(3px);">○○○○</span>の月』のリズム。大きな転機が訪れそうです。これからの3ヶ月は、あなたにとって種まきの期間。新月のエネルギーが最高潮に達し、新しいことを始めるのに最適な時期です。
 </p>
 ```
 
@@ -39,17 +39,17 @@
 ```html
 <div class="fortune-content">
     <div class="fortune-highlight">
-        <strong>今後12ヶ月の全体的な流れ</strong>
+        <strong>今後3ヶ月の全体的な流れ</strong>
         <p>
-            これからの1年間は『<strong style="color: #ffd700;">創造と始まりの月</strong>』のリズム。あなたにとって人生の新章が始まる重要な12ヶ月です。新月のエネルギーが最高潮に達し、これまで温めてきたアイデアや計画を実現に移す絶好のタイミングが訪れます。
+            これからの1年間は『<strong style="color: #ffd700;">創造と始まりの月</strong>』のリズム。あなたにとって人生の新章が始まる重要な3ヶ月です。新月のエネルギーが最高潮に達し、これまで温めてきたアイデアや計画を実現に移す絶好のタイミングが訪れます。
         </p>
         
         <p style="margin-top: 20px;">
-            新月×三日月パターンのあなたにとって、今後1年間は「計画的な挑戦の年」。外向的なエネルギーと内向的な慎重さが調和し、リスクを計算しながら大胆に行動できる12ヶ月となります。
+            新月×三日月パターンのあなたにとって、今後1年間は「計画的な挑戦の年」。外向的なエネルギーと内向的な慎重さが調和し、リスクを計算しながら大胆に行動できる3ヶ月となります。
         </p>
     </div>
     
-    <h4 style="color: #ffd700; margin: 30px 0 20px;">🌸 12ヶ月を通じた運勢の流れ</h4>
+    <h4 style="color: #ffd700; margin: 30px 0 20px;">🌸 3ヶ月を通じた運勢の流れ</h4>
     
     <div style="margin-bottom: 25px;">
         <strong style="color: #917FB3;">【開始から3ヶ月目まで：種まき期】</strong>
@@ -67,8 +67,8 @@
     </div>
     
     <div style="margin-bottom: 25px;">
-        <strong style="color: #917FB3;">【10ヶ月目～12ヶ月目：充実・準備期】</strong>
-        <p>内面的な成長と次の1年への準備の時期。スキルアップや人間関係の深化に最適な期間です。診断から11～12ヶ月後は特に直感が冴え、次の年への重要なヒントを得られるでしょう。</p>
+        <strong style="color: #917FB3;">【10ヶ月目～3ヶ月目：充実・準備期】</strong>
+        <p>内面的な成長と次の1年への準備の時期。スキルアップや人間関係の深化に最適な期間です。診断から11～3ヶ月後は特に直感が冴え、次の年への重要なヒントを得られるでしょう。</p>
     </div>
     
     <div class="fortune-highlight" style="margin-top: 30px;">
@@ -82,7 +82,7 @@
     </div>
     
     <p style="margin-top: 30px; font-size: 18px; color: #333; line-height: 2;">
-今後1年間は、慎重さと大胆さのバランスを活かして持続可能な成功を築く12ヶ月となるでしょう。月のリズムに合わせて行動することで、自然な流れの中で最大の成果を得ることができます。
+今後1年間は、慎重さと大胆さのバランスを活かして持続可能な成功を築く3ヶ月となるでしょう。月のリズムに合わせて行動することで、自然な流れの中で最大の成果を得ることができます。
     </p>
 </div>
 ```
@@ -150,8 +150,8 @@
     </div>
     
     <div style="margin-bottom: 20px;">
-        <strong style="color: #917FB3;">【10〜12ヶ月目：深い繋がり】</strong>
-        <p>精神的な繋がりが深まり、お互いの成長を支え合う関係へ。次の1年に向けた二人の計画も具体化してきます。診断から11〜12ヶ月後の特別な日には特別な思い出を作る絶好の機会。</p>
+        <strong style="color: #917FB3;">【10〜3ヶ月目：深い繋がり】</strong>
+        <p>精神的な繋がりが深まり、お互いの成長を支え合う関係へ。次の1年に向けた二人の計画も具体化してきます。診断から11〜3ヶ月後の特別な日には特別な思い出を作る絶好の機会。</p>
     </div>
     
     <div class="fortune-highlight" style="margin-top: 30px;">
@@ -237,19 +237,19 @@
 ```html
 <div class="fortune-content">
     <div class="fortune-highlight">
-        <strong>今後12ヶ月のキャリア運の特徴</strong>
+        <strong>今後3ヶ月のキャリア運の特徴</strong>
         <p>
-            起業や独立、転職など、新しいスタートを切るのに最適な12ヶ月間。あなたのアイデアが形になりやすく、周りからの支援も得られやすい時期です。特に診断から2〜3ヶ月後と7〜8ヶ月後は重要な決断の時期となります。
+            起業や独立、転職など、新しいスタートを切るのに最適な3ヶ月間。あなたのアイデアが形になりやすく、周りからの支援も得られやすい時期です。特に診断から2〜3ヶ月後と7〜8ヶ月後は重要な決断の時期となります。
         </p>
     </div>
     
-    <h4 style="color: #739884; margin: 30px 0 20px;">📈 12ヶ月間のキャリア発展カレンダー</h4>
+    <h4 style="color: #739884; margin: 30px 0 20px;">📈 3ヶ月間のキャリア発展カレンダー</h4>
     
     <ul class="fortune-list">
         <li><strong>開始～3ヶ月：準備期間</strong> - スキルアップや資格取得に最適。新しい技術の習得や人脈作りに集中</li>
         <li><strong>4～6ヶ月：始動期</strong> - 新プロジェクトのスタート、転職活動。あなたの能力が最も発揮される期間</li>
         <li><strong>7～9ヶ月：成長期</strong> - 実績を積み、評価を得る時期。責任あるポジションを任される可能性大</li>
-        <li><strong>10～12ヶ月：収穫期</strong> - 昇進、昇給、ボーナスの可能性。この12ヶ月の成果が形になる
+        <li><strong>10～3ヶ月：収穫期</strong> - 昇進、昇給、ボーナスの可能性。この3ヶ月の成果が形になる
     </ul>
     
     <h4 style="color: #739884; margin: 30px 0 20px;">🌟 特に注目すべき重要な日</h4>
@@ -258,7 +258,7 @@
         <li><strong>診断から2ヶ月後の新月</strong>：新しい仕事やプロジェクトを始める最高の日</li>
         <li><strong>診断から5ヶ月後の新月</strong>：独立や起業を決断するのに適した日</li>
         <li><strong>診断から7ヶ月後の新月</strong>：転職の面接や重要な商談に最適</li>
-        <li><strong>診断から10ヶ月後の満月</strong>：12ヶ月の成果を振り返り、次の年の計画を立てる
+        <li><strong>診断から10ヶ月後の満月</strong>：3ヶ月の成果を振り返り、次の年の計画を立てる
     </ul>
     
     <h4 style="color: #739884; margin: 30px 0 20px;">🌙 成功のための月のリズム活用法</h4>
@@ -330,7 +330,7 @@
     </div>
     
     <div style="margin-bottom: 20px;">
-        <strong style="color: #C7A585;">11～12ヶ月：</strong>ボーナスや臨時収入で潤う。感謝の気持ちを忘れず、寄付や贈り物で運気アップ
+        <strong style="color: #C7A585;">11～3ヶ月：</strong>ボーナスや臨時収入で潤う。感謝の気持ちを忘れず、寄付や贈り物で運気アップ
     </div>
     
     <h4 style="color: #C7A585; margin: 30px 0 20px;">✨ 金運アップの秘訣</h4>
@@ -491,7 +491,7 @@
 ```html
 <div class="final-message">
     <h3 style="color: #ffd700; text-align: center; font-size: 28px; margin-bottom: 30px;">
-        ✨ 今後1年間を最高の12ヶ月にする月からの特別なメッセージ ✨
+        ✨ 今後1年間を最高の3ヶ月にする月からの特別なメッセージ ✨
     </h3>
     
     <div style="text-align: center; margin-bottom: 30px;">
@@ -510,7 +510,7 @@
     
     <div style="margin: 40px 0; padding: 30px; background: linear-gradient(135deg, rgba(255,215,0,0.1) 0%, rgba(232,160,191,0.05) 100%); border-radius: 20px; border: 1px solid rgba(255,255,255,0.1);">
         <h4 style="font-size: 24px; color: #ffd700; margin-bottom: 25px; text-align: center;">
-            🌙 この12ヶ月を最高の期間にする5つの月の教え 🌙
+            🌙 この3ヶ月を最高の期間にする5つの月の教え 🌙
         </h4>
         
         <div style="margin-bottom: 25px; padding: 20px; background: rgba(255,255,255,0.05); border-radius: 15px; border-left: 4px solid #ffd700;">
@@ -565,11 +565,11 @@
         </div>
         
         <p style="color: #f0f0ff; font-size: 18px; line-height: 2; margin-bottom: 20px;">
-            今後12ヶ月で、あなたは多くの「始まり」を経験します。恋愛、仕事、人間関係、すべてにおいて新しい扉が開かれるでしょう。
+            今後3ヶ月で、あなたは多くの「始まり」を経験します。恋愛、仕事、人間関係、すべてにおいて新しい扉が開かれるでしょう。
         </p>
         
         <p style="color: #f0f0ff; font-size: 18px; line-height: 2; margin-bottom: 30px;">
-            恐れずに一歩を踏み出してください。月はいつもあなたを見守り、導いています。あなたの内なる光を信じて、輝かしい12ヶ月を過ごしてください。
+            恐れずに一歩を踏み出してください。月はいつもあなたを見守り、導いています。あなたの内なる光を信じて、輝かしい3ヶ月を過ごしてください。
         </p>
         
         <div style="font-size: 24px; color: #ffd700; margin: 30px 0;">
