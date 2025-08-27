@@ -306,10 +306,31 @@ function updateSixElements(patternId) {
         }
     } else {
         // デフォルト値（パターンIDから算出）
-        const emotionalTypes = ['情熱ロマンチスト', '感情直感', '共感思いやり', '理性コントロール'];
-        const distanceTypes = ['密着', '自然', 'ゆったり', '独立'];
-        const valueTypes = ['刺激と冒険', '成長と向上', '現実的安定', 'ルールと伝統'];
-        const energyTypes = ['積極行動', '反応適応', '計画実行', '内省充電'];
+        // 実際の画像ファイル名に対応
+        const emotionalTypes = [
+            {name: 'ストレート型', image: 'straight'},
+            {name: '察してほしい型', image: 'subtle'},
+            {name: 'スキンシップ型', image: 'physical'},
+            {name: '照れ屋型', image: 'shy'}
+        ];
+        const distanceTypes = [
+            {name: '密着型', image: 'close'},
+            {name: 'ちょうどいい距離型', image: 'moderate'},
+            {name: '慎重型', image: 'cautious'},
+            {name: '自由マイペース型', image: 'independent'}
+        ];
+        const valueTypes = [
+            {name: 'ロマンチスト型', image: 'romantic'},
+            {name: '成長重視型', image: 'growth'},
+            {name: 'リアリスト型', image: 'realistic'},
+            {name: 'ドキドキ大好き型', image: 'excitement'}
+        ];
+        const energyTypes = [
+            {name: '燃え上がり型', image: 'intense'},
+            {name: '安定ロングラン型', image: 'stable'},
+            {name: '気分アップダウン型', image: 'fluctuating'},
+            {name: 'クール型', image: 'cool'}
+        ];
         
         const emotionalElement = document.querySelector('.type-item[data-type="emotional"]');
         const distanceElement = document.querySelector('.type-item[data-type="distance"]');
@@ -318,30 +339,54 @@ function updateSixElements(patternId) {
         
         if (emotionalElement) {
             const idx = Math.floor(patternId / 16) % 4;
+            const selected = emotionalTypes[idx];
             const label = emotionalElement.querySelectorAll('span')[1];
+            const img = emotionalElement.querySelector('img');
             if (label) {
-                label.textContent = emotionalTypes[idx];
+                label.textContent = selected.name;
+            }
+            if (img) {
+                img.src = `/images/love-types/emotional/${selected.image}.png`;
+                img.alt = selected.name;
             }
         }
         if (distanceElement) {
             const idx = Math.floor(patternId / 8) % 4;
+            const selected = distanceTypes[idx];
             const label = distanceElement.querySelectorAll('span')[1];
+            const img = distanceElement.querySelector('img');
             if (label) {
-                label.textContent = distanceTypes[idx];
+                label.textContent = selected.name;
+            }
+            if (img) {
+                img.src = `/images/love-types/distance/${selected.image}.png`;
+                img.alt = selected.name;
             }
         }
         if (valuesElement) {
             const idx = Math.floor(patternId / 4) % 4;
+            const selected = valueTypes[idx];
             const label = valuesElement.querySelectorAll('span')[1];
+            const img = valuesElement.querySelector('img');
             if (label) {
-                label.textContent = valueTypes[idx];
+                label.textContent = selected.name;
+            }
+            if (img) {
+                img.src = `/images/love-types/values/${selected.image}.png`;
+                img.alt = selected.name;
             }
         }
         if (energyElement) {
             const idx = patternId % 4;
+            const selected = energyTypes[idx];
             const label = energyElement.querySelectorAll('span')[1];
+            const img = energyElement.querySelector('img');
             if (label) {
-                label.textContent = energyTypes[idx];
+                label.textContent = selected.name;
+            }
+            if (img) {
+                img.src = `/images/love-types/energy/${selected.image}.png`;
+                img.alt = selected.name;
             }
         }
     }
