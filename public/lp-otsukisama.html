@@ -2237,7 +2237,7 @@
                 <div class="fortune-content">
                     <div class="fortune-highlight">
                         <div class="sub-banner">直近3ヶ月の全体的な流れ</div>
-                        <p>
+                        <p class="fortune-overall-text">
                             直近3ヶ月は、あなたにとって集中的な変化と成長を経験する重要な期間となります。新月の創造力と満月の情熱が短期間で絶妙に混ざり合い、驚くほど素早く大きな成果を生み出すでしょう。特に診断から1ヶ月目と3ヶ月目には、人生を変えるような重要な出来事が起こります。診断から1ヶ月後の新月と、2ヶ月後の満月は特に重要な日。この日に始めたことは、3ヶ月以内に大きな実を結ぶでしょう。
                         </p>
                     </div>
@@ -2313,7 +2313,7 @@
                 <div class="fortune-content">
                     <div class="fortune-highlight">
                         <div class="sub-banner">直近3ヶ月の恋愛運の特徴</div>
-                        <p>
+                        <p class="fortune-love-text">
                             新月タイプのあなたは、相手の心に新しい風を即座に吹き込む存在。初対面から強い印象を残し、短期間で相手の人生に大きな変化をもたらすでしょう。
                         </p>
                     </div>
@@ -2406,7 +2406,7 @@
             <!-- 人間関係運 -->
             <div class="fortune-section relationship">
                 <div class="section-header">
-                    <p>
+                    <p class="fortune-relationship-text">
                         新しい仲間との出会いが多い3ヶ月。あなたの持つ開拓者精神に共感する人たちが集まってきて、一緒に何か新しいことを始めることになりそう。
                     </p>
                 </div>
@@ -2465,7 +2465,7 @@
             <div class="fortune-section career">
                 <div class="section-header">
                     <h2 class="rhythm-heading">新たなキャリアの扉が開く3ヶ月</h2>
-                    <p>
+                    <p class="fortune-work-text">
                         起業や独立、転職など、新しいスタートを切るのに最適な3ヶ月。あなたのアイデアが形になりやすく、周りからの支援も得られやすい時期。
                     </p>
                 </div>
@@ -2523,7 +2523,7 @@
             <!-- 金運・財運 -->
             <div class="fortune-section money">
                 <div class="section-header">
-                    <p>
+                    <p class="fortune-money-text">
                         新月から満月に向かうように、徐々に豊かさが増していく年。前半は投資の時期、後半は収穫の時期となります。
                     </p>
                 </div>
@@ -2906,6 +2906,7 @@
     
     <!-- Chart.jsライブラリの読み込み -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="/js/otsukisama-patterns.js"></script>
     
     <!-- グラフ描画スクリプト -->
     <script>
@@ -3520,15 +3521,30 @@
     }
     
     // パターン固有のコンテンツを更新
-    function updatePatternContent(patternId, moonPhase, hiddenPhase) {
+    async function updatePatternContent(patternId, moonPhase, hiddenPhase) {
+        // パターンデータを取得
+        const patternData = window.getPatternContent ? window.getPatternContent(patternId) : null;
+        
+        if (!patternData) {
+            console.warn(`Pattern ${patternId} data not found, using demo data`);
+            // デモデータを使用
+            updateDemoContent(patternId);
+            return;
+        }
+        
         // 3つの月の力を更新
-        const threePowers = getPatternPowers(patternId);
-        updateThreeMoonPowers(threePowers);
+        updateThreeMoonPowers(patternData.threePowers);
+        
+        // 性格4軸を更新
+        updatePersonalityAxes(patternData.personality);
         
         // 運勢テキストを更新
-        updateFortuneTexts(patternId, moonPhase, hiddenPhase);
+        updateFortuneTexts(patternData.fortune);
         
-        console.log(`Pattern ${patternId + 1} loaded: ${moonPhase}×${hiddenPhase}`);
+        // 月相に応じた画像を更新
+        updateMoonImages(moonPhase, hiddenPhase);
+        
+        console.log(`Pattern ${patternId} loaded: ${moonPhase}×${hiddenPhase}`);
     }
     
     // パターンごとの3つの力を取得
@@ -3566,23 +3582,100 @@
     }
     
     // 運勢テキストを更新
-    function updateFortuneTexts(patternId, moonPhase, hiddenPhase) {
-        // 運勢セクションのテキストを更新
-        const fortuneSections = {
-            overall: '今後3ヶ月は、新しい挑戦と成長の時期です。',
-            love: '恋愛運は上昇傾向にあり、素敵な出会いが期待できます。',
-            work: '仕事では創造性が高まり、新しいアイデアが評価されるでしょう。',
-            relationship: '人間関係は安定し、信頼できる仲間との絆が深まります。',
-            money: '金運は波がありますが、計画的な行動で安定します。'
-        };
+    function updateFortuneTexts(fortuneData) {
+        // 全体運を更新
+        const overallElem = document.querySelector('.fortune-overall-text');
+        if (overallElem) {
+            overallElem.textContent = fortuneData.overall;
+        }
         
-        // 各セクションのテキストを更新（実際にはパターンごとの内容をロード）
-        Object.keys(fortuneSections).forEach(key => {
-            const elem = document.getElementById(`fortune-${key}`);
-            if (elem) {
-                elem.textContent = fortuneSections[key];
-            }
+        // 恋愛運を更新
+        const loveElem = document.querySelector('.fortune-love-text');
+        if (loveElem) {
+            loveElem.textContent = fortuneData.love;
+        }
+        
+        // 仕事運を更新
+        const workElem = document.querySelector('.fortune-work-text');
+        if (workElem) {
+            workElem.textContent = fortuneData.work;
+        }
+        
+        // 人間関係運を更新
+        const relationshipElem = document.querySelector('.fortune-relationship-text');
+        if (relationshipElem) {
+            relationshipElem.textContent = fortuneData.relationship;
+        }
+        
+        // 金運を更新
+        const moneyElem = document.querySelector('.fortune-money-text');
+        if (moneyElem) {
+            moneyElem.textContent = fortuneData.money;
+        }
+    }
+    
+    // 性格4軸を更新
+    function updatePersonalityAxes(personalityData) {
+        // 感情表現の軸
+        const emotionalType = document.getElementById('emotionalExpressionType');
+        const emotionalContent = document.getElementById('emotionalExpressionContent');
+        if (emotionalType) emotionalType.textContent = personalityData.emotional;
+        if (emotionalContent) emotionalContent.textContent = personalityData.emotionalDesc;
+        
+        // 距離感の軸
+        const distanceType = document.getElementById('distanceStyleType');
+        const distanceContent = document.getElementById('distanceStyleContent');
+        if (distanceType) distanceType.textContent = personalityData.distance;
+        if (distanceContent) distanceContent.textContent = personalityData.distanceDesc;
+        
+        // 価値観の軸
+        const valuesType = document.getElementById('loveValuesType');
+        const valuesContent = document.getElementById('loveValuesContent');
+        if (valuesType) valuesType.textContent = personalityData.values;
+        if (valuesContent) valuesContent.textContent = personalityData.valuesDesc;
+        
+        // エネルギーの軸
+        const energyType = document.getElementById('loveEnergyType');
+        const energyContent = document.getElementById('loveEnergyContent');
+        if (energyType) energyType.textContent = personalityData.energy;
+        if (energyContent) energyContent.textContent = personalityData.energyDesc;
+    }
+    
+    // 月相に応じた画像を更新
+    function updateMoonImages(moonPhase, hiddenPhase) {
+        // 月相に基づいて月詠の画像を変更
+        const tsukuyomiImages = document.querySelectorAll('.tsukuyomi-character img');
+        const moonPhaseIndex = ['新月', '三日月', '上弦', '十三夜', '満月', '十六夜', '下弦', '暁'].indexOf(moonPhase);
+        
+        // 画像番号を決定（1-8の範囲）
+        const imageNumber = (moonPhaseIndex % 8) + 1;
+        
+        tsukuyomiImages.forEach((img, index) => {
+            // 各セクションで異なる画像を使用
+            const sectionImageNum = ((imageNumber + index) % 8) + 1;
+            img.src = `/images/tsukuyomi/${sectionImageNum}.png`;
         });
+    }
+    
+    // デモコンテンツを更新（パターンデータがない場合）
+    function updateDemoContent(patternId) {
+        // デモ用の3つの力
+        const demoPowers = [
+            { title: '直感の力', desc: '内なる声に導かれ、正しい選択ができる時期' },
+            { title: '創造の力', desc: '新しいアイデアが次々と湧き上がる' },
+            { title: '調和の力', desc: '周囲との関係が円滑に進む' }
+        ];
+        updateThreeMoonPowers(demoPowers);
+        
+        // デモ用の運勢テキスト
+        const demoFortune = {
+            overall: '今後3ヶ月は、新しい挑戦と成長の時期です。あなたの持つ潜在能力が開花し、これまでにない成果を上げることができるでしょう。',
+            love: '恋愛運は上昇傾向にあり、素敵な出会いが期待できます。既存の関係も深まり、より強い絆で結ばれるでしょう。',
+            work: '仕事では創造性が高まり、新しいアイデアが評価されるでしょう。チームワークも良好で、大きなプロジェクトを成功に導けます。',
+            relationship: '人間関係は安定し、信頼できる仲間との絆が深まります。新しい出会いもあり、あなたの世界が広がる時期です。',
+            money: '金運は波がありますが、計画的な行動で安定します。新しい収入源も見つかり、経済的な余裕が生まれるでしょう。'
+        };
+        updateFortuneTexts(demoFortune);
     }
     
     // ページ読み込み時にカレンダーを生成
