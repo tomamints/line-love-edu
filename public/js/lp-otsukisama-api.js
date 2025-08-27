@@ -70,30 +70,10 @@ async function loadUserProfile() {
     
     const userId = getUserIdFromUrl();
     if (!userId) {
-        console.log('No userId in URL, using default profile');
-        // デフォルトのプロフィールを設定（デバッグ用）
-        const defaultProfile = {
-            emotionalExpression: 'ストレート告白型',
-            distanceStyle: '安心セーフ型',
-            loveValues: 'ロマンチスト型',
-            loveEnergy: '燃え上がり型'
-        };
-        currentProfile = defaultProfile; // デフォルトプロフィールを保存
-        updatePersonalityDisplay(defaultProfile);
-        displayCombinedPersonality(defaultProfile);
-        
-        // 6つの要素を更新（デフォルトプロフィールを渡す）
-        if (typeof updateSixElements === 'function' && currentPatternId !== null) {
-            const moonPhaseIndex = Math.floor(currentPatternId / 8);
-            const hiddenPhaseIndex = currentPatternId % 8;
-            const moonPhaseNames = ['新月', '三日月', '上弦の月', '十三夜', '満月', '十六夜', '下弦の月', '暁'];
-            const moonPhase = moonPhaseNames[moonPhaseIndex];
-            const hiddenMoonPhase = moonPhaseNames[hiddenPhaseIndex];
-            updateSixElements(currentPatternId, moonPhase, hiddenMoonPhase, defaultProfile);
-        }
-        // デフォルトメッセージを表示
-        displayNoProfileMessage();
-        return currentProfile; // プロフィールを返す
+        console.log('No userId in URL, redirecting to LINE');
+        // LINEに誘導するメッセージを表示
+        displayLineRedirectMessage();
+        return null; // プロフィールなし
     }
     
     try {
