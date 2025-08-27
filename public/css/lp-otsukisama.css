@@ -1,0 +1,1952 @@
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html {
+            overflow-x: hidden;
+            width: 100%;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans JP', sans-serif;
+            background: linear-gradient(180deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            color: #ffffff;
+            line-height: 1.8;
+            overflow-x: hidden;
+            font-size: 16px;
+        }
+        
+        /* フォントヒエラルキー */
+        h1, h2.banner-title {
+            font-family: 'Noto Sans JP', sans-serif;
+            font-weight: 900;
+            letter-spacing: 0.05em;
+        }
+        
+        .section-title {
+            font-family: 'Noto Sans JP', sans-serif;
+            font-weight: 700;
+        }
+        
+        .special-message {
+            font-family: 'Hiragino Mincho ProN', serif;
+            font-style: italic;
+        }
+        
+        /* スクロール進捗バー */
+        .scroll-progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 0%;
+            height: 4px;
+            background: linear-gradient(90deg, #ffd700, #ff6b6b, #9370db);
+            z-index: 9999;
+            transition: width 0.2s ease;
+            box-shadow: 0 2px 10px rgba(255, 215, 0, 0.5);
+        }
+        
+        /* スマホでスクロール案内を表示 */
+        @media (min-width: 769px) {
+            .scroll-hint {
+                display: none !important;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                font-size: 16px;
+                line-height: 1.8;
+            }
+            
+            h1 {
+                font-size: 28px;
+            }
+            
+            h2 {
+                font-size: 22px;
+            }
+            
+            h3 {
+                font-size: 18px;
+            }
+        }
+        
+        /* 星空アニメーション */
+        .stars-container {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 0;
+        }
+        
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 3s infinite;
+        }
+        
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+        
+        .shooting-star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: linear-gradient(90deg, white, transparent);
+            animation: shoot 3s linear infinite;
+        }
+        
+        @keyframes shoot {
+            0% { transform: translateX(-100px) translateY(0); opacity: 1; }
+            100% { transform: translateX(2000px) translateY(200px); opacity: 0; }
+        }
+        
+        /* メインコンテナ */
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 20px;
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            overflow-x: hidden;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                max-width: 100%;
+                padding: 0 5px;
+            }
+        }
+        
+        /* ヘッダー */
+        .header {
+            text-align: center;
+            padding: 60px 20px;
+            background: radial-gradient(circle at center, rgba(100,100,255,0.1) 0%, transparent 60%);
+        }
+        
+        .main-moon {
+            width: 150px;
+            height: 150px;
+            margin: 0 auto 30px;
+            background: radial-gradient(circle at 30% 30%, #ffffff 0%, #f0f0ff 50%, #d0d0ff 100%);
+            border-radius: 50%;
+            box-shadow: 
+                0 0 80px rgba(255,255,255,0.8),
+                0 0 120px rgba(200,200,255,0.6),
+                inset -20px -20px 30px rgba(150,150,200,0.3);
+            animation: moonGlow 4s ease-in-out infinite;
+        }
+        
+        @keyframes moonGlow {
+            0%, 100% { box-shadow: 0 0 80px rgba(255,255,255,0.8), 0 0 120px rgba(200,200,255,0.6); }
+            50% { box-shadow: 0 0 100px rgba(255,255,255,1), 0 0 150px rgba(200,200,255,0.8); }
+        }
+        
+        h1 {
+            font-size: 32px;
+            font-weight: normal;
+            letter-spacing: 4px;
+            margin-bottom: 15px;
+            text-shadow: 0 0 30px rgba(255,255,255,0.5);
+            background: linear-gradient(135deg, #ffffff 0%, #e0e0ff 50%, #ffffff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .subtitle {
+            font-size: 16px;
+            color: #c0c0ff;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+        
+        .sub-description {
+            font-size: 14px;
+            color: #a0a0e0;
+            margin-top: 20px;
+            line-height: 1.6;
+            font-weight: 500;
+        }
+        
+        /* フォームセクション */
+        .form-section {
+            padding: 40px 20px;
+            margin-bottom: 40px;
+        }
+        
+        .form-title {
+            text-align: center;
+            font-size: 20px;
+            color: #ffffff;
+            margin-bottom: 30px;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+        
+        .form-group {
+            margin-bottom: 30px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 15px;
+            color: #d0d0ff;
+            letter-spacing: 1px;
+            font-weight: 500;
+        }
+        
+        .required {
+            color: #ff9999;
+            font-size: 12px;
+            margin-left: 5px;
+        }
+        
+        input[type="text"] {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            color: white;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #9090ff;
+            background: rgba(255,255,255,0.1);
+            box-shadow: 0 0 20px rgba(144,144,255,0.3);
+        }
+        
+        .date-selects {
+            display: flex;
+            gap: 12px;
+        }
+        
+        select {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        select:focus {
+            outline: none;
+            border-color: #9090ff;
+            background: rgba(255,255,255,0.1);
+        }
+        
+        select option {
+            background: #2a2a4e;
+            color: white;
+        }
+        
+        button {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #917FB3 0%, #E8A0BF 100%);
+            border: none;
+            border-radius: 15px;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.4s;
+            box-shadow: 0 10px 30px rgba(145,127,179,0.4);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 40px rgba(145,127,179,0.6);
+        }
+        
+        button:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+        
+        .button-subtitle {
+            font-size: 12px;
+            opacity: 0.9;
+            margin-top: 5px;
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        /* 結果セクション（初期は非表示） */
+        .result-section {
+            display: none;
+        }
+        
+        /* タイトルスタイル */
+        .section-title {
+            text-align: center;
+            font-size: 22px;
+            color: #ffd700;
+            margin: 50px 0 30px;
+            letter-spacing: 2px;
+            text-shadow: 0 0 20px rgba(255,215,0,0.5);
+        }
+        
+        .section-description {
+            text-align: center;
+            font-size: 17px;
+            color: #d0d0ff;
+            letter-spacing: 0.5px;
+            line-height: 2;
+            font-weight: 600;
+        }
+        
+        /* 3段階バナースタイル */
+        
+        /* 最重要バナー（運勢・恋愛） */
+        .banner-supreme {
+            position: relative;
+            text-align: center;
+            font-size: 42px;
+            margin: 100px 0 80px;
+            padding: 45px 30px;
+            color: #ffffff;
+            letter-spacing: 6px;
+            background: linear-gradient(135deg,
+                rgba(255, 215, 0, 0.2) 0%,
+                rgba(255, 107, 107, 0.15) 25%,
+                rgba(147, 112, 219, 0.2) 50%,
+                rgba(100, 200, 255, 0.15) 75%,
+                rgba(255, 215, 0, 0.2) 100%);
+            border: 3px solid #ffd700;
+            border-radius: 20px;
+            text-shadow: 0 3px 15px rgba(255, 215, 0, 0.5);
+            overflow: hidden;
+            animation: bannerGlow 4s ease-in-out infinite;
+            box-shadow: 0 10px 50px rgba(255, 215, 0, 0.3);
+        }
+        
+        @keyframes bannerGlow {
+            0%, 100% { 
+                box-shadow: 0 10px 50px rgba(255, 215, 0, 0.3);
+                transform: scale(1);
+            }
+            50% { 
+                box-shadow: 0 15px 60px rgba(255, 215, 0, 0.5);
+                transform: scale(1.02);
+            }
+        }
+        
+        /* 中重要バナー（仕事・人間関係） */
+        .banner-secondary {
+            position: relative;
+            text-align: center;
+            font-size: 36px;
+            margin: 70px 0 50px;
+            padding: 30px 20px;
+            color: #ffffff;
+            letter-spacing: 4px;
+            background: linear-gradient(90deg,
+                transparent 0%,
+                rgba(147, 112, 219, 0.2) 20%,
+                rgba(147, 112, 219, 0.3) 50%,
+                rgba(147, 112, 219, 0.2) 80%,
+                transparent 100%);
+            border-left: 5px solid #ffd700;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+            font-style: italic;
+        }
+        
+        /* 装飾的バナー（月相説明） */
+        .banner-decorative {
+            position: relative;
+            text-align: center;
+            font-size: 32px;
+            margin: 60px 0 40px;
+            padding: 25px 15px;
+            color: #ffffff;
+            letter-spacing: 3px;
+            background: rgba(100, 100, 255, 0.1);
+            border-radius: 15px;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+        
+        .banner-decorative::before {
+            content: "🌙";
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 40px;
+            animation: moonFloat 3s ease-in-out infinite;
+        }
+        
+        .banner-decorative::after {
+            content: "🌙";
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%) scaleX(-1);
+            font-size: 40px;
+            animation: moonFloat 3s ease-in-out infinite;
+        }
+        
+        @keyframes moonFloat {
+            0%, 100% { transform: translateY(-50%) rotate(0deg); }
+            50% { transform: translateY(-60%) rotate(10deg); }
+        }
+        
+        /* 旧バナースタイル（互換性のため） */
+        .banner-title {
+            position: relative;
+            text-align: center;
+            font-size: 38px;
+            margin: 80px 0 60px;
+            padding: 35px 20px;
+            color: #ffffff;
+            letter-spacing: 5px;
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                rgba(147, 112, 219, 0.3) 15%,
+                rgba(147, 112, 219, 0.5) 50%,
+                rgba(147, 112, 219, 0.3) 85%,
+                transparent 100%);
+            border-top: 2px solid rgba(255, 215, 0, 0.6);
+            border-bottom: 2px solid rgba(255, 215, 0, 0.6);
+            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+            overflow: hidden;
+        }
+        
+        .banner-title::before,
+        .banner-title::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 100px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.6));
+        }
+        
+        .banner-title::before {
+            left: -110px;
+        }
+        
+        .banner-title::after {
+            right: -110px;
+            background: linear-gradient(90deg, rgba(255, 215, 0, 0.6), transparent);
+        }
+        
+        @media (max-width: 768px) {
+            .banner-title {
+                font-size: 26px;
+                margin: 60px 0 40px;
+                padding: 25px 10px;
+                letter-spacing: 3px;
+            }
+            
+            .banner-title::before,
+            .banner-title::after {
+                display: none;
+            }
+        }
+        
+        /* 6つのタイプを円形に配置 - 新デザイン */
+        .moon-types-circle {
+            position: relative;
+            width: 400px;
+            height: 400px;
+            margin: 80px auto;
+        }
+        
+        /* 軌道線 */
+        .orbit-path {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 320px;
+            height: 320px;
+            border: 1px dashed rgba(255,215,0,0.2);
+            border-radius: 50%;
+        }
+        
+        /* 中心の月 */
+        .center-moon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 120px;
+            height: 120px;
+            background: radial-gradient(circle at 30% 30%, #fff8dc 0%, #ffd700 30%, #ffa500 60%, rgba(255,215,0,0.3) 100%);
+            border-radius: 50%;
+            box-shadow: 
+                0 0 100px rgba(255,215,0,0.9),
+                0 0 150px rgba(255,215,0,0.6),
+                inset -20px -20px 40px rgba(255,165,0,0.3),
+                inset 10px 10px 30px rgba(255,255,255,0.8);
+            z-index: 10;
+            animation: moonPulse 4s ease-in-out infinite;
+        }
+        
+        @keyframes moonPulse {
+            0%, 100% { 
+                box-shadow: 
+                    0 0 100px rgba(255,215,0,0.9),
+                    0 0 150px rgba(255,215,0,0.6),
+                    inset -20px -20px 40px rgba(255,165,0,0.3),
+                    inset 10px 10px 30px rgba(255,255,255,0.8);
+            }
+            50% { 
+                box-shadow: 
+                    0 0 120px rgba(255,215,0,1),
+                    0 0 180px rgba(255,215,0,0.8),
+                    inset -20px -20px 40px rgba(255,165,0,0.4),
+                    inset 10px 10px 30px rgba(255,255,255,0.9);
+            }
+        }
+        
+        /* 要素コンテナ（軌道上を回転） */
+        .elements-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 320px;
+            height: 320px;
+            transform: translate(-50%, -50%);
+            animation: orbitRotation 40s linear infinite;
+        }
+        
+        @keyframes orbitRotation {
+            from { transform: translate(-50%, -50%) rotate(0deg); }
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+        
+        .type-item {
+            position: absolute;
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.05) 100%);
+            border: 2px solid rgba(255,215,0,0.6);
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 20px rgba(255,215,0,0.2);
+            overflow: hidden; /* 円形マスクのため */
+            transform: translate(-50%, -50%);
+            animation: counterRotate 40s linear infinite;
+        }
+        
+        /* 月相画像専用のスタイル */
+        .moon-phase-item {
+            background: transparent !important;
+            backdrop-filter: none !important;
+            overflow: visible !important; /* ラベル表示のためvisibleに */
+        }
+        
+        .moon-phase-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            top: 0;
+            left: 0;
+            border-radius: 50%; /* 画像自体を円形に */
+        }
+        
+        @keyframes counterRotate {
+            from { transform: translate(-50%, -50%) rotate(0deg); }
+            to { transform: translate(-50%, -50%) rotate(-360deg); }
+        }
+        
+        .type-item:hover {
+            transform: translate(-50%, -50%) scale(1.3);
+            z-index: 20;
+        }
+        
+        /* 月相 - ゴールド */
+        .type-item:nth-child(1) {
+            border: 3px solid rgba(255,215,0,0.9);
+            box-shadow: 0 0 35px rgba(255,215,0,0.5);
+        }
+        .type-item:nth-child(1):hover {
+            box-shadow: 0 0 50px rgba(255,215,0,0.8);
+        }
+        
+        /* 裏月相 - パープル */
+        .type-item:nth-child(2) {
+            border: 3px solid rgba(180,100,255,0.9);
+            box-shadow: 0 0 35px rgba(180,100,255,0.5);
+        }
+        .type-item:nth-child(2):hover {
+            box-shadow: 0 0 50px rgba(180,100,255,0.8);
+        }
+        
+        /* 恋愛タイプアイコン専用スタイル */
+        .love-type-item {
+            background: rgba(255,255,255,0.1) !important;
+            backdrop-filter: blur(5px) !important;
+        }
+        
+        .love-type-item img {
+            padding: 2px;
+            filter: brightness(1.1) contrast(1.1);
+            width: 95% !important;
+            height: 95% !important;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            object-fit: contain !important;
+        }
+        
+        /* 感情表現 - ピンク */
+        .type-item:nth-child(3) {
+            border: 3px solid rgba(255,100,180,0.9);
+            box-shadow: 0 0 35px rgba(255,100,180,0.5);
+        }
+        .type-item:nth-child(3):hover {
+            box-shadow: 0 0 50px rgba(255,100,180,0.8);
+        }
+        
+        /* 距離感 - エメラルドグリーン */
+        .type-item:nth-child(4) {
+            border: 3px solid rgba(50,255,180,0.9);
+            box-shadow: 0 0 35px rgba(50,255,180,0.5);
+        }
+        .type-item:nth-child(4):hover {
+            box-shadow: 0 0 50px rgba(50,255,180,0.8);
+        }
+        
+        /* 価値観 - スカイブルー */
+        .type-item:nth-child(5) {
+            border: 3px solid rgba(100,200,255,0.9);
+            box-shadow: 0 0 35px rgba(100,200,255,0.5);
+        }
+        .type-item:nth-child(5):hover {
+            box-shadow: 0 0 50px rgba(100,200,255,0.8);
+        }
+        
+        /* エネルギー - オレンジレッド */
+        .type-item:nth-child(6) {
+            border: 3px solid rgba(255,120,50,0.9);
+            box-shadow: 0 0 35px rgba(255,120,50,0.5);
+        }
+        .type-item:nth-child(6):hover {
+            box-shadow: 0 0 50px rgba(255,120,50,0.8);
+        }
+        
+        /* モバイル用レスポンシブ */
+        @media (max-width: 768px) {
+            .moon-types-circle {
+                width: calc(100vw - 40px);
+                max-width: 400px;
+                height: calc(100vw - 40px);
+                max-height: 400px;
+                margin: 60px auto;
+            }
+            
+            .orbit-path {
+                width: 240px;
+                height: 240px;
+            }
+            
+            .center-moon {
+                width: 100px;
+                height: 100px;
+            }
+            
+            
+            .type-item {
+                width: 65px;
+                height: 65px;
+            }
+            
+            .type-label {
+                font-size: 10px;
+            }
+            
+            .type-result {
+                font-size: 12px;
+            }
+        }
+        
+        .type-label {
+            font-size: 12px;
+            margin-bottom: 5px;
+            font-weight: 600;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+        
+        .type-result {
+            font-size: 16px;
+            font-weight: bold;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
+            white-space: nowrap;
+            padding: 0 5px;
+        }
+        
+        /* 各要素の文字色を対応する色に */
+        .type-item:nth-child(1) .type-label,
+        .type-item:nth-child(1) .type-result {
+            color: #ffd700;
+        }
+        
+        .type-item:nth-child(2) .type-label,
+        .type-item:nth-child(2) .type-result {
+            color: #b464ff;
+        }
+        
+        .type-item:nth-child(3) .type-label,
+        .type-item:nth-child(3) .type-result {
+            color: #ff64b4;
+        }
+        
+        .type-item:nth-child(4) .type-label,
+        .type-item:nth-child(4) .type-result {
+            color: #32ffb4;
+        }
+        
+        .type-item:nth-child(5) .type-label,
+        .type-item:nth-child(5) .type-result {
+            color: #64c8ff;
+        }
+        
+        .type-item:nth-child(6) .type-label,
+        .type-item:nth-child(6) .type-result {
+            color: #ff7832;
+        }
+        
+        /* エネルギータイプの説明 */
+        .energy-types {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin: 40px 0;
+        }
+        
+        .energy-item {
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(135deg, rgba(30,50,70,0.95) 0%, rgba(50,60,80,0.9) 100%);
+            border-radius: 15px;
+            transition: all 0.3s;
+            backdrop-filter: blur(5px);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .energy-item::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+        
+        .energy-item:hover::before {
+            opacity: 1;
+        }
+        
+        /* エネルギータイプごとの色分け */
+        .energy-item:nth-child(1) {
+            background: linear-gradient(135deg, rgba(255,100,150,0.2) 0%, rgba(255,150,200,0.1) 100%);
+            border: 2px solid rgba(255,100,150,0.6);
+            box-shadow: 0 10px 30px rgba(255,100,150,0.3);
+        }
+        
+        .energy-item:nth-child(2) {
+            background: linear-gradient(135deg, rgba(150,100,255,0.2) 0%, rgba(200,150,255,0.1) 100%);
+            border: 2px solid rgba(150,100,255,0.6);
+            box-shadow: 0 10px 30px rgba(150,100,255,0.3);
+        }
+        
+        .energy-item:nth-child(3) {
+            background: linear-gradient(135deg, rgba(100,200,255,0.2) 0%, rgba(150,220,255,0.1) 100%);
+            border: 2px solid rgba(100,200,255,0.6);
+            box-shadow: 0 10px 30px rgba(100,200,255,0.3);
+        }
+        
+        .energy-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(100,100,200,0.3);
+        }
+        
+        .energy-title {
+            font-size: 22px;
+            color: #ffffff;
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+            text-shadow: 0 0 15px rgba(255,255,255,0.8);
+            font-weight: bold;
+        }
+        
+        .energy-description {
+            font-size: 15px;
+            color: #ffffff;
+            line-height: 1.6;
+            font-weight: 600;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+        }
+        
+        /* 月相カード */
+        .moon-phase-card {
+            padding: 30px 25px;
+            margin-bottom: 40px;
+            border: 3px solid rgba(255,215,0,0.7);
+            border-left: 6px solid rgba(255,215,0,0.9);
+            border-radius: 20px;
+            background: linear-gradient(90deg, rgba(20,30,50,0.95) 0%, rgba(40,50,70,0.9) 100%);
+            backdrop-filter: blur(8px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.4), 
+                        0 0 50px rgba(255,215,0,0.15),
+                        inset 0 2px 0 rgba(255,255,255,0.15);
+            position: relative;
+        }
+        
+        /* 新月用の色 */
+        .moon-phase-card.new-moon {
+            background: linear-gradient(90deg, rgba(15,20,40,0.95) 0%, rgba(30,40,60,0.9) 100%);
+            border: 3px solid rgba(255,215,0,0.6);
+            border-left: 6px solid rgba(255,215,0,0.9);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.4),
+                        0 0 40px rgba(255,215,0,0.2),
+                        inset 0 2px 0 rgba(255,215,0,0.2);
+        }
+        
+        /* 三日月用の色 */
+        .moon-phase-card.crescent {
+            background: linear-gradient(90deg, rgba(60,50,70,0.95) 0%, rgba(80,70,90,0.9) 100%);
+            border: 3px solid rgba(180,100,255,0.6);
+            border-left: 6px solid rgba(180,100,255,0.9);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.4),
+                        0 0 40px rgba(180,100,255,0.2),
+                        inset 0 2px 0 rgba(180,100,255,0.2);
+        }
+        
+        .moon-phase-header {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            margin-bottom: 25px;
+        }
+        
+        .moon-phase-visual {
+            width: 120px;
+            height: 120px;
+            background: radial-gradient(circle at 30% 30%, #ffffff 0%, #e0e0ff 100%);
+            border-radius: 50%;
+            flex-shrink: 0;
+            box-shadow: 0 0 40px rgba(255,255,255,0.6);
+        }
+        
+        .moon-phase-info h2 {
+            font-size: 42px;
+            color: #ffd700;
+            margin-bottom: 12px;
+            letter-spacing: 2px;
+            font-weight: bold;
+            text-shadow: 
+                2px 2px 4px rgba(0,0,0,0.8),
+                0 0 30px rgba(255,215,0,0.4);
+        }
+        
+        .moon-phase-subtitle {
+            font-size: 20px;
+            color: #ffffff;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+            letter-spacing: 0.5px;
+            line-height: 1.4;
+            position: relative;
+            padding-bottom: 2px;
+            border-bottom: 2px solid rgba(255,215,0,0.3);
+        }
+        
+        .moon-phase-description {
+            font-size: 18px;
+            line-height: 1.9;
+            color: #ffffff;
+            font-weight: 500;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+        }
+        
+        /* 恋愛タイプ分析 */
+        .love-type-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
+            margin: 40px 0;
+        }
+        
+        /* 総合診断カード */
+        .combined-personality-card {
+            background: linear-gradient(135deg, rgba(255,215,0,0.1) 0%, rgba(255,182,193,0.1) 100%);
+            border: 2px solid #ffd700;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 20px 0;
+            animation: glow 3s ease-in-out infinite;
+        }
+        
+        .combined-title {
+            color: #ffd700;
+            font-size: 24px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .combined-description {
+            color: #fff;
+            font-size: 18px;
+            line-height: 1.8;
+            margin-bottom: 20px;
+        }
+        
+        .combined-advice {
+            background: rgba(255,255,255,0.05);
+            border-left: 3px solid #ff6b6b;
+            padding: 15px 20px;
+            margin-top: 20px;
+        }
+        
+        .combined-advice h4 {
+            color: #ff6b6b;
+            margin-bottom: 10px;
+        }
+        
+        .compatible-types-card {
+            background: rgba(100,150,200,0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .compatible-types-card h4 {
+            color: #87ceeb;
+            margin-bottom: 15px;
+        }
+        
+        .compatible-types-card ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .compatible-types-card li {
+            color: #fff;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .compatible-types-card li:before {
+            content: "💕 ";
+            margin-right: 10px;
+        }
+        
+        .love-type-card {
+            background: linear-gradient(135deg, rgba(40,50,60,0.95) 0%, rgba(60,70,80,0.9) 100%);
+            border-radius: 15px;
+            padding: 20px;
+            backdrop-filter: blur(5px);
+            position: relative;
+            transition: all 0.3s;
+        }
+        
+        .love-type-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        /* 恋愛タイプカードの色分け */
+        .love-type-card:nth-child(1) {
+            background: linear-gradient(135deg, rgba(255,0,100,0.15) 0%, rgba(255,100,150,0.1) 100%);
+            border: 2px solid rgba(255,0,100,0.5);
+            box-shadow: 0 5px 20px rgba(255,0,100,0.2);
+        }
+        
+        .love-type-card:nth-child(2) {
+            background: linear-gradient(135deg, rgba(50,255,180,0.15) 0%, rgba(30,220,150,0.1) 100%);
+            border: 2px solid rgba(50,255,180,0.5);
+            box-shadow: 0 5px 20px rgba(50,255,180,0.2);
+        }
+        
+        .love-type-card:nth-child(3) {
+            background: linear-gradient(135deg, rgba(0,150,255,0.15) 0%, rgba(100,200,255,0.1) 100%);
+            border: 2px solid rgba(0,150,255,0.5);
+            box-shadow: 0 5px 20px rgba(0,150,255,0.2);
+        }
+        
+        .love-type-card:nth-child(4) {
+            background: linear-gradient(135deg, rgba(255,150,0,0.15) 0%, rgba(255,200,100,0.1) 100%);
+            border: 2px solid rgba(255,150,0,0.5);
+            box-shadow: 0 5px 20px rgba(255,150,0,0.2);
+        }
+        
+        .love-type-title {
+            font-size: 18px;
+            color: #ffffff;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: bold;
+            text-shadow: 0 0 10px rgba(255,255,255,0.5);
+        }
+        
+        .love-type-title img {
+            width: 42px;
+            height: 42px;
+            object-fit: contain;
+            filter: brightness(1.2) contrast(1.1);
+        }
+        
+        .love-type-icon {
+            width: 30px;
+            height: 30px;
+            background: radial-gradient(circle, #ffffff, #ffd700);
+            border-radius: 50%;
+            box-shadow: 0 0 15px rgba(255,215,0,0.6);
+        }
+        
+        .love-type-content {
+            font-size: 16px;
+            color: #ffffff;
+            line-height: 2;
+            font-weight: 500;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+            text-align: left;
+            max-height: 300px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+        
+        .love-type-content::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .love-type-content::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.1);
+            border-radius: 3px;
+        }
+        
+        .love-type-content::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.3);
+            border-radius: 3px;
+        }
+        
+        .love-type-content::-webkit-scrollbar-thumb:hover {
+            background: rgba(255,255,255,0.5);
+        }
+        
+        /* 運勢セクション */
+        .fortune-section {
+            margin-bottom: 30px;
+            padding: 15px 8px;
+            border-radius: 8px;
+            backdrop-filter: blur(8px);
+        }
+        
+        /* 直近3ヶ月運命セクション - 紫系 */
+        .fortune-section.destiny {
+            background: linear-gradient(135deg, rgba(60,40,70,0.95) 0%, rgba(80,60,90,0.9) 100%);
+            border: 1px solid rgba(181,165,214,0.3);
+        }
+        
+        /* 恋愛運セクション - ピンク系 */
+        .fortune-section.love {
+            background: linear-gradient(135deg, rgba(100,50,60,0.95) 0%, rgba(120,70,80,0.9) 100%);
+            border: 1px solid rgba(255,182,193,0.3);
+        }
+        
+        /* 人間関係運セクション - 青系 */
+        .fortune-section.relationship {
+            background: linear-gradient(135deg, rgba(30,50,70,0.95) 0%, rgba(50,60,80,0.9) 100%);
+            border: 1px solid rgba(165,180,214,0.3);
+        }
+        
+        /* 仕事運セクション - 緑系 */
+        .fortune-section.career {
+            background: linear-gradient(135deg, rgba(40,60,50,0.95) 0%, rgba(60,80,70,0.9) 100%);
+            border: 1px solid rgba(150,255,180,0.3);
+        }
+        
+        /* 金運セクション - ゴールド系 */
+        .fortune-section.money {
+            background: linear-gradient(135deg, rgba(90,70,50,0.95) 0%, rgba(110,90,70,0.9) 100%);
+            border: 1px solid rgba(255,215,0,0.3);
+        }
+        
+        .section-header {
+            padding: 15px 0;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .section-header h3 {
+            font-size: 28px;
+            color: #ffd700;
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+        }
+        
+        .section-header p {
+            font-size: 20px;
+            color: #ffffff;
+            line-height: 2.1;
+            font-weight: 600;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+        }
+        
+        .fortune-content {
+            padding: 0 10px;
+            line-height: 2.2;
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 18px;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+        }
+        
+        .fortune-highlight {
+            border-left: 3px solid #ffd700;
+            padding-left: 20px;
+            margin: 30px 0;
+        }
+        
+        .fortune-list {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0;
+        }
+        
+        .fortune-list li {
+            position: relative;
+            padding-left: 30px;
+            margin-bottom: 15px;
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 17px;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+        }
+        
+        .fortune-list li::before {
+            content: '✦';
+            position: absolute;
+            left: 0;
+            color: #ffd700;
+        }
+        
+        /* 月齢カレンダー */
+        .monthly-fortune {
+            background: linear-gradient(135deg, rgba(30,50,70,0.95) 0%, rgba(50,60,80,0.9) 100%);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 40px 0;
+            width: 100%;
+            overflow-x: hidden;
+            backdrop-filter: blur(8px);
+        }
+        
+        .calendar-wrapper {
+            background: rgba(10,20,40,0.6);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .weekday-header {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid rgba(255,215,0,0.3);
+        }
+        
+        .weekday {
+            text-align: center;
+            color: #ffd700;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        
+        .weekday:first-child {
+            color: #ff9999; /* 日曜日は赤系 */
+        }
+        
+        .weekday:last-child {
+            color: #9999ff; /* 土曜日は青系 */
+        }
+        
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+            width: 100%;
+        }
+        
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: rgba(20,30,50,0.8);
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: all 0.3s;
+            min-width: 45px;
+            position: relative;
+        }
+        
+        .calendar-day:hover {
+            background: rgba(255,215,0,0.2);
+            transform: scale(1.05);
+            cursor: pointer;
+        }
+        
+        /* 空白セル */
+        .calendar-day.empty {
+            background: transparent;
+            border: none;
+            cursor: default;
+        }
+        
+        .calendar-day.empty:hover {
+            transform: none;
+            background: transparent;
+        }
+        
+        /* 日曜日のセル */
+        .calendar-day.sunday .day-number {
+            color: #ff9999;
+        }
+        
+        /* 土曜日のセル */
+        .calendar-day.saturday .day-number {
+            color: #9999ff;
+        }
+        
+        /* ラッキーデー */
+        .calendar-day.lucky-day {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.25), rgba(255, 215, 0, 0.15));
+            border: 2px solid #ffd700;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
+        }
+        
+        /* パワーデー */
+        .calendar-day.power-day {
+            background: linear-gradient(135deg, rgba(147, 112, 219, 0.25), rgba(147, 112, 219, 0.15));
+            border: 2px solid #9370DB;
+        }
+        
+        /* 注意日 */
+        .calendar-day.caution-day {
+            background: rgba(255, 100, 100, 0.15);
+            border: 1px solid rgba(255, 100, 100, 0.5);
+        }
+        
+        /* 特別マーク */
+        .special-mark {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            font-size: 12px;
+        }
+        
+        /* カレンダーの凡例 */
+        .calendar-legend {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            margin-top: 20px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #d0d0ff;
+            font-size: 13px;
+        }
+        
+        .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        
+        .legend-dot.lucky {
+            background: #ffd700;
+            box-shadow: 0 0 8px rgba(255, 215, 0, 0.6);
+        }
+        
+        .legend-dot.power {
+            background: #9370DB;
+            box-shadow: 0 0 8px rgba(147, 112, 219, 0.6);
+        }
+        
+        .legend-dot.caution {
+            background: rgba(255, 100, 100, 0.8);
+        }
+        
+        .day-number {
+            font-size: 16px;
+            color: #ffffff;
+            margin-bottom: 5px;
+            font-weight: bold;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+        }
+        
+        .moon-emoji {
+            font-size: 20px;
+        }
+        
+        /* CTAボタン */
+        .cta-section {
+            text-align: center;
+            margin: 60px 0;
+            padding: 40px;
+            background: linear-gradient(135deg, rgba(181,165,214,0.15) 0%, rgba(207,143,169,0.1) 100%);
+            border-radius: 30px;
+            border: 2px solid rgba(181,165,214,0.3);
+        }
+        
+        .cta-title {
+            font-size: 24px;
+            color: #ffd700;
+            margin-bottom: 15px;
+            letter-spacing: 2px;
+        }
+        
+        .cta-description {
+            font-size: 14px;
+            color: #e0e0ff;
+            margin-bottom: 30px;
+            line-height: 1.8;
+            font-weight: 600;
+        }
+        
+        .paid-features {
+            text-align: left;
+            max-width: 600px;
+            margin: 0 auto 30px;
+            list-style: none;
+            padding: 0;
+        }
+        
+        .paid-features li {
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            color: #ffffff;
+            font-size: 15px;
+        }
+        
+        .price-info {
+            margin: 30px 0;
+            font-size: 20px;
+        }
+        
+        .price-label {
+            color: #d0d0ff;
+        }
+        
+        .price {
+            color: #ffd700;
+            font-size: 36px;
+            font-weight: bold;
+            margin: 0 10px;
+        }
+        
+        .price-note {
+            color: #a0a0e0;
+            font-size: 14px;
+        }
+        
+        .guarantee {
+            margin-top: 20px;
+            font-size: 13px;
+            color: #a0a0e0;
+            line-height: 1.6;
+        }
+        
+        .cta-button {
+            display: inline-block;
+            padding: 18px 40px;
+            background: linear-gradient(135deg, #E8A0BF 0%, #917FB3 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 30px;
+            font-size: 18px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            transition: all 0.4s;
+            box-shadow: 0 10px 30px rgba(232,160,191,0.4);
+            position: relative;
+        }
+        
+        .cta-button .button-subtitle {
+            display: block;
+            font-size: 12px;
+            margin-top: 5px;
+            opacity: 0.9;
+            font-weight: normal;
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(232,160,191,0.6);
+        }
+        
+        /* 最終メッセージ */
+        .final-message {
+            background: linear-gradient(135deg, rgba(255,140,255,0.08) 0%, rgba(255,100,150,0.05) 100%);
+            border-radius: 20px;
+            padding: 30px 20px;
+            text-align: center;
+            margin-bottom: 50px;
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+        
+        .final-message h3 {
+            font-size: 24px;
+            color: #ffd700;
+            margin-bottom: 20px;
+            letter-spacing: 2px;
+        }
+        
+        .final-message p {
+            font-size: 15px;
+            color: #d0d0ff;
+            line-height: 2;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        
+        /* テキスト強調システム */
+        .emphasis-critical {
+            background: linear-gradient(135deg, rgba(255, 0, 0, 0.2), rgba(255, 100, 100, 0.15));
+            padding: 8px 15px;
+            border-radius: 8px;
+            position: relative;
+            display: inline-block;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        
+        .emphasis-critical::before {
+            content: "⭐ 重要";
+            position: absolute;
+            top: -10px;
+            left: 10px;
+            background: #ff4444;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+        
+        .emphasis-important {
+            border-bottom: 3px solid #ffd700;
+            padding-bottom: 2px;
+            font-weight: 600;
+        }
+        
+        .emphasis-note {
+            border-left: 4px solid #9370db;
+            padding-left: 15px;
+            margin: 20px 0;
+            opacity: 0.95;
+        }
+        
+        /* ビジュアルセパレーター */
+        .star-separator {
+            text-align: center;
+            margin: 80px 0;
+            position: relative;
+            height: 50px;
+        }
+        
+        .star-separator::before {
+            content: "✦ ✦ ✦";
+            font-size: 24px;
+            color: #ffd700;
+            letter-spacing: 20px;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+            animation: starTwinkle 3s ease-in-out infinite;
+        }
+        
+        @keyframes starTwinkle {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+        
+        /* セクション内の見出しスタイル */
+        .rhythm-heading {
+            background: linear-gradient(135deg, #ffd700 0%, #ff9500 100%);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 3px;
+            display: inline-block;
+            font-size: 22px;
+            font-weight: bold;
+            margin: 30px 0;
+            box-shadow: 0 5px 20px rgba(255, 215, 0, 0.4);
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+        
+        /* サブバナー（流れ説明用） */
+        .sub-banner {
+            background: rgba(147, 112, 219, 0.08);
+            border-left: 4px solid #9370db;
+            padding: 20px 30px;
+            margin: 40px 0;
+            font-size: 20px;
+            font-weight: bold;
+            color: #ffffff;
+            position: relative;
+        }
+        
+        /* 月別ボックス */
+        .month-box {
+            margin: 35px 0;
+            position: relative;
+        }
+        
+        .month-label {
+            display: inline-block;
+            background: transparent;
+            color: #ffd700;
+            font-weight: 900;
+            font-size: 14px;
+            padding: 6px 14px;
+            border: 2px solid #ffd700;
+            border-radius: 2px;
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+        }
+        
+        .month-box h3 {
+            color: #ff9f9f;
+            margin: 0 0 12px 0;
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+        
+        .month-box p {
+            color: rgba(255, 255, 255, 0.9);
+            line-height: 1.8;
+            margin: 0;
+        }
+        
+        .monthly-sections {
+            margin: 30px 0;
+        }
+        
+        /* ポイントボックス */
+        .point-box {
+            background: rgba(255, 50, 50, 0.05);
+            border-left: 4px solid #ff5555;
+            padding: 20px 20px 20px 25px;
+            margin: 35px 0;
+            position: relative;
+        }
+        
+        .point-box strong {
+            color: #ff6666;
+            font-size: 16px;
+            display: block;
+            margin-bottom: 12px;
+            letter-spacing: 0.5px;
+        }
+        
+        .point-box p {
+            margin: 0;
+            line-height: 1.8;
+        }
+        
+        /* ハイライトバナー（転機用） */
+        .highlight-banner {
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            color: #0a1628;
+            padding: 14px 24px;
+            margin: 30px 0;
+            font-weight: 900;
+            font-size: 20px;
+            text-align: center;
+            border-radius: 2px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+            letter-spacing: 0.5px;
+        }
+        
+        .highlight-banner::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            animation: slideShine 2.5s infinite;
+        }
+        
+        @keyframes slideShine {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        
+        /* 視覚的休憩ゾーン */
+        .visual-break {
+            height: 150px;
+            background: radial-gradient(ellipse at center, rgba(100, 100, 255, 0.1) 0%, transparent 70%);
+            margin: 60px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-style: italic;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 14px;
+        }
+        
+        /* CTAボタン強化 */
+        .cta-main {
+            display: inline-block;
+            padding: 20px 50px;
+            background: linear-gradient(135deg, 
+                #ff6b6b 0%, 
+                #ffd700 25%, 
+                #32ff80 50%, 
+                #6b6bff 75%, 
+                #ff6bff 100%);
+            background-size: 200% 200%;
+            animation: rainbowShift 3s ease infinite;
+            color: white;
+            font-size: 20px;
+            font-weight: 900;
+            border-radius: 50px;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            box-shadow: 0 10px 40px rgba(255, 107, 107, 0.4);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .cta-main::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+        
+        @keyframes rainbowShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        
+        .cta-main:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 15px 50px rgba(255, 107, 107, 0.6);
+        }
+        
+        .cta-sub {
+            display: inline-block;
+            padding: 15px 35px;
+            background: transparent;
+            border: 2px solid #ffd700;
+            color: #ffd700;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 30px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .cta-sub:hover {
+            background: rgba(255, 215, 0, 0.1);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(255, 215, 0, 0.3);
+        }
+        
+        /* レスポンシブ対応 */
+        @media (max-width: 768px) {
+            .moon-types-circle {
+                width: calc(100vw - 40px);
+                max-width: 320px;
+                height: calc(100vw - 40px);
+                max-height: 320px;
+            }
+            
+            .type-item {
+                width: 85px;
+                height: 85px;
+                font-size: 12px;
+                padding: 8px;
+            }
+            
+            .type-label {
+                font-size: 11px;
+                margin-bottom: 3px;
+            }
+            
+            .type-result {
+                font-size: 11px;
+                font-weight: bold;
+                color: #ffd700;
+            }
+            
+            .center-moon {
+                width: 90px;
+                height: 90px;
+            }
+            
+            .energy-types {
+                grid-template-columns: 1fr;
+            }
+            
+            .love-type-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .moon-phase-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .calendar-wrapper {
+                padding: 10px;
+            }
+            
+            .weekday-header {
+                gap: 5px;
+            }
+            
+            .weekday {
+                font-size: 12px;
+            }
+            
+            .calendar-grid {
+                gap: 5px;
+            }
+            
+            .calendar-day {
+                font-size: 11px;
+                padding: 5px;
+                min-width: 0;
+            }
+            
+            .day-number {
+                font-size: 12px;
+            }
+            
+            .moon-emoji {
+                font-size: 16px;
+            }
+        }
+        
+        /* 月詠キャラクター強化 */
+        .tsukuyomi-section {
+            position: relative;
+            margin: 60px 0;
+            display: flex;
+            align-items: flex-start;
+            gap: 25px;
+            transition: all 0.3s ease;
+        }
+        
+        .tsukuyomi-section:hover .tsukuyomi-character {
+            transform: scale(1.1);
+            filter: drop-shadow(0 0 30px rgba(255, 215, 0, 0.5));
+        }
+        
+        .tsukuyomi-character {
+            flex-shrink: 0;
+            width: 180px;
+            height: 180px;
+            transition: all 0.5s ease;
+            animation: characterFloat 4s ease-in-out infinite;
+            position: relative;
+        }
+        
+        .tsukuyomi-character img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            filter: drop-shadow(0 5px 15px rgba(100, 100, 255, 0.3));
+        }
+        
+        .tsukuyomi-bubble {
+            flex: 1;
+            background: linear-gradient(135deg, rgba(22,33,62,0.95) 0%, rgba(53,80,112,0.9) 100%);
+            border-radius: 20px;
+            padding: 20px 25px;
+            position: relative;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.4);
+            backdrop-filter: blur(10px);
+        }
+        
+        .tsukuyomi-bubble::before {
+            content: "";
+            position: absolute;
+            left: -10px;
+            top: 30px;
+            width: 0;
+            height: 0;
+            border-style: solid;
+            border-width: 10px 10px 10px 0;
+            border-color: transparent rgba(255,255,255,0.1) transparent transparent;
+        }
+        
+        .tsukuyomi-name {
+            font-size: 14px;
+            color: #ffd700;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+        }
+        
+        .tsukuyomi-bubble p {
+            font-size: 18px;
+            line-height: 2.1;
+            color: #f0f0ff;
+        }
+        
+        /* 右側配置のキャラクター */
+        .tsukuyomi-section.right {
+            flex-direction: row-reverse;
+        }
+        
+        .tsukuyomi-section.right .tsukuyomi-bubble::before {
+            left: auto;
+            right: -10px;
+            border-width: 10px 0 10px 10px;
+            border-color: transparent transparent transparent rgba(255,255,255,0.1);
+        }
+        
+        @media (max-width: 768px) {
+            .tsukuyomi-section {
+                flex-direction: row;
+                align-items: flex-start;
+                margin: 30px 0;
+                padding: 0 10px;
+                gap: 10px;
+            }
+            
+            .tsukuyomi-section.right {
+                flex-direction: row-reverse;
+            }
+            
+            .tsukuyomi-character {
+                width: 80px;
+                height: 80px;
+                flex-shrink: 0;
+                margin: 0;
+            }
+            
+            .tsukuyomi-character img {
+                width: 100%;
+                height: 100%;
+                object-fit: contain;
+            }
+            
+            .tsukuyomi-bubble {
+                flex: 1;
+                padding: 15px;
+                margin: 0;
+                box-sizing: border-box;
+            }
+            
+            .tsukuyomi-bubble::before {
+                content: "";
+                position: absolute;
+                left: -8px;
+                top: 20px;
+                width: 0;
+                height: 0;
+                border-style: solid;
+                border-width: 8px 8px 8px 0;
+                border-color: transparent rgba(255,255,255,0.1) transparent transparent;
+            }
+            
+            .tsukuyomi-section.right .tsukuyomi-bubble::before {
+                left: auto;
+                right: -8px;
+                border-width: 8px 0 8px 8px;
+                border-color: transparent transparent transparent rgba(255,255,255,0.1);
+            }
+            
+            .tsukuyomi-bubble p {
+                font-size: 16px;
+                line-height: 2;
+            }
+            
+            .tsukuyomi-name {
+                font-size: 12px;
+            }
+        }

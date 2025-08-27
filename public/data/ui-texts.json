@@ -1,0 +1,58 @@
+{
+  "headers": {
+    "mainTitle": "おつきさま診断",
+    "formTitle": "あなたの生年月日を教えてください",
+    "resultTitle": "あなたの月相診断結果",
+    "moonPhaseTitle": "あなたの月相（表の顔）",
+    "hiddenPhaseTitle": "あなたの隠れ月相（裏の顔）",
+    "threePowersTitle": "あなたの3つの月の力",
+    "personalityTitle": "あなたの恋愛タイプ",
+    "fortuneTitle": "今週の運勢",
+    "calendarTitle": "あなただけの月相カレンダー",
+    "graphTitle": "今後3ヶ月の運勢グラフ"
+  },
+  "buttons": {
+    "submit": "診断する",
+    "reset": "もう一度診断する",
+    "share": "結果をシェア",
+    "saveImage": "画像を保存"
+  },
+  "labels": {
+    "name": "お名前",
+    "nickname": "ニックネーム",
+    "birthdate": "生年月日",
+    "year": "年",
+    "month": "月", 
+    "day": "日",
+    "required": "必須"
+  },
+  "placeholders": {
+    "name": "お名前を入力",
+    "nickname": "例：ゆうこ",
+    "selectYear": "年を選択",
+    "selectMonth": "月を選択",
+    "selectDay": "日を選択"
+  },
+  "messages": {
+    "loading": "診断中...",
+    "calculating": "月相を計算中...",
+    "noProfile": "プロフィール情報がありません",
+    "error": "エラーが発生しました",
+    "formError": "すべての項目を入力してください",
+    "welcome": "ようこそ、",
+    "complete": "診断完了！"
+  },
+  "fortuneLabels": {
+    "overall": "全体運",
+    "love": "恋愛運",
+    "work": "仕事運",
+    "relationship": "人間関係",
+    "money": "金運"
+  },
+  "personalityAxes": {
+    "emotionalExpression": "感情表現",
+    "distanceStyle": "距離感",
+    "loveValues": "価値観",
+    "loveEnergy": "エネルギー"
+  }
+}
