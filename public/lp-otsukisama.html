@@ -2803,12 +2803,16 @@
         async function loadUserProfile() {
             const userId = getUserIdFromUrl();
             if (!userId) {
-                console.log('No userId in URL, using default values or from localStorage');
+                console.log('No userId in URL, checking alternatives');
                 // localStorageから取得を試みる
                 const savedData = localStorage.getItem('userPersonalityData');
                 if (savedData) {
                     const profile = JSON.parse(savedData);
                     updatePersonalityDisplay(profile);
+                    displayCombinedPersonality(profile);
+                } else {
+                    // デフォルトメッセージを表示
+                    displayNoProfileMessage();
                 }
                 return;
             }
@@ -2851,6 +2855,68 @@
             if (profile.loveEnergy) {
                 document.getElementById('loveEnergyType').textContent = profile.loveEnergy;
                 updateLoveEnergyContent(profile.loveEnergy);
+            }
+        }
+        
+        // プロフィールがない場合のメッセージを表示
+        function displayNoProfileMessage() {
+            // 4軸セクションに案内メッセージを表示
+            const loveTypeCards = document.querySelectorAll('.love-type-card');
+            if (loveTypeCards.length > 0) {
+                // 最初のカードに案内メッセージを挿入
+                const messageCard = document.createElement('div');
+                messageCard.className = 'no-profile-message';
+                messageCard.innerHTML = `
+                    <div style="background: linear-gradient(135deg, rgba(255,215,0,0.1), rgba(255,100,100,0.1)); 
+                                border: 2px dashed #ffd700; 
+                                border-radius: 15px; 
+                                padding: 30px; 
+                                margin-bottom: 30px;
+                                text-align: center;">
+                        <h3 style="color: #ffd700; margin-bottom: 15px;">
+                            💫 4つの恋愛性格診断を表示するには
+                        </h3>
+                        <p style="color: #fff; line-height: 1.8; margin-bottom: 20px;">
+                            この部分は、LINEで事前に恋愛タイプ診断を受けていただいた方に<br>
+                            パーソナライズされた結果を表示しています。
+                        </p>
+                        <div style="background: rgba(0,0,0,0.3); padding: 20px; border-radius: 10px; margin: 20px 0;">
+                            <p style="color: #87ceeb; font-size: 14px; margin-bottom: 10px;">
+                                📱 LINEで診断を受けるには：
+                            </p>
+                            <ol style="text-align: left; color: #ccc; line-height: 1.8; margin: 0 auto; max-width: 400px;">
+                                <li>LINE公式アカウントを友だち追加</li>
+                                <li>「恋愛タイプ診断」メニューを選択</li>
+                                <li>4つの質問に回答</li>
+                                <li>診断完了後、個人用URLが発行されます</li>
+                            </ol>
+                        </div>
+                        <p style="color: #ffd700; font-size: 12px;">
+                            ※ 現在は月相診断のみお楽しみいただけます
+                        </p>
+                    </div>
+                `;
+                
+                // love-type-gridの前に挿入
+                const loveTypeGrid = document.querySelector('.love-type-grid');
+                if (loveTypeGrid && loveTypeGrid.parentNode) {
+                    loveTypeGrid.parentNode.insertBefore(messageCard, loveTypeGrid);
+                }
+            }
+            
+            // 総合診断セクションにもメッセージを表示
+            const combinedSection = document.getElementById('combinedPersonality');
+            if (combinedSection) {
+                combinedSection.innerHTML = `
+                    <div class="combined-personality-card" style="background: rgba(100,100,100,0.2); border-style: dashed;">
+                        <h3 class="combined-title">🔒 総合恋愛タイプ診断</h3>
+                        <p style="text-align: center; color: #ccc;">
+                            LINEで4つの質問に回答すると、<br>
+                            あなただけの256通りの組み合わせから<br>
+                            総合恋愛タイプが判定されます
+                        </p>
+                    </div>
+                `;
             }
         }
         
