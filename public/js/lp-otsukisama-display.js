@@ -387,12 +387,12 @@ async function updateSixElements(patternId, moonPhase, hiddenMoonPhase, profile 
             const label = distanceElement.querySelectorAll('span')[1];
             const img = distanceElement.querySelector('img');
             const typeMapping = {
-                '密着型': { name: '密着型', image: 'close' },
-                'ちょうどいい距離型': { name: 'ちょうどいい距離型', image: 'moderate' },
-                '慎重型': { name: '慎重型', image: 'cautious' },
+                'ベッタリ依存型': { name: 'ベッタリ依存型', image: 'close' },
+                '安心セーフ型': { name: '安心セーフ型', image: 'moderate' },
+                '壁あり慎重型': { name: '壁あり慎重型', image: 'cautious' },
                 '自由マイペース型': { name: '自由マイペース型', image: 'independent' }
             };
-            const mapped = typeMapping[profile.distanceStyle] || typeMapping['ちょうどいい距離型'];
+            const mapped = typeMapping[profile.distanceStyle] || typeMapping['安心セーフ型'];
             if (label) {
                 label.textContent = mapped.name;
             }
