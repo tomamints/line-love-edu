@@ -23,7 +23,22 @@ async function loadUserProfile() {
         currentPatternId = urlPatternId;
         console.log('Using pattern ID from URL:', currentPatternId);
         updateMoonPhaseContent(currentPatternId);
-        updateSixElements(currentPatternId);
+        
+        // パターンIDから月相を計算
+        const moonPhaseIndex = Math.floor(currentPatternId / 8);
+        const hiddenPhaseIndex = currentPatternId % 8;
+        const moonPhaseNames = ['新月', '三日月', '上弦の月', '十三夜', '満月', '十六夜', '下弦の月', '暁'];
+        const moonPhase = moonPhaseNames[moonPhaseIndex];
+        const hiddenMoonPhase = moonPhaseNames[hiddenPhaseIndex];
+        
+        // プロフィールを取得
+        const savedProfile = localStorage.getItem('lineUserProfile');
+        const profile = savedProfile ? JSON.parse(savedProfile) : null;
+        
+        // 6つの要素を更新（月相とプロフィールを渡す）
+        if (typeof updateSixElements === 'function') {
+            updateSixElements(currentPatternId, moonPhase, hiddenMoonPhase, profile);
+        }
         // グラフデータも更新（もし実装されていれば）
         if (typeof updateFortuneGraph === 'function') {
             updateFortuneGraph(currentPatternId);
@@ -52,7 +67,22 @@ async function loadUserProfile() {
         }
         
         updateMoonPhaseContent(currentPatternId);
-        updateSixElements(currentPatternId);
+        
+        // パターンIDから月相を計算
+        const moonPhaseIndex = Math.floor(currentPatternId / 8);
+        const hiddenPhaseIndex = currentPatternId % 8;
+        const moonPhaseNames = ['新月', '三日月', '上弦の月', '十三夜', '満月', '十六夜', '下弦の月', '暁'];
+        const moonPhase = moonPhaseNames[moonPhaseIndex];
+        const hiddenMoonPhase = moonPhaseNames[hiddenPhaseIndex];
+        
+        // プロフィールを取得
+        const savedProfile = localStorage.getItem('lineUserProfile');
+        const profile = savedProfile ? JSON.parse(savedProfile) : null;
+        
+        // 6つの要素を更新（月相とプロフィールを渡す）
+        if (typeof updateSixElements === 'function') {
+            updateSixElements(currentPatternId, moonPhase, hiddenMoonPhase, profile);
+        }
         if (typeof updateFortuneGraph === 'function') {
             updateFortuneGraph(currentPatternId);
         }
@@ -110,7 +140,19 @@ async function loadUserBirthdate() {
                 if (typeof currentPatternId !== 'undefined') {
                     currentPatternId = generatePatternId(userData.birthdate.year, userData.birthdate.month, userData.birthdate.day);
                     updateMoonPhaseContent(currentPatternId);
-                    updateSixElements(currentPatternId);
+                    
+                    // パターンIDから月相を計算
+                    const moonPhaseIndex = Math.floor(currentPatternId / 8);
+                    const hiddenPhaseIndex = currentPatternId % 8;
+                    const moonPhaseNames = ['新月', '三日月', '上弧の月', '十三夜', '満月', '十六夜', '下弧の月', '暁'];
+                    const moonPhase = moonPhaseNames[moonPhaseIndex];
+                    const hiddenMoonPhase = moonPhaseNames[hiddenPhaseIndex];
+                    
+                    // プロフィールを取得
+                    const savedProfile = localStorage.getItem('lineUserProfile');
+                    const profile = savedProfile ? JSON.parse(savedProfile) : null;
+                    
+                    updateSixElements(currentPatternId, moonPhase, hiddenMoonPhase, profile);
                 }
             }
         }
@@ -141,7 +183,19 @@ async function loadUserBirthdate() {
             if (typeof currentPatternId !== 'undefined') {
                 currentPatternId = generatePatternId(year, month, day);
                 updateMoonPhaseContent(currentPatternId);
-                updateSixElements(currentPatternId);
+                
+                // パターンIDから月相を計算
+                const moonPhaseIndex = Math.floor(currentPatternId / 8);
+                const hiddenPhaseIndex = currentPatternId % 8;
+                const moonPhaseNames = ['新月', '三日月', '上弧の月', '十三夜', '満月', '十六夜', '下弦の月', '暁'];
+                const moonPhase = moonPhaseNames[moonPhaseIndex];
+                const hiddenMoonPhase = moonPhaseNames[hiddenPhaseIndex];
+                
+                // プロフィールを取得
+                const savedProfile = localStorage.getItem('lineUserProfile');
+                const profile = savedProfile ? JSON.parse(savedProfile) : null;
+                
+                updateSixElements(currentPatternId, moonPhase, hiddenMoonPhase, profile);
                 if (typeof updateFortuneGraph === 'function') {
                     updateFortuneGraph(currentPatternId);
                 }

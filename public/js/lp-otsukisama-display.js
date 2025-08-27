@@ -124,8 +124,10 @@ async function updateMoonPhaseContent(patternId) {
     }
     
     // 4つの恋愛軸要素も更新（6つの円形要素の中の4つ）
-    // LINEユーザーデータから取得（updatePersonalityDisplayから情報を取得）
-    const profile = JSON.parse(localStorage.getItem('lineUserProfile') || '{}');
+    // 引数で渡されたプロフィールを使用、なければlocalStorageから取得
+    if (!profile) {
+        profile = JSON.parse(localStorage.getItem('lineUserProfile') || '{}');
+    }
     
     if (profile.emotionalExpression) {
         const emotionalItem = document.querySelector('.type-item[data-type="emotional"]');
@@ -244,7 +246,7 @@ async function updateMoonPhaseContent(patternId) {
 }
 
 // 6つの円形要素を更新する関数
-async function updateSixElements(patternId, moonPhase, hiddenMoonPhase) {
+async function updateSixElements(patternId, moonPhase, hiddenMoonPhase, profile = null) {
     // データローダーが読み込み完了するまで待つ
     if (!window.OtsukisamaDataLoader || !window.OtsukisamaDataLoader.isLoaded()) {
         await new Promise(resolve => {
@@ -493,6 +495,9 @@ async function updateSixElements(patternId, moonPhase, hiddenMoonPhase) {
 
 // 恋愛タイプの表示を更新
 function updatePersonalityDisplay(profile) {
+    // プロフィールをlocalStorageに保存（6つの要素更新用）
+    localStorage.setItem('lineUserProfile', JSON.stringify(profile));
+    
     // 感情表現を更新（画像も含む）
     if (profile.emotionalExpression) {
         document.getElementById('emotionalExpressionType').textContent = profile.emotionalExpression;
@@ -700,12 +705,20 @@ function displayCombinedPersonality(profile) {
     }
 }
 
-async function updateDynamicContent(userData) {
+async function updateDynamicContent(userData, profile = null) {
     const { name, moonPhase, hiddenMoonPhase, patternId } = userData;
     
-    // 6つの円形要素も更新（月相も渡す）
+    // プロフィールが渡されていない場合はlocalStorageから取得
+    if (!profile) {
+        const savedProfile = localStorage.getItem('lineUserProfile');
+        if (savedProfile) {
+            profile = JSON.parse(savedProfile);
+        }
+    }
+    
+    // 6つの円形要素を更新（月相とプロフィールを渡す）
     if (typeof updateSixElements === 'function') {
-        updateSixElements(patternId, moonPhase, hiddenMoonPhase);
+        await updateSixElements(patternId, moonPhase, hiddenMoonPhase, profile);
     }
     
     // ユーザー名を複数箇所に表示

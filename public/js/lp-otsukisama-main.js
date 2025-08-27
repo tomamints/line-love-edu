@@ -63,16 +63,25 @@ window.addEventListener('DOMContentLoaded', async function() {
         const savedData = localStorage.getItem('userData');
         if (savedData) {
             const userData = JSON.parse(savedData);
-            updateDynamicContent(userData);
+            
+            // ユーザープロフィールを先に読み込み
+            await loadUserProfile();
+            
+            // プロフィールを取得
+            const savedProfile = localStorage.getItem('lineUserProfile');
+            const profile = savedProfile ? JSON.parse(savedProfile) : null;
+            
+            // 動的コンテンツを更新（プロフィールを渡す）
+            await updateDynamicContent(userData, profile);
             
             // カレンダー生成
             if (typeof generatePersonalizedCalendar === 'function') {
                 generatePersonalizedCalendar();
             }
+        } else {
+            // ユーザープロフィールを読み込み
+            loadUserProfile();
         }
-        
-        // ユーザープロフィールを読み込み
-        loadUserProfile();
     }
 });
 

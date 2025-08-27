@@ -97,9 +97,6 @@ function setupForm() {
         // localStorageに保存
         localStorage.setItem('userData', JSON.stringify(userData));
         
-        // 動的コンテンツを更新
-        updateDynamicContent(userData);
-        
         // 結果セクションに名前を表示
         document.getElementById('resultName').textContent = name;
         
@@ -107,8 +104,15 @@ function setupForm() {
         document.getElementById('formSection').style.display = 'none';
         document.getElementById('resultSection').style.display = 'block';
         
-        // ユーザープロフィールを読み込む
-        loadUserProfile();
+        // ユーザープロフィールを読み込む（非同期）
+        loadUserProfile().then(() => {
+            // プロフィールを取得
+            const savedProfile = localStorage.getItem('lineUserProfile');
+            const profile = savedProfile ? JSON.parse(savedProfile) : null;
+            
+            // 動的コンテンツを更新（プロフィールを渡す）
+            updateDynamicContent(userData, profile);
+        });
         
         // スムーズにスクロール
         window.scrollTo({
