@@ -2,26 +2,50 @@
  * カレンダー生成関連の関数
  */
 
-// 月相カレンダーのパターンデータ（仕様書から抜粋）
-const moonCalendarPatterns = {
-    '新月×新月': {
-        goodDays: [1, 8, 15, 22, 29],
-        specialDays: [{ day: 15, description: '特に新しいことを始めるのに最適' }]
-    },
-    '新月×三日月': {
-        goodDays: [2, 9, 16, 23, 30],
-        specialDays: [{ day: 23, description: '計画を立てるのに良い日' }]
-    },
-    // 他のパターンも同様に定義...
-};
+let calendarPatternsData = null;
+
+// カレンダーパターンデータを読み込む
+async function loadCalendarPatterns() {
+    try {
+        const response = await fetch('/data/moon-calendar-patterns-complete.json');
+        const data = await response.json();
+        calendarPatternsData = data.patterns;
+        console.log('Calendar patterns loaded:', Object.keys(calendarPatternsData).length, 'patterns');
+        return true;
+    } catch (error) {
+        console.error('Failed to load calendar patterns:', error);
+        return false;
+    }
+}
+
+// パターンIDからカレンダーデータを取得
+function getCalendarPattern(patternId) {
+    if (!calendarPatternsData) {
+        console.error('Calendar patterns not loaded');
+        return null;
+    }
+    
+    const pattern = calendarPatternsData[String(patternId)];
+    if (!pattern) {
+        console.error('Calendar pattern not found for ID:', patternId);
+        return null;
+    }
+    
+    return pattern;
+}
 
 // カレンダー生成関数
-function generatePersonalizedCalendar() {
+async function generatePersonalizedCalendar() {
     const container = document.getElementById('personalizedCalendar');
     const messageElement = document.getElementById('calendarMessage');
     const monthYearElement = document.getElementById('calendarMonthYear');
     
     if (!container) return;
+    
+    // カレンダーパターンデータが読み込まれていない場合は読み込む
+    if (!calendarPatternsData) {
+        await loadCalendarPatterns();
+    }
     
     // フォームから生年月日を取得（デモ用にデフォルト値を設定）
     const birthYear = parseInt(document.getElementById('year')?.value) || 1990;
@@ -29,13 +53,18 @@ function generatePersonalizedCalendar() {
     const birthDay = parseInt(document.getElementById('day')?.value) || 15;
     
     // ユーザーの月相を計算
-    const userMoonPhase = calculateMoonPhaseType(birthYear, birthMonth, birthDay);
-    const hiddenMoonPhase = getHiddenMoonPhaseName(birthYear, birthMonth, birthDay);
-    const patternId = `${userMoonPhase}×${hiddenMoonPhase}`;
     const numericPatternId = generatePatternId(birthYear, birthMonth, birthDay);
+    const patternData = getCalendarPattern(numericPatternId);
     
-    // パターンデータを取得（デモ用にデフォルトパターンを使用）
-    const patternData = moonCalendarPatterns[patternId] || moonCalendarPatterns['新月×新月'];
+    if (!patternData) {
+        console.error('No calendar pattern found for user');
+        return;
+    }
+    
+    // メッセージを表示
+    if (messageElement) {
+        messageElement.textContent = patternData.monthly_message;
+    }
     
     // 現在の月の情報を取得
     const currentDate = new Date();
@@ -73,22 +102,33 @@ function generatePersonalizedCalendar() {
     for (let day = 1; day <= daysInMonth; day++) {
         const date = new Date(currentYear, currentMonth, day);
         const moonAge = calculateMoonAge(date);
-        const moonPhaseIndex = getMoonPhaseFromAge(moonAge);
-        const dayMoonPhase = getMoonPhaseName(moonPhaseIndex);
+        const moonEmoji = getMoonEmoji(moonAge);
         
         let dayClass = 'calendar-day';
+        let specialMark = '';
         let specialMessage = '';
         
-        // 良い日をチェック
-        if (patternData.goodDays && patternData.goodDays.includes(day)) {
-            dayClass += ' good-day';
+        // ラッキーデーをチェック
+        if (patternData.lucky_days && patternData.lucky_days.includes(day)) {
+            dayClass += ' lucky-day';
         }
         
-        // 特別な日をチェック
-        const specialDay = patternData.specialDays?.find(s => s.day === day);
-        if (specialDay) {
+        // パワーデーをチェック
+        if (patternData.power_days && patternData.power_days.includes(day)) {
+            dayClass += ' power-day';
+        }
+        
+        // 注意日をチェック
+        if (patternData.caution_days && patternData.caution_days.includes(day)) {
+            dayClass += ' caution-day';
+        }
+        
+        // 特別な日のマークとメッセージ
+        if (patternData.special_marks && patternData.special_marks[String(day)]) {
+            const special = patternData.special_marks[String(day)];
+            specialMark = special.mark;
+            specialMessage = `<div class="special-message">${special.message}</div>`;
             dayClass += ' special-day';
-            specialMessage = `<div class="special-message">${specialDay.description}</div>`;
         }
         
         // 今日の日付をハイライト
@@ -96,39 +136,82 @@ function generatePersonalizedCalendar() {
             dayClass += ' today';
         }
         
-        // ユーザーと同じ月相の日
-        if (dayMoonPhase === userMoonPhase) {
-            dayClass += ' same-phase';
-        }
-        
         calendarHTML += `
-            <div class="${dayClass}" data-day="${day}" data-moon-phase="${dayMoonPhase}">
-                <div class="day-number">${day}</div>
-                <div class="day-moon-icon">${getMoonIcon(moonPhaseIndex)}</div>
+            <div class="${dayClass}" data-day="${day}">
+                <div class="day-content">
+                    <span class="day-number">${day}</span>
+                    <span class="moon-emoji">${moonEmoji}</span>
+                    ${specialMark ? `<span class="special-mark">${specialMark}</span>` : ''}
+                </div>
                 ${specialMessage}
             </div>
         `;
     }
     
-    calendarHTML += '</div></div>';
+    calendarHTML += '</div>';
+    calendarHTML += '</div>';
+    
+    // カレンダー凡例
+    calendarHTML += `
+        <div class="calendar-legend">
+            <div class="legend-item">
+                <span class="legend-marker lucky">●</span>
+                <span>ラッキーデー</span>
+            </div>
+            <div class="legend-item">
+                <span class="legend-marker power">●</span>
+                <span>パワーデー</span>
+            </div>
+            <div class="legend-item">
+                <span class="legend-marker caution">●</span>
+                <span>注意日</span>
+            </div>
+        </div>
+    `;
+    
+    // アドバイスセクション
+    calendarHTML += `
+        <div class="calendar-advice">
+            <div class="advice-section">
+                <h4>💕 恋愛アドバイス</h4>
+                <p>${patternData.love_advice}</p>
+            </div>
+            <div class="advice-section">
+                <h4>⭐ ベストアクション</h4>
+                <p>${patternData.best_action_days}</p>
+            </div>
+        </div>
+    `;
     
     container.innerHTML = calendarHTML;
-    
-    // メッセージを更新
-    if (messageElement) {
-        messageElement.innerHTML = `
-            <p>あなたの月相「${userMoonPhase}」と相性の良い日をハイライトしています。</p>
-            <p class="calendar-legend">
-                <span class="legend-item"><span class="legend-dot good-day"></span>相性の良い日</span>
-                <span class="legend-item"><span class="legend-dot special-day"></span>特別な日</span>
-                <span class="legend-item"><span class="legend-dot same-phase"></span>同じ月相の日</span>
-            </p>
-        `;
-    }
 }
 
-// 月相に応じたアイコンを返す
-function getMoonIcon(phase) {
-    const icons = ['🌑', '🌒', '🌓', '🌔', '🌕', '🌖', '🌗', '🌘'];
-    return icons[phase] || '🌙';
+// 月齢から月の絵文字を取得
+function getMoonEmoji(moonAge) {
+    if (moonAge <= 1.5) return '🌑'; // 新月
+    else if (moonAge <= 5.5) return '🌒'; // 三日月
+    else if (moonAge <= 9.5) return '🌓'; // 上弦
+    else if (moonAge <= 13.5) return '🌔'; // 十三夜
+    else if (moonAge <= 16.5) return '🌕'; // 満月
+    else if (moonAge <= 20.5) return '🌖'; // 十六夜
+    else if (moonAge <= 24.5) return '🌗'; // 下弦
+    else if (moonAge <= 28.5) return '🌘'; // 暁
+    else return '🌑'; // 新月に戻る
 }
+
+// 月齢を計算する関数（簡易版）
+function calculateMoonAge(date) {
+    // 基準となる新月の日付（2000年1月6日）
+    const baseNewMoon = new Date(2000, 0, 6, 18, 14);
+    const lunarCycle = 29.530588853; // 朔望月の日数
+    
+    const daysSinceBase = (date - baseNewMoon) / (1000 * 60 * 60 * 24);
+    const moonAge = daysSinceBase % lunarCycle;
+    
+    return moonAge >= 0 ? moonAge : moonAge + lunarCycle;
+}
+
+// ページ読み込み時にカレンダーパターンデータを読み込む
+document.addEventListener('DOMContentLoaded', () => {
+    loadCalendarPatterns();
+});

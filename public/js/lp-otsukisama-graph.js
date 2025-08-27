@@ -3,17 +3,62 @@
  */
 
 let fortuneChart = null;
+let fortuneGraphData = null;
+
+// 運勢グラフデータを読み込む
+async function loadFortuneGraphData() {
+    try {
+        const response = await fetch('/docs/fortune_graph_all_64_patterns.json');
+        const data = await response.json();
+        fortuneGraphData = data.patterns;
+        console.log('Fortune graph data loaded:', fortuneGraphData.length, 'patterns');
+        return true;
+    } catch (error) {
+        console.error('Failed to load fortune graph data:', error);
+        return false;
+    }
+}
+
+// パターンIDから運勢グラフデータを取得
+function getFortuneGraphDataByPatternId(patternId) {
+    if (!fortuneGraphData) {
+        console.error('Fortune graph data not loaded');
+        return null;
+    }
+    
+    // patternIdは0-63の数値
+    // fortuneGraphDataのpattern_numberは1-64
+    const patternNumber = parseInt(patternId) + 1;
+    const data = fortuneGraphData.find(p => p.pattern_number === patternNumber);
+    
+    if (!data) {
+        console.error('Fortune graph data not found for pattern:', patternId);
+        return null;
+    }
+    
+    return data;
+}
 
 // 運勢グラフを初期化・更新
-function updateFortuneGraph(patternId) {
+async function updateFortuneGraph(patternId) {
     const canvas = document.getElementById('fortuneChart');
     if (!canvas) return;
     
+    // データが読み込まれていない場合は読み込む
+    if (!fortuneGraphData) {
+        await loadFortuneGraphData();
+    }
+    
+    const graphData = getFortuneGraphDataByPatternId(patternId);
+    if (!graphData) {
+        console.error('No graph data for pattern:', patternId);
+        return;
+    }
+    
     const ctx = canvas.getContext('2d');
     
-    // パターンIDに基づいてデータを生成（実際には仕様書のデータを使用）
-    const baseValue = 50 + (patternId % 20) * 2;
-    const monthlyData = generateFortuneData(patternId, baseValue);
+    // 今月から3ヶ月分のデータを取得
+    const monthlyData = extractThreeMonthsData(graphData.fortune_data);
     
     // 既存のチャートがあれば破棄
     if (fortuneChart) {
@@ -32,7 +77,9 @@ function updateFortuneGraph(patternId) {
                     borderColor: 'rgba(255, 215, 0, 1)',
                     backgroundColor: 'rgba(255, 215, 0, 0.1)',
                     tension: 0.4,
-                    borderWidth: 3
+                    borderWidth: 3,
+                    pointRadius: 6,
+                    pointHoverRadius: 8
                 },
                 {
                     label: '恋愛運',
@@ -40,15 +87,39 @@ function updateFortuneGraph(patternId) {
                     borderColor: 'rgba(255, 105, 180, 1)',
                     backgroundColor: 'rgba(255, 105, 180, 0.1)',
                     tension: 0.4,
-                    borderWidth: 3
+                    borderWidth: 3,
+                    pointRadius: 6,
+                    pointHoverRadius: 8
                 },
                 {
                     label: '仕事運',
-                    data: monthlyData.work,
+                    data: monthlyData.career,
                     borderColor: 'rgba(100, 149, 237, 1)',
                     backgroundColor: 'rgba(100, 149, 237, 0.1)',
                     tension: 0.4,
-                    borderWidth: 3
+                    borderWidth: 3,
+                    pointRadius: 6,
+                    pointHoverRadius: 8
+                },
+                {
+                    label: '人間関係',
+                    data: monthlyData.relationship,
+                    borderColor: 'rgba(50, 205, 50, 1)',
+                    backgroundColor: 'rgba(50, 205, 50, 0.1)',
+                    tension: 0.4,
+                    borderWidth: 3,
+                    pointRadius: 6,
+                    pointHoverRadius: 8
+                },
+                {
+                    label: '金運',
+                    data: monthlyData.money,
+                    borderColor: 'rgba(255, 140, 0, 1)',
+                    backgroundColor: 'rgba(255, 140, 0, 0.1)',
+                    tension: 0.4,
+                    borderWidth: 3,
+                    pointRadius: 6,
+                    pointHoverRadius: 8
                 }
             ]
         },
@@ -57,45 +128,67 @@ function updateFortuneGraph(patternId) {
             maintainAspectRatio: false,
             plugins: {
                 legend: {
-                    position: 'top',
+                    display: true,
+                    position: 'bottom',
                     labels: {
-                        color: '#fff',
+                        padding: 15,
                         font: {
-                            size: 14
-                        }
+                            size: 12
+                        },
+                        color: '#666'
                     }
                 },
                 tooltip: {
-                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                    titleColor: '#ffd700',
-                    bodyColor: '#fff',
-                    borderColor: '#ffd700',
-                    borderWidth: 1
+                    mode: 'index',
+                    intersect: false,
+                    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                    titleColor: '#333',
+                    bodyColor: '#666',
+                    borderColor: '#ddd',
+                    borderWidth: 1,
+                    padding: 12,
+                    displayColors: true,
+                    callbacks: {
+                        label: function(context) {
+                            const label = context.dataset.label || '';
+                            const value = context.parsed.y;
+                            // 1-5の値を20-100のパーセンテージに変換して表示
+                            const percentage = value * 20;
+                            return label + ': ' + percentage + '%';
+                        }
+                    }
                 }
             },
             scales: {
-                y: {
-                    beginAtZero: true,
-                    max: 100,
+                x: {
+                    grid: {
+                        display: false
+                    },
                     ticks: {
-                        color: '#aaa',
+                        color: '#666',
                         font: {
                             size: 12
                         }
-                    },
-                    grid: {
-                        color: 'rgba(255, 255, 255, 0.1)'
                     }
                 },
-                x: {
+                y: {
+                    min: 0,
+                    max: 6,
                     ticks: {
-                        color: '#aaa',
+                        stepSize: 1,
+                        color: '#666',
                         font: {
                             size: 12
+                        },
+                        callback: function(value) {
+                            // 1-5の値を運勢レベルとして表示
+                            const levels = ['', '凶', '小吉', '中吉', '吉', '大吉', ''];
+                            return levels[value] || '';
                         }
                     },
                     grid: {
-                        color: 'rgba(255, 255, 255, 0.1)'
+                        borderDash: [2, 2],
+                        color: 'rgba(0, 0, 0, 0.1)'
                     }
                 }
             }
@@ -104,40 +197,69 @@ function updateFortuneGraph(patternId) {
     
     // チャートを作成
     fortuneChart = new Chart(ctx, config);
+    
+    // グラフの特徴を表示
+    updateFortuneCharacteristics(graphData);
 }
 
-// 運勢データを生成する関数
-function generateFortuneData(patternId, baseValue) {
+// 3ヶ月分のデータを抽出
+function extractThreeMonthsData(fortuneData) {
     const currentMonth = new Date().getMonth();
     const monthNames = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'];
     
-    // 今月から3ヶ月分のラベルを生成
+    // 今月から3ヶ月分のラベルとデータを生成
     const labels = [];
+    const overall = [];
+    const love = [];
+    const career = [];
+    const relationship = [];
+    const money = [];
+    
     for (let i = 0; i < 3; i++) {
         const monthIndex = (currentMonth + i) % 12;
         labels.push(monthNames[monthIndex]);
-    }
-    
-    // パターンIDに基づいて運勢データを生成
-    const seed = patternId + 1;
-    
-    const overall = [];
-    const love = [];
-    const work = [];
-    
-    for (let i = 0; i < 3; i++) {
-        // 各月の運勢を計算（パターンに基づく変動）
-        const monthSeed = seed * (i + 1);
         
-        overall.push(Math.min(100, Math.max(20, baseValue + Math.sin(monthSeed * 0.1) * 30)));
-        love.push(Math.min(100, Math.max(20, baseValue + Math.cos(monthSeed * 0.15) * 35)));
-        work.push(Math.min(100, Math.max(20, baseValue + Math.sin(monthSeed * 0.2) * 25)));
+        // 各運勢のデータを取得（1-5の値）
+        overall.push(fortuneData.overall[monthIndex]);
+        love.push(fortuneData.love[monthIndex]);
+        career.push(fortuneData.career[monthIndex]);
+        relationship.push(fortuneData.relationship[monthIndex]);
+        money.push(fortuneData.money[monthIndex]);
     }
     
     return {
         labels,
         overall,
         love,
-        work
+        career,
+        relationship,
+        money
     };
 }
+
+// 運勢の特徴を表示
+function updateFortuneCharacteristics(graphData) {
+    // 運勢の特徴を表示する要素を探す
+    const characteristicsElement = document.getElementById('fortune-characteristics');
+    if (characteristicsElement) {
+        characteristicsElement.textContent = graphData.characteristics;
+    }
+    
+    // ピーク週と注意週を表示
+    const peakWeeksElement = document.getElementById('peak-weeks');
+    if (peakWeeksElement && graphData.peak_weeks) {
+        const weeks = graphData.peak_weeks.map(w => `第${w}週`).join('、');
+        peakWeeksElement.textContent = `幸運期: ${weeks}`;
+    }
+    
+    const cautionWeeksElement = document.getElementById('caution-weeks');
+    if (cautionWeeksElement && graphData.caution_weeks) {
+        const weeks = graphData.caution_weeks.map(w => `第${w}週`).join('、');
+        cautionWeeksElement.textContent = `注意期: ${weeks}`;
+    }
+}
+
+// ページ読み込み時に運勢グラフデータを読み込む
+document.addEventListener('DOMContentLoaded', () => {
+    loadFortuneGraphData();
+});
