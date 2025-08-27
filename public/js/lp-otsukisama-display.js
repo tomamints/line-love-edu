@@ -1,13 +1,19 @@
 // Display-related functions for LP Otsukisama page
 
 // 月相パターンに応じてコンテンツを更新
-function updateMoonPhaseContent(patternId) {
-    if (typeof OtsukisamaPatterns === 'undefined' || !OtsukisamaPatterns[patternId]) {
+async function updateMoonPhaseContent(patternId) {
+    // データローダーが読み込み完了するまで待つ
+    if (!window.OtsukisamaDataLoader || !window.OtsukisamaDataLoader.isLoaded()) {
+        await new Promise(resolve => {
+            window.addEventListener('otsukisama-data-loaded', resolve, { once: true });
+        });
+    }
+    
+    const pattern = window.OtsukisamaDataLoader.getPatternFortune(patternId);
+    if (!pattern) {
         console.log('Pattern data not found for ID:', patternId);
         return;
     }
-    
-    const pattern = OtsukisamaPatterns[patternId];
     
     // 表月相の更新
     const moonPhaseCard = document.querySelector('.moon-phase-card.new-moon');
@@ -39,23 +45,9 @@ function updateMoonPhaseContent(patternId) {
         
         // 月相ごとのサブタイトルを設定
         if (moonPhaseSubtitle) {
-            if (window.moonPhaseData && window.moonPhaseData[pattern.moonPhase]) {
-                moonPhaseSubtitle.textContent = window.moonPhaseData[pattern.moonPhase].subtitle;
-            } else {
-                // フォールバック
-                const phaseSubtitles = {
-                    '新月': '新しい始まりの力。無限の可能性を秘めた開拓者',
-                    '三日月': '成長のエネルギー。小さな芽を大きく育てる育成者',
-                    '上弦': '挑戦のエネルギー。困難を乗り越える戦士',
-                    '十三夜': '美と調和の力。バランスを保つ調整者',
-                    '満月': '完成のエネルギー。すべてを照らす完全体',
-                    '十六夜': '内省のエネルギー。真実を見つめる賢者',
-                    '下弦': '手放しの力。不要なものを削ぎ落とす浄化者',
-                    '暁': '準備のエネルギー。次なる始まりへの準備者'
-                };
-                if (phaseSubtitles[pattern.moonPhase]) {
-                    moonPhaseSubtitle.textContent = phaseSubtitles[pattern.moonPhase];
-                }
+            const phaseDesc = window.OtsukisamaDataLoader.getMoonPhaseDescription(pattern.moonPhase);
+            if (phaseDesc) {
+                moonPhaseSubtitle.textContent = phaseDesc.subtitle;
             }
         }
         
@@ -63,24 +55,9 @@ function updateMoonPhaseContent(patternId) {
         const moonPhaseDesc = document.getElementById('moon-phase-description');
         if (moonPhaseDesc) {
             // JSONデータから説明文を取得
-            if (window.moonPhaseData && window.moonPhaseData[pattern.moonPhase]) {
-                moonPhaseDesc.textContent = window.moonPhaseData[pattern.moonPhase].description;
-            } else {
-                // フォールバック（JSONが読み込めなかった場合）
-                const phaseDescriptions = {
-                    '新月': 'あなたは新月の日に生まれた、始まりのエネルギーを持つ人。何もないところから何かを生み出す力があり、ゼロから1を作り出すことに長けています。純粋で素直な心を持ち、新しいことへの好奇心が旺盛。まだ誰も踏み入れていない道を進むパイオニア精神があります。時に無鉄砲に見えることもありますが、その勇気こそがあなたの最大の武器なのです。',
-                    '三日月': 'あなたは成長のエネルギーを持つ三日月生まれ。小さな芽を大きく育てる力に優れ、物事を少しずつ、確実に成長させていくことができます。慎重でありながら着実に前進し、困難も成長の糧に変える力があります。繊細な感受性を持ち、相手の気持ちを察することが得意です。',
-                    '上弦': 'あなたは挑戦のエネルギーを持つ上弦の月生まれ。困難に立ち向かう勇気と、それを乗り越える力を持っています。決断力に優れ、迷うことなく前進できる強さがあります。バランス感覚も優れており、理想と現実の間で最適な選択ができます。',
-                    '十三夜': 'あなたは美と調和の力を持つ十三夜生まれ。完成に向かう美しいエネルギーを持ち、物事を美しく仕上げる才能があります。周囲との調和を大切にし、皆が心地よく過ごせる環境を作ることができます。成熟した魅力で人々を惹きつけます。',
-                    '満月': 'あなたは完成のエネルギーを持つ満月生まれ。すべてを照らす圧倒的な存在感を持ち、周囲に大きな影響を与えます。情熱的で表現力豊か、あなたがいるだけで場が華やぎます。完全性を求める性質があり、何事も完璧を目指します。',
-                    '十六夜': 'あなたは内省のエネルギーを持つ十六夜生まれ。満月の後の落ち着きを持ち、物事を深く見つめる力があります。余裕と品格を持ち、慌てることなく自分のペースで進めます。内面の豊かさと深い洞察力が魅力です。',
-                    '下弦': 'あなたは手放しの力を持つ下弦の月生まれ。不要なものを削ぎ落とし、本質だけを残す力があります。整理整頓が得意で、効率的に物事を進められます。終わりから新しい始まりを見つけ出す、再生の力も持っています。',
-                    '暁': 'あなたは準備のエネルギーを持つ暁生まれ。次なる始まりに向けて準備を整える力があります。深い洞察力と神秘的な魅力を持ち、見えない世界との繋がりを感じることができます。静寂の中で大きな力を蓄えています。'
-                };
-                
-                if (phaseDescriptions[pattern.moonPhase]) {
-                    moonPhaseDesc.textContent = phaseDescriptions[pattern.moonPhase];
-                }
+            const moonDescription = window.OtsukisamaDataLoader.getMoonPhaseDescription(pattern.moonPhase);
+            if (moonDescription) {
+                moonPhaseDesc.textContent = moonDescription.description;
             }
         }
     }
@@ -115,23 +92,9 @@ function updateMoonPhaseContent(patternId) {
         
         // 裏月相のサブタイトル
         if (hiddenPhaseSubtitle) {
-            if (window.hiddenPhaseData && window.hiddenPhaseData[pattern.hiddenPhase]) {
-                hiddenPhaseSubtitle.textContent = window.hiddenPhaseData[pattern.hiddenPhase].subtitle;
-            } else {
-                // フォールバック
-                const hiddenPhaseSubtitles = {
-                    '新月': '内なる静寂と無限の可能性',
-                    '三日月': '内なる繊細さと慎重さを秘めた策士',
-                    '上弦': '内なる勇気と決断力',
-                    '十三夜': '内なる美意識と芸術性',
-                    '満月': '内なる感情の豊かさ',
-                    '十六夜': '内なる知恵と洞察力',
-                    '下弦': '内なる浄化と解放の力',
-                    '暁': '内なる静寂と準備の時'
-                };
-                if (hiddenPhaseSubtitles[pattern.hiddenPhase]) {
-                    hiddenPhaseSubtitle.textContent = hiddenPhaseSubtitles[pattern.hiddenPhase];
-                }
+            const hiddenDesc = window.OtsukisamaDataLoader.getHiddenPhaseDescription(pattern.hiddenPhase);
+            if (hiddenDesc) {
+                hiddenPhaseSubtitle.textContent = hiddenDesc.subtitle;
             }
         }
         
@@ -139,37 +102,23 @@ function updateMoonPhaseContent(patternId) {
         const hiddenPhaseDesc = document.getElementById('hidden-phase-description');
         if (hiddenPhaseDesc) {
             // JSONデータから説明文を取得
-            if (window.hiddenPhaseData && window.hiddenPhaseData[pattern.hiddenPhase]) {
-                hiddenPhaseDesc.textContent = window.hiddenPhaseData[pattern.hiddenPhase].description;
-            } else {
-                // フォールバック（JSONが読み込めなかった場合）
-                const hiddenDescriptions = {
-                    '新月': '表向きは始まりのエネルギーに満ちていますが、内面では静寂と無限の可能性を秘めています。時に孤独を感じることもありますが、それはあなたが新しい道を切り開く先駆者だから。内なる声に耳を傾けることで、真の方向性が見えてきます。',
-                    '三日月': '表向きは勢いよく突き進むあなたですが、実は内面では細やかな配慮ができる繊細な人。新しいことを始める前に、実はしっかりと下調べをしていたり、リスクを計算していたりするでしょう。その慎重さと大胆さのバランスが、あなたの成功の秘訣。',
-                    '上弦': '表面的には穏やかに見えても、内には強い決断力と勇気を秘めています。困難に直面した時、誰よりも冷静に状況を判断し、最適な選択をすることができます。内なる戦士の魂が、あなたを勝利へと導きます。',
-                    '十三夜': '外見は普通でも、内面には深い美意識と芸術性を持っています。日常の中に美を見出し、それを大切にする繊細な心。人には見せない創造的な一面が、あなたの隠れた才能です。',
-                    '満月': '表では明るく振る舞いながら、内面では深い感情の波を感じています。喜怒哀楽が人一倍豊かで、その感情の深さがあなたの人間性を豊かにしています。時に感情に振り回されることもありますが、それもまた魅力の一つです。',
-                    '十六夜': '表面的には活動的でも、内面では深い内省と洞察を行っています。物事の本質を見抜く力があり、表面的なものに惑わされることがありません。その知恵と洞察力が、あなたを真の成功へと導きます。',
-                    '下弦': '外では社交的でも、内面では不要なものを削ぎ落とし、本質だけを大切にしています。人間関係も選別的で、本当に大切な人だけを心に留めます。その選択眼が、質の高い人生を作り出します。',
-                    '暁': '表向きは普通に見えても、内面では深い神秘性と直感力を持っています。見えない世界との繋がりを感じ、スピリチュアルな体験を大切にします。その神秘的な力が、あなたに特別な導きを与えます。'
-                };
-                
-                if (hiddenDescriptions[pattern.hiddenPhase]) {
-                    hiddenPhaseDesc.textContent = hiddenDescriptions[pattern.hiddenPhase];
-                }
+            const hiddenDescription = window.OtsukisamaDataLoader.getHiddenPhaseDescription(pattern.hiddenPhase);
+            if (hiddenDescription) {
+                hiddenPhaseDesc.textContent = hiddenDescription.description;
             }
         }
     }
     
     // 3つの月の力を更新
-    if (pattern.threePowers && pattern.threePowers.length === 3) {
+    const threePowers = window.OtsukisamaDataLoader.getPatternThreePowers(patternId);
+    if (threePowers && threePowers.length === 3) {
         const powerItems = document.querySelectorAll('.three-powers .energy-item');
         powerItems.forEach((item, index) => {
-            if (pattern.threePowers[index]) {
+            if (threePowers[index]) {
                 const titleEl = item.querySelector('.energy-title');
                 const descEl = item.querySelector('.energy-description');
-                if (titleEl) titleEl.textContent = pattern.threePowers[index].title;
-                if (descEl) descEl.textContent = pattern.threePowers[index].desc;
+                if (titleEl) titleEl.textContent = threePowers[index].title;
+                if (descEl) descEl.textContent = threePowers[index].desc;
             }
         });
     }
@@ -211,14 +160,19 @@ function updateMoonPhaseContent(patternId) {
 }
 
 // 6つの円形要素を更新する関数
-function updateSixElements(patternId) {
-    // パターンからデータを取得
-    if (!OtsukisamaPatterns || !OtsukisamaPatterns[patternId]) {
+async function updateSixElements(patternId) {
+    // データローダーが読み込み完了するまで待つ
+    if (!window.OtsukisamaDataLoader || !window.OtsukisamaDataLoader.isLoaded()) {
+        await new Promise(resolve => {
+            window.addEventListener('otsukisama-data-loaded', resolve, { once: true });
+        });
+    }
+    
+    const pattern = window.OtsukisamaDataLoader.getPatternFortune(patternId);
+    if (!pattern) {
         console.error('Pattern not found for updateSixElements:', patternId);
         return;
     }
-    
-    const pattern = OtsukisamaPatterns[patternId];
     
     // 月相要素を更新（画像とテキスト）
     const moonPhaseElement = document.querySelector('.type-item[data-moon-type="omote"]');
