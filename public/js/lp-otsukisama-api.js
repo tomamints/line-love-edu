@@ -17,6 +17,7 @@ function getPatternIdFromUrl() {
 
 // ユーザーのプロフィールを取得して表示
 async function loadUserProfile() {
+    let currentProfile = null; // 現在のプロフィールを保持
     // デバッグ用: URLからパターンIDを取得
     const urlPatternId = getPatternIdFromUrl();
     if (urlPatternId !== null) {
@@ -89,6 +90,7 @@ async function loadUserProfile() {
         const savedData = localStorage.getItem('userPersonalityData');
         if (savedData) {
             const profile = JSON.parse(savedData);
+            currentProfile = profile; // プロフィールを保存
             updatePersonalityDisplay(profile);
             displayCombinedPersonality(profile);
             
@@ -109,6 +111,7 @@ async function loadUserProfile() {
                 loveValues: 'ロマンチスト型',
                 loveEnergy: '燃え上がり型'
             };
+            currentProfile = defaultProfile; // デフォルトプロフィールを保存
             updatePersonalityDisplay(defaultProfile);
             displayCombinedPersonality(defaultProfile);
             
@@ -124,7 +127,7 @@ async function loadUserProfile() {
             // デフォルトメッセージを表示
             displayNoProfileMessage();
         }
-        return;
+        return currentProfile; // プロフィールを返す
     }
     
     try {
@@ -137,6 +140,8 @@ async function loadUserProfile() {
             
             // 組み合わせ診断文を生成して表示
             displayCombinedPersonality(data.profile);
+            
+            currentProfile = data.profile; // APIから取得したプロフィールを保存
             
             // 6つの要素を更新（APIから取得したプロフィールを渡す）
             if (typeof updateSixElements === 'function' && currentPatternId !== null) {
@@ -153,6 +158,8 @@ async function loadUserProfile() {
     } catch (error) {
         console.error('Failed to load user profile:', error);
     }
+    
+    return currentProfile; // プロフィールを返す
 }
 
 // ユーザーデータから生年月日を自動入力する関数

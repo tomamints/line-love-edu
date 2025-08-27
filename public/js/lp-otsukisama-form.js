@@ -102,9 +102,9 @@ function setupForm() {
         document.getElementById('resultSection').style.display = 'block';
         
         // ユーザープロフィールを読み込む（非同期）
-        loadUserProfile().then(() => {
-            // 動的コンテンツを更新
-            updateDynamicContent(userData);
+        loadUserProfile().then((profile) => {
+            // 動的コンテンツを更新（プロフィールを渡す）
+            updateDynamicContent(userData, profile);
         });
         
         // スムーズにスクロール
