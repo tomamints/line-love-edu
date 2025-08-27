@@ -16,12 +16,12 @@ class OtsukisamaDataLoader {
     async loadAllData() {
         try {
             const [patterns, threePowers, personalityAxes, moonPhases, hiddenPhases, uiTexts] = await Promise.all([
-                fetch('/data/otsukisama-patterns-complete.json').then(r => r.json()),
-                fetch('/data/three-powers.json').then(r => r.json()),
-                fetch('/data/personality-axes-descriptions.json').then(r => r.json()),
-                fetch('/data/moon-phase-descriptions.json').then(r => r.json()),
-                fetch('/data/hidden-phase-descriptions.json').then(r => r.json()),
-                fetch('/data/ui-texts.json').then(r => r.json())
+                fetch('data/otsukisama-patterns-complete.json').then(r => r.json()),
+                fetch('data/three-powers.json').then(r => r.json()),
+                fetch('data/personality-axes-descriptions.json').then(r => r.json()),
+                fetch('data/moon-phase-descriptions.json').then(r => r.json()),
+                fetch('data/hidden-phase-descriptions.json').then(r => r.json()),
+                fetch('data/ui-texts.json').then(r => r.json())
             ]);
 
             this.patternsData = patterns;
