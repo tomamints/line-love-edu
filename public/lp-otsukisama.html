@@ -2212,10 +2212,10 @@
                     <div style="margin-top: 20px; padding: 15px; background: rgba(255, 215, 0, 0.1); border-radius: 10px; border-left: 3px solid #ffd700;">
                         <p style="color: #ffd700; font-size: 14px; margin: 0 0 8px; font-weight: bold;">グラフの見方</p>
                         <p style="color: rgba(255, 255, 255, 0.8); font-size: 12px; line-height: 1.6; margin: 0;">
-                            このグラフは、あなたの直近3ヶ月（12週間）の運勢の推移を表しています。<br>
-                            • <span style="color: #6666ff; font-weight: bold;">左側（低調）</span>：エネルギーを蓄える充電期間。新しいことを準備する時期<br>
-                            • <span style="color: #ff6b6b; font-weight: bold;">右側（絶好調）</span>：運勢が最高潮！積極的に行動すべき時期<br>
-                            • 線の動きを見て、運勢の波を把握し、最適なタイミングで行動しましょう
+                            このグラフは、あなたの直近3ヶ月（12週間）の運気の流れを表しています。<br>
+                            • 運気が上がるタイミングが一目でわかります<br>
+                            • ピーク時期を見極めて、大事な行動を計画しましょう<br>
+                            • 波が下がる時期はエネルギーを蓄える大切な準備期間です
                         </p>
                     </div>
                 </div>
@@ -2889,7 +2889,7 @@
         // サンプルデータ
         const fortuneData = [5,4,2,5,3,5,1,5,4,5,2,3];
         const weekLabels = ['1週', '2週', '3週', '4週', '5週', '6週', '7週', '8週', '9週', '10週', '11週', '12週'];
-        const fortuneLevels = ['低調', 'やや低調', '普通', '好調', '絶好調'];
+        const fortuneLevels = ['準備期', '蓄積期', '安定期', '上昇期', '最高潮'];
         
         // 軸を入れ替えたデータを作成
         const chartData = fortuneData.map((value, index) => ({
@@ -2950,7 +2950,7 @@
                                 label: function(context) {
                                     const value = context.parsed.x;
                                     const weekIndex = context.dataIndex;
-                                    const levelText = ['低調', 'やや低調', '普通', '好調', '絶好調'][value - 1];
+                                    const levelText = ['準備期', '蓄積期', '安定期', '上昇期', '最高潮'][value - 1];
                                     const stars = '⭐'.repeat(value);
                                     
                                     // 週別コメントを生成
@@ -2977,7 +2977,7 @@
                                         3: [
                                             "安定した運気。基礎を固める良い時期",
                                             "大きな変化はないが、着実な進歩が可能",
-                                            "平穏な週。充電期間として活用を"
+                                            "平穏な週。エネルギーを蓄える時期として活用を"
                                         ],
                                         2: [
                                             "慎重な行動が吉。無理は禁物の時期",
@@ -2985,7 +2985,7 @@
                                             "内省と準備の週。次の上昇に備えて"
                                         ],
                                         1: [
-                                            "充電期間と捉えて。休息も重要な戦略",
+                                            "エネルギーを蓄える準備期間。次の飛躍への大切な時期",
                                             "困難な時期ですが、学びのチャンス",
                                             "嵐は必ず過ぎます。今は耐える時"
                                         ]
@@ -3040,7 +3040,7 @@
                             ticks: {
                                 stepSize: 1,
                                 callback: function(value) {
-                                    const labels = ['', '低調', 'やや低調', '普通', '好調', '絶好調'];
+                                    const labels = ['', '準備期', '蓄積期', '安定期', '上昇期', '最高潮'];
                                     return labels[value] || '';
                                 },
                                 color: '#ffffff',
