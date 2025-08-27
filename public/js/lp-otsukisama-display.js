@@ -138,12 +138,12 @@ async function updateMoonPhaseContent(patternId) {
             const spans = emotionalItem.querySelectorAll('span');
             const label = spans[spans.length - 1]; // 最後のspan = bottom label
             
-            // updatePersonalityDisplayと完全に同じマッピング
+            // 実際のファイル名に合わせたマッピング
             const typeMapping = {
                 'ストレート型': 'straight',
                 'ストレート告白型': 'straight',
-                'スキンシップ型': 'skinship',
-                'さりげない気遣い型': 'care',
+                'スキンシップ型': 'physical',
+                'さりげない気遣い型': 'subtle',  // care.pngがないのでsubtleを使用
                 '奥手シャイ型': 'shy',
                 '察してほしい型': 'subtle'
             };
@@ -166,15 +166,15 @@ async function updateMoonPhaseContent(patternId) {
             const spans = distanceItem.querySelectorAll('span');
             const label = spans[spans.length - 1]; // 最後のspan = bottom label
             
-            // updatePersonalityDisplayと完全に同じマッピング
+            // 実際のファイル名に合わせたマッピング
             const typeMapping = {
-                'ベッタリ依存型': 'dependent',
-                'ベッタリ型': 'dependent',
-                '安心セーフ型': 'safe',
-                'ちょうどいい距離型': 'safe',
-                'じっくり型': 'slow',
-                '自由マイペース型': 'free',
-                'マイペース型': 'free',
+                'ベッタリ依存型': 'close',
+                'ベッタリ型': 'close',
+                '安心セーフ型': 'moderate',
+                'ちょうどいい距離型': 'moderate',
+                'じっくり型': 'cautious',
+                '自由マイペース型': 'independent',
+                'マイペース型': 'independent',
                 '壁あり慎重型': 'cautious',
                 '超慎重型': 'cautious'
             };
@@ -197,14 +197,14 @@ async function updateMoonPhaseContent(patternId) {
             const spans = valuesItem.querySelectorAll('span');
             const label = spans[spans.length - 1]; // 最後のspan = bottom label
             
-            // updatePersonalityDisplayと完全に同じマッピング
+            // 実際のファイル名に合わせたマッピング
             const typeMapping = {
                 'ロマンチスト型': 'romantic',
                 'ロマンス重視': 'romantic',
-                'リアリスト型': 'realist',
-                '安心感重視': 'security',
-                '刺激ハンター型': 'hunter',
-                '刺激重視': 'hunter',
+                'リアリスト型': 'realistic',
+                '安心感重視': 'realistic',
+                '刺激ハンター型': 'excitement',
+                '刺激重視': 'excitement',
                 '成長パートナー型': 'growth',
                 '成長重視': 'growth'
             };
@@ -227,14 +227,14 @@ async function updateMoonPhaseContent(patternId) {
             const spans = energyItem.querySelectorAll('span');
             const label = spans[spans.length - 1]; // 最後のspan = bottom label
             
-            // updatePersonalityDisplayと完全に同じマッピング
+            // 実際のファイル名に合わせたマッピング
             const typeMapping = {
-                '燃え上がり型': 'burning',
-                '情熱的': 'passionate',
-                '持続型': 'sustain',
+                '燃え上がり型': 'intense',
+                '情熱的': 'intense',
+                '持続型': 'stable',
                 '安定的': 'stable',
-                '波あり型': 'wave',
-                '変動的': 'wave',
+                '波あり型': 'fluctuating',
+                '変動的': 'fluctuating',
                 'クール型': 'cool',
                 '冷静': 'cool'
             };
@@ -547,8 +547,8 @@ function updatePersonalityDisplay(profile) {
             const typeMapping = {
                 'ストレート型': 'straight',
                 'ストレート告白型': 'straight',
-                'スキンシップ型': 'skinship',
-                'さりげない気遣い型': 'care',
+                'スキンシップ型': 'physical',
+                'さりげない気遣い型': 'subtle',
                 '奥手シャイ型': 'shy',
                 '察してほしい型': 'subtle'
             };
@@ -566,17 +566,17 @@ function updatePersonalityDisplay(profile) {
         const distanceImg = document.querySelector('.love-type-card:nth-child(2) img');
         if (distanceImg) {
             const typeMapping = {
-                'ベッタリ依存型': 'dependent',
-                'ベッタリ型': 'dependent',
-                '安心セーフ型': 'safe',
-                'ちょうどいい距離型': 'safe',
-                'じっくり型': 'slow',
-                '自由マイペース型': 'free',
-                'マイペース型': 'free',
+                'ベッタリ依存型': 'close',
+                'ベッタリ型': 'close',
+                '安心セーフ型': 'moderate',
+                'ちょうどいい距離型': 'moderate',
+                'じっくり型': 'cautious',
+                '自由マイペース型': 'independent',
+                'マイペース型': 'independent',
                 '壁あり慎重型': 'cautious',
                 '超慎重型': 'cautious'
             };
-            const imageName = typeMapping[profile.distanceStyle] || 'safe';
+            const imageName = typeMapping[profile.distanceStyle] || 'moderate';
             distanceImg.src = `/images/love-types/distance/${imageName}.png`;
         }
     }
@@ -592,10 +592,10 @@ function updatePersonalityDisplay(profile) {
             const typeMapping = {
                 'ロマンチスト型': 'romantic',
                 'ロマンス重視': 'romantic',
-                'リアリスト型': 'realist',
-                '安心感重視': 'security',
-                '刺激ハンター型': 'hunter',
-                '刺激重視': 'hunter',
+                'リアリスト型': 'realistic',
+                '安心感重視': 'realistic',
+                '刺激ハンター型': 'excitement',
+                '刺激重視': 'excitement',
                 '成長パートナー型': 'growth',
                 '成長重視': 'growth'
             };
@@ -613,16 +613,16 @@ function updatePersonalityDisplay(profile) {
         const energyImg = document.querySelector('.love-type-card:nth-child(4) img');
         if (energyImg) {
             const typeMapping = {
-                '燃え上がり型': 'burning',
-                '情熱的': 'passionate',
-                '持続型': 'sustain',
+                '燃え上がり型': 'intense',
+                '情熱的': 'intense',
+                '持続型': 'stable',
                 '安定的': 'stable',
-                '波あり型': 'wave',
-                '変動的': 'wave',
+                '波あり型': 'fluctuating',
+                '変動的': 'fluctuating',
                 'クール型': 'cool',
                 '冷静': 'cool'
             };
-            const imageName = typeMapping[profile.loveEnergy] || 'burning';
+            const imageName = typeMapping[profile.loveEnergy] || 'intense';
             energyImg.src = `/images/love-types/energy/${imageName}.png`;
         }
     }
