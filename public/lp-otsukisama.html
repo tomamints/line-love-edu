@@ -2799,8 +2799,163 @@
             return params.get('userId');
         }
         
+        // URLからパターンIDを取得（デバッグ用）
+        function getPatternIdFromUrl() {
+            const params = new URLSearchParams(window.location.search);
+            const patternId = params.get('patternId');
+            return patternId ? parseInt(patternId) : null;
+        }
+        
+        // 月相パターンに応じてコンテンツを更新
+        function updateMoonPhaseContent(patternId) {
+            if (typeof OtsukisamaPatterns === 'undefined' || !OtsukisamaPatterns[patternId]) {
+                console.log('Pattern data not found for ID:', patternId);
+                return;
+            }
+            
+            const pattern = OtsukisamaPatterns[patternId];
+            
+            // 表月相の更新
+            const moonPhaseCard = document.querySelector('.moon-phase-card.new-moon');
+            if (moonPhaseCard) {
+                const moonPhaseImg = moonPhaseCard.querySelector('.moon-phase-visual');
+                const moonPhaseTitle = moonPhaseCard.querySelector('.moon-phase-info h2');
+                const moonPhaseSubtitle = moonPhaseCard.querySelector('.moon-phase-subtitle');
+                const moonPhaseDesc = moonPhaseCard.querySelector('.moon-phase-description');
+                
+                // 月相に応じた画像を設定
+                const phaseImages = {
+                    '新月': '/images/moon/omote-0.png',
+                    '三日月': '/images/moon/omote-1.png',
+                    '上弦': '/images/moon/omote-2.png',
+                    '十三夜': '/images/moon/omote-3.png',
+                    '満月': '/images/moon/omote-4.png',
+                    '十六夜': '/images/moon/omote-5.png',
+                    '下弦': '/images/moon/omote-6.png',
+                    '暁': '/images/moon/omote-7.png'
+                };
+                
+                if (moonPhaseImg && phaseImages[pattern.moonPhase]) {
+                    moonPhaseImg.src = phaseImages[pattern.moonPhase];
+                    moonPhaseImg.alt = pattern.moonPhase;
+                }
+                
+                if (moonPhaseTitle) {
+                    moonPhaseTitle.textContent = pattern.moonPhase;
+                }
+                
+                // 月相ごとのサブタイトルを設定（仕様書から）
+                const phaseSubtitles = {
+                    '新月': '新しい始まりの力。無限の可能性を秘めた開拓者',
+                    '三日月': '成長のエネルギー。小さな芽を大きく育てる育成者',
+                    '上弦': '挑戦のエネルギー。困難を乗り越える戦士',
+                    '十三夜': '美と調和の力。バランスを保つ調整者',
+                    '満月': '完成のエネルギー。すべてを照らす完全体',
+                    '十六夜': '内省のエネルギー。真実を見つめる賢者',
+                    '下弦': '手放しの力。不要なものを削ぎ落とす浄化者',
+                    '暁': '準備のエネルギー。次なる始まりへの準備者'
+                };
+                
+                if (moonPhaseSubtitle && phaseSubtitles[pattern.moonPhase]) {
+                    moonPhaseSubtitle.textContent = phaseSubtitles[pattern.moonPhase];
+                }
+            }
+            
+            // 裏月相の更新
+            const hiddenPhaseCard = document.querySelector('.moon-phase-card.crescent');
+            if (hiddenPhaseCard) {
+                const hiddenPhaseImg = hiddenPhaseCard.querySelector('.moon-phase-visual');
+                const hiddenPhaseTitle = hiddenPhaseCard.querySelector('.moon-phase-info h2');
+                const hiddenPhaseSubtitle = hiddenPhaseCard.querySelector('.moon-phase-subtitle');
+                const hiddenPhaseDesc = hiddenPhaseCard.querySelector('.moon-phase-description');
+                
+                // 裏月相に応じた画像を設定
+                const hiddenPhaseImages = {
+                    '新月': '/images/moon/ura-0.png',
+                    '三日月': '/images/moon/ura-1.png',
+                    '上弦': '/images/moon/ura-2.png',
+                    '十三夜': '/images/moon/ura-3.png',
+                    '満月': '/images/moon/ura-4.png',
+                    '十六夜': '/images/moon/ura-5.png',
+                    '下弦': '/images/moon/ura-6.png',
+                    '暁': '/images/moon/ura-7.png'
+                };
+                
+                if (hiddenPhaseImg && hiddenPhaseImages[pattern.hiddenPhase]) {
+                    hiddenPhaseImg.src = hiddenPhaseImages[pattern.hiddenPhase];
+                    hiddenPhaseImg.alt = pattern.hiddenPhase;
+                }
+                
+                if (hiddenPhaseTitle) {
+                    hiddenPhaseTitle.textContent = pattern.hiddenPhase + '（裏の顔）';
+                }
+                
+                // 裏月相のサブタイトル
+                const hiddenPhaseSubtitles = {
+                    '新月': '内なる静寂と無限の可能性',
+                    '三日月': '内なる繊細さと慎重さを秘めた策士',
+                    '上弦': '内なる勇気と決断力',
+                    '十三夜': '内なる美意識と芸術性',
+                    '満月': '内なる感情の豊かさ',
+                    '十六夜': '内なる知恵と洞察力',
+                    '下弦': '内なる浄化と解放の力',
+                    '暁': '内なる静寂と準備の時'
+                };
+                
+                if (hiddenPhaseSubtitle && hiddenPhaseSubtitles[pattern.hiddenPhase]) {
+                    hiddenPhaseSubtitle.textContent = hiddenPhaseSubtitles[pattern.hiddenPhase];
+                }
+            }
+            
+            // 3つの月の力を更新
+            if (pattern.threePowers && pattern.threePowers.length === 3) {
+                const powerItems = document.querySelectorAll('.three-powers .energy-item');
+                powerItems.forEach((item, index) => {
+                    if (pattern.threePowers[index]) {
+                        const titleEl = item.querySelector('.energy-title');
+                        const descEl = item.querySelector('.energy-description');
+                        if (titleEl) titleEl.textContent = pattern.threePowers[index].title;
+                        if (descEl) descEl.textContent = pattern.threePowers[index].desc;
+                    }
+                });
+            }
+            
+            // 運勢テキストの更新
+            if (pattern.fortune) {
+                // 全体運
+                const overallSection = document.querySelector('.fortune-content');
+                if (overallSection && pattern.fortune.overall) {
+                    const overallText = overallSection.querySelector('p');
+                    if (overallText) {
+                        overallText.textContent = pattern.fortune.overall;
+                    }
+                }
+                
+                // 恋愛運、仕事運、人間関係運、金運の更新も同様に実装可能
+            }
+            
+            console.log('Moon phase content updated for pattern:', patternId);
+        }
+        
         // ユーザーのプロフィールを取得して表示
         async function loadUserProfile() {
+            // デバッグ用: URLからパターンIDを取得
+            const patternId = getPatternIdFromUrl();
+            if (patternId !== null) {
+                console.log('Using pattern ID from URL:', patternId);
+                updateMoonPhaseContent(patternId);
+                // グラフデータも更新（もし実装されていれば）
+                if (typeof updateFortuneGraph === 'function') {
+                    updateFortuneGraph(patternId);
+                }
+            } else {
+                // 通常はユーザーの生年月日から計算
+                // ここではデモとしてランダムなパターンを設定
+                const randomPatternId = Math.floor(Math.random() * 64);
+                console.log('Using random pattern ID:', randomPatternId);
+                updateMoonPhaseContent(randomPatternId);
+            }
+            
             const userId = getUserIdFromUrl();
             if (!userId) {
                 console.log('No userId in URL, checking alternatives');
