@@ -140,12 +140,10 @@ async function updateMoonPhaseContent(patternId) {
             
             // 実際のファイル名に合わせたマッピング
             const typeMapping = {
-                'ストレート型': 'straight',
                 'ストレート告白型': 'straight',
                 'スキンシップ型': 'physical',
                 'さりげない気遣い型': 'subtle',  // care.pngがないのでsubtleを使用
-                '奥手シャイ型': 'shy',
-                '察してほしい型': 'subtle'
+                '奥手シャイ型': 'shy'
             };
             const imageName = typeMapping[profile.emotionalExpression] || 'straight';
             if (img) {
@@ -369,12 +367,12 @@ async function updateSixElements(patternId, moonPhase, hiddenMoonPhase, profile 
             const label = emotionalElement.querySelectorAll('span')[1];
             const img = emotionalElement.querySelector('img');
             const typeMapping = {
-                'ストレート型': { name: 'ストレート型', image: 'straight' },
-                '察してほしい型': { name: '察してほしい型', image: 'subtle' },
+                'ストレート告白型': { name: 'ストレート告白型', image: 'straight' },
+                'さりげない気遣い型': { name: 'さりげない気遣い型', image: 'subtle' },
                 'スキンシップ型': { name: 'スキンシップ型', image: 'physical' },
-                '照れ屋型': { name: '照れ屋型', image: 'shy' }
+                '奥手シャイ型': { name: '奥手シャイ型', image: 'shy' }
             };
-            const mapped = typeMapping[profile.emotionalExpression] || typeMapping['ストレート型'];
+            const mapped = typeMapping[profile.emotionalExpression] || typeMapping['ストレート告白型'];
             if (label) {
                 label.textContent = mapped.name;
             }
@@ -410,9 +408,9 @@ async function updateSixElements(patternId, moonPhase, hiddenMoonPhase, profile 
             const img = valuesElement.querySelector('img');
             const typeMapping = {
                 'ロマンチスト型': { name: 'ロマンチスト型', image: 'romantic' },
-                '成長重視型': { name: '成長重視型', image: 'growth' },
+                '成長パートナー型': { name: '成長パートナー型', image: 'growth' },
                 'リアリスト型': { name: 'リアリスト型', image: 'realistic' },
-                'ドキドキ大好き型': { name: 'ドキドキ大好き型', image: 'excitement' }
+                '刺激ハンター型': { name: '刺激ハンター型', image: 'excitement' }
             };
             const mapped = typeMapping[profile.loveValues] || typeMapping['ロマンチスト型'];
             if (label) {
@@ -430,8 +428,8 @@ async function updateSixElements(patternId, moonPhase, hiddenMoonPhase, profile 
             const img = energyElement.querySelector('img');
             const typeMapping = {
                 '燃え上がり型': { name: '燃え上がり型', image: 'intense' },
-                '安定ロングラン型': { name: '安定ロングラン型', image: 'stable' },
-                '気分アップダウン型': { name: '気分アップダウン型', image: 'fluctuating' },
+                '持続型': { name: '持続型', image: 'stable' },
+                '波あり型': { name: '波あり型', image: 'fluctuating' },
                 'クール型': { name: 'クール型', image: 'cool' }
             };
             const mapped = typeMapping[profile.loveEnergy] || typeMapping['燃え上がり型'];
@@ -447,27 +445,27 @@ async function updateSixElements(patternId, moonPhase, hiddenMoonPhase, profile 
         // デフォルト値（パターンIDから算出）
         // 実際の画像ファイル名に対応
         const emotionalTypes = [
-            {name: 'ストレート型', image: 'straight'},
-            {name: '察してほしい型', image: 'subtle'},
+            {name: 'ストレート告白型', image: 'straight'},
+            {name: 'さりげない気遣い型', image: 'subtle'},
             {name: 'スキンシップ型', image: 'physical'},
-            {name: '照れ屋型', image: 'shy'}
+            {name: '奥手シャイ型', image: 'shy'}
         ];
         const distanceTypes = [
-            {name: '密着型', image: 'close'},
-            {name: 'ちょうどいい距離型', image: 'moderate'},
-            {name: '慎重型', image: 'cautious'},
+            {name: 'ベッタリ依存型', image: 'close'},
+            {name: '安心セーフ型', image: 'moderate'},
+            {name: '壁あり慎重型', image: 'cautious'},
             {name: '自由マイペース型', image: 'independent'}
         ];
         const valueTypes = [
             {name: 'ロマンチスト型', image: 'romantic'},
-            {name: '成長重視型', image: 'growth'},
+            {name: '成長パートナー型', image: 'growth'},
             {name: 'リアリスト型', image: 'realistic'},
-            {name: 'ドキドキ大好き型', image: 'excitement'}
+            {name: '刺激ハンター型', image: 'excitement'}
         ];
         const energyTypes = [
             {name: '燃え上がり型', image: 'intense'},
-            {name: '安定ロングラン型', image: 'stable'},
-            {name: '気分アップダウン型', image: 'fluctuating'},
+            {name: '持続型', image: 'stable'},
+            {name: '波あり型', image: 'fluctuating'},
             {name: 'クール型', image: 'cool'}
         ];
         
@@ -545,12 +543,10 @@ function updatePersonalityDisplay(profile) {
         const emotionalImg = document.querySelector('.love-type-card:nth-child(1) img');
         if (emotionalImg) {
             const typeMapping = {
-                'ストレート型': 'straight',
                 'ストレート告白型': 'straight',
                 'スキンシップ型': 'physical',
                 'さりげない気遣い型': 'subtle',
-                '奥手シャイ型': 'shy',
-                '察してほしい型': 'subtle'
+                '奥手シャイ型': 'shy'
             };
             const imageName = typeMapping[profile.emotionalExpression] || 'straight';
             emotionalImg.src = `/images/love-types/emotional/${imageName}.png`;
