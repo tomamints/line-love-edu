@@ -123,6 +123,90 @@ async function updateMoonPhaseContent(patternId) {
         });
     }
     
+    // 4つの恋愛軸要素も更新（6つの円形要素の中の4つ）
+    // LINEユーザーデータから取得（updatePersonalityDisplayから情報を取得）
+    const profile = JSON.parse(localStorage.getItem('lineUserProfile') || '{}');
+    
+    if (profile.emotionalExpression) {
+        const emotionalItem = document.querySelector('.type-item[data-type="emotional"]');
+        if (emotionalItem) {
+            const img = emotionalItem.querySelector('img');
+            const label = emotionalItem.querySelectorAll('span')[1]; // bottom label
+            const typeMapping = {
+                'ストレート告白型': 'straight',
+                'スキンシップ型': 'skinship',
+                'さりげない気遣い型': 'caring',
+                '奥手シャイ型': 'shy'
+            };
+            const imageName = typeMapping[profile.emotionalExpression] || 'straight';
+            if (img) {
+                img.src = `/images/love-types/emotional/${imageName}.png`;
+                img.alt = profile.emotionalExpression;
+            }
+            if (label) label.textContent = profile.emotionalExpression;
+        }
+    }
+    
+    if (profile.distanceStyle) {
+        const distanceItem = document.querySelector('.type-item[data-type="distance"]');
+        if (distanceItem) {
+            const img = distanceItem.querySelector('img');
+            const label = distanceItem.querySelectorAll('span')[1];
+            const typeMapping = {
+                'ベッタリ依存型': 'dependent',
+                '安心セーフ型': 'safe',
+                '自由マイペース型': 'free',
+                '壁あり慎重型': 'cautious'
+            };
+            const imageName = typeMapping[profile.distanceStyle] || 'safe';
+            if (img) {
+                img.src = `/images/love-types/distance/${imageName}.png`;
+                img.alt = profile.distanceStyle;
+            }
+            if (label) label.textContent = profile.distanceStyle;
+        }
+    }
+    
+    if (profile.loveValues) {
+        const valuesItem = document.querySelector('.type-item[data-type="values"]');
+        if (valuesItem) {
+            const img = valuesItem.querySelector('img');
+            const label = valuesItem.querySelectorAll('span')[1];
+            const typeMapping = {
+                'ロマンチスト型': 'romantic',
+                'リアリスト型': 'realistic',
+                '刺激ハンター型': 'thrill',
+                '成長パートナー型': 'growth'
+            };
+            const imageName = typeMapping[profile.loveValues] || 'romantic';
+            if (img) {
+                img.src = `/images/love-types/values/${imageName}.png`;
+                img.alt = profile.loveValues;
+            }
+            if (label) label.textContent = profile.loveValues;
+        }
+    }
+    
+    if (profile.loveEnergy) {
+        const energyItem = document.querySelector('.type-item[data-type="energy"]');
+        if (energyItem) {
+            const img = energyItem.querySelector('img');
+            const label = energyItem.querySelectorAll('span')[1];
+            const typeMapping = {
+                '燃え上がり型': 'burning',
+                '持続型': 'steady',
+                '波あり型': 'wavy',
+                'クール型': 'cool'
+            };
+            const imageName = typeMapping[profile.loveEnergy] || 'burning';
+            if (img) {
+                img.src = `/images/love-types/energy/${imageName}.png`;
+                img.alt = profile.loveEnergy;
+            }
+            if (label) label.textContent = profile.loveEnergy;
+        }
+    }
+    
     // 運勢テキストの更新
     if (pattern.fortune) {
         // 全体運
