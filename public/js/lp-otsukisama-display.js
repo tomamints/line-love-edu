@@ -129,110 +129,121 @@ async function updateMoonPhaseContent(patternId) {
         profile = JSON.parse(localStorage.getItem('lineUserProfile') || '{}');
     }
     
-    console.log('updateSixElements - profile:', profile);
-    console.log('updateSixElements - emotionalExpression:', profile.emotionalExpression);
-    
+    // 感情表現を更新（updatePersonalityDisplayと同じロジック）
     if (profile.emotionalExpression) {
         const emotionalItem = document.querySelector('.type-item[data-type="emotional"]');
-        console.log('emotionalItem found:', emotionalItem);
         if (emotionalItem) {
             const img = emotionalItem.querySelector('img');
             const spans = emotionalItem.querySelectorAll('span');
             const label = spans[spans.length - 1]; // 最後のspan = bottom label
+            
+            // updatePersonalityDisplayと同じマッピング
             const typeMapping = {
+                'ストレート型': 'straight',
                 'ストレート告白型': 'straight',
-                'ストレート型': 'straight',  // 短縮形も対応
                 'スキンシップ型': 'skinship',
-                'さりげない気遣い型': 'caring',
-                '奥手シャイ型': 'shy'
+                'さりげない気遣い型': 'care',
+                '奥手シャイ型': 'shy',
+                '察してほしい型': 'subtle'
             };
             const imageName = typeMapping[profile.emotionalExpression] || 'straight';
-            console.log('Updating emotional - imageName:', imageName, 'from:', profile.emotionalExpression);
             if (img) {
                 img.src = `/images/love-types/emotional/${imageName}.png`;
                 img.alt = profile.emotionalExpression;
-                console.log('Updated emotional img src:', img.src);
             }
             if (label) {
                 label.textContent = profile.emotionalExpression;
-                console.log('Updated emotional label:', label.textContent);
             }
         }
     }
     
+    // 距離感を更新（updatePersonalityDisplayと同じロジック）
     if (profile.distanceStyle) {
         const distanceItem = document.querySelector('.type-item[data-type="distance"]');
         if (distanceItem) {
             const img = distanceItem.querySelector('img');
             const spans = distanceItem.querySelectorAll('span');
             const label = spans[spans.length - 1]; // 最後のspan = bottom label
+            
+            // updatePersonalityDisplayと同じマッピング
             const typeMapping = {
                 'ベッタリ依存型': 'dependent',
+                'ベッタリ型': 'dependent',
                 '安心セーフ型': 'safe',
+                'ちょうどいい距離型': 'safe',
+                'じっくり型': 'slow',
                 '自由マイペース型': 'free',
-                '自由マイペース型': 'independent',  // HTMLの初期値に対応
-                '壁あり慎重型': 'cautious'
+                'マイペース型': 'free',
+                '壁あり慎重型': 'cautious',
+                '超慎重型': 'cautious'
             };
             const imageName = typeMapping[profile.distanceStyle] || 'safe';
-            console.log('Updating distance - imageName:', imageName, 'from:', profile.distanceStyle);
             if (img) {
                 img.src = `/images/love-types/distance/${imageName}.png`;
                 img.alt = profile.distanceStyle;
             }
             if (label) {
                 label.textContent = profile.distanceStyle;
-                console.log('Updated distance label:', label.textContent);
             }
         }
     }
     
+    // 価値観を更新（updatePersonalityDisplayと同じロジック）
     if (profile.loveValues) {
         const valuesItem = document.querySelector('.type-item[data-type="values"]');
         if (valuesItem) {
             const img = valuesItem.querySelector('img');
             const spans = valuesItem.querySelectorAll('span');
             const label = spans[spans.length - 1]; // 最後のspan = bottom label
+            
+            // updatePersonalityDisplayと同じマッピング
             const typeMapping = {
                 'ロマンチスト型': 'romantic',
+                'フワフワ型': 'romantic',
                 'リアリスト型': 'realistic',
+                '現実路線型': 'realistic',
                 '刺激ハンター型': 'thrill',
-                '成長パートナー型': 'growth'
+                'ワクワク型': 'thrill',
+                '成長パートナー型': 'growth',
+                '共に成長型': 'growth'
             };
             const imageName = typeMapping[profile.loveValues] || 'romantic';
-            console.log('Updating values - imageName:', imageName, 'from:', profile.loveValues);
             if (img) {
                 img.src = `/images/love-types/values/${imageName}.png`;
                 img.alt = profile.loveValues;
             }
             if (label) {
                 label.textContent = profile.loveValues;
-                console.log('Updated values label:', label.textContent);
             }
         }
     }
     
+    // エネルギーを更新（updatePersonalityDisplayと同じロジック）
     if (profile.loveEnergy) {
         const energyItem = document.querySelector('.type-item[data-type="energy"]');
         if (energyItem) {
             const img = energyItem.querySelector('img');
             const spans = energyItem.querySelectorAll('span');
             const label = spans[spans.length - 1]; // 最後のspan = bottom label
+            
+            // updatePersonalityDisplayと同じマッピング
             const typeMapping = {
                 '燃え上がり型': 'burning',
-                '燃え上がり型': 'intense',  // HTMLの初期値に対応
+                'グイグイ型': 'burning',
                 '持続型': 'steady',
+                'ジワジワ型': 'steady',
                 '波あり型': 'wavy',
-                'クール型': 'cool'
+                '波乗り型': 'wavy',
+                'クール型': 'cool',
+                'サラリと型': 'cool'
             };
             const imageName = typeMapping[profile.loveEnergy] || 'burning';
-            console.log('Updating energy - imageName:', imageName, 'from:', profile.loveEnergy);
             if (img) {
                 img.src = `/images/love-types/energy/${imageName}.png`;
                 img.alt = profile.loveEnergy;
             }
             if (label) {
                 label.textContent = profile.loveEnergy;
-                console.log('Updated energy label:', label.textContent);
             }
         }
     }
