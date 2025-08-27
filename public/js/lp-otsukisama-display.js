@@ -442,90 +442,17 @@ async function updateSixElements(patternId, moonPhase, hiddenMoonPhase, profile 
             }
         }
     } else {
-        // デフォルト値（パターンIDから算出）
-        // 実際の画像ファイル名に対応
-        const emotionalTypes = [
-            {name: 'ストレート告白型', image: 'straight'},
-            {name: 'さりげない気遣い型', image: 'subtle'},
-            {name: 'スキンシップ型', image: 'physical'},
-            {name: '奥手シャイ型', image: 'shy'}
-        ];
-        const distanceTypes = [
-            {name: 'ベッタリ依存型', image: 'close'},
-            {name: '安心セーフ型', image: 'moderate'},
-            {name: '壁あり慎重型', image: 'cautious'},
-            {name: '自由マイペース型', image: 'independent'}
-        ];
-        const valueTypes = [
-            {name: 'ロマンチスト型', image: 'romantic'},
-            {name: '成長パートナー型', image: 'growth'},
-            {name: 'リアリスト型', image: 'realistic'},
-            {name: '刺激ハンター型', image: 'excitement'}
-        ];
-        const energyTypes = [
-            {name: '燃え上がり型', image: 'intense'},
-            {name: '持続型', image: 'stable'},
-            {name: '波あり型', image: 'fluctuating'},
-            {name: 'クール型', image: 'cool'}
-        ];
-        
+        // プロフィールがない場合は4つの要素を非表示にする
         const emotionalElement = document.querySelector('.type-item[data-type="emotional"]');
         const distanceElement = document.querySelector('.type-item[data-type="distance"]');
         const valuesElement = document.querySelector('.type-item[data-type="values"]');
         const energyElement = document.querySelector('.type-item[data-type="energy"]');
         
-        if (emotionalElement) {
-            const idx = Math.floor(patternId / 16) % 4;
-            const selected = emotionalTypes[idx];
-            const label = emotionalElement.querySelectorAll('span')[1];
-            const img = emotionalElement.querySelector('img');
-            if (label) {
-                label.textContent = selected.name;
-            }
-            if (img) {
-                img.src = `/images/love-types/emotional/${selected.image}.png`;
-                img.alt = selected.name;
-            }
-        }
-        if (distanceElement) {
-            const idx = Math.floor(patternId / 8) % 4;
-            const selected = distanceTypes[idx];
-            const label = distanceElement.querySelectorAll('span')[1];
-            const img = distanceElement.querySelector('img');
-            if (label) {
-                label.textContent = selected.name;
-            }
-            if (img) {
-                img.src = `/images/love-types/distance/${selected.image}.png`;
-                img.alt = selected.name;
-            }
-        }
-        if (valuesElement) {
-            const idx = Math.floor(patternId / 4) % 4;
-            const selected = valueTypes[idx];
-            const label = valuesElement.querySelectorAll('span')[1];
-            const img = valuesElement.querySelector('img');
-            if (label) {
-                label.textContent = selected.name;
-            }
-            if (img) {
-                img.src = `/images/love-types/values/${selected.image}.png`;
-                img.alt = selected.name;
-            }
-        }
-        if (energyElement) {
-            const idx = patternId % 4;
-            const selected = energyTypes[idx];
-            const label = energyElement.querySelectorAll('span')[1];
-            const img = energyElement.querySelector('img');
-            if (label) {
-                label.textContent = selected.name;
-            }
-            if (img) {
-                img.src = `/images/love-types/energy/${selected.image}.png`;
-                img.alt = selected.name;
-            }
-        }
+        // 4つの要素を非表示に
+        if (emotionalElement) emotionalElement.style.display = 'none';
+        if (distanceElement) distanceElement.style.display = 'none';
+        if (valuesElement) valuesElement.style.display = 'none';
+        if (energyElement) energyElement.style.display = 'none';
     }
     
     console.log('Updated 6 elements for pattern:', patternId, pattern.pattern);
