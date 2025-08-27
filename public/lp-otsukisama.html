@@ -3319,10 +3319,13 @@
         window.addEventListener('scroll', updateScrollProgress);
         window.addEventListener('resize', updateScrollProgress);
         
-        // 初期化
-        createStars();
-        initDateSelects();
-        updateScrollProgress();
+        // DOMContentLoaded後に初期化
+        document.addEventListener('DOMContentLoaded', function() {
+            createStars();
+            initDateSelects();
+            updateScrollProgress();
+            loadUserProfile(); // ユーザープロファイルの読み込みも追加
+        });
     </script>
     
     <!-- Chart.jsライブラリの読み込み -->
