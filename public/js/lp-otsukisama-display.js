@@ -124,9 +124,10 @@ async function updateMoonPhaseContent(patternId) {
     }
     
     // 4つの恋愛軸要素も更新（6つの円形要素の中の4つ）
-    // 引数で渡されたプロフィールを使用、なければlocalStorageから取得
+    // 引数で渡されたプロフィールを使用
     if (!profile) {
-        profile = JSON.parse(localStorage.getItem('lineUserProfile') || '{}');
+        // プロフィールがない場合は更新しない
+        return;
     }
     
     // 感情表現を更新
@@ -353,10 +354,10 @@ async function updateSixElements(patternId, moonPhase, hiddenMoonPhase, profile 
         }
     }
     
-    // LINE APIから取得した4軸データがあれば使用、なければデフォルト
-    const userProfile = localStorage.getItem('userPersonalityData');
-    if (userProfile) {
-        const profile = JSON.parse(userProfile);
+    // LINE APIから取得した4軸データがあれば使用
+    // TODO: APIから直接取得するように変更
+    if (false) {
+        const profile = {};
         
         const emotionalElement = document.querySelector('.type-item[data-type="emotional"]');
         const distanceElement = document.querySelector('.type-item[data-type="distance"]');
@@ -534,8 +535,6 @@ async function updateSixElements(patternId, moonPhase, hiddenMoonPhase, profile 
 
 // 恋愛タイプの表示を更新
 function updatePersonalityDisplay(profile) {
-    // プロフィールをlocalStorageに保存（6つの要素更新用）
-    localStorage.setItem('lineUserProfile', JSON.stringify(profile));
     
     // 感情表現を更新（画像も含む）
     if (profile.emotionalExpression) {
@@ -746,14 +745,6 @@ function displayCombinedPersonality(profile) {
 
 async function updateDynamicContent(userData, profile = null) {
     const { name, moonPhase, hiddenMoonPhase, patternId } = userData;
-    
-    // プロフィールが渡されていない場合はlocalStorageから取得
-    if (!profile) {
-        const savedProfile = localStorage.getItem('lineUserProfile');
-        if (savedProfile) {
-            profile = JSON.parse(savedProfile);
-        }
-    }
     
     // 6つの円形要素を更新（月相とプロフィールを渡す）
     if (typeof updateSixElements === 'function') {

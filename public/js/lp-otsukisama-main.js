@@ -59,29 +59,8 @@ window.addEventListener('DOMContentLoaded', async function() {
     // 結果セクションが表示されている場合は初期化
     const resultSection = document.getElementById('resultSection');
     if (resultSection && resultSection.style.display !== 'none') {
-        // 保存されたデータから復元
-        const savedData = localStorage.getItem('userData');
-        if (savedData) {
-            const userData = JSON.parse(savedData);
-            
-            // ユーザープロフィールを先に読み込み
-            await loadUserProfile();
-            
-            // プロフィールを取得
-            const savedProfile = localStorage.getItem('lineUserProfile');
-            const profile = savedProfile ? JSON.parse(savedProfile) : null;
-            
-            // 動的コンテンツを更新（プロフィールを渡す）
-            await updateDynamicContent(userData, profile);
-            
-            // カレンダー生成
-            if (typeof generatePersonalizedCalendar === 'function') {
-                generatePersonalizedCalendar();
-            }
-        } else {
-            // ユーザープロフィールを読み込み
-            loadUserProfile();
-        }
+        // ユーザープロフィールを読み込み
+        loadUserProfile();
     }
 });
 

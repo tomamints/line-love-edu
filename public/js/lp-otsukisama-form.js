@@ -85,7 +85,7 @@ function setupForm() {
         const patternId = generatePatternId(year, month, day);
         currentPatternId = patternId; // グローバル変数を更新
         
-        // ユーザーデータを保存
+        // ユーザーデータを作成
         const userData = {
             name: name,
             birthdate: { year, month, day },
@@ -93,9 +93,6 @@ function setupForm() {
             hiddenMoonPhase: hiddenMoonPhase,
             patternId: patternId
         };
-        
-        // localStorageに保存
-        localStorage.setItem('userData', JSON.stringify(userData));
         
         // 結果セクションに名前を表示
         document.getElementById('resultName').textContent = name;
@@ -106,12 +103,8 @@ function setupForm() {
         
         // ユーザープロフィールを読み込む（非同期）
         loadUserProfile().then(() => {
-            // プロフィールを取得
-            const savedProfile = localStorage.getItem('lineUserProfile');
-            const profile = savedProfile ? JSON.parse(savedProfile) : null;
-            
-            // 動的コンテンツを更新（プロフィールを渡す）
-            updateDynamicContent(userData, profile);
+            // 動的コンテンツを更新
+            updateDynamicContent(userData);
         });
         
         // スムーズにスクロール

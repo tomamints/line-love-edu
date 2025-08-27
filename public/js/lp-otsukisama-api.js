@@ -31,13 +31,9 @@ async function loadUserProfile() {
         const moonPhase = moonPhaseNames[moonPhaseIndex];
         const hiddenMoonPhase = moonPhaseNames[hiddenPhaseIndex];
         
-        // プロフィールを取得
-        const savedProfile = localStorage.getItem('lineUserProfile');
-        const profile = savedProfile ? JSON.parse(savedProfile) : null;
-        
-        // 6つの要素を更新（月相とプロフィールを渡す）
+        // 6つの要素を更新（月相のみ渡す）
         if (typeof updateSixElements === 'function') {
-            updateSixElements(currentPatternId, moonPhase, hiddenMoonPhase, profile);
+            updateSixElements(currentPatternId, moonPhase, hiddenMoonPhase);
         }
         // グラフデータも更新（もし実装されていれば）
         if (typeof updateFortuneGraph === 'function') {
@@ -75,13 +71,9 @@ async function loadUserProfile() {
         const moonPhase = moonPhaseNames[moonPhaseIndex];
         const hiddenMoonPhase = moonPhaseNames[hiddenPhaseIndex];
         
-        // プロフィールを取得
-        const savedProfile = localStorage.getItem('lineUserProfile');
-        const profile = savedProfile ? JSON.parse(savedProfile) : null;
-        
-        // 6つの要素を更新（月相とプロフィールを渡す）
+        // 6つの要素を更新（月相のみ渡す）
         if (typeof updateSixElements === 'function') {
-            updateSixElements(currentPatternId, moonPhase, hiddenMoonPhase, profile);
+            updateSixElements(currentPatternId, moonPhase, hiddenMoonPhase);
         }
         if (typeof updateFortuneGraph === 'function') {
             updateFortuneGraph(currentPatternId);
@@ -118,9 +110,6 @@ async function loadUserProfile() {
         const data = await response.json();
         
         if (data.success && data.profile) {
-            // localStorageに保存（次回アクセス時用）
-            localStorage.setItem('userPersonalityData', JSON.stringify(data.profile));
-            
             // 4つの軸の結果を更新
             updatePersonalityDisplay(data.profile);
             
@@ -157,11 +146,7 @@ async function loadUserBirthdate() {
                     const moonPhase = moonPhaseNames[moonPhaseIndex];
                     const hiddenMoonPhase = moonPhaseNames[hiddenPhaseIndex];
                     
-                    // プロフィールを取得
-                    const savedProfile = localStorage.getItem('lineUserProfile');
-                    const profile = savedProfile ? JSON.parse(savedProfile) : null;
-                    
-                    updateSixElements(currentPatternId, moonPhase, hiddenMoonPhase, profile);
+                    updateSixElements(currentPatternId, moonPhase, hiddenMoonPhase);
                 }
             }
         }
@@ -200,11 +185,7 @@ async function loadUserBirthdate() {
                 const moonPhase = moonPhaseNames[moonPhaseIndex];
                 const hiddenMoonPhase = moonPhaseNames[hiddenPhaseIndex];
                 
-                // プロフィールを取得
-                const savedProfile = localStorage.getItem('lineUserProfile');
-                const profile = savedProfile ? JSON.parse(savedProfile) : null;
-                
-                updateSixElements(currentPatternId, moonPhase, hiddenMoonPhase, profile);
+                updateSixElements(currentPatternId, moonPhase, hiddenMoonPhase);
                 if (typeof updateFortuneGraph === 'function') {
                     updateFortuneGraph(currentPatternId);
                 }
