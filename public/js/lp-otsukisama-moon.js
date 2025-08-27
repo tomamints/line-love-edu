@@ -2,31 +2,49 @@
  * 月相計算関連の関数
  */
 
-// 月齢を計算する関数
+// 月齢を計算する関数（LINEバックエンドと完全一致）
 function calculateMoonAge(date) {
-    const year = date.getFullYear();
-    const month = date.getMonth() + 1;
-    const day = date.getDate();
+    // 基準日（新月）: 2000年1月6日 18:14:00（LINEと同じ）
+    const referenceDate = new Date('2000-01-06 18:14:00');
+    const lunarCycle = 29.53059; // 朔望月（日）- LINEと同じ値
     
-    // 簡易的な月齢計算（実際の天文学的計算の簡略版）
-    const baseDate = new Date(2000, 0, 6, 18, 14); // 2000年1月6日の新月時刻
-    const diff = date - baseDate;
-    const lunation = 29.530588861; // 朔望月（日数）
-    const moonAge = ((diff / (1000 * 60 * 60 * 24)) % lunation + lunation) % lunation;
+    // 経過日数を計算
+    const daysDiff = (date - referenceDate) / (1000 * 60 * 60 * 24);
+    
+    // 月齢を計算（0-29.53日）
+    let moonAge = daysDiff % lunarCycle;
+    if (moonAge < 0) moonAge += lunarCycle;
     
     return moonAge;
 }
 
-// 月齢から月相を判定する関数
+// 月齢から月相を判定する関数（LINEバックエンドと完全一致）
 function getMoonPhaseFromAge(moonAge) {
-    // 8つの月相に分類（0-7）
-    const phase = Math.floor((moonAge + 1.845) / 3.691);
-    return phase % 8;
+    // LINEと同じ範囲で判定
+    const ranges = [
+        { index: 0, min: 0, max: 3.7 },      // 新月
+        { index: 1, min: 3.7, max: 7.4 },    // 三日月
+        { index: 2, min: 7.4, max: 11.1 },   // 上弦
+        { index: 3, min: 11.1, max: 14.8 },  // 十三夜
+        { index: 4, min: 14.8, max: 18.5 },  // 満月
+        { index: 5, min: 18.5, max: 22.1 },  // 十六夜
+        { index: 6, min: 22.1, max: 25.8 },  // 下弦
+        { index: 7, min: 25.8, max: 29.53 }  // 暁
+    ];
+    
+    for (const range of ranges) {
+        if (moonAge >= range.min && moonAge < range.max) {
+            return range.index;
+        }
+    }
+    
+    // デフォルト（新月）
+    return 0;
 }
 
-// 月相名を取得
+// 月相名を取得（LINEバックエンドと完全一致）
 function getMoonPhaseName(phase) {
-    const phases = ['新月', '三日月', '上弦', '十三夜', '満月', '十六夜', '下弦', '暁'];
+    const phases = ['新月', '三日月', '上弦の月', '十三夜', '満月', '十六夜', '下弦の月', '暁'];
     return phases[phase];
 }
 
@@ -56,7 +74,7 @@ function calculateHiddenMoonIndex(moonPhase, month, day) {
 function getHiddenMoonPhaseName(year, month, day) {
     const moonPhaseIndex = getMoonPhaseIndex(year, month, day);
     const hiddenIndex = calculateHiddenMoonIndex(moonPhaseIndex, month, day);
-    const phases = ['新月', '三日月', '上弦', '十三夜', '満月', '十六夜', '下弦', '暁'];
+    const phases = ['新月', '三日月', '上弦の月', '十三夜', '満月', '十六夜', '下弦の月', '暁'];
     return phases[hiddenIndex];
 }
 
