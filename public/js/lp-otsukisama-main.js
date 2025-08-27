@@ -4,9 +4,9 @@
 
 // グローバル変数
 let currentPatternId = null;
-let moonPhaseData = null;
-let hiddenPhaseData = null;
-let uiTexts = null;
+window.moonPhaseData = null;
+window.hiddenPhaseData = null;
+window.uiTexts = null;
 
 // データの読み込み
 async function loadDataFiles() {
@@ -17,13 +17,15 @@ async function loadDataFiles() {
             fetch('/data/ui-texts.json').then(r => r.json())
         ]);
         
-        moonPhaseData = moonPhases;
-        hiddenPhaseData = hiddenPhases;
-        uiTexts = texts;
+        window.moonPhaseData = moonPhases;
+        window.hiddenPhaseData = hiddenPhases;
+        window.uiTexts = texts;
         
         console.log('Data files loaded successfully');
+        return true;
     } catch (error) {
         console.error('Failed to load data files:', error);
+        return false;
     }
 }
 
