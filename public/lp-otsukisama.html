@@ -3532,19 +3532,20 @@
             return;
         }
         
-        // 3つの月の力を更新
+        // 3つの月の力を更新（パターンベース）
         updateThreeMoonPowers(patternData.threePowers);
         
-        // 性格4軸を更新
-        updatePersonalityAxes(patternData.personality);
+        // 性格4軸はLINEユーザーデータから取得するため、ここでは更新しない
+        // updatePersonalityAxes()はloadUserProfile()から呼ばれる
         
-        // 運勢テキストを更新
+        // 運勢テキストを更新（パターンベース）
         updateFortuneTexts(patternData.fortune);
         
         // 月相に応じた画像を更新
         updateMoonImages(moonPhase, hiddenPhase);
         
         console.log(`Pattern ${patternId} loaded: ${moonPhase}×${hiddenPhase}`);
+        console.log('Note: Personality axes will be loaded from LINE user database');
     }
     
     // パターンごとの3つの力を取得
