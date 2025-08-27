@@ -353,9 +353,7 @@ async function updateSixElements(patternId, moonPhase, hiddenMoonPhase, profile 
     }
     
     // LINE APIから取得した4軸データがあれば使用
-    // TODO: APIから直接取得するように変更
-    if (false) {
-        const profile = {};
+    if (profile) {
         
         const emotionalElement = document.querySelector('.type-item[data-type="emotional"]');
         const distanceElement = document.querySelector('.type-item[data-type="distance"]');
@@ -442,7 +440,7 @@ async function updateSixElements(patternId, moonPhase, hiddenMoonPhase, profile 
             }
         }
     } else {
-        // プロフィールがない場合は4つの要素を非表示にする
+        // プロフィールがない場合は4つの要素を表示しない
         const emotionalElement = document.querySelector('.type-item[data-type="emotional"]');
         const distanceElement = document.querySelector('.type-item[data-type="distance"]');
         const valuesElement = document.querySelector('.type-item[data-type="values"]');
