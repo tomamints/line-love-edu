@@ -234,28 +234,83 @@ async function updateSixElements(patternId) {
         const valuesElement = document.querySelector('.type-item[data-type="values"]');
         const energyElement = document.querySelector('.type-item[data-type="energy"]');
         
+        // 感情表現
         if (emotionalElement && profile.emotionalExpression) {
             const label = emotionalElement.querySelectorAll('span')[1];
+            const img = emotionalElement.querySelector('img');
+            const typeMapping = {
+                'ストレート型': { name: 'ストレート型', image: 'straight' },
+                '察してほしい型': { name: '察してほしい型', image: 'subtle' },
+                'スキンシップ型': { name: 'スキンシップ型', image: 'physical' },
+                '照れ屋型': { name: '照れ屋型', image: 'shy' }
+            };
+            const mapped = typeMapping[profile.emotionalExpression] || typeMapping['ストレート型'];
             if (label) {
-                label.textContent = profile.emotionalExpression.replace('タイプ', '').replace('派', '');
+                label.textContent = mapped.name;
+            }
+            if (img) {
+                img.src = `/images/love-types/emotional/${mapped.image}.png`;
+                img.alt = mapped.name;
             }
         }
+        
+        // 距離感
         if (distanceElement && profile.distanceStyle) {
             const label = distanceElement.querySelectorAll('span')[1];
+            const img = distanceElement.querySelector('img');
+            const typeMapping = {
+                '密着型': { name: '密着型', image: 'close' },
+                'ちょうどいい距離型': { name: 'ちょうどいい距離型', image: 'moderate' },
+                '慎重型': { name: '慎重型', image: 'cautious' },
+                '自由マイペース型': { name: '自由マイペース型', image: 'independent' }
+            };
+            const mapped = typeMapping[profile.distanceStyle] || typeMapping['ちょうどいい距離型'];
             if (label) {
-                label.textContent = profile.distanceStyle.replace('距離感', '').replace('型', '');
+                label.textContent = mapped.name;
+            }
+            if (img) {
+                img.src = `/images/love-types/distance/${mapped.image}.png`;
+                img.alt = mapped.name;
             }
         }
+        
+        // 価値観
         if (valuesElement && profile.loveValues) {
             const label = valuesElement.querySelectorAll('span')[1];
+            const img = valuesElement.querySelector('img');
+            const typeMapping = {
+                'ロマンチスト型': { name: 'ロマンチスト型', image: 'romantic' },
+                '成長重視型': { name: '成長重視型', image: 'growth' },
+                'リアリスト型': { name: 'リアリスト型', image: 'realistic' },
+                'ドキドキ大好き型': { name: 'ドキドキ大好き型', image: 'excitement' }
+            };
+            const mapped = typeMapping[profile.loveValues] || typeMapping['ロマンチスト型'];
             if (label) {
-                label.textContent = profile.loveValues;
+                label.textContent = mapped.name;
+            }
+            if (img) {
+                img.src = `/images/love-types/values/${mapped.image}.png`;
+                img.alt = mapped.name;
             }
         }
+        
+        // エネルギー
         if (energyElement && profile.loveEnergy) {
             const label = energyElement.querySelectorAll('span')[1];
+            const img = energyElement.querySelector('img');
+            const typeMapping = {
+                '燃え上がり型': { name: '燃え上がり型', image: 'intense' },
+                '安定ロングラン型': { name: '安定ロングラン型', image: 'stable' },
+                '気分アップダウン型': { name: '気分アップダウン型', image: 'fluctuating' },
+                'クール型': { name: 'クール型', image: 'cool' }
+            };
+            const mapped = typeMapping[profile.loveEnergy] || typeMapping['燃え上がり型'];
             if (label) {
-                label.textContent = profile.loveEnergy.replace('派', '').replace('型', '');
+                label.textContent = mapped.name;
+            }
+            if (img) {
+                img.src = `/images/love-types/energy/${mapped.image}.png`;
+                img.alt = mapped.name;
             }
         }
     } else {
