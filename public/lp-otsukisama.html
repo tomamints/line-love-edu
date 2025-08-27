@@ -79,10 +79,6 @@
             h3 {
                 font-size: 18px;
             }
-            
-            .container {
-                padding: 15px;
-            }
         }
         
         /* 星空アニメーション */
@@ -121,13 +117,20 @@
         
         /* メインコンテナ */
         .container {
-            max-width: 100%;
-            margin: 0;
-            padding: 0 5px;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 20px;
             position: relative;
             z-index: 1;
             width: 100%;
             overflow-x: hidden;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                max-width: 100%;
+                padding: 0 5px;
+            }
         }
         
         /* ヘッダー */
@@ -882,8 +885,8 @@
         }
         
         .moon-phase-visual {
-            width: 80px;
-            height: 80px;
+            width: 120px;
+            height: 120px;
             background: radial-gradient(circle at 30% 30%, #ffffff 0%, #e0e0ff 100%);
             border-radius: 50%;
             flex-shrink: 0;
@@ -891,7 +894,7 @@
         }
         
         .moon-phase-info h2 {
-            font-size: 38px;
+            font-size: 42px;
             color: #ffd700;
             margin-bottom: 12px;
             letter-spacing: 2px;
@@ -899,16 +902,6 @@
             text-shadow: 
                 2px 2px 4px rgba(0,0,0,0.8),
                 0 0 30px rgba(255,215,0,0.4);
-            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 50%, #ffd700 100%);
-            background-clip: text;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: goldShine 3s linear infinite;
-        }
-        
-        @keyframes goldShine {
-            0% { background-position: 0% 50%; }
-            100% { background-position: 100% 50%; }
         }
         
         .moon-phase-subtitle {
@@ -2041,9 +2034,9 @@
             </p>
             
             <!-- 月相説明セクション -->
-            <div style="padding: 35px 0; margin: 50px 0 40px; text-align: center;">
+            <div style="padding: 20px 0 10px; text-align: center;">
                 <img src="/images/banner/3-getsusou.png" alt="まずは、あなたの月相から見ていきましょう" style="max-width: 100%; height: auto; margin-bottom: 5px;">
-                <p style="color: #ffffff; font-size: 18px; font-weight: 600; line-height: 2; margin-bottom: 15px; text-shadow: 1px 1px 3px rgba(0,0,0,0.5);">
+                <p style="color: #ffffff; font-size: 18px; font-weight: 600; line-height: 2; margin-bottom: 5px; text-shadow: 1px 1px 3px rgba(0,0,0,0.5);">
                     月相とは、あなたが生まれた日の月の形。これによって、あなたの基本的な性格や人生のテーマがわかります。あなたの月相は...
                 </p>
             </div>
@@ -2051,7 +2044,7 @@
             <!-- 月相タイプ -->
             <div class="moon-phase-card new-moon">
                 <div class="moon-phase-header">
-                    <img src="/images/moon/omote-0.png" alt="新月" class="moon-phase-visual" style="width: 80px; height: 80px; object-fit: cover; border-radius: 50%; flex-shrink: 0;">
+                    <img src="/images/moon/omote-0.png" alt="新月" class="moon-phase-visual" style="width: 120px; height: 120px; object-fit: cover; border-radius: 50%; flex-shrink: 0;">
                     <div class="moon-phase-info">
                         <h2>新月</h2>
                         <p class="moon-phase-subtitle">新しい始まりの力。無限の可能性を秘めた開拓者</p>
@@ -2063,7 +2056,7 @@
             </div>
             
             <!-- 裏月相説明 -->
-            <div style="padding: 30px 0; margin: 40px 0; text-align: center;">
+            <div style="padding: 20px 0 10px; text-align: center;">
                 <img src="/images/banner/4-2-uranokao.png" alt="そして、あなたの裏の顔も見てみましょう" style="max-width: 100%; height: auto; margin-bottom: 5px;">
                 <p style="color: #ffffff; font-size: 18px; font-weight: 600; line-height: 1.8; text-shadow: 1px 1px 3px rgba(0,0,0,0.5);">
                     表の月相が社会的な顔だとすれば、裏月相はあなたのプライベートな顔。親しい人の前でだけ見せる、もう一つのあなたです。
@@ -2073,7 +2066,7 @@
             <!-- 裏月相 -->
             <div class="moon-phase-card crescent">
                 <div class="moon-phase-header">
-                    <img src="/images/moon/ura-1.png" alt="三日月" class="moon-phase-visual" style="width: 80px; height: 80px; object-fit: cover; border-radius: 50%; flex-shrink: 0;">
+                    <img src="/images/moon/ura-1.png" alt="三日月" class="moon-phase-visual" style="width: 120px; height: 120px; object-fit: cover; border-radius: 50%; flex-shrink: 0;">
                     <div class="moon-phase-info">
                         <h2>三日月（裏の顔）</h2>
                         <p class="moon-phase-subtitle">内なる繊細さと慎重さを秘めた策士</p>
@@ -2085,7 +2078,7 @@
             </div>
             
             <!-- 3つの月の力セクション -->
-            <div style="padding: 35px 0; margin: 50px 0 40px; text-align: center;">
+            <div style="padding: 20px 0 10px; text-align: center;">
                 <img src="/images/banner/5-1-3tsuno.png" alt="あなたが持っている3つの力は〇〇です" style="max-width: 100%; height: auto; margin-bottom: 5px;">
                 <p style="color: #ffffff; font-size: 18px; font-weight: 600; line-height: 2; text-shadow: 1px 1px 3px rgba(0,0,0,0.5);">
                     さらに深く、あなたの月が持つ特別な力を見ていきましょう。月には3つの力があり、それぞれがあなたの人生を導いています。
@@ -2114,7 +2107,7 @@
             </div>
             
             <!-- 4つの軸からあなたを紐解く -->
-            <div style="padding: 35px 0; margin: 50px 0 40px; text-align: center;">
+            <div style="padding: 20px 0 10px; text-align: center;">
                 <img src="/images/banner/5-2-tikara.png" alt="4つの軸からあなたを紐解く" style="max-width: 100%; height: auto; margin-bottom: 5px;">
                 <p style="color: #ffffff; font-size: 18px; font-weight: 600; line-height: 2; text-shadow: 1px 1px 3px rgba(0,0,0,0.5);">
                     次に、4つの軸から見たあなたの特性を見ていきます。
