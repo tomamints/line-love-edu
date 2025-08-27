@@ -2768,6 +2768,12 @@
             const monthSelect = document.getElementById('month');
             const daySelect = document.getElementById('day');
             
+            // 要素が存在しない場合は終了
+            if (!yearSelect || !monthSelect || !daySelect) {
+                console.log('Date select elements not found');
+                return;
+            }
+            
             // 年（1950-2010）
             for (let year = 2010; year >= 1950; year--) {
                 const option = document.createElement('option');
@@ -2790,6 +2796,48 @@
                 option.value = day;
                 option.textContent = day + '日';
                 daySelect.appendChild(option);
+            }
+            
+            // ユーザーデータから生年月日を自動入力
+            loadUserBirthdate();
+        }
+        
+        // ユーザーデータから生年月日を自動入力する関数
+        async function loadUserBirthdate() {
+            const userId = getUserIdFromUrl();
+            if (!userId) return;
+            
+            try {
+                // プロフィール情報を取得
+                const response = await fetch(`/api/get-love-profile?userId=${userId}`);
+                const data = await response.json();
+                
+                if (data.success && data.profile && data.profile.birthdate) {
+                    // 生年月日をパース (YYYY-MM-DD形式を想定)
+                    const birthdate = new Date(data.profile.birthdate);
+                    const year = birthdate.getFullYear();
+                    const month = birthdate.getMonth() + 1;
+                    const day = birthdate.getDate();
+                    
+                    // セレクトボックスに値を設定
+                    const yearSelect = document.getElementById('year');
+                    const monthSelect = document.getElementById('month');
+                    const daySelect = document.getElementById('day');
+                    
+                    if (yearSelect) yearSelect.value = year;
+                    if (monthSelect) monthSelect.value = month;
+                    if (daySelect) daySelect.value = day;
+                    
+                    // 名前も自動入力
+                    const nameInput = document.getElementById('name');
+                    if (nameInput && data.profile.name) {
+                        nameInput.value = data.profile.name;
+                    }
+                    
+                    console.log('User birthdate loaded:', year, month, day);
+                }
+            } catch (error) {
+                console.log('Could not load user birthdate:', error);
             }
         }
         
