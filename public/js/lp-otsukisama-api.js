@@ -98,6 +98,15 @@ async function loadUserProfile() {
             updatePersonalityDisplay(profile);
             displayCombinedPersonality(profile);
         } else {
+            // デフォルトのプロフィールを設定（デバッグ用）
+            const defaultProfile = {
+                emotionalExpression: 'ストレート告白型',
+                distanceStyle: '安心セーフ型',
+                loveValues: 'ロマンチスト型',
+                loveEnergy: '燃え上がり型'
+            };
+            updatePersonalityDisplay(defaultProfile);
+            displayCombinedPersonality(defaultProfile);
             // デフォルトメッセージを表示
             displayNoProfileMessage();
         }

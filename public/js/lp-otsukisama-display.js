@@ -129,23 +129,34 @@ async function updateMoonPhaseContent(patternId) {
         profile = JSON.parse(localStorage.getItem('lineUserProfile') || '{}');
     }
     
+    console.log('updateSixElements - profile:', profile);
+    console.log('updateSixElements - emotionalExpression:', profile.emotionalExpression);
+    
     if (profile.emotionalExpression) {
         const emotionalItem = document.querySelector('.type-item[data-type="emotional"]');
+        console.log('emotionalItem found:', emotionalItem);
         if (emotionalItem) {
             const img = emotionalItem.querySelector('img');
-            const label = emotionalItem.querySelectorAll('span')[1]; // bottom label
+            const spans = emotionalItem.querySelectorAll('span');
+            const label = spans[spans.length - 1]; // 最後のspan = bottom label
             const typeMapping = {
                 'ストレート告白型': 'straight',
+                'ストレート型': 'straight',  // 短縮形も対応
                 'スキンシップ型': 'skinship',
                 'さりげない気遣い型': 'caring',
                 '奥手シャイ型': 'shy'
             };
             const imageName = typeMapping[profile.emotionalExpression] || 'straight';
+            console.log('Updating emotional - imageName:', imageName, 'from:', profile.emotionalExpression);
             if (img) {
                 img.src = `/images/love-types/emotional/${imageName}.png`;
                 img.alt = profile.emotionalExpression;
+                console.log('Updated emotional img src:', img.src);
             }
-            if (label) label.textContent = profile.emotionalExpression;
+            if (label) {
+                label.textContent = profile.emotionalExpression;
+                console.log('Updated emotional label:', label.textContent);
+            }
         }
     }
     
@@ -153,19 +164,25 @@ async function updateMoonPhaseContent(patternId) {
         const distanceItem = document.querySelector('.type-item[data-type="distance"]');
         if (distanceItem) {
             const img = distanceItem.querySelector('img');
-            const label = distanceItem.querySelectorAll('span')[1];
+            const spans = distanceItem.querySelectorAll('span');
+            const label = spans[spans.length - 1]; // 最後のspan = bottom label
             const typeMapping = {
                 'ベッタリ依存型': 'dependent',
                 '安心セーフ型': 'safe',
                 '自由マイペース型': 'free',
+                '自由マイペース型': 'independent',  // HTMLの初期値に対応
                 '壁あり慎重型': 'cautious'
             };
             const imageName = typeMapping[profile.distanceStyle] || 'safe';
+            console.log('Updating distance - imageName:', imageName, 'from:', profile.distanceStyle);
             if (img) {
                 img.src = `/images/love-types/distance/${imageName}.png`;
                 img.alt = profile.distanceStyle;
             }
-            if (label) label.textContent = profile.distanceStyle;
+            if (label) {
+                label.textContent = profile.distanceStyle;
+                console.log('Updated distance label:', label.textContent);
+            }
         }
     }
     
@@ -173,7 +190,8 @@ async function updateMoonPhaseContent(patternId) {
         const valuesItem = document.querySelector('.type-item[data-type="values"]');
         if (valuesItem) {
             const img = valuesItem.querySelector('img');
-            const label = valuesItem.querySelectorAll('span')[1];
+            const spans = valuesItem.querySelectorAll('span');
+            const label = spans[spans.length - 1]; // 最後のspan = bottom label
             const typeMapping = {
                 'ロマンチスト型': 'romantic',
                 'リアリスト型': 'realistic',
@@ -181,11 +199,15 @@ async function updateMoonPhaseContent(patternId) {
                 '成長パートナー型': 'growth'
             };
             const imageName = typeMapping[profile.loveValues] || 'romantic';
+            console.log('Updating values - imageName:', imageName, 'from:', profile.loveValues);
             if (img) {
                 img.src = `/images/love-types/values/${imageName}.png`;
                 img.alt = profile.loveValues;
             }
-            if (label) label.textContent = profile.loveValues;
+            if (label) {
+                label.textContent = profile.loveValues;
+                console.log('Updated values label:', label.textContent);
+            }
         }
     }
     
@@ -193,19 +215,25 @@ async function updateMoonPhaseContent(patternId) {
         const energyItem = document.querySelector('.type-item[data-type="energy"]');
         if (energyItem) {
             const img = energyItem.querySelector('img');
-            const label = energyItem.querySelectorAll('span')[1];
+            const spans = energyItem.querySelectorAll('span');
+            const label = spans[spans.length - 1]; // 最後のspan = bottom label
             const typeMapping = {
                 '燃え上がり型': 'burning',
+                '燃え上がり型': 'intense',  // HTMLの初期値に対応
                 '持続型': 'steady',
                 '波あり型': 'wavy',
                 'クール型': 'cool'
             };
             const imageName = typeMapping[profile.loveEnergy] || 'burning';
+            console.log('Updating energy - imageName:', imageName, 'from:', profile.loveEnergy);
             if (img) {
                 img.src = `/images/love-types/energy/${imageName}.png`;
                 img.alt = profile.loveEnergy;
             }
-            if (label) label.textContent = profile.loveEnergy;
+            if (label) {
+                label.textContent = profile.loveEnergy;
+                console.log('Updated energy label:', label.textContent);
+            }
         }
     }
     
