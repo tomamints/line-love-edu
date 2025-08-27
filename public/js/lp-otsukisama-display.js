@@ -249,16 +249,20 @@ async function updateMoonPhaseContent(patternId) {
     
     // 運勢テキストの更新
     if (pattern.fortune) {
+        console.log(`Updating fortune for pattern ${patternId}: ${pattern.moonPhase}×${pattern.hiddenPhase}`);
+        
         // 全体運
         const overallText = document.getElementById('fortune-overall-text');
         if (overallText && pattern.fortune.overall) {
             overallText.textContent = pattern.fortune.overall;
+            console.log('Overall fortune updated');
         }
         
         // 恋愛運
         const loveText = document.getElementById('fortune-love-text');
         if (loveText && pattern.fortune.love) {
             loveText.textContent = pattern.fortune.love;
+            console.log('Love fortune updated');
         }
         
         // 仕事運
