@@ -1056,6 +1056,141 @@ async function handleTextMessage(event) {
   const text = event.message.text;
   
   try {
+    // 「本格」キーワードでLPへ誘導
+    if (text === '本格') {
+      const lpUrl = `${process.env.BASE_URL || 'https://line-love-edu.vercel.app'}/lp-otsukisama.html?userId=${userId}`;
+      
+      await client.replyMessage(event.replyToken, {
+        type: 'flex',
+        altText: '🌙 本格おつきさま診断 - 直近3ヶ月の運勢',
+        contents: {
+          type: 'bubble',
+          size: 'mega',
+          header: {
+            type: 'box',
+            layout: 'vertical',
+            contents: [
+              {
+                type: 'text',
+                text: '✨ 本格おつきさま診断 ✨',
+                size: 'xl',
+                color: '#ffffff',
+                align: 'center',
+                weight: 'bold'
+              },
+              {
+                type: 'text',
+                text: '直近3ヶ月の詳細運勢',
+                size: 'md',
+                color: '#ffffff',
+                align: 'center',
+                margin: 'md'
+              }
+            ],
+            backgroundColor: '#764ba2',
+            paddingAll: '20px'
+          },
+          body: {
+            type: 'box',
+            layout: 'vertical',
+            contents: [
+              {
+                type: 'text',
+                text: '🌙 あなたの生まれた瞬間の月の形',
+                size: 'md',
+                weight: 'bold',
+                color: '#764ba2',
+                wrap: true
+              },
+              {
+                type: 'text',
+                text: 'と',
+                size: 'sm',
+                align: 'center',
+                margin: 'sm'
+              },
+              {
+                type: 'text',
+                text: '💝 4つの恋愛タイプ診断',
+                size: 'md',
+                weight: 'bold',
+                color: '#ff69b4',
+                wrap: true
+              },
+              {
+                type: 'text',
+                text: 'から導き出される',
+                size: 'sm',
+                align: 'center',
+                margin: 'sm'
+              },
+              {
+                type: 'text',
+                text: '📊 あなただけの詳細な運勢',
+                size: 'lg',
+                weight: 'bold',
+                align: 'center',
+                margin: 'lg',
+                wrap: true
+              },
+              {
+                type: 'separator',
+                margin: 'xl'
+              },
+              {
+                type: 'box',
+                layout: 'vertical',
+                margin: 'xl',
+                spacing: 'sm',
+                contents: [
+                  {
+                    type: 'text',
+                    text: '📅 直近3ヶ月の運勢が分かる',
+                    size: 'sm'
+                  },
+                  {
+                    type: 'text',
+                    text: '💕 恋愛運の波を月単位で予測',
+                    size: 'sm'
+                  },
+                  {
+                    type: 'text',
+                    text: '💰 金運アップのタイミング',
+                    size: 'sm'
+                  },
+                  {
+                    type: 'text',
+                    text: '🎯 あなたの性格に合った開運法',
+                    size: 'sm'
+                  }
+                ]
+              }
+            ],
+            paddingAll: '20px'
+          },
+          footer: {
+            type: 'box',
+            layout: 'vertical',
+            contents: [
+              {
+                type: 'button',
+                style: 'primary',
+                height: 'md',
+                action: {
+                  type: 'uri',
+                  label: '✨ 診断結果を見る',
+                  uri: lpUrl
+                },
+                color: '#764ba2'
+              }
+            ],
+            paddingAll: '10px'
+          }
+        }
+      });
+      return;
+    }
+    
     // 占いを始める - 友達追加時と同じカードを表示
     if (text === '占いを始める' || text === 'start') {
       const userId = event.source.userId;
