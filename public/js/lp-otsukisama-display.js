@@ -220,15 +220,54 @@ function updateSixElements(patternId) {
     
     const pattern = OtsukisamaPatterns[patternId];
     
-    // 円形要素の月相と裏月相を更新
-    const moonPhaseElement = document.querySelector('.circle-item[data-type="moon-phase"] .circle-label');
-    const hiddenPhaseElement = document.querySelector('.circle-item[data-type="hidden-phase"] .circle-label');
+    // 月相要素を更新（画像とテキスト）
+    const moonPhaseElement = document.querySelector('.type-item[data-moon-type="omote"]');
+    const hiddenPhaseElement = document.querySelector('.type-item[data-moon-type="ura"]');
     
     if (moonPhaseElement) {
-        moonPhaseElement.textContent = pattern.moonPhase;
+        // 月相の画像を更新
+        const moonImg = moonPhaseElement.querySelector('img');
+        const moonLabel = moonPhaseElement.querySelectorAll('span')[1]; // bottom label
+        const phaseImages = {
+            '新月': '/images/moon/omote-0.png',
+            '三日月': '/images/moon/omote-1.png',
+            '上弦': '/images/moon/omote-2.png',
+            '十三夜': '/images/moon/omote-3.png',
+            '満月': '/images/moon/omote-4.png',
+            '十六夜': '/images/moon/omote-5.png',
+            '下弦': '/images/moon/omote-6.png',
+            '暁': '/images/moon/omote-7.png'
+        };
+        if (moonImg && phaseImages[pattern.moonPhase]) {
+            moonImg.src = phaseImages[pattern.moonPhase];
+            moonImg.alt = pattern.moonPhase;
+        }
+        if (moonLabel) {
+            moonLabel.textContent = pattern.moonPhase;
+        }
     }
+    
     if (hiddenPhaseElement) {
-        hiddenPhaseElement.textContent = pattern.hiddenPhase;
+        // 裏月相の画像を更新
+        const hiddenImg = hiddenPhaseElement.querySelector('img');
+        const hiddenLabel = hiddenPhaseElement.querySelectorAll('span')[1]; // bottom label
+        const hiddenImages = {
+            '新月': '/images/moon/ura-0.png',
+            '三日月': '/images/moon/ura-1.png',
+            '上弦': '/images/moon/ura-2.png',
+            '十三夜': '/images/moon/ura-3.png',
+            '満月': '/images/moon/ura-4.png',
+            '十六夜': '/images/moon/ura-5.png',
+            '下弦': '/images/moon/ura-6.png',
+            '暁': '/images/moon/ura-7.png'
+        };
+        if (hiddenImg && hiddenImages[pattern.hiddenPhase]) {
+            hiddenImg.src = hiddenImages[pattern.hiddenPhase];
+            hiddenImg.alt = pattern.hiddenPhase;
+        }
+        if (hiddenLabel) {
+            hiddenLabel.textContent = pattern.hiddenPhase;
+        }
     }
     
     // LINE APIから取得した4軸データがあれば使用、なければデフォルト
@@ -236,22 +275,34 @@ function updateSixElements(patternId) {
     if (userProfile) {
         const profile = JSON.parse(userProfile);
         
-        const emotionalElement = document.querySelector('.circle-item[data-type="emotional"] .circle-label');
-        const distanceElement = document.querySelector('.circle-item[data-type="distance"] .circle-label');
-        const valuesElement = document.querySelector('.circle-item[data-type="values"] .circle-label');
-        const energyElement = document.querySelector('.circle-item[data-type="energy"] .circle-label');
+        const emotionalElement = document.querySelector('.type-item[data-type="emotional"]');
+        const distanceElement = document.querySelector('.type-item[data-type="distance"]');
+        const valuesElement = document.querySelector('.type-item[data-type="values"]');
+        const energyElement = document.querySelector('.type-item[data-type="energy"]');
         
         if (emotionalElement && profile.emotionalExpression) {
-            emotionalElement.textContent = profile.emotionalExpression.replace('タイプ', '').replace('派', '');
+            const label = emotionalElement.querySelectorAll('span')[1];
+            if (label) {
+                label.textContent = profile.emotionalExpression.replace('タイプ', '').replace('派', '');
+            }
         }
         if (distanceElement && profile.distanceStyle) {
-            distanceElement.textContent = profile.distanceStyle.replace('距離感', '').replace('型', '');
+            const label = distanceElement.querySelectorAll('span')[1];
+            if (label) {
+                label.textContent = profile.distanceStyle.replace('距離感', '').replace('型', '');
+            }
         }
         if (valuesElement && profile.loveValues) {
-            valuesElement.textContent = profile.loveValues;
+            const label = valuesElement.querySelectorAll('span')[1];
+            if (label) {
+                label.textContent = profile.loveValues;
+            }
         }
         if (energyElement && profile.loveEnergy) {
-            energyElement.textContent = profile.loveEnergy.replace('派', '').replace('型', '');
+            const label = energyElement.querySelectorAll('span')[1];
+            if (label) {
+                label.textContent = profile.loveEnergy.replace('派', '').replace('型', '');
+            }
         }
     } else {
         // デフォルト値（パターンIDから算出）
@@ -260,26 +311,38 @@ function updateSixElements(patternId) {
         const valueTypes = ['刺激と冒険', '成長と向上', '現実的安定', 'ルールと伝統'];
         const energyTypes = ['積極行動', '反応適応', '計画実行', '内省充電'];
         
-        const emotionalElement = document.querySelector('.circle-item[data-type="emotional"] .circle-label');
-        const distanceElement = document.querySelector('.circle-item[data-type="distance"] .circle-label');
-        const valuesElement = document.querySelector('.circle-item[data-type="values"] .circle-label');
-        const energyElement = document.querySelector('.circle-item[data-type="energy"] .circle-label');
+        const emotionalElement = document.querySelector('.type-item[data-type="emotional"]');
+        const distanceElement = document.querySelector('.type-item[data-type="distance"]');
+        const valuesElement = document.querySelector('.type-item[data-type="values"]');
+        const energyElement = document.querySelector('.type-item[data-type="energy"]');
         
         if (emotionalElement) {
             const idx = Math.floor(patternId / 16) % 4;
-            emotionalElement.textContent = emotionalTypes[idx];
+            const label = emotionalElement.querySelectorAll('span')[1];
+            if (label) {
+                label.textContent = emotionalTypes[idx];
+            }
         }
         if (distanceElement) {
             const idx = Math.floor(patternId / 8) % 4;
-            distanceElement.textContent = distanceTypes[idx];
+            const label = distanceElement.querySelectorAll('span')[1];
+            if (label) {
+                label.textContent = distanceTypes[idx];
+            }
         }
         if (valuesElement) {
             const idx = Math.floor(patternId / 4) % 4;
-            valuesElement.textContent = valueTypes[idx];
+            const label = valuesElement.querySelectorAll('span')[1];
+            if (label) {
+                label.textContent = valueTypes[idx];
+            }
         }
         if (energyElement) {
             const idx = patternId % 4;
-            energyElement.textContent = energyTypes[idx];
+            const label = energyElement.querySelectorAll('span')[1];
+            if (label) {
+                label.textContent = energyTypes[idx];
+            }
         }
     }
     
