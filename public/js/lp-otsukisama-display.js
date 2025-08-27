@@ -109,8 +109,8 @@ async function updateMoonPhaseContent(patternId) {
         }
     }
     
-    // 3つの月の力を更新
-    const threePowers = window.OtsukisamaDataLoader.getPatternThreePowers(patternId);
+    // 3つの月の力を更新（実際の月相名を使用）
+    const threePowers = window.OtsukisamaDataLoader.getThreePowers(actualMoonPhase);
     if (threePowers && threePowers.length === 3) {
         const powerItems = document.querySelectorAll('.three-powers .energy-item');
         powerItems.forEach((item, index) => {
@@ -160,7 +160,7 @@ async function updateMoonPhaseContent(patternId) {
 }
 
 // 6つの円形要素を更新する関数
-async function updateSixElements(patternId) {
+async function updateSixElements(patternId, moonPhase, hiddenMoonPhase) {
     // データローダーが読み込み完了するまで待つ
     if (!window.OtsukisamaDataLoader || !window.OtsukisamaDataLoader.isLoaded()) {
         await new Promise(resolve => {
@@ -173,6 +173,10 @@ async function updateSixElements(patternId) {
         console.error('Pattern not found for updateSixElements:', patternId);
         return;
     }
+    
+    // 引数で渡された月相を優先的に使用（実際の計算結果）
+    const actualMoonPhase = moonPhase || pattern.moonPhase;
+    const actualHiddenPhase = hiddenMoonPhase || pattern.hiddenPhase;
     
     // 月相要素を更新（画像とテキスト）
     const moonPhaseElement = document.querySelector('.type-item[data-moon-type="omote"]');
@@ -192,12 +196,12 @@ async function updateSixElements(patternId) {
             '下弦の月': '/images/moon/omote-6.png',
             '暁': '/images/moon/omote-7.png'
         };
-        if (moonImg && phaseImages[pattern.moonPhase]) {
-            moonImg.src = phaseImages[pattern.moonPhase];
-            moonImg.alt = pattern.moonPhase;
+        if (moonImg && phaseImages[actualMoonPhase]) {
+            moonImg.src = phaseImages[actualMoonPhase];
+            moonImg.alt = actualMoonPhase;
         }
         if (moonLabel) {
-            moonLabel.textContent = pattern.moonPhase;
+            moonLabel.textContent = actualMoonPhase;
         }
     }
     
@@ -215,12 +219,12 @@ async function updateSixElements(patternId) {
             '下弦の月': '/images/moon/ura-6.png',
             '暁': '/images/moon/ura-7.png'
         };
-        if (hiddenImg && hiddenImages[pattern.hiddenPhase]) {
-            hiddenImg.src = hiddenImages[pattern.hiddenPhase];
-            hiddenImg.alt = pattern.hiddenPhase;
+        if (hiddenImg && hiddenImages[actualHiddenPhase]) {
+            hiddenImg.src = hiddenImages[actualHiddenPhase];
+            hiddenImg.alt = actualHiddenPhase;
         }
         if (hiddenLabel) {
-            hiddenLabel.textContent = pattern.hiddenPhase;
+            hiddenLabel.textContent = actualHiddenPhase;
         }
     }
     
@@ -615,9 +619,9 @@ function displayCombinedPersonality(profile) {
 async function updateDynamicContent(userData) {
     const { name, moonPhase, hiddenMoonPhase, patternId } = userData;
     
-    // 6つの円形要素も更新
+    // 6つの円形要素も更新（月相も渡す）
     if (typeof updateSixElements === 'function') {
-        updateSixElements(patternId);
+        updateSixElements(patternId, moonPhase, hiddenMoonPhase);
     }
     
     // ユーザー名を複数箇所に表示
@@ -657,7 +661,12 @@ async function updateDynamicContent(userData) {
     generatePersonalizedCalendar();
     
     // パターン固有のコンテンツを更新
-    updatePatternContent(patternId, moonPhase, hiddenMoonPhase);
+    if (typeof updatePatternContent === 'function') {
+        updatePatternContent(patternId, moonPhase, hiddenMoonPhase);
+    }
+    
+    // 月相の解説を更新
+    await updateMoonPhaseExplanations(moonPhase, hiddenMoonPhase);
 }
 
 // 各タイプの説明を更新する関数
@@ -725,4 +734,54 @@ function getLoveEnergyDetailedContent(type) {
         'クール型': '恋愛に全てを捧げず、冷静さを保つタイプ。バランスの取れた大人の恋愛を楽しみます。'
     };
     return contents[type] || '';
+}
+
+// 月相の解説を更新する関数
+async function updateMoonPhaseExplanations(moonPhase, hiddenMoonPhase) {
+    // データローダーが読み込み完了するまで待つ
+    if (!window.OtsukisamaDataLoader || !window.OtsukisamaDataLoader.isLoaded()) {
+        await new Promise(resolve => {
+            window.addEventListener('otsukisama-data-loaded', resolve, { once: true });
+        });
+    }
+    
+    // 月相（表）の解説を更新
+    const moonPhaseDesc = window.OtsukisamaDataLoader.getMoonPhaseDescription(moonPhase);
+    if (moonPhaseDesc) {
+        const moonDescElement = document.querySelector('.moon-description[data-phase="omote"]');
+        if (moonDescElement) {
+            const titleElement = moonDescElement.querySelector('h3');
+            const subtitleElement = moonDescElement.querySelector('h4');
+            const descElement = moonDescElement.querySelector('p');
+            const imgElement = moonDescElement.querySelector('img');
+            
+            if (titleElement) titleElement.textContent = moonPhaseDesc.title;
+            if (subtitleElement) subtitleElement.textContent = moonPhaseDesc.subtitle;
+            if (descElement) descElement.textContent = moonPhaseDesc.description;
+            if (imgElement && moonPhaseDesc.image) {
+                imgElement.src = moonPhaseDesc.image;
+                imgElement.alt = moonPhase;
+            }
+        }
+    }
+    
+    // 隠れ月相（裏）の解説を更新
+    const hiddenPhaseDesc = window.OtsukisamaDataLoader.getHiddenPhaseDescription(hiddenMoonPhase);
+    if (hiddenPhaseDesc) {
+        const hiddenDescElement = document.querySelector('.moon-description[data-phase="ura"]');
+        if (hiddenDescElement) {
+            const titleElement = hiddenDescElement.querySelector('h3');
+            const subtitleElement = hiddenDescElement.querySelector('h4');
+            const descElement = hiddenDescElement.querySelector('p');
+            const imgElement = hiddenDescElement.querySelector('img');
+            
+            if (titleElement) titleElement.textContent = hiddenPhaseDesc.title;
+            if (subtitleElement) subtitleElement.textContent = hiddenPhaseDesc.subtitle;
+            if (descElement) descElement.textContent = hiddenPhaseDesc.description;
+            if (imgElement && hiddenPhaseDesc.image) {
+                imgElement.src = hiddenPhaseDesc.image;
+                imgElement.alt = hiddenMoonPhase;
+            }
+        }
+    }
 }
