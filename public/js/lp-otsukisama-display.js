@@ -405,21 +405,95 @@ async function updateSixElements(patternId) {
 
 // 恋愛タイプの表示を更新
 function updatePersonalityDisplay(profile) {
+    // 感情表現を更新（画像も含む）
     if (profile.emotionalExpression) {
         document.getElementById('emotionalExpressionType').textContent = profile.emotionalExpression;
         updateEmotionalExpressionContent(profile.emotionalExpression);
+        
+        // 画像を更新
+        const emotionalImg = document.querySelector('.love-type-card:nth-child(1) img');
+        if (emotionalImg) {
+            const typeMapping = {
+                'ストレート型': 'straight',
+                'ストレート告白型': 'straight',
+                'スキンシップ型': 'skinship',
+                'さりげない気遣い型': 'care',
+                '奥手シャイ型': 'shy',
+                '察してほしい型': 'subtle'
+            };
+            const imageName = typeMapping[profile.emotionalExpression] || 'straight';
+            emotionalImg.src = `/images/love-types/emotional/${imageName}.png`;
+        }
     }
+    
+    // 距離感を更新（画像も含む）
     if (profile.distanceStyle) {
         document.getElementById('distanceStyleType').textContent = profile.distanceStyle;
         updateDistanceStyleContent(profile.distanceStyle);
+        
+        // 画像を更新
+        const distanceImg = document.querySelector('.love-type-card:nth-child(2) img');
+        if (distanceImg) {
+            const typeMapping = {
+                'ベッタリ依存型': 'dependent',
+                'ベッタリ型': 'dependent',
+                '安心セーフ型': 'safe',
+                'ちょうどいい距離型': 'safe',
+                'じっくり型': 'slow',
+                '自由マイペース型': 'free',
+                'マイペース型': 'free',
+                '壁あり慎重型': 'cautious',
+                '超慎重型': 'cautious'
+            };
+            const imageName = typeMapping[profile.distanceStyle] || 'safe';
+            distanceImg.src = `/images/love-types/distance/${imageName}.png`;
+        }
     }
+    
+    // 価値観を更新（画像も含む）
     if (profile.loveValues) {
         document.getElementById('loveValuesType').textContent = profile.loveValues;
         updateLoveValuesContent(profile.loveValues);
+        
+        // 画像を更新
+        const valuesImg = document.querySelector('.love-type-card:nth-child(3) img');
+        if (valuesImg) {
+            const typeMapping = {
+                'ロマンチスト型': 'romantic',
+                'ロマンス重視': 'romantic',
+                'リアリスト型': 'realist',
+                '安心感重視': 'security',
+                '刺激ハンター型': 'hunter',
+                '刺激重視': 'hunter',
+                '成長パートナー型': 'growth',
+                '成長重視': 'growth'
+            };
+            const imageName = typeMapping[profile.loveValues] || 'romantic';
+            valuesImg.src = `/images/love-types/values/${imageName}.png`;
+        }
     }
+    
+    // エネルギーを更新（画像も含む）
     if (profile.loveEnergy) {
         document.getElementById('loveEnergyType').textContent = profile.loveEnergy;
         updateLoveEnergyContent(profile.loveEnergy);
+        
+        // 画像を更新
+        const energyImg = document.querySelector('.love-type-card:nth-child(4) img');
+        if (energyImg) {
+            const typeMapping = {
+                '燃え上がり型': 'burning',
+                '情熱的': 'passionate',
+                '持続型': 'sustain',
+                '安定的': 'stable',
+                '波あり型': 'wave',
+                '変動的': 'wave',
+                'クール型': 'cool',
+                '冷静': 'cool'
+            };
+            const imageName = typeMapping[profile.loveEnergy] || 'burning';
+            energyImg.src = `/images/love-types/energy/${imageName}.png`;
+        }
     }
 }
 
