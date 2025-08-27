@@ -932,6 +932,71 @@
             margin: 40px 0;
         }
         
+        /* 総合診断カード */
+        .combined-personality-card {
+            background: linear-gradient(135deg, rgba(255,215,0,0.1) 0%, rgba(255,182,193,0.1) 100%);
+            border: 2px solid #ffd700;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 20px 0;
+            animation: glow 3s ease-in-out infinite;
+        }
+        
+        .combined-title {
+            color: #ffd700;
+            font-size: 24px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .combined-description {
+            color: #fff;
+            font-size: 18px;
+            line-height: 1.8;
+            margin-bottom: 20px;
+        }
+        
+        .combined-advice {
+            background: rgba(255,255,255,0.05);
+            border-left: 3px solid #ff6b6b;
+            padding: 15px 20px;
+            margin-top: 20px;
+        }
+        
+        .combined-advice h4 {
+            color: #ff6b6b;
+            margin-bottom: 10px;
+        }
+        
+        .compatible-types-card {
+            background: rgba(100,150,200,0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .compatible-types-card h4 {
+            color: #87ceeb;
+            margin-bottom: 15px;
+        }
+        
+        .compatible-types-card ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .compatible-types-card li {
+            color: #fff;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .compatible-types-card li:before {
+            content: "💕 ";
+            margin-right: 10px;
+        }
+        
         .love-type-card {
             background: linear-gradient(135deg, rgba(40,50,60,0.95) 0%, rgba(60,70,80,0.9) 100%);
             border-radius: 15px;
@@ -2188,6 +2253,12 @@
                 </div>
             </div>
             
+            <!-- 総合恋愛タイプ診断 -->
+            <div id="combinedPersonality" style="margin: 40px 0;"></div>
+            
+            <!-- 相性の良いタイプ -->
+            <div id="compatibleTypes" style="margin: 30px 0;"></div>
+            
             <!-- スターセパレーター -->
             <div class="star-separator"></div>
             
@@ -2732,7 +2803,13 @@
         async function loadUserProfile() {
             const userId = getUserIdFromUrl();
             if (!userId) {
-                console.log('No userId in URL, using default values');
+                console.log('No userId in URL, using default values or from localStorage');
+                // localStorageから取得を試みる
+                const savedData = localStorage.getItem('userPersonalityData');
+                if (savedData) {
+                    const profile = JSON.parse(savedData);
+                    updatePersonalityDisplay(profile);
+                }
                 return;
             }
             
@@ -2741,28 +2818,92 @@
                 const data = await response.json();
                 
                 if (data.success && data.profile) {
+                    // localStorageに保存（次回アクセス時用）
+                    localStorage.setItem('userPersonalityData', JSON.stringify(data.profile));
+                    
                     // 4つの軸の結果を更新
-                    if (data.profile.emotionalExpression) {
-                        document.getElementById('emotionalExpressionType').textContent = data.profile.emotionalExpression;
-                        updateEmotionalExpressionContent(data.profile.emotionalExpression);
-                    }
-                    if (data.profile.distanceStyle) {
-                        document.getElementById('distanceStyleType').textContent = data.profile.distanceStyle;
-                        updateDistanceStyleContent(data.profile.distanceStyle);
-                    }
-                    if (data.profile.loveValues) {
-                        document.getElementById('loveValuesType').textContent = data.profile.loveValues;
-                        updateLoveValuesContent(data.profile.loveValues);
-                    }
-                    if (data.profile.loveEnergy) {
-                        document.getElementById('loveEnergyType').textContent = data.profile.loveEnergy;
-                        updateLoveEnergyContent(data.profile.loveEnergy);
-                    }
+                    updatePersonalityDisplay(data.profile);
+                    
+                    // 組み合わせ診断文を生成して表示
+                    displayCombinedPersonality(data.profile);
                     
                     console.log('User profile loaded:', data.profile);
                 }
             } catch (error) {
                 console.error('Failed to load user profile:', error);
+            }
+        }
+        
+        // 性格診断の表示を更新
+        function updatePersonalityDisplay(profile) {
+            if (profile.emotionalExpression) {
+                document.getElementById('emotionalExpressionType').textContent = profile.emotionalExpression;
+                updateEmotionalExpressionContent(profile.emotionalExpression);
+            }
+            if (profile.distanceStyle) {
+                document.getElementById('distanceStyleType').textContent = profile.distanceStyle;
+                updateDistanceStyleContent(profile.distanceStyle);
+            }
+            if (profile.loveValues) {
+                document.getElementById('loveValuesType').textContent = profile.loveValues;
+                updateLoveValuesContent(profile.loveValues);
+            }
+            if (profile.loveEnergy) {
+                document.getElementById('loveEnergyType').textContent = profile.loveEnergy;
+                updateLoveEnergyContent(profile.loveEnergy);
+            }
+        }
+        
+        // 組み合わせ診断文を表示
+        function displayCombinedPersonality(profile) {
+            if (!window.PersonalityCombinations) {
+                console.error('PersonalityCombinations not loaded');
+                return;
+            }
+            
+            // 組み合わせ診断文を生成
+            const combined = PersonalityCombinations.generateCombinedText(
+                profile.emotionalExpression,
+                profile.distanceStyle,
+                profile.loveValues,
+                profile.loveEnergy
+            );
+            
+            // 組み合わせ診断セクションを追加または更新
+            const combinedSection = document.getElementById('combinedPersonality');
+            if (combinedSection) {
+                combinedSection.innerHTML = `
+                    <div class="combined-personality-card">
+                        <h3 class="combined-title">🌟 あなたの総合恋愛タイプ: ${combined.title}</h3>
+                        <p class="combined-description">${combined.description}</p>
+                        <div class="combined-advice">
+                            <h4>💝 アドバイス</h4>
+                            <p>${combined.advice}</p>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // 相性の良いタイプも表示
+            const compatibleTypes = PersonalityCombinations.getCompatibleTypes(
+                profile.emotionalExpression,
+                profile.distanceStyle,
+                profile.loveValues,
+                profile.loveEnergy
+            );
+            
+            if (compatibleTypes.length > 0) {
+                const compatibleSection = document.getElementById('compatibleTypes');
+                if (compatibleSection) {
+                    compatibleSection.innerHTML = `
+                        <div class="compatible-types-card">
+                            <h4>相性の良いタイプ</h4>
+                            <ul>
+                                ${compatibleTypes.map(type => `<li>${type}</li>`).join('')}
+                            </ul>
+                        </div>
+                    `;
+                }
             }
         }
         
@@ -2907,6 +3048,7 @@
     <!-- Chart.jsライブラリの読み込み -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="/js/otsukisama-patterns.js"></script>
+    <script src="/js/personality-combinations.js"></script>
     
     <!-- グラフ描画スクリプト -->
     <script>
