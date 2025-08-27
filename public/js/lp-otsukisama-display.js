@@ -129,7 +129,7 @@ async function updateMoonPhaseContent(patternId) {
         profile = JSON.parse(localStorage.getItem('lineUserProfile') || '{}');
     }
     
-    // 感情表現を更新（updatePersonalityDisplayと同じロジック）
+    // 感情表現を更新
     if (profile.emotionalExpression) {
         const emotionalItem = document.querySelector('.type-item[data-type="emotional"]');
         if (emotionalItem) {
@@ -137,7 +137,7 @@ async function updateMoonPhaseContent(patternId) {
             const spans = emotionalItem.querySelectorAll('span');
             const label = spans[spans.length - 1]; // 最後のspan = bottom label
             
-            // updatePersonalityDisplayと同じマッピング
+            // updatePersonalityDisplayと完全に同じマッピング
             const typeMapping = {
                 'ストレート型': 'straight',
                 'ストレート告白型': 'straight',
@@ -157,7 +157,7 @@ async function updateMoonPhaseContent(patternId) {
         }
     }
     
-    // 距離感を更新（updatePersonalityDisplayと同じロジック）
+    // 距離感を更新
     if (profile.distanceStyle) {
         const distanceItem = document.querySelector('.type-item[data-type="distance"]');
         if (distanceItem) {
@@ -165,7 +165,7 @@ async function updateMoonPhaseContent(patternId) {
             const spans = distanceItem.querySelectorAll('span');
             const label = spans[spans.length - 1]; // 最後のspan = bottom label
             
-            // updatePersonalityDisplayと同じマッピング
+            // updatePersonalityDisplayと完全に同じマッピング
             const typeMapping = {
                 'ベッタリ依存型': 'dependent',
                 'ベッタリ型': 'dependent',
@@ -188,7 +188,7 @@ async function updateMoonPhaseContent(patternId) {
         }
     }
     
-    // 価値観を更新（updatePersonalityDisplayと同じロジック）
+    // 価値観を更新
     if (profile.loveValues) {
         const valuesItem = document.querySelector('.type-item[data-type="values"]');
         if (valuesItem) {
@@ -196,16 +196,16 @@ async function updateMoonPhaseContent(patternId) {
             const spans = valuesItem.querySelectorAll('span');
             const label = spans[spans.length - 1]; // 最後のspan = bottom label
             
-            // updatePersonalityDisplayと同じマッピング
+            // updatePersonalityDisplayと完全に同じマッピング
             const typeMapping = {
                 'ロマンチスト型': 'romantic',
-                'フワフワ型': 'romantic',
-                'リアリスト型': 'realistic',
-                '現実路線型': 'realistic',
-                '刺激ハンター型': 'thrill',
-                'ワクワク型': 'thrill',
+                'ロマンス重視': 'romantic',
+                'リアリスト型': 'realist',
+                '安心感重視': 'security',
+                '刺激ハンター型': 'hunter',
+                '刺激重視': 'hunter',
                 '成長パートナー型': 'growth',
-                '共に成長型': 'growth'
+                '成長重視': 'growth'
             };
             const imageName = typeMapping[profile.loveValues] || 'romantic';
             if (img) {
@@ -218,7 +218,7 @@ async function updateMoonPhaseContent(patternId) {
         }
     }
     
-    // エネルギーを更新（updatePersonalityDisplayと同じロジック）
+    // エネルギーを更新
     if (profile.loveEnergy) {
         const energyItem = document.querySelector('.type-item[data-type="energy"]');
         if (energyItem) {
@@ -226,16 +226,16 @@ async function updateMoonPhaseContent(patternId) {
             const spans = energyItem.querySelectorAll('span');
             const label = spans[spans.length - 1]; // 最後のspan = bottom label
             
-            // updatePersonalityDisplayと同じマッピング
+            // updatePersonalityDisplayと完全に同じマッピング
             const typeMapping = {
                 '燃え上がり型': 'burning',
-                'グイグイ型': 'burning',
-                '持続型': 'steady',
-                'ジワジワ型': 'steady',
-                '波あり型': 'wavy',
-                '波乗り型': 'wavy',
+                '情熱的': 'passionate',
+                '持続型': 'sustain',
+                '安定的': 'stable',
+                '波あり型': 'wave',
+                '変動的': 'wave',
                 'クール型': 'cool',
-                'サラリと型': 'cool'
+                '冷静': 'cool'
             };
             const imageName = typeMapping[profile.loveEnergy] || 'burning';
             if (img) {
