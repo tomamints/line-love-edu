@@ -362,6 +362,7 @@ async function updateSixElements(patternId, moonPhase, hiddenMoonPhase, profile 
         
         // 感情表現
         if (emotionalElement && profile.emotionalExpression) {
+            emotionalElement.style.display = ''; // 表示に戻す
             const label = emotionalElement.querySelectorAll('span')[1];
             const img = emotionalElement.querySelector('img');
             const typeMapping = {
@@ -382,6 +383,7 @@ async function updateSixElements(patternId, moonPhase, hiddenMoonPhase, profile 
         
         // 距離感
         if (distanceElement && profile.distanceStyle) {
+            distanceElement.style.display = ''; // 表示に戻す
             const label = distanceElement.querySelectorAll('span')[1];
             const img = distanceElement.querySelector('img');
             const typeMapping = {
@@ -402,6 +404,7 @@ async function updateSixElements(patternId, moonPhase, hiddenMoonPhase, profile 
         
         // 価値観
         if (valuesElement && profile.loveValues) {
+            valuesElement.style.display = ''; // 表示に戻す
             const label = valuesElement.querySelectorAll('span')[1];
             const img = valuesElement.querySelector('img');
             const typeMapping = {
@@ -422,6 +425,7 @@ async function updateSixElements(patternId, moonPhase, hiddenMoonPhase, profile 
         
         // エネルギー
         if (energyElement && profile.loveEnergy) {
+            energyElement.style.display = ''; // 表示に戻す
             const label = energyElement.querySelectorAll('span')[1];
             const img = energyElement.querySelector('img');
             const typeMapping = {
