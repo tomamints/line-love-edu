@@ -121,9 +121,9 @@
         
         /* メインコンテナ */
         .container {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 20px;
+            max-width: 100%;
+            margin: 0;
+            padding: 0 5px;
             position: relative;
             z-index: 1;
             width: 100%;
@@ -576,7 +576,6 @@
             box-shadow: 0 0 20px rgba(255,215,0,0.2);
             overflow: hidden; /* 円形マスクのため */
             transform: translate(-50%, -50%);
-            /* 逆回転で文字を正立させる */
             animation: counterRotate 40s linear infinite;
         }
         
@@ -604,7 +603,6 @@
         
         .type-item:hover {
             transform: translate(-50%, -50%) scale(1.3);
-            animation-play-state: paused;
             z-index: 20;
         }
         
@@ -893,24 +891,43 @@
         }
         
         .moon-phase-info h2 {
-            font-size: 26px;
+            font-size: 38px;
             color: #ffd700;
-            margin-bottom: 8px;
-            letter-spacing: 1px;
+            margin-bottom: 12px;
+            letter-spacing: 2px;
+            font-weight: bold;
+            text-shadow: 
+                2px 2px 4px rgba(0,0,0,0.8),
+                0 0 30px rgba(255,215,0,0.4);
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 50%, #ffd700 100%);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: goldShine 3s linear infinite;
+        }
+        
+        @keyframes goldShine {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 100% 50%; }
         }
         
         .moon-phase-subtitle {
-            font-size: 16px;
+            font-size: 20px;
             color: #ffffff;
-            font-weight: 600;
-            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+            letter-spacing: 0.5px;
+            line-height: 1.4;
+            position: relative;
+            padding-bottom: 2px;
+            border-bottom: 2px solid rgba(255,215,0,0.3);
         }
         
         .moon-phase-description {
-            font-size: 20px;
-            line-height: 2.1;
+            font-size: 18px;
+            line-height: 1.9;
             color: #ffffff;
-            font-weight: 600;
+            font-weight: 500;
             text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
         }
         
@@ -1018,9 +1035,9 @@
         
         /* 運勢セクション */
         .fortune-section {
-            margin-bottom: 50px;
-            padding: 30px;
-            border-radius: 20px;
+            margin-bottom: 30px;
+            padding: 15px 8px;
+            border-radius: 8px;
             backdrop-filter: blur(8px);
         }
         
@@ -1895,7 +1912,7 @@
         <!-- ヘッダー -->
         <div class="header">
             <div class="main-moon"></div>
-            <h1>おつきさま診断</h1>
+            <img src="/images/banner/1-title.png" alt="おつきさま診断" style="max-width: 100%; height: auto; margin: 20px 0;">
             <p class="subtitle">月が導くあなたの運命</p>
             <p class="sub-description">
                 生まれた日の月相から読み解く、あなただけの特別な運勢メッセージ
@@ -1950,7 +1967,7 @@
             </div>
             
             <!-- タイプ診断タイトル -->
-            <h2 class="banner-title">おつきさま診断で読み解くあなた</h2>
+            <img src="/images/banner/2-anata.png" alt="おつきさま診断で読み解くあなた" style="max-width: 100%; height: auto; margin: 40px 0;">
             
             <!-- 月詠による診断説明 -->
             <div class="tsukuyomi-section right">
@@ -2025,7 +2042,7 @@
             
             <!-- 月相説明セクション -->
             <div style="padding: 35px 0; margin: 50px 0 40px; text-align: center;">
-                <h3 style="font-size: 22px; color: #ffd700; margin-bottom: 20px; letter-spacing: 2px;">まずは、あなたの「月相」から見ていきましょう</h3>
+                <img src="/images/banner/3-getsusou.png" alt="まずは、あなたの月相から見ていきましょう" style="max-width: 100%; height: auto; margin-bottom: 20px;">
                 <p style="color: #ffffff; font-size: 18px; font-weight: 600; line-height: 2; margin-bottom: 15px; text-shadow: 1px 1px 3px rgba(0,0,0,0.5);">
                     月相とは、あなたが生まれた日の月の形。これによって、あなたの基本的な性格や人生のテーマがわかります。あなたの月相は...
                 </p>
@@ -2034,7 +2051,7 @@
             <!-- 月相タイプ -->
             <div class="moon-phase-card new-moon">
                 <div class="moon-phase-header">
-                    <img src="/images/moon/omote-0.png" alt="新月" class="moon-phase-visual" style="width: 80px; height: 80px; object-fit: cover; border-radius: 50%; flex-shrink: 0; border: 3px solid rgba(255,215,0,0.8); box-shadow: 0 0 40px rgba(255,255,255,0.6), 0 0 20px rgba(255,215,0,0.5);">
+                    <img src="/images/moon/omote-0.png" alt="新月" class="moon-phase-visual" style="width: 80px; height: 80px; object-fit: cover; border-radius: 50%; flex-shrink: 0;">
                     <div class="moon-phase-info">
                         <h2>新月</h2>
                         <p class="moon-phase-subtitle">新しい始まりの力。無限の可能性を秘めた開拓者</p>
@@ -2047,7 +2064,7 @@
             
             <!-- 裏月相説明 -->
             <div style="padding: 30px 0; margin: 40px 0; text-align: center;">
-                <h3 style="font-size: 20px; color: #ffd700; margin-bottom: 15px;">そして、あなたの「裏の顔」も見てみましょう</h3>
+                <img src="/images/banner/4-2-uranokao.png" alt="そして、あなたの裏の顔も見てみましょう" style="max-width: 100%; height: auto; margin-bottom: 15px;">
                 <p style="color: #ffffff; font-size: 18px; font-weight: 600; line-height: 1.8; text-shadow: 1px 1px 3px rgba(0,0,0,0.5);">
                     表の月相が社会的な顔だとすれば、裏月相はあなたのプライベートな顔。親しい人の前でだけ見せる、もう一つのあなたです。
                 </p>
@@ -2056,7 +2073,7 @@
             <!-- 裏月相 -->
             <div class="moon-phase-card crescent">
                 <div class="moon-phase-header">
-                    <img src="/images/moon/ura-1.png" alt="三日月" class="moon-phase-visual" style="width: 80px; height: 80px; object-fit: cover; border-radius: 50%; flex-shrink: 0; border: 3px solid rgba(180,100,255,0.8); box-shadow: 0 0 40px rgba(255,255,255,0.6), 0 0 20px rgba(180,100,255,0.5);">
+                    <img src="/images/moon/ura-1.png" alt="三日月" class="moon-phase-visual" style="width: 80px; height: 80px; object-fit: cover; border-radius: 50%; flex-shrink: 0;">
                     <div class="moon-phase-info">
                         <h2>三日月（裏の顔）</h2>
                         <p class="moon-phase-subtitle">内なる繊細さと慎重さを秘めた策士</p>
@@ -2069,7 +2086,7 @@
             
             <!-- 3つの月の力セクション -->
             <div style="padding: 35px 0; margin: 50px 0 40px; text-align: center;">
-                <h3 style="font-size: 22px; color: #ffd700; font-weight: bold; margin-bottom: 20px; letter-spacing: 2px; text-shadow: 1px 1px 3px rgba(0,0,0,0.5);">3つの月の力</h3>
+                <img src="/images/banner/5-1-3tsuno.png" alt="あなたが持っている3つの力は〇〇です" style="max-width: 100%; height: auto; margin-bottom: 20px;">
                 <p style="color: #ffffff; font-size: 18px; font-weight: 600; line-height: 2; text-shadow: 1px 1px 3px rgba(0,0,0,0.5);">
                     さらに深く、あなたの月が持つ特別な力を見ていきましょう。月には3つの力があり、それぞれがあなたの人生を導いています。
                 </p>
@@ -2098,7 +2115,7 @@
             
             <!-- 4つの軸からあなたを紐解く -->
             <div style="padding: 35px 0; margin: 50px 0 40px; text-align: center;">
-                <h3 style="font-size: 22px; color: #ffd700; font-weight: bold; margin-bottom: 20px; letter-spacing: 2px; text-shadow: 1px 1px 3px rgba(0,0,0,0.5);">4つの軸からあなたを紐解く</h3>
+                <img src="/images/banner/5-2-tikara.png" alt="4つの軸からあなたを紐解く" style="max-width: 100%; height: auto; margin-bottom: 20px;">
                 <p style="color: #ffffff; font-size: 18px; font-weight: 600; line-height: 2; text-shadow: 1px 1px 3px rgba(0,0,0,0.5);">
                     次に、4つの軸から見たあなたの特性を見ていきます。
                 </p>
@@ -2179,74 +2196,17 @@
             <div class="star-separator"></div>
             
             <!-- 直近3ヶ月全体運バナー -->
-            <h2 class="banner-supreme">直近3ヶ月 あなたの運命</h2>
+            <img src="/images/banner/7-unmei.png" alt="直近3ヶ月の運命" style="max-width: 100%; height: auto; margin: 40px 0;">
             
             <!-- 運勢グラフセクション -->
             <div class="fortune-graph-section" style="margin: 40px 0;">
                 <div style="background: linear-gradient(135deg, rgba(20, 10, 50, 0.95), rgba(40, 20, 70, 0.95)); padding: 20px 15px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.3);">
                     <h4 style="color: #ffd700; margin-bottom: 20px; text-align: center; font-size: 24px; font-weight: bold; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">
-                        📊 3ヶ月の運勢推移グラフ
+                        3ヶ月の運勢推移グラフ
                     </h4>
                     <p style="text-align: center; color: rgba(255,255,255,0.8); margin-bottom: 25px; font-size: 14px;">
                         あなたの運勢の波を可視化しました
                     </p>
-                    
-                    <!-- X軸の説明（グラフの上部） - レスポンシブ対応版 -->
-                    <div style="margin: 0 auto 20px; max-width: 100%;">
-                        <!-- メインインジケーター -->
-                        <div style="background: linear-gradient(90deg, 
-                            rgba(100, 100, 255, 0.3) 0%, 
-                            rgba(100, 200, 255, 0.25) 25%,
-                            rgba(50, 255, 180, 0.25) 50%,
-                            rgba(255, 215, 0, 0.25) 75%,
-                            rgba(255, 107, 107, 0.3) 100%); 
-                            padding: 12px 8px; 
-                            border-radius: 12px; 
-                            border: 2px solid rgba(255, 215, 0, 0.4);
-                            box-shadow: 0 3px 10px rgba(0,0,0,0.3);">
-                            
-                            <div style="display: flex; justify-content: space-between; align-items: center;">
-                                <!-- 左側：低調 -->
-                                <div style="text-align: left; min-width: 0;">
-                                    <div style="display: flex; align-items: center; gap: 3px;">
-                                        <span style="color: #6666ff; font-size: clamp(18px, 5vw, 24px); font-weight: bold;">◀</span>
-                                        <div>
-                                            <div style="color: #6666ff; font-size: clamp(14px, 4vw, 20px); font-weight: bold; text-shadow: 1px 1px 3px rgba(0,0,0,0.5);">低調</div>
-                                            <div style="color: #9999ff; font-size: clamp(9px, 2.5vw, 11px);">充電期</div>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <!-- 中央：説明 -->
-                                <div style="text-align: center; padding: 0 5px;">
-                                    <div style="color: #ffd700; font-size: clamp(11px, 3vw, 14px); font-weight: bold;">運勢</div>
-                                    <div style="color: rgba(255, 255, 255, 0.6); font-size: clamp(9px, 2.5vw, 11px); white-space: nowrap;">左→右上昇</div>
-                                </div>
-                                
-                                <!-- 右側：絶好調 -->
-                                <div style="text-align: right; min-width: 0;">
-                                    <div style="display: flex; align-items: center; gap: 3px; justify-content: flex-end;">
-                                        <div>
-                                            <div style="color: #ff6b6b; font-size: clamp(14px, 4vw, 20px); font-weight: bold; text-shadow: 1px 1px 3px rgba(0,0,0,0.5);">絶好調</div>
-                                            <div style="color: #ff9999; font-size: clamp(9px, 2.5vw, 11px);">最高！</div>
-                                        </div>
-                                        <span style="color: #ff4444; font-size: clamp(18px, 5vw, 24px); font-weight: bold;">▶</span>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- グラデーションバー -->
-                            <div style="margin-top: 8px; height: 6px; background: linear-gradient(90deg, 
-                                #6666ff 0%, 
-                                #64c8ff 25%, 
-                                #32ffb4 50%, 
-                                #ffd700 75%, 
-                                #ff6b6b 100%); 
-                                border-radius: 3px; 
-                                box-shadow: 0 2px 5px rgba(0,0,0,0.3);">
-                            </div>
-                        </div>
-                    </div>
                     
                     <!-- グラフコンテナー -->
                     <div style="background: rgba(0, 0, 0, 0.2); border-radius: 10px; padding: 10px; position: relative;">
@@ -2257,7 +2217,7 @@
                     
                     <!-- グラフの解説 -->
                     <div style="margin-top: 20px; padding: 15px; background: rgba(255, 215, 0, 0.1); border-radius: 10px; border-left: 3px solid #ffd700;">
-                        <p style="color: #ffd700; font-size: 14px; margin: 0 0 8px; font-weight: bold;">📈 グラフの見方</p>
+                        <p style="color: #ffd700; font-size: 14px; margin: 0 0 8px; font-weight: bold;">グラフの見方</p>
                         <p style="color: rgba(255, 255, 255, 0.8); font-size: 12px; line-height: 1.6; margin: 0;">
                             このグラフは、あなたの直近3ヶ月（12週間）の運勢の推移を表しています。<br>
                             • <span style="color: #6666ff; font-weight: bold;">左側（低調）</span>：エネルギーを蓄える充電期間。新しいことを準備する時期<br>
@@ -2343,7 +2303,7 @@
             </div>
             
             <!-- 恋愛運バナー -->
-            <h2 class="banner-supreme">恋愛運</h2>
+            <img src="/images/banner/8-rennai.png" alt="あなたの恋愛運" style="max-width: 100%; height: auto; margin: 40px 0;">
             
             <!-- 恋愛運 -->
             <div class="fortune-section love">
@@ -2444,7 +2404,7 @@
             </div>
             
             <!-- 人間関係運バナー -->
-            <h2 class="banner-secondary">人間関係運</h2>
+            <img src="/images/banner/9-ningenn.png" alt="人間関係運" style="max-width: 100%; height: auto; margin: 40px 0;">
             
             <!-- 人間関係運 -->
             <div class="fortune-section relationship">
@@ -2502,7 +2462,7 @@
             </div>
             
             <!-- 仕事運バナー -->
-            <h2 class="banner-secondary">仕事運・キャリア</h2>
+            <img src="/images/banner/10-shigoto.png" alt="仕事運" style="max-width: 100%; height: auto; margin: 40px 0;">
             
             <!-- 仕事運 -->
             <div class="fortune-section career">
@@ -2561,7 +2521,7 @@
             </div>
             
             <!-- 金運バナー -->
-            <h2 class="banner-secondary">金運・財運</h2>
+            <img src="/images/banner/11-kin.png" alt="金運" style="max-width: 100%; height: auto; margin: 40px 0;">
             
             <!-- 金運・財運 -->
             <div class="fortune-section money">
@@ -2620,7 +2580,7 @@
             
             <!-- 最終メッセージ -->
             <div class="final-message">
-                <h3>月が教えてくれる5つの教え</h3>
+                <img src="/images/banner/12-saigo.png" alt="月が教えてくれる5つの教え" style="max-width: 100%; height: auto; margin-bottom: 20px;">
                 <p>
                     新月のあなたは、常に新しいことへチャレンジする勇気を持っています。その勇気は素晴らしいものですが、時には立ち止まることも大切。月のリズムに合わせて、緩急をつけることで、より大きな成果を得られるでしょう。
                 </p>
