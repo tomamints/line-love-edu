@@ -1959,6 +1959,9 @@
                 </div>
             </div>
             
+            <!-- 月相診断結果 -->
+            <div id="userMoonPhase"></div>
+            
             <!-- タイプ診断タイトル -->
             <img src="/images/banner/2-anata.png" alt="おつきさま診断で読み解くあなた" style="max-width: 100%; height: auto; margin: 15px 0 5px;">
             
@@ -2085,7 +2088,7 @@
                 </p>
             </div>
             
-            <div class="energy-types">
+            <div class="energy-types three-powers">
                 <div class="energy-item">
                     <div class="energy-title">直感力</div>
                     <div class="energy-description">
@@ -2209,6 +2212,7 @@
                     </div>
                     
                     <!-- グラフの解説 -->
+                    <div id="graphDescription"></div>
                     <div style="margin-top: 20px; padding: 15px; background: rgba(255, 215, 0, 0.1); border-radius: 10px; border-left: 3px solid #ffd700;">
                         <p style="color: #ffd700; font-size: 14px; margin: 0 0 8px; font-weight: bold;">グラフの見方</p>
                         <p style="color: rgba(255, 255, 255, 0.8); font-size: 12px; line-height: 1.6; margin: 0;">
@@ -2834,14 +2838,34 @@
             e.preventDefault();
             
             const name = document.getElementById('name').value;
-            const year = document.getElementById('year').value;
-            const month = document.getElementById('month').value;
-            const day = document.getElementById('day').value;
+            const year = parseInt(document.getElementById('year').value);
+            const month = parseInt(document.getElementById('month').value);
+            const day = parseInt(document.getElementById('day').value);
             
             if (!name || !year || !month || !day) {
                 alert('すべての項目を入力してください');
                 return;
             }
+            
+            // 月相と裏月相を計算
+            const moonPhase = calculateMoonPhaseType(year, month, day);
+            const hiddenMoonPhase = getHiddenMoonPhaseName(year, month, day);
+            const patternId = generatePatternId(year, month, day);
+            
+            // ユーザーデータを保存
+            const userData = {
+                name: name,
+                birthdate: { year, month, day },
+                moonPhase: moonPhase,
+                hiddenMoonPhase: hiddenMoonPhase,
+                patternId: patternId
+            };
+            
+            // ローカルストレージに保存
+            localStorage.setItem('otsukisama_user_data', JSON.stringify(userData));
+            
+            // 動的にコンテンツを更新
+            updateDynamicContent(userData);
             
             // 結果セクションに名前を表示
             document.getElementById('resultName').textContent = name;
@@ -3126,19 +3150,78 @@
         31: { phase: '新月', emoji: '🌑' }
     };
     
-    // 月相タイプ計算（仮のロジック）
-    function calculateMoonPhaseType(birthMonth, birthDay) {
-        const moonPhases = ['新月', '三日月', '上弦', '十三夜', '満月', '十六夜', '下弦', '暁'];
-        const index = (birthMonth + birthDay) % 8;
-        return moonPhases[index];
+    // LINE互換の月齢計算
+    function calculateMoonAge(date) {
+        // 基準日（新月）: 2000年1月6日 18:14:00
+        const referenceDate = new Date('2000-01-06T18:14:00');
+        const lunarCycle = 29.53059; // 朔望月（日）
+        
+        // 経過日数を計算
+        const daysDiff = (date - referenceDate) / (1000 * 60 * 60 * 24);
+        
+        // 月齢を計算（0-29.53日）
+        let moonAge = daysDiff % lunarCycle;
+        if (moonAge < 0) moonAge += lunarCycle;
+        
+        return Math.round(moonAge * 10) / 10;
     }
     
-    // 裏月相計算（仮のロジック）
-    function calculateHiddenMoonType(birthMonth, birthDay) {
-        const moonPhases = ['新月', '三日月', '上弦', '十三夜', '満月', '十六夜', '下弦', '暁'];
-        const daySum = Math.floor(birthDay / 10) + (birthDay % 10);
-        const index = (birthMonth + daySum) % 8;
-        return moonPhases[index];
+    // 月齢から月相を判定
+    function getMoonPhaseFromAge(moonAge) {
+        if (moonAge < 3.7) return 0;  // 新月
+        if (moonAge < 7.4) return 1;  // 三日月
+        if (moonAge < 11.1) return 2; // 上弦
+        if (moonAge < 14.8) return 3; // 十三夜
+        if (moonAge < 18.5) return 4; // 満月
+        if (moonAge < 22.1) return 5; // 十六夜
+        if (moonAge < 25.8) return 6; // 下弦
+        return 7; // 暁
+    }
+    
+    // 月相名を取得
+    function getMoonPhaseName(phase) {
+        const names = ['新月', '三日月', '上弦', '十三夜', '満月', '十六夜', '下弦', '暁'];
+        return names[phase];
+    }
+    
+    // 生年月日から月相を計算
+    function calculateMoonPhaseType(year, month, day) {
+        const birthDate = new Date(year, month - 1, day);
+        const moonAge = calculateMoonAge(birthDate);
+        const moonPhase = getMoonPhaseFromAge(moonAge);
+        return getMoonPhaseName(moonPhase);
+    }
+    
+    // 月相インデックスを取得
+    function getMoonPhaseIndex(year, month, day) {
+        const birthDate = new Date(year, month - 1, day);
+        const moonAge = calculateMoonAge(birthDate);
+        return getMoonPhaseFromAge(moonAge);
+    }
+    
+    // 裏月相計算（仕様書通り）
+    function calculateHiddenMoonIndex(moonPhaseIndex, birthMonth, birthDay) {
+        // 生日の数字根を計算
+        let dayRoot = birthDay;
+        while (dayRoot > 9) {
+            dayRoot = Math.floor(dayRoot / 10) + (dayRoot % 10);
+        }
+        // 仕様書の計算式: (moonPhase + birthMonth + digitRoot(birthDay)) % 8
+        return (moonPhaseIndex + birthMonth + dayRoot) % 8;
+    }
+    
+    // 裏月相名を取得
+    function getHiddenMoonPhaseName(year, month, day) {
+        const moonPhaseIndex = getMoonPhaseIndex(year, month, day);
+        const hiddenIndex = calculateHiddenMoonIndex(moonPhaseIndex, month, day);
+        return getMoonPhaseName(hiddenIndex);
+    }
+    
+    // パターンIDを生成（0-63の数値）
+    function generatePatternId(year, month, day) {
+        const moonPhaseIndex = getMoonPhaseIndex(year, month, day);
+        const hiddenIndex = calculateHiddenMoonIndex(moonPhaseIndex, month, day);
+        return moonPhaseIndex * 8 + hiddenIndex;
     }
     
     // カレンダー生成関数
@@ -3150,13 +3233,15 @@
         if (!container) return;
         
         // フォームから生年月日を取得（デモ用にデフォルト値を設定）
+        const birthYear = parseInt(document.getElementById('year')?.value) || 1990;
         const birthMonth = parseInt(document.getElementById('month')?.value) || 7;
         const birthDay = parseInt(document.getElementById('day')?.value) || 15;
         
         // 月相タイプを計算
-        const userMoonPhase = calculateMoonPhaseType(birthMonth, birthDay);
-        const hiddenMoonPhase = calculateHiddenMoonType(birthMonth, birthDay);
+        const userMoonPhase = calculateMoonPhaseType(birthYear, birthMonth, birthDay);
+        const hiddenMoonPhase = getHiddenMoonPhaseName(birthYear, birthMonth, birthDay);
         const patternId = `${userMoonPhase}×${hiddenMoonPhase}`;
+        const numericPatternId = generatePatternId(birthYear, birthMonth, birthDay);
         
         // パターンデータを取得（デモ用にデフォルトパターンを使用）
         const patternData = moonCalendarPatterns[patternId] || moonCalendarPatterns['新月×新月'];
@@ -3260,6 +3345,244 @@
                 ${patternData.love_advice}
             `;
         }
+    }
+    
+    // 動的コンテンツを更新する関数
+    async function updateDynamicContent(userData) {
+        const { name, moonPhase, hiddenMoonPhase, patternId } = userData;
+        
+        // ユーザー名を複数箇所に表示
+        const nameElements = ['resultName', 'resultName2', 'resultName3'];
+        nameElements.forEach(id => {
+            const elem = document.getElementById(id);
+            if (elem) elem.textContent = name;
+        });
+        
+        // 月相情報を表示
+        const moonDisplay = document.getElementById('userMoonPhase');
+        if (moonDisplay) {
+            moonDisplay.innerHTML = `
+                <div class="moon-phase-display" style="text-align: center; margin: 30px 0;">
+                    <div style="display: flex; justify-content: center; gap: 40px; flex-wrap: wrap;">
+                        <div class="phase-item">
+                            <h3 style="color: #ffd700; margin-bottom: 10px;">あなたの月相</h3>
+                            <p style="font-size: 28px; color: #fff; font-weight: bold;">${moonPhase}</p>
+                        </div>
+                        <div class="phase-item">
+                            <h3 style="color: #ffd700; margin-bottom: 10px;">隠れ月相（裏の顔）</h3>
+                            <p style="font-size: 28px; color: #fff; font-weight: bold;">${hiddenMoonPhase}</p>
+                        </div>
+                    </div>
+                    <div style="margin-top: 20px; color: #aaa;">
+                        <p>パターン ${patternId + 1}/64</p>
+                        <p style="color: #ffd700; font-size: 20px; margin-top: 10px;">${moonPhase}×${hiddenMoonPhase}</p>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // 運勢グラフを更新
+        await loadFortuneGraph(patternId);
+        
+        // カレンダーを生成
+        generatePersonalizedCalendar();
+        
+        // パターン固有のコンテンツを更新
+        updatePatternContent(patternId, moonPhase, hiddenMoonPhase);
+    }
+    
+    // 運勢グラフを読み込む関数
+    async function loadFortuneGraph(patternId) {
+        try {
+            const response = await fetch('/docs/fortune_graph_all_64_patterns.json');
+            const data = await response.json();
+            
+            // パターンIDに対応するデータを検索
+            const patternData = data.patterns.find(p => p.pattern_number === (patternId + 1));
+            
+            if (patternData) {
+                const ctx = document.getElementById('fortuneChart')?.getContext('2d');
+                if (ctx && window.Chart) {
+                    // 既存のチャートがあれば破棄
+                    if (window.fortuneChartInstance) {
+                        window.fortuneChartInstance.destroy();
+                    }
+                    
+                    // 新しいチャートを作成
+                    window.fortuneChartInstance = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: ['1週', '2週', '3週', '4週', '5週', '6週', 
+                                    '7週', '8週', '9週', '10週', '11週', '12週'],
+                            datasets: [{
+                                label: '総合運',
+                                data: patternData.fortune_data.overall,
+                                borderColor: '#ffd700',
+                                backgroundColor: 'rgba(255, 215, 0, 0.1)',
+                                tension: 0.3,
+                                fill: true,
+                                pointRadius: 6,
+                                pointBackgroundColor: '#ffd700',
+                                pointBorderColor: '#fff',
+                                pointBorderWidth: 2,
+                                borderWidth: 3
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    display: true,
+                                    position: 'top',
+                                    labels: {
+                                        color: '#ffd700',
+                                        font: { size: 16, weight: 'bold' }
+                                    }
+                                },
+                                tooltip: {
+                                    backgroundColor: 'rgba(0, 0, 0, 0.9)',
+                                    titleColor: '#ffd700',
+                                    bodyColor: '#fff',
+                                    borderColor: '#ffd700',
+                                    borderWidth: 1,
+                                    displayColors: false,
+                                    callbacks: {
+                                        label: function(context) {
+                                            const value = context.parsed.y;
+                                            const labels = {
+                                                5: '絶好調',
+                                                4: '好調',
+                                                3: '安定期',
+                                                2: '充電期',
+                                                1: '準備期'
+                                            };
+                                            return labels[value] || value;
+                                        }
+                                    }
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    beginAtZero: false,
+                                    min: 1,
+                                    max: 5,
+                                    ticks: {
+                                        stepSize: 1,
+                                        color: '#ccc',
+                                        font: { size: 12 },
+                                        callback: function(value) {
+                                            const labels = {
+                                                5: '絶好調',
+                                                4: '好調',
+                                                3: '安定',
+                                                2: '充電',
+                                                1: '準備'
+                                            };
+                                            return labels[value] || '';
+                                        }
+                                    },
+                                    grid: {
+                                        color: 'rgba(255, 255, 255, 0.1)',
+                                        drawBorder: false
+                                    }
+                                },
+                                x: {
+                                    ticks: {
+                                        color: '#ccc',
+                                        font: { size: 12 }
+                                    },
+                                    grid: {
+                                        color: 'rgba(255, 255, 255, 0.05)',
+                                        drawBorder: false
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+                
+                // グラフの説明を更新
+                const graphDesc = document.getElementById('graphDescription');
+                if (graphDesc) {
+                    graphDesc.innerHTML = `
+                        <div style="background: rgba(255, 215, 0, 0.05); padding: 15px; border-radius: 5px; margin-top: 20px;">
+                            <h4 style="color: #ffd700; margin-bottom: 10px;">${patternData.characteristics}</h4>
+                            <p style="color: #fff;">ピーク週: 第${patternData.peak_weeks.join('・')}週</p>
+                            <p style="color: #fff;">注意週: 第${patternData.caution_weeks.join('・')}週</p>
+                        </div>
+                    `;
+                }
+            }
+        } catch (error) {
+            console.error('運勢グラフの読み込みエラー:', error);
+        }
+    }
+    
+    // パターン固有のコンテンツを更新
+    function updatePatternContent(patternId, moonPhase, hiddenPhase) {
+        // 3つの月の力を更新
+        const threePowers = getPatternPowers(patternId);
+        updateThreeMoonPowers(threePowers);
+        
+        // 運勢テキストを更新
+        updateFortuneTexts(patternId, moonPhase, hiddenPhase);
+        
+        console.log(`Pattern ${patternId + 1} loaded: ${moonPhase}×${hiddenPhase}`);
+    }
+    
+    // パターンごとの3つの力を取得
+    function getPatternPowers(patternId) {
+        // デモ用のデータ（実際にはパターンごとに異なるデータを用意）
+        const powerSets = [
+            [
+                { title: '直感の力', desc: '内なる声に導かれ、正しい選択ができる時期' },
+                { title: '創造の力', desc: '新しいアイデアが次々と湧き上がる' },
+                { title: '調和の力', desc: '周囲との関係が円滑に進む' }
+            ],
+            [
+                { title: '行動の力', desc: '思い立ったらすぐに動ける勢いがある' },
+                { title: '成長の力', desc: '自己成長のチャンスが訪れる' },
+                { title: '魅力の力', desc: 'あなたの魅力が最大限に発揮される' }
+            ]
+        ];
+        return powerSets[patternId % 2] || powerSets[0];
+    }
+    
+    // 3つの月の力を表示更新
+    function updateThreeMoonPowers(powers) {
+        const container = document.querySelector('.three-powers');
+        if (container) {
+            container.innerHTML = powers.map((power, i) => `
+                <div class="power-card" style="background: rgba(255, 215, 0, 0.05); padding: 20px; border-radius: 5px; border-left: 3px solid #ffd700;">
+                    <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                        <div style="width: 30px; height: 30px; background: #ffd700; color: #000; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; margin-right: 10px;">${i + 1}</div>
+                        <h4 style="color: #ffd700; margin: 0;">${power.title}</h4>
+                    </div>
+                    <p style="color: #fff; margin: 0;">${power.desc}</p>
+                </div>
+            `).join('');
+        }
+    }
+    
+    // 運勢テキストを更新
+    function updateFortuneTexts(patternId, moonPhase, hiddenPhase) {
+        // 運勢セクションのテキストを更新
+        const fortuneSections = {
+            overall: '今後3ヶ月は、新しい挑戦と成長の時期です。',
+            love: '恋愛運は上昇傾向にあり、素敵な出会いが期待できます。',
+            work: '仕事では創造性が高まり、新しいアイデアが評価されるでしょう。',
+            relationship: '人間関係は安定し、信頼できる仲間との絆が深まります。',
+            money: '金運は波がありますが、計画的な行動で安定します。'
+        };
+        
+        // 各セクションのテキストを更新（実際にはパターンごとの内容をロード）
+        Object.keys(fortuneSections).forEach(key => {
+            const elem = document.getElementById(`fortune-${key}`);
+            if (elem) {
+                elem.textContent = fortuneSections[key];
+            }
+        });
     }
     
     // ページ読み込み時にカレンダーを生成
