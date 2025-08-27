@@ -26,11 +26,11 @@ async function updateMoonPhaseContent(patternId) {
         const phaseImages = {
             '新月': '/images/moon/omote-0.png',
             '三日月': '/images/moon/omote-1.png',
-            '上弦': '/images/moon/omote-2.png',
+            '上弦の月': '/images/moon/omote-2.png',
             '十三夜': '/images/moon/omote-3.png',
             '満月': '/images/moon/omote-4.png',
             '十六夜': '/images/moon/omote-5.png',
-            '下弦': '/images/moon/omote-6.png',
+            '下弦の月': '/images/moon/omote-6.png',
             '暁': '/images/moon/omote-7.png'
         };
         
@@ -185,11 +185,11 @@ async function updateSixElements(patternId) {
         const phaseImages = {
             '新月': '/images/moon/omote-0.png',
             '三日月': '/images/moon/omote-1.png',
-            '上弦': '/images/moon/omote-2.png',
+            '上弦の月': '/images/moon/omote-2.png',
             '十三夜': '/images/moon/omote-3.png',
             '満月': '/images/moon/omote-4.png',
             '十六夜': '/images/moon/omote-5.png',
-            '下弦': '/images/moon/omote-6.png',
+            '下弦の月': '/images/moon/omote-6.png',
             '暁': '/images/moon/omote-7.png'
         };
         if (moonImg && phaseImages[pattern.moonPhase]) {
@@ -208,11 +208,11 @@ async function updateSixElements(patternId) {
         const hiddenImages = {
             '新月': '/images/moon/ura-0.png',
             '三日月': '/images/moon/ura-1.png',
-            '上弦': '/images/moon/ura-2.png',
+            '上弦の月': '/images/moon/ura-2.png',
             '十三夜': '/images/moon/ura-3.png',
             '満月': '/images/moon/ura-4.png',
             '十六夜': '/images/moon/ura-5.png',
-            '下弦': '/images/moon/ura-6.png',
+            '下弦の月': '/images/moon/ura-6.png',
             '暁': '/images/moon/ura-7.png'
         };
         if (hiddenImg && hiddenImages[pattern.hiddenPhase]) {
