@@ -2118,7 +2118,7 @@
                         <p class="moon-phase-subtitle">新しい始まりの力。無限の可能性を秘めた開拓者</p>
                     </div>
                 </div>
-                <div class="moon-phase-description">
+                <div class="moon-phase-description" id="moon-phase-description">
                     あなたは新月の日に生まれた、始まりのエネルギーを持つ人。何もないところから何かを生み出す力があり、ゼロから1を作り出すことに長けています。純粋で素直な心を持ち、新しいことへの好奇心が旺盛。まだ誰も踏み入れていない道を進むパイオニア精神があります。時に無鉄砲に見えることもありますが、その勇気こそがあなたの最大の武器なのです。
                 </div>
             </div>
@@ -2140,7 +2140,7 @@
                         <p class="moon-phase-subtitle">内なる繊細さと慎重さを秘めた策士</p>
                     </div>
                 </div>
-                <div class="moon-phase-description">
+                <div class="moon-phase-description" id="hidden-phase-description">
                     表向きは勢いよく突き進むあなたですが、実は内面では細やかな配慮ができる繊細な人。新しいことを始める前に、実はしっかりと下調べをしていたり、リスクを計算していたりするでしょう。その慎重さと大胆さのバランスが、あなたの成功の秘訣。時々弱音を吐きたくなることもありますが、それは成長の証です。
                 </div>
             </div>
@@ -2308,7 +2308,7 @@
                 <div class="fortune-content">
                     <div class="fortune-highlight">
                         <div class="sub-banner">直近3ヶ月の全体的な流れ</div>
-                        <p class="fortune-overall-text">
+                        <p class="fortune-overall-text" id="fortune-overall-text">
                             直近3ヶ月は、あなたにとって集中的な変化と成長を経験する重要な期間となります。新月の創造力と満月の情熱が短期間で絶妙に混ざり合い、驚くほど素早く大きな成果を生み出すでしょう。特に診断から1ヶ月目と3ヶ月目には、人生を変えるような重要な出来事が起こります。診断から1ヶ月後の新月と、2ヶ月後の満月は特に重要な日。この日に始めたことは、3ヶ月以内に大きな実を結ぶでしょう。
                         </p>
                     </div>
@@ -2384,7 +2384,7 @@
                 <div class="fortune-content">
                     <div class="fortune-highlight">
                         <div class="sub-banner">直近3ヶ月の恋愛運の特徴</div>
-                        <p class="fortune-love-text">
+                        <p class="fortune-love-text" id="fortune-love-text">
                             新月タイプのあなたは、相手の心に新しい風を即座に吹き込む存在。初対面から強い印象を残し、短期間で相手の人生に大きな変化をもたらすでしょう。
                         </p>
                     </div>
@@ -2477,7 +2477,7 @@
             <!-- 人間関係運 -->
             <div class="fortune-section relationship">
                 <div class="section-header">
-                    <p class="fortune-relationship-text">
+                    <p class="fortune-relationship-text" id="fortune-relationship-text">
                         新しい仲間との出会いが多い3ヶ月。あなたの持つ開拓者精神に共感する人たちが集まってきて、一緒に何か新しいことを始めることになりそう。
                     </p>
                 </div>
@@ -2536,7 +2536,7 @@
             <div class="fortune-section career">
                 <div class="section-header">
                     <h2 class="rhythm-heading">新たなキャリアの扉が開く3ヶ月</h2>
-                    <p class="fortune-work-text">
+                    <p class="fortune-work-text" id="fortune-work-text">
                         起業や独立、転職など、新しいスタートを切るのに最適な3ヶ月。あなたのアイデアが形になりやすく、周りからの支援も得られやすい時期。
                     </p>
                 </div>
@@ -2594,7 +2594,7 @@
             <!-- 金運・財運 -->
             <div class="fortune-section money">
                 <div class="section-header">
-                    <p class="fortune-money-text">
+                    <p class="fortune-money-text" id="fortune-money-text">
                         新月から満月に向かうように、徐々に豊かさが増していく年。前半は投資の時期、後半は収穫の時期となります。
                     </p>
                 </div>
@@ -2859,6 +2859,26 @@
                 if (moonPhaseSubtitle && phaseSubtitles[pattern.moonPhase]) {
                     moonPhaseSubtitle.textContent = phaseSubtitles[pattern.moonPhase];
                 }
+                
+                // 表月相の説明文を更新
+                const moonPhaseDesc = document.getElementById('moon-phase-description');
+                if (moonPhaseDesc) {
+                    // 月相ごとの説明文（仕様書から）
+                    const phaseDescriptions = {
+                        '新月': 'あなたは新月の日に生まれた、始まりのエネルギーを持つ人。何もないところから何かを生み出す力があり、ゼロから1を作り出すことに長けています。純粋で素直な心を持ち、新しいことへの好奇心が旺盛。まだ誰も踏み入れていない道を進むパイオニア精神があります。時に無鉄砲に見えることもありますが、その勇気こそがあなたの最大の武器なのです。',
+                        '三日月': 'あなたは成長のエネルギーを持つ三日月生まれ。小さな芽を大きく育てる力に優れ、物事を少しずつ、確実に成長させていくことができます。慎重でありながら着実に前進し、困難も成長の糧に変える力があります。繊細な感受性を持ち、相手の気持ちを察することが得意です。',
+                        '上弦': 'あなたは挑戦のエネルギーを持つ上弦の月生まれ。困難に立ち向かう勇気と、それを乗り越える力を持っています。決断力に優れ、迷うことなく前進できる強さがあります。バランス感覚も優れており、理想と現実の間で最適な選択ができます。',
+                        '十三夜': 'あなたは美と調和の力を持つ十三夜生まれ。完成に向かう美しいエネルギーを持ち、物事を美しく仕上げる才能があります。周囲との調和を大切にし、皆が心地よく過ごせる環境を作ることができます。成熟した魅力で人々を惹きつけます。',
+                        '満月': 'あなたは完成のエネルギーを持つ満月生まれ。すべてを照らす圧倒的な存在感を持ち、周囲に大きな影響を与えます。情熱的で表現力豊か、あなたがいるだけで場が華やぎます。完全性を求める性質があり、何事も完璧を目指します。',
+                        '十六夜': 'あなたは内省のエネルギーを持つ十六夜生まれ。満月の後の落ち着きを持ち、物事を深く見つめる力があります。余裕と品格を持ち、慌てることなく自分のペースで進めます。内面の豊かさと深い洞察力が魅力です。',
+                        '下弦': 'あなたは手放しの力を持つ下弦の月生まれ。不要なものを削ぎ落とし、本質だけを残す力があります。整理整頓が得意で、効率的に物事を進められます。終わりから新しい始まりを見つけ出す、再生の力も持っています。',
+                        '暁': 'あなたは準備のエネルギーを持つ暁生まれ。次なる始まりに向けて準備を整える力があります。深い洞察力と神秘的な魅力を持ち、見えない世界との繋がりを感じることができます。静寂の中で大きな力を蓄えています。'
+                    };
+                    
+                    if (phaseDescriptions[pattern.moonPhase]) {
+                        moonPhaseDesc.textContent = phaseDescriptions[pattern.moonPhase];
+                    }
+                }
             }
             
             // 裏月相の更新
@@ -2905,6 +2925,26 @@
                 if (hiddenPhaseSubtitle && hiddenPhaseSubtitles[pattern.hiddenPhase]) {
                     hiddenPhaseSubtitle.textContent = hiddenPhaseSubtitles[pattern.hiddenPhase];
                 }
+                
+                // 裏月相の説明文を更新
+                const hiddenPhaseDesc = document.getElementById('hidden-phase-description');
+                if (hiddenPhaseDesc) {
+                    // 裏月相ごとの説明文
+                    const hiddenDescriptions = {
+                        '新月': '表向きは始まりのエネルギーに満ちていますが、内面では静寂と無限の可能性を秘めています。時に孤独を感じることもありますが、それはあなたが新しい道を切り開く先駆者だから。内なる声に耳を傾けることで、真の方向性が見えてきます。',
+                        '三日月': '表向きは勢いよく突き進むあなたですが、実は内面では細やかな配慮ができる繊細な人。新しいことを始める前に、実はしっかりと下調べをしていたり、リスクを計算していたりするでしょう。その慎重さと大胆さのバランスが、あなたの成功の秘訣。',
+                        '上弦': '表面的には穏やかに見えても、内には強い決断力と勇気を秘めています。困難に直面した時、誰よりも冷静に状況を判断し、最適な選択をすることができます。内なる戦士の魂が、あなたを勝利へと導きます。',
+                        '十三夜': '外見は普通でも、内面には深い美意識と芸術性を持っています。日常の中に美を見出し、それを大切にする繊細な心。人には見せない創造的な一面が、あなたの隠れた才能です。',
+                        '満月': '表では明るく振る舞いながら、内面では深い感情の波を感じています。喜怒哀楽が人一倍豊かで、その感情の深さがあなたの人間性を豊かにしています。時に感情に振り回されることもありますが、それもまた魅力の一つです。',
+                        '十六夜': '表面的には活動的でも、内面では深い内省と洞察を行っています。物事の本質を見抜く力があり、表面的なものに惑わされることがありません。その知恵と洞察力が、あなたを真の成功へと導きます。',
+                        '下弦': '外では社交的でも、内面では不要なものを削ぎ落とし、本質だけを大切にしています。人間関係も選別的で、本当に大切な人だけを心に留めます。その選択眼が、質の高い人生を作り出します。',
+                        '暁': '表向きは普通に見えても、内面では深い神秘性と直感力を持っています。見えない世界との繋がりを感じ、スピリチュアルな体験を大切にします。その神秘的な力が、あなたに特別な導きを与えます。'
+                    };
+                    
+                    if (hiddenDescriptions[pattern.hiddenPhase]) {
+                        hiddenPhaseDesc.textContent = hiddenDescriptions[pattern.hiddenPhase];
+                    }
+                }
             }
             
             // 3つの月の力を更新
@@ -2923,15 +2963,34 @@
             // 運勢テキストの更新
             if (pattern.fortune) {
                 // 全体運
-                const overallSection = document.querySelector('.fortune-content');
-                if (overallSection && pattern.fortune.overall) {
-                    const overallText = overallSection.querySelector('p');
-                    if (overallText) {
-                        overallText.textContent = pattern.fortune.overall;
-                    }
+                const overallText = document.getElementById('fortune-overall-text');
+                if (overallText && pattern.fortune.overall) {
+                    overallText.textContent = pattern.fortune.overall;
                 }
                 
-                // 恋愛運、仕事運、人間関係運、金運の更新も同様に実装可能
+                // 恋愛運
+                const loveText = document.getElementById('fortune-love-text');
+                if (loveText && pattern.fortune.love) {
+                    loveText.textContent = pattern.fortune.love;
+                }
+                
+                // 仕事運
+                const workText = document.getElementById('fortune-work-text');
+                if (workText && pattern.fortune.work) {
+                    workText.textContent = pattern.fortune.work;
+                }
+                
+                // 人間関係運
+                const relationshipText = document.getElementById('fortune-relationship-text');
+                if (relationshipText && pattern.fortune.relationship) {
+                    relationshipText.textContent = pattern.fortune.relationship;
+                }
+                
+                // 金運
+                const moneyText = document.getElementById('fortune-money-text');
+                if (moneyText && pattern.fortune.money) {
+                    moneyText.textContent = pattern.fortune.money;
+                }
             }
             
             console.log('Moon phase content updated for pattern:', patternId);
