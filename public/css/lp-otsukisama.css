@@ -1468,6 +1468,18 @@
             flex-shrink: 0;
         }
         
+        /* 月相（表）の黄色い枠 */
+        img[src*="/moon/omote-"] {
+            border: 4px solid #ffd700 !important;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+        }
+        
+        /* 裏月相の紫の枠 */
+        img[src*="/moon/ura-"] {
+            border: 4px solid #b5a5d6 !important;
+            box-shadow: 0 0 20px rgba(181, 165, 214, 0.5);
+        }
+        
         /* カレンダーの凡例 */
         .calendar-legend {
             display: flex;
