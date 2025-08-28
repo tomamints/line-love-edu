@@ -744,15 +744,12 @@ async function updateUserDisplayContent(userData, profile = null) {
 
 // 動的コンテンツを更新する関数（パターンから）
 function updateDynamicContentFromPattern(pattern) {
-    console.log('updateDynamicContentFromPattern called with:', pattern);
-    
     if (!pattern || !pattern.dynamicContent) {
         console.warn('Dynamic content not found for pattern');
         return;
     }
     
     const dc = pattern.dynamicContent;
-    console.log('Dynamic content:', dc);
     
     // 全体運のタイトルと導入文
     const overallTitle = document.getElementById('fortune-overall-title');
