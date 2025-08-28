@@ -571,7 +571,7 @@
             backdrop-filter: blur(10px);
             box-shadow: 0 0 20px rgba(255,215,0,0.2);
             overflow: hidden; /* 円形マスクのため */
-            transform: translate(-50%, -50%);
+            /* transform: translate(-50%, -50%); 削除 - 傾きの原因 */
             animation: counterRotate 40s linear infinite;
         }
         
@@ -593,12 +593,12 @@
         }
         
         @keyframes counterRotate {
-            from { transform: translate(-50%, -50%) rotate(0deg); }
-            to { transform: translate(-50%, -50%) rotate(-360deg); }
+            from { transform: rotate(0deg); }
+            to { transform: rotate(-360deg); }
         }
         
         .type-item:hover {
-            transform: translate(-50%, -50%) scale(1.3);
+            transform: scale(1.3);
             z-index: 20;
         }
         
