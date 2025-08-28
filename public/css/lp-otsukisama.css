@@ -632,9 +632,9 @@
             width: 95% !important;
             height: 95% !important;
             position: absolute;
-            top: 2.5%;  /* (100% - 95%) / 2 = 2.5% */
-            left: 2.5%; /* (100% - 95%) / 2 = 2.5% */
-            /* transform: translate(-50%, -50%); 削除 - 傾きの原因 */
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
             object-fit: contain !important;
         }
         
