@@ -40,11 +40,21 @@ async function generatePersonalizedCalendar(providedPatternId) {
     const messageElement = document.getElementById('calendarMessage');
     const monthYearElement = document.getElementById('calendarMonthYear');
     
-    if (!container) return;
+    console.log('[Calendar] Starting generation for pattern:', providedPatternId);
+    
+    if (!container) {
+        console.error('[Calendar] Container not found: personalizedCalendar');
+        return;
+    }
     
     // カレンダーパターンデータが読み込まれていない場合は読み込む
     if (!calendarPatternsData) {
-        await loadCalendarPatterns();
+        console.log('[Calendar] Loading calendar patterns...');
+        const loaded = await loadCalendarPatterns();
+        if (!loaded) {
+            console.error('[Calendar] Failed to load calendar patterns');
+            return;
+        }
     }
     
     // パターンIDを決定（引数で渡されていればそれを使用）
@@ -59,12 +69,15 @@ async function generatePersonalizedCalendar(providedPatternId) {
         numericPatternId = generatePatternId(birthYear, birthMonth, birthDay);
     }
     
+    console.log('[Calendar] Looking for pattern ID:', numericPatternId);
     const patternData = getCalendarPattern(numericPatternId);
     
     if (!patternData) {
-        console.error('No calendar pattern found for user');
+        console.error('[Calendar] No calendar pattern found for pattern ID:', numericPatternId);
+        console.log('[Calendar] Available patterns:', calendarPatternsData ? Object.keys(calendarPatternsData) : 'none');
         return;
     }
+    console.log('[Calendar] Pattern data found:', patternData);
     
     // メッセージを表示
     if (messageElement) {
