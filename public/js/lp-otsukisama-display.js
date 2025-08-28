@@ -962,6 +962,24 @@ function updateDynamicContentFromPattern(pattern) {
         moneyText.textContent = pattern.money.mainText;
         console.log('Money text set successfully');
     }
+    
+    // 最後の祝福メッセージを月相に応じて更新
+    const finalBlessingMessage = document.getElementById('final-blessing-message');
+    if (finalBlessingMessage && pattern.moonPhase) {
+        const blessingMessages = {
+            '新月': '新月の光があなたの道を照らしますように',
+            '三日月': '三日月の優しい光があなたを包みますように',
+            '上弦の月': '上弦の月の力強さがあなたを支えますように',
+            '十三夜': '十三夜の神秘的な輝きがあなたを導きますように',
+            '満月': '満月の祝福があなたに降り注ぎますように',
+            '十六夜': '十六夜の穏やかな光があなたに安らぎをもたらしますように',
+            '下弦の月': '下弦の月の知恵があなたを正しい道へ導きますように',
+            '暁': '暁の月の新しい始まりがあなたに希望をもたらしますように'
+        };
+        const message = blessingMessages[pattern.moonPhase] || '月の光があなたの道を照らしますように';
+        finalBlessingMessage.textContent = `「${message}」`;
+        console.log('Final blessing message updated for moon phase:', pattern.moonPhase);
+    }
 }
 
 // 各タイプの説明を更新する関数
