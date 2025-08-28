@@ -84,19 +84,8 @@ async function generatePersonalizedCalendar(providedPatternId) {
         monthYearElement.textContent = `${currentYear}年 ${monthNames[currentMonth]}`;
     }
     
-    // カレンダーのHTMLを生成
-    let calendarHTML = '<div class="calendar-grid">';
-    
-    // 曜日ヘッダー
-    const dayHeaders = ['日', '月', '火', '水', '木', '金', '土'];
-    calendarHTML += '<div class="calendar-header">';
-    dayHeaders.forEach(day => {
-        calendarHTML += `<div class="calendar-day-header">${day}</div>`;
-    });
-    calendarHTML += '</div>';
-    
-    // カレンダー本体
-    calendarHTML += '<div class="calendar-body">';
+    // カレンダーのHTMLを生成（日付のみ）
+    let calendarHTML = '';
     
     // 月初めまでの空白
     for (let i = 0; i < firstDayOfMonth; i++) {
@@ -153,41 +142,7 @@ async function generatePersonalizedCalendar(providedPatternId) {
         `;
     }
     
-    calendarHTML += '</div>';
-    calendarHTML += '</div>';
-    
-    // カレンダー凡例
-    calendarHTML += `
-        <div class="calendar-legend">
-            <div class="legend-item">
-                <span class="legend-marker lucky">●</span>
-                <span>ラッキーデー</span>
-            </div>
-            <div class="legend-item">
-                <span class="legend-marker power">●</span>
-                <span>パワーデー</span>
-            </div>
-            <div class="legend-item">
-                <span class="legend-marker caution">●</span>
-                <span>注意日</span>
-            </div>
-        </div>
-    `;
-    
-    // アドバイスセクション
-    calendarHTML += `
-        <div class="calendar-advice">
-            <div class="advice-section">
-                <h4>💕 恋愛アドバイス</h4>
-                <p>${patternData.love_advice}</p>
-            </div>
-            <div class="advice-section">
-                <h4>⭐ ベストアクション</h4>
-                <p>${patternData.best_action_days}</p>
-            </div>
-        </div>
-    `;
-    
+    // カレンダーのセルのみを更新（既存のHTMLに上書きしない）
     container.innerHTML = calendarHTML;
 }
 
