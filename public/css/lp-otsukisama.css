@@ -1346,6 +1346,36 @@
             font-size: 12px;
         }
         
+        /* カレンダー内の特別メッセージ */
+        .calendar-day .special-message {
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.9);
+            color: #ffd700;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            white-space: nowrap;
+            z-index: 10;
+            display: none;
+            font-family: 'Noto Sans JP', sans-serif;
+            font-style: normal;
+            font-weight: normal;
+            line-height: 1.2;
+            min-width: max-content;
+        }
+        
+        .calendar-day:hover .special-message {
+            display: block;
+        }
+        
+        /* 特別な日のスタイル調整 */
+        .calendar-day.special-day {
+            overflow: visible;
+        }
+        
         /* カレンダーの凡例 */
         .calendar-legend {
             display: flex;
