@@ -132,11 +132,14 @@ async function updateMoonPhaseContent(patternId) {
     }
     
     // 4つの恋愛軸要素も更新（6つの円形要素の中の4つ）
-    // プロフィールはLINE APIから取得される場合のみ存在
-    const profile = window.userProfile || null;
-    if (profile) {
-        // 感情表現を更新
-        if (profile.emotionalExpression) {
+    // 引数で渡されたプロフィールを使用
+    if (!profile) {
+        // プロフィールがない場合は更新しない
+        return;
+    }
+    
+    // 感情表現を更新
+    if (profile.emotionalExpression) {
         const emotionalItem = document.querySelector('.type-item[data-type="emotional"]');
         if (emotionalItem) {
             const img = emotionalItem.querySelector('img');
@@ -251,7 +254,6 @@ async function updateMoonPhaseContent(patternId) {
             }
         }
     }
-    } // profile block end
     
     // 運勢テキストの更新
     if (pattern.fortune) {
@@ -363,8 +365,6 @@ async function updateSixElements(patternId, moonPhase, hiddenMoonPhase, profile 
     }
     
     // LINE APIから取得した4軸データがあれば使用
-    // この処理は既に上部で実行済みのため、重複を削除
-    /*
     if (profile) {
         
         const emotionalElement = document.querySelector('.type-item[data-type="emotional"]');
@@ -468,9 +468,8 @@ async function updateSixElements(patternId, moonPhase, hiddenMoonPhase, profile 
         if (valuesElement) valuesElement.style.display = 'none';
         if (energyElement) energyElement.style.display = 'none';
     }
-    */
     
-    console.log('Updated 6 elements for pattern:', patternId);
+    console.log('Updated 6 elements for pattern:', patternId, pattern.pattern);
 }
 
 
@@ -745,25 +744,27 @@ async function updateUserDisplayContent(userData, profile = null) {
 
 // 動的コンテンツを更新する関数（パターンから）
 function updateDynamicContentFromPattern(pattern) {
-    if (!pattern || !pattern.overall) {
-        console.warn('Pattern data not found');
+    if (!pattern || !pattern.dynamicContent) {
+        console.warn('Dynamic content not found for pattern');
         return;
     }
     
+    const dc = pattern.dynamicContent;
+    
     // 全体運のタイトルと導入文
     const overallTitle = document.getElementById('fortune-overall-title');
-    if (overallTitle) overallTitle.textContent = pattern.overall.title || '運命の3ヶ月';
+    if (overallTitle) overallTitle.textContent = dc.overallTitle || '運命の3ヶ月';
     
     const overallIntro = document.getElementById('fortune-overall-intro');
-    if (overallIntro) overallIntro.textContent = pattern.overall.intro || pattern.overall.mainText;
+    if (overallIntro) overallIntro.textContent = dc.overallIntro || pattern.fortune.overall;
     
     // 全体運の月別タイトルと説明を更新
     const destinySection = document.querySelector('.fortune-section.destiny');
     if (destinySection) {
         const monthBoxes = destinySection.querySelectorAll('.month-box');
         if (monthBoxes.length >= 3) {
-            const overallMonthTitles = [pattern.overall.month1.title, pattern.overall.month2.title, pattern.overall.month3.title];
-            const overallMonthTexts = [pattern.overall.month1.text, pattern.overall.month2.text, pattern.overall.month3.text];
+            const overallMonthTitles = [dc.month1Title, dc.month2Title, dc.month3Title];
+            const overallMonthTexts = [dc.month1Text, dc.month2Text, dc.month3Text];
             
             monthBoxes.forEach((box, index) => {
                 if (index < 3) {
@@ -779,7 +780,7 @@ function updateDynamicContentFromPattern(pattern) {
     // 注意ポイント
     const overallCautionBox = document.querySelector('.fortune-section.destiny .point-box p');
     if (overallCautionBox) {
-        overallCautionBox.textContent = pattern.overall.caution || '慎重に行動することが大切です。';
+        overallCautionBox.textContent = dc.overallCaution || '慎重に行動することが大切です。';
     }
     
     // 転機のアドバイス
@@ -787,8 +788,8 @@ function updateDynamicContentFromPattern(pattern) {
     if (destinyContent) {
         // 転機のアドバイス段落を更新
         const transitionPara = destinyContent.querySelector('p:not(.fortune-overall-text)');
-        if (transitionPara && pattern.overall.transitionAdvice) {
-            transitionPara.textContent = pattern.overall.transitionAdvice;
+        if (transitionPara && dc.transitionAdvice) {
+            transitionPara.textContent = dc.transitionAdvice;
         }
         
         // 重要な転機の時期を更新
@@ -849,22 +850,22 @@ function updateDynamicContentFromPattern(pattern) {
     if (relationshipSection) {
         const transitionDiv = relationshipSection.querySelector('.highlight-banner + p');
         if (transitionDiv) {
-            transitionDiv.textContent = pattern.relationship.transition || '人間関係に変化が訪れます。';
+            transitionDiv.textContent = dc.relationshipTransition || '人間関係に変化が訪れます。';
         }
         
         const relationshipCaution = relationshipSection.querySelector('.point-box p');
         if (relationshipCaution) {
-            relationshipCaution.textContent = pattern.relationship.caution || '周囲との調和を大切にしましょう。';
+            relationshipCaution.textContent = dc.relationshipCaution || '周囲との調和を大切にしましょう。';
         }
     }
     
     // 人間関係運の新規セクション
-    if (pattern.relationship) {
+    if (pattern.newSections && pattern.newSections.relationship) {
         const newConnections = document.getElementById('fortune-relationship-new-connections');
-        if (newConnections) newConnections.textContent = pattern.relationship.newConnections || '';
+        if (newConnections) newConnections.textContent = pattern.newSections.relationship.newConnections || '';
         
         const challenges = document.getElementById('fortune-relationship-challenges');
-        if (challenges) challenges.textContent = pattern.relationship.challengesAndSolutions || '';
+        if (challenges) challenges.textContent = pattern.newSections.relationship.challengesAndSolutions || '';
     }
     
     // 金運のピークタイミング
@@ -872,14 +873,14 @@ function updateDynamicContentFromPattern(pattern) {
     if (moneySection) {
         const peakTimingDiv = moneySection.querySelector('.highlight-banner + p');
         if (peakTimingDiv) {
-            peakTimingDiv.textContent = pattern.money.peakTiming || '金運が上昇する時期です。';
+            peakTimingDiv.textContent = dc.moneyPeakTiming || '金運が上昇する時期です。';
         }
     }
     
     // 金運の新規セクション
-    if (pattern.money) {
+    if (pattern.newSections && pattern.newSections.money) {
         const moneyTrouble = document.getElementById('fortune-money-trouble');
-        if (moneyTrouble) moneyTrouble.textContent = pattern.money.moneyTrouble || '';
+        if (moneyTrouble) moneyTrouble.textContent = pattern.newSections.money.moneyTrouble || '';
     }
     
     // 全体運のメインテキスト（最初の部分）
