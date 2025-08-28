@@ -268,6 +268,8 @@ async function updateMoonPhaseContent(patternId) {
 
 // 6つの円形要素を更新する関数
 async function updateSixElements(patternId, moonPhase, hiddenMoonPhase, profile = null) {
+    console.log('updateSixElements called:', { patternId, moonPhase, hiddenMoonPhase, profile });
+    
     // データローダーが読み込み完了するまで待つ
     if (!window.OtsukisamaDataLoader || !window.OtsukisamaDataLoader.isLoaded()) {
         await new Promise(resolve => {
@@ -310,6 +312,7 @@ async function updateSixElements(patternId, moonPhase, hiddenMoonPhase, profile 
         if (moonLabel) {
             moonLabel.textContent = displayMoonPhase;
         }
+        console.log('Moon phase element updated:', displayMoonPhase);
     }
     
     if (hiddenPhaseElement) {
@@ -336,8 +339,7 @@ async function updateSixElements(patternId, moonPhase, hiddenMoonPhase, profile 
     }
     
     // LINE APIから取得した4軸データがあれば使用
-    // この処理は既に上部で実行済みのため、重複を削除
-    /*
+    console.log('Checking profile for 4-axis data:', profile);
     if (profile) {
         
         const emotionalElement = document.querySelector('.type-item[data-type="emotional"]');
@@ -429,19 +431,57 @@ async function updateSixElements(patternId, moonPhase, hiddenMoonPhase, profile 
             }
         }
     } else {
-        // プロフィールがない場合は4つの要素を表示しない
+        // プロフィールがない場合はデフォルトの値を表示
+        console.log('No profile data, using defaults for 4-axis elements');
         const emotionalElement = document.querySelector('.type-item[data-type="emotional"]');
         const distanceElement = document.querySelector('.type-item[data-type="distance"]');
         const valuesElement = document.querySelector('.type-item[data-type="values"]');
         const energyElement = document.querySelector('.type-item[data-type="energy"]');
         
-        // 4つの要素を非表示に
-        if (emotionalElement) emotionalElement.style.display = 'none';
-        if (distanceElement) distanceElement.style.display = 'none';
-        if (valuesElement) valuesElement.style.display = 'none';
-        if (energyElement) energyElement.style.display = 'none';
+        // デフォルトの感情表現
+        if (emotionalElement) {
+            const label = emotionalElement.querySelectorAll('span')[1];
+            const img = emotionalElement.querySelector('img');
+            if (label) label.textContent = 'ストレート告白型';
+            if (img) {
+                img.src = '/images/love-types/emotional/straight.png';
+                img.alt = 'ストレート告白型';
+            }
+        }
+        
+        // デフォルトの距離感
+        if (distanceElement) {
+            const label = distanceElement.querySelectorAll('span')[1];
+            const img = distanceElement.querySelector('img');
+            if (label) label.textContent = '安心セーフ型';
+            if (img) {
+                img.src = '/images/love-types/distance/moderate.png';
+                img.alt = '安心セーフ型';
+            }
+        }
+        
+        // デフォルトの価値観
+        if (valuesElement) {
+            const label = valuesElement.querySelectorAll('span')[1];
+            const img = valuesElement.querySelector('img');
+            if (label) label.textContent = 'ロマンチスト型';
+            if (img) {
+                img.src = '/images/love-types/values/romantic.png';
+                img.alt = 'ロマンチスト型';
+            }
+        }
+        
+        // デフォルトのエネルギー
+        if (energyElement) {
+            const label = energyElement.querySelectorAll('span')[1];
+            const img = energyElement.querySelector('img');
+            if (label) label.textContent = '燃え上がり型';
+            if (img) {
+                img.src = '/images/love-types/energy/intense.png';
+                img.alt = '燃え上がり型';
+            }
+        }
     }
-    */
     
     console.log('Updated 6 elements for pattern:', patternId);
 }
