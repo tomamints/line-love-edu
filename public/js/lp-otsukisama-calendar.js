@@ -7,7 +7,7 @@ let calendarPatternsData = null;
 // カレンダーパターンデータを読み込む
 async function loadCalendarPatterns() {
     try {
-        const response = await fetch('/data/moon-calendar-patterns-complete.json');
+        const response = await fetch('data/moon-calendar-patterns-complete.json');
         const data = await response.json();
         calendarPatternsData = data.patterns;
         console.log('Calendar patterns loaded:', Object.keys(calendarPatternsData).length, 'patterns');
