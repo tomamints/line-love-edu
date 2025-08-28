@@ -15,6 +15,11 @@ async function updateMoonPhaseContent(patternId) {
         return;
     }
     
+    // 動的コンテンツを更新
+    if (pattern.dynamicContent) {
+        updateDynamicContent(pattern.dynamicContent);
+    }
+    
     // 表月相の更新
     const moonPhaseCard = document.querySelector('.moon-phase-card.new-moon');
     if (moonPhaseCard) {
@@ -73,11 +78,11 @@ async function updateMoonPhaseContent(patternId) {
         const hiddenPhaseImages = {
             '新月': '/images/moon/ura-0.png',
             '三日月': '/images/moon/ura-1.png',
-            '上弦': '/images/moon/ura-2.png',
+            '上弦の月': '/images/moon/ura-2.png',
             '十三夜': '/images/moon/ura-3.png',
             '満月': '/images/moon/ura-4.png',
             '十六夜': '/images/moon/ura-5.png',
-            '下弦': '/images/moon/ura-6.png',
+            '下弦の月': '/images/moon/ura-6.png',
             '暁': '/images/moon/ura-7.png'
         };
         
@@ -467,6 +472,152 @@ async function updateSixElements(patternId, moonPhase, hiddenMoonPhase, profile 
     console.log('Updated 6 elements for pattern:', patternId, pattern.pattern);
 }
 
+// 動的コンテンツを更新する関数
+function updateDynamicContent(dynamicContent) {
+    // 全体運のタイトルと説明
+    const overallTitle = document.getElementById('fortune-overall-title');
+    if (overallTitle && dynamicContent.overallTitle) {
+        overallTitle.textContent = dynamicContent.overallTitle;
+    }
+    
+    const overallIntro = document.getElementById('fortune-overall-intro');
+    if (overallIntro && dynamicContent.overallIntro) {
+        overallIntro.textContent = dynamicContent.overallIntro;
+    }
+    
+    // 月ごとのタイトルと説明
+    const monthBoxes = document.querySelectorAll('.fortune-section.destiny .month-box');
+    if (monthBoxes.length >= 3) {
+        // 1ヶ月目
+        const month1Title = monthBoxes[0].querySelector('h3');
+        const month1Text = monthBoxes[0].querySelector('p');
+        if (month1Title && dynamicContent.month1Title) {
+            month1Title.textContent = dynamicContent.month1Title;
+        }
+        if (month1Text && dynamicContent.month1Text) {
+            month1Text.textContent = dynamicContent.month1Text;
+        }
+        
+        // 2ヶ月目
+        const month2Title = monthBoxes[1].querySelector('h3');
+        const month2Text = monthBoxes[1].querySelector('p');
+        if (month2Title && dynamicContent.month2Title) {
+            month2Title.textContent = dynamicContent.month2Title;
+        }
+        if (month2Text && dynamicContent.month2Text) {
+            month2Text.textContent = dynamicContent.month2Text;
+        }
+        
+        // 3ヶ月目
+        const month3Title = monthBoxes[2].querySelector('h3');
+        const month3Text = monthBoxes[2].querySelector('p');
+        if (month3Title && dynamicContent.month3Title) {
+            month3Title.textContent = dynamicContent.month3Title;
+        }
+        if (month3Text && dynamicContent.month3Text) {
+            month3Text.textContent = dynamicContent.month3Text;
+        }
+    }
+    
+    // 注意ポイント
+    const overallCautionBox = document.querySelector('.fortune-section.destiny .point-box p');
+    if (overallCautionBox && dynamicContent.overallCaution) {
+        overallCautionBox.textContent = dynamicContent.overallCaution;
+    }
+    
+    // 転機のアドバイス
+    const transitionPara = document.querySelector('.fortune-section.destiny .fortune-content > p');
+    if (transitionPara && dynamicContent.transitionAdvice) {
+        transitionPara.textContent = dynamicContent.transitionAdvice;
+    }
+    
+    // 重要な転機の時期
+    const criticalTimings = document.querySelectorAll('.fortune-section.destiny .fortune-highlight:last-child p');
+    if (criticalTimings.length >= 3) {
+        if (dynamicContent.criticalTiming1) {
+            criticalTimings[0].innerHTML = dynamicContent.criticalTiming1;
+        }
+        if (dynamicContent.criticalTiming2) {
+            criticalTimings[1].innerHTML = dynamicContent.criticalTiming2;
+        }
+        if (dynamicContent.criticalTiming3) {
+            criticalTimings[2].innerHTML = dynamicContent.criticalTiming3;
+        }
+    }
+    
+    // 恋愛運
+    const loveIntro = document.getElementById('fortune-love-intro');
+    if (loveIntro && dynamicContent.loveIntro) {
+        loveIntro.textContent = dynamicContent.loveIntro;
+    }
+    
+    // 恋愛運の月ごとのタイトルと説明
+    const loveMonthBoxes = document.querySelectorAll('.fortune-section.love .month-box');
+    if (loveMonthBoxes.length >= 3) {
+        // 1ヶ月目
+        const loveMonth1Title = loveMonthBoxes[0].querySelector('h3');
+        const loveMonth1Text = loveMonthBoxes[0].querySelector('p');
+        if (loveMonth1Title && dynamicContent.loveMonth1Title) {
+            loveMonth1Title.textContent = dynamicContent.loveMonth1Title;
+        }
+        if (loveMonth1Text && dynamicContent.loveMonth1Text) {
+            loveMonth1Text.textContent = dynamicContent.loveMonth1Text;
+        }
+        
+        // 2ヶ月目
+        const loveMonth2Title = loveMonthBoxes[1].querySelector('h3');
+        const loveMonth2Text = loveMonthBoxes[1].querySelector('p');
+        if (loveMonth2Title && dynamicContent.loveMonth2Title) {
+            loveMonth2Title.textContent = dynamicContent.loveMonth2Title;
+        }
+        if (loveMonth2Text && dynamicContent.loveMonth2Text) {
+            loveMonth2Text.textContent = dynamicContent.loveMonth2Text;
+        }
+        
+        // 3ヶ月目
+        const loveMonth3Title = loveMonthBoxes[2].querySelector('h3');
+        const loveMonth3Text = loveMonthBoxes[2].querySelector('p');
+        if (loveMonth3Title && dynamicContent.loveMonth3Title) {
+            loveMonth3Title.textContent = dynamicContent.loveMonth3Title;
+        }
+        if (loveMonth3Text && dynamicContent.loveMonth3Text) {
+            loveMonth3Text.textContent = dynamicContent.loveMonth3Text;
+        }
+    }
+    
+    // 恋愛の注意ポイント
+    const loveCautionBox = document.querySelector('.fortune-section.love .point-box p');
+    if (loveCautionBox && dynamicContent.loveCaution) {
+        loveCautionBox.textContent = dynamicContent.loveCaution;
+    }
+    
+    // 仕事運のタイトル
+    const workTitle = document.getElementById('fortune-work-title');
+    if (workTitle && dynamicContent.workTitle) {
+        workTitle.textContent = dynamicContent.workTitle;
+    }
+    
+    // 人間関係の転機
+    const relationshipTransition = document.querySelector('.fortune-section.relationship .highlight-banner + p');
+    if (relationshipTransition && dynamicContent.relationshipTransition) {
+        relationshipTransition.textContent = dynamicContent.relationshipTransition;
+    }
+    
+    // 人間関係の注意ポイント
+    const relationshipCautionBox = document.querySelector('.fortune-section.relationship .point-box p');
+    if (relationshipCautionBox && dynamicContent.relationshipCaution) {
+        relationshipCautionBox.textContent = dynamicContent.relationshipCaution;
+    }
+    
+    // 金運最高潮のタイミング
+    const moneyPeakTiming = document.querySelector('.fortune-section.money .highlight-banner + p');
+    if (moneyPeakTiming && dynamicContent.moneyPeakTiming) {
+        moneyPeakTiming.textContent = dynamicContent.moneyPeakTiming;
+    }
+    
+    console.log('Dynamic content updated');
+}
+
 // 恋愛タイプの表示を更新
 function updatePersonalityDisplay(profile) {
     
@@ -675,7 +826,7 @@ function displayCombinedPersonality(profile) {
     }
 }
 
-async function updateDynamicContent(userData, profile = null) {
+async function updateUserDisplayContent(userData, profile = null) {
     const { name, moonPhase, hiddenMoonPhase, patternId } = userData;
     
     // 6つの円形要素を更新（月相とプロフィールを渡す）
@@ -727,9 +878,6 @@ async function updateDynamicContent(userData, profile = null) {
     if (typeof updatePatternContent === 'function') {
         updatePatternContent(patternId, moonPhase, hiddenMoonPhase);
     }
-    
-    // 動的コンテンツを更新
-    updateDynamicContent(pattern);
     
     // 月相の解説を更新
     await updateMoonPhaseExplanations(moonPhase, hiddenMoonPhase);

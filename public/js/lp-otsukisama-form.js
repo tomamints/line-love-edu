@@ -104,7 +104,7 @@ function setupForm() {
         // ユーザープロフィールを読み込む（非同期）
         loadUserProfile().then((profile) => {
             // 動的コンテンツを更新（プロフィールを渡す）
-            updateDynamicContent(userData, profile);
+            updateUserDisplayContent(userData, profile);
         });
         
         // スムーズにスクロール
