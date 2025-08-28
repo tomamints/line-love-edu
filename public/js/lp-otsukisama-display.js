@@ -894,6 +894,21 @@ function updateDynamicContentFromPattern(pattern) {
         console.log('Work text set successfully');
     }
     
+    // 仕事運の新規セクション
+    if (pattern.work) {
+        const newTalent = document.getElementById('fortune-work-new-talent');
+        if (newTalent && pattern.work.newTalent) {
+            newTalent.textContent = pattern.work.newTalent;
+            console.log('Work new talent set successfully');
+        }
+        
+        const turningPoint = document.getElementById('fortune-work-turning-point');
+        if (turningPoint && pattern.work.turningPoint) {
+            turningPoint.textContent = pattern.work.turningPoint;
+            console.log('Work turning point set successfully');
+        }
+    }
+    
     // 人間関係運
     const relationshipText = document.getElementById('fortune-relationship-text');
     if (relationshipText && pattern.relationship && pattern.relationship.mainText) {
