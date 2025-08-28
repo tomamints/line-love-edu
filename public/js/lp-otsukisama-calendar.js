@@ -35,7 +35,7 @@ function getCalendarPattern(patternId) {
 }
 
 // カレンダー生成関数
-async function generatePersonalizedCalendar() {
+async function generatePersonalizedCalendar(providedPatternId) {
     const container = document.getElementById('personalizedCalendar');
     const messageElement = document.getElementById('calendarMessage');
     const monthYearElement = document.getElementById('calendarMonthYear');
@@ -47,13 +47,18 @@ async function generatePersonalizedCalendar() {
         await loadCalendarPatterns();
     }
     
-    // フォームから生年月日を取得（デモ用にデフォルト値を設定）
-    const birthYear = parseInt(document.getElementById('year')?.value) || 1990;
-    const birthMonth = parseInt(document.getElementById('month')?.value) || 7;
-    const birthDay = parseInt(document.getElementById('day')?.value) || 15;
+    // パターンIDを決定（引数で渡されていればそれを使用）
+    let numericPatternId = providedPatternId;
+    if (numericPatternId === undefined || numericPatternId === null) {
+        // フォームから生年月日を取得（デモ用にデフォルト値を設定）
+        const birthYear = parseInt(document.getElementById('year')?.value) || 1990;
+        const birthMonth = parseInt(document.getElementById('month')?.value) || 7;
+        const birthDay = parseInt(document.getElementById('day')?.value) || 15;
+        
+        // ユーザーの月相を計算
+        numericPatternId = generatePatternId(birthYear, birthMonth, birthDay);
+    }
     
-    // ユーザーの月相を計算
-    const numericPatternId = generatePatternId(birthYear, birthMonth, birthDay);
     const patternData = getCalendarPattern(numericPatternId);
     
     if (!patternData) {

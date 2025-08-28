@@ -8,7 +8,7 @@ let fortuneGraphData = null;
 // 運勢グラフデータを読み込む
 async function loadFortuneGraphData() {
     try {
-        const response = await fetch('/docs/fortune_graph_all_64_patterns.json');
+        const response = await fetch('data/fortune_graph_all_64_patterns.json');
         const data = await response.json();
         fortuneGraphData = data.patterns;
         console.log('Fortune graph data loaded:', fortuneGraphData.length, 'patterns');
@@ -74,52 +74,16 @@ async function updateFortuneGraph(patternId) {
                 {
                     label: '全体運',
                     data: monthlyData.overall,
-                    borderColor: 'rgba(255, 215, 0, 1)',
-                    backgroundColor: 'rgba(255, 215, 0, 0.1)',
+                    borderColor: 'rgba(147, 112, 219, 1)',
+                    backgroundColor: 'rgba(147, 112, 219, 0.2)',
                     tension: 0.4,
-                    borderWidth: 3,
-                    pointRadius: 6,
-                    pointHoverRadius: 8
-                },
-                {
-                    label: '恋愛運',
-                    data: monthlyData.love,
-                    borderColor: 'rgba(255, 105, 180, 1)',
-                    backgroundColor: 'rgba(255, 105, 180, 0.1)',
-                    tension: 0.4,
-                    borderWidth: 3,
-                    pointRadius: 6,
-                    pointHoverRadius: 8
-                },
-                {
-                    label: '仕事運',
-                    data: monthlyData.career,
-                    borderColor: 'rgba(100, 149, 237, 1)',
-                    backgroundColor: 'rgba(100, 149, 237, 0.1)',
-                    tension: 0.4,
-                    borderWidth: 3,
-                    pointRadius: 6,
-                    pointHoverRadius: 8
-                },
-                {
-                    label: '人間関係',
-                    data: monthlyData.relationship,
-                    borderColor: 'rgba(50, 205, 50, 1)',
-                    backgroundColor: 'rgba(50, 205, 50, 0.1)',
-                    tension: 0.4,
-                    borderWidth: 3,
-                    pointRadius: 6,
-                    pointHoverRadius: 8
-                },
-                {
-                    label: '金運',
-                    data: monthlyData.money,
-                    borderColor: 'rgba(255, 140, 0, 1)',
-                    backgroundColor: 'rgba(255, 140, 0, 0.1)',
-                    tension: 0.4,
-                    borderWidth: 3,
-                    pointRadius: 6,
-                    pointHoverRadius: 8
+                    borderWidth: 4,
+                    pointRadius: 8,
+                    pointHoverRadius: 10,
+                    pointBackgroundColor: 'rgba(147, 112, 219, 1)',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2,
+                    fill: true
                 }
             ]
         },
@@ -128,15 +92,7 @@ async function updateFortuneGraph(patternId) {
             maintainAspectRatio: false,
             plugins: {
                 legend: {
-                    display: true,
-                    position: 'bottom',
-                    labels: {
-                        padding: 15,
-                        font: {
-                            size: 12
-                        },
-                        color: '#666'
-                    }
+                    display: false
                 },
                 tooltip: {
                     mode: 'index',
@@ -150,11 +106,9 @@ async function updateFortuneGraph(patternId) {
                     displayColors: true,
                     callbacks: {
                         label: function(context) {
-                            const label = context.dataset.label || '';
                             const value = context.parsed.y;
-                            // 1-5の値を20-100のパーセンテージに変換して表示
-                            const percentage = value * 20;
-                            return label + ': ' + percentage + '%';
+                            const levels = ['', '充電期', '準備期', '上昇期', '好調期', '絶好調'];
+                            return '運勢: ' + levels[value] + ' (' + (value * 20) + '%)';
                         }
                     }
                 }
@@ -182,7 +136,7 @@ async function updateFortuneGraph(patternId) {
                         },
                         callback: function(value) {
                             // 1-5の値を運勢レベルとして表示
-                            const levels = ['', '凶', '小吉', '中吉', '吉', '大吉', ''];
+                            const levels = ['', '充電期', '準備期', '上昇期', '好調期', '絶好調', ''];
                             return levels[value] || '';
                         }
                     },
