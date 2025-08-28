@@ -32,9 +32,6 @@ function initDateSelects() {
         option.textContent = day + '日';
         daySelect.appendChild(option);
     }
-    
-    // ユーザーデータから生年月日を自動入力
-    loadUserBirthdate();
 }
 
 // 生年月日フォームに値を設定する補助関数
@@ -116,4 +113,9 @@ function setupForm() {
     
     // 生年月日セレクトボックスを初期化
     initDateSelects();
+    
+    // データベースから生年月日を自動入力
+    if (typeof loadUserBirthdate === 'function') {
+        loadUserBirthdate();
+    }
 }
