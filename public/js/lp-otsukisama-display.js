@@ -808,6 +808,18 @@ function updateDynamicContentFromPattern(pattern) {
     const loveIntro = document.getElementById('fortune-love-intro');
     if (loveIntro) loveIntro.textContent = dc.loveIntro || pattern.fortune.love.substring(0, 100) + '...';
     
+    // 恋愛運の新規セクション
+    if (pattern.newSections && pattern.newSections.love) {
+        const destinyMeeting = document.getElementById('fortune-love-destiny-meeting');
+        if (destinyMeeting) destinyMeeting.textContent = pattern.newSections.love.destinyMeeting || '';
+        
+        const admirerType = document.getElementById('fortune-love-admirer-type');
+        if (admirerType) admirerType.textContent = pattern.newSections.love.admirerType || '';
+        
+        const dangerousType = document.getElementById('fortune-love-dangerous-type');
+        if (dangerousType) dangerousType.textContent = pattern.newSections.love.dangerousType || '';
+    }
+    
     // 恋愛運の月別タイトル
     const loveSection = document.querySelector('.fortune-section.love');
     if (loveSection) {
@@ -847,6 +859,15 @@ function updateDynamicContentFromPattern(pattern) {
         }
     }
     
+    // 人間関係運の新規セクション
+    if (pattern.newSections && pattern.newSections.relationship) {
+        const newConnections = document.getElementById('fortune-relationship-new-connections');
+        if (newConnections) newConnections.textContent = pattern.newSections.relationship.newConnections || '';
+        
+        const challenges = document.getElementById('fortune-relationship-challenges');
+        if (challenges) challenges.textContent = pattern.newSections.relationship.challengesAndSolutions || '';
+    }
+    
     // 金運のピークタイミング
     const moneySection = document.querySelector('.fortune-section.money');
     if (moneySection) {
@@ -854,6 +875,12 @@ function updateDynamicContentFromPattern(pattern) {
         if (peakTimingDiv) {
             peakTimingDiv.textContent = dc.moneyPeakTiming || '金運が上昇する時期です。';
         }
+    }
+    
+    // 金運の新規セクション
+    if (pattern.newSections && pattern.newSections.money) {
+        const moneyTrouble = document.getElementById('fortune-money-trouble');
+        if (moneyTrouble) moneyTrouble.textContent = pattern.newSections.money.moneyTrouble || '';
     }
     
     // 全体運のメインテキスト（最初の部分）
