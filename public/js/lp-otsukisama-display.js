@@ -684,6 +684,9 @@ function displayCombinedPersonality(profile) {
 async function updateUserDisplayContent(userData, profile = null) {
     const { name, moonPhase, hiddenMoonPhase, patternId } = userData;
     
+    // 占い文章を含む月相コンテンツを更新
+    await updateMoonPhaseContent(patternId);
+    
     // 6つの円形要素を更新（月相とプロフィールを渡す）
     if (typeof updateSixElements === 'function') {
         await updateSixElements(patternId, moonPhase, hiddenMoonPhase, profile);
@@ -729,9 +732,10 @@ async function updateUserDisplayContent(userData, profile = null) {
         await generatePersonalizedCalendar(patternId);
     }
     
-    // パターン固有のコンテンツを更新
-    if (typeof updatePatternContent === 'function') {
-        updatePatternContent(patternId, moonPhase, hiddenMoonPhase);
+    // パターン固有のコンテンツを更新（パターンデータから）
+    const patternData = window.OtsukisamaDataLoader?.getPatternFortune(patternId);
+    if (patternData) {
+        updateDynamicContentFromPattern(patternData);
     }
     
     // 月相の解説を更新
@@ -740,12 +744,15 @@ async function updateUserDisplayContent(userData, profile = null) {
 
 // 動的コンテンツを更新する関数（パターンから）
 function updateDynamicContentFromPattern(pattern) {
+    console.log('updateDynamicContentFromPattern called with:', pattern);
+    
     if (!pattern || !pattern.dynamicContent) {
         console.warn('Dynamic content not found for pattern');
         return;
     }
     
     const dc = pattern.dynamicContent;
+    console.log('Dynamic content:', dc);
     
     // 全体運のタイトルと導入文
     const overallTitle = document.getElementById('fortune-overall-title');
@@ -754,21 +761,23 @@ function updateDynamicContentFromPattern(pattern) {
     const overallIntro = document.getElementById('fortune-overall-intro');
     if (overallIntro) overallIntro.textContent = dc.overallIntro || pattern.fortune.overall.substring(0, 100) + '...';
     
-    // 月別のタイトルと説明
-    const monthBoxes = document.querySelectorAll('.month-box');
-    if (monthBoxes.length >= 3) {
-        // 全体運の月別
-        const overallMonthTitles = [dc.month1Title, dc.month2Title, dc.month3Title];
-        const overallMonthTexts = [dc.month1Text, dc.month2Text, dc.month3Text];
-        
-        monthBoxes.forEach((box, index) => {
-            if (index < 3) {
-                const h3 = box.querySelector('h3');
-                const p = box.querySelector('p');
-                if (h3) h3.textContent = overallMonthTitles[index] || `${index + 1}ヶ月目の展開`;
-                if (p) p.textContent = overallMonthTexts[index] || `${index + 1}ヶ月目の詳細な運勢...`;
-            }
-        });
+    // 全体運の月別タイトルと説明を更新
+    const destinySection = document.querySelector('.fortune-section.destiny');
+    if (destinySection) {
+        const monthBoxes = destinySection.querySelectorAll('.month-box');
+        if (monthBoxes.length >= 3) {
+            const overallMonthTitles = [dc.month1Title, dc.month2Title, dc.month3Title];
+            const overallMonthTexts = [dc.month1Text, dc.month2Text, dc.month3Text];
+            
+            monthBoxes.forEach((box, index) => {
+                if (index < 3) {
+                    const h3 = box.querySelector('h3');
+                    const p = box.querySelector('p');
+                    if (h3) h3.textContent = overallMonthTitles[index] || `${index + 1}ヶ月目の展開`;
+                    if (p) p.textContent = overallMonthTexts[index] || `${index + 1}ヶ月目の詳細な運勢...`;
+                }
+            });
+        }
     }
     
     // 注意ポイント
@@ -778,16 +787,22 @@ function updateDynamicContentFromPattern(pattern) {
     }
     
     // 転機のアドバイス
-    const transitionSection = document.querySelector('.fortune-highlight:last-child');
-    if (transitionSection) {
-        const transitionTexts = transitionSection.querySelectorAll('p');
-        if (transitionTexts.length >= 3) {
-            transitionTexts[0].textContent = dc.transitionAdvice || '重要な転機が訪れます。';
-            transitionTexts[1].textContent = dc.criticalTiming1 || '1つ目の転機...';
-            transitionTexts[2].textContent = dc.criticalTiming2 || '2つ目の転機...';
-            // 3つ目の転機を追加する場合
-            if (transitionTexts.length >= 4) {
-                transitionTexts[3].textContent = dc.criticalTiming3 || '3つ目の転機...';
+    const destinyContent = document.querySelector('.fortune-section.destiny .fortune-content');
+    if (destinyContent) {
+        // 転機のアドバイス段落を更新
+        const transitionPara = destinyContent.querySelector('p:not(.fortune-overall-text)');
+        if (transitionPara && dc.transitionAdvice) {
+            transitionPara.textContent = dc.transitionAdvice;
+        }
+        
+        // 重要な転機の時期を更新
+        const highlightSection = destinyContent.querySelector('.fortune-highlight:last-child');
+        if (highlightSection) {
+            const transitionTexts = highlightSection.querySelectorAll('p');
+            if (transitionTexts.length >= 3) {
+                if (dc.criticalTiming1) transitionTexts[0].innerHTML = dc.criticalTiming1;
+                if (dc.criticalTiming2) transitionTexts[1].innerHTML = dc.criticalTiming2;
+                if (dc.criticalTiming3) transitionTexts[2].innerHTML = dc.criticalTiming3;
             }
         }
     }

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>占い文章反映テスト</title>
+</head>
+<body>
+    <h1>占い文章反映テスト</h1>
+    
+    <div id="test-results"></div>
+    
+    <script>
+        // テスト用のダミー月相情報
+        window.currentPatternId = 0; // 新月×新月のパターン
+        
+        // データローダーのテスト
+        function testDataLoader() {
+            const results = document.getElementById('test-results');
+            let html = '<h2>データローダーテスト結果</h2>';
+            
+            // データがロードされているか確認
+            if (window.OtsukisamaDataLoader && window.OtsukisamaDataLoader.isLoaded()) {
+                html += '<p style="color: green;">✓ データローダーがロードされています</p>';
+                
+                // パターンデータを取得
+                const pattern = window.OtsukisamaDataLoader.getPatternFortune(0);
+                if (pattern) {
+                    html += '<p style="color: green;">✓ パターン0のデータを取得できました</p>';
+                    
+                    // 占い文章の確認
+                    if (pattern.fortune) {
+                        html += '<h3>占い文章（最初の200文字）:</h3>';
+                        html += '<ul>';
+                        html += '<li><strong>全体運:</strong> ' + (pattern.fortune.overall ? pattern.fortune.overall.substring(0, 200) + '...' : '❌ なし') + '</li>';
+                        html += '<li><strong>恋愛運:</strong> ' + (pattern.fortune.love ? pattern.fortune.love.substring(0, 200) + '...' : '❌ なし') + '</li>';
+                        html += '<li><strong>仕事運:</strong> ' + (pattern.fortune.work ? pattern.fortune.work.substring(0, 200) + '...' : '❌ なし') + '</li>';
+                        html += '<li><strong>人間関係運:</strong> ' + (pattern.fortune.relationship ? pattern.fortune.relationship.substring(0, 200) + '...' : '❌ なし') + '</li>';
+                        html += '<li><strong>金運:</strong> ' + (pattern.fortune.money ? pattern.fortune.money.substring(0, 200) + '...' : '❌ なし') + '</li>';
+                        html += '</ul>';
+                    } else {
+                        html += '<p style="color: red;">❌ 占い文章データがありません</p>';
+                    }
+                    
+                    // 動的コンテンツの確認
+                    if (pattern.dynamicContent) {
+                        html += '<h3>動的コンテンツ:</h3>';
+                        html += '<ul>';
+                        html += '<li><strong>全体運タイトル:</strong> ' + (pattern.dynamicContent.overallTitle || '❌ なし') + '</li>';
+                        html += '<li><strong>全体運導入:</strong> ' + (pattern.dynamicContent.overallIntro ? pattern.dynamicContent.overallIntro.substring(0, 100) + '...' : '❌ なし') + '</li>';
+                        html += '<li><strong>1ヶ月目タイトル:</strong> ' + (pattern.dynamicContent.month1Title || '❌ なし') + '</li>';
+                        html += '<li><strong>2ヶ月目タイトル:</strong> ' + (pattern.dynamicContent.month2Title || '❌ なし') + '</li>';
+                        html += '<li><strong>3ヶ月目タイトル:</strong> ' + (pattern.dynamicContent.month3Title || '❌ なし') + '</li>';
+                        html += '</ul>';
+                    } else {
+                        html += '<p style="color: red;">❌ 動的コンテンツデータがありません</p>';
+                    }
+                } else {
+                    html += '<p style="color: red;">❌ パターン0のデータを取得できませんでした</p>';
+                }
+            } else {
+                html += '<p style="color: red;">❌ データローダーがロードされていません</p>';
+                html += '<p>OtsukisamaDataLoader: ' + (typeof window.OtsukisamaDataLoader) + '</p>';
+            }
+            
+            results.innerHTML = html;
+        }
+        
+        // ページ読み込み後にテスト実行
+        setTimeout(testDataLoader, 3000);
+    </script>
+    
+    <!-- 必要なスクリプトを読み込み -->
+    <script src="public/js/otsukisama-data-loader.js"></script>
+    <script src="public/js/lp-otsukisama-moon.js"></script>
+    <script src="public/js/lp-otsukisama-display.js"></script>
+</body>
+</html>

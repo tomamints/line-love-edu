@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>フォーム送信テスト</title>
+    <style>
+        body { padding: 20px; font-family: sans-serif; }
+        .test-section { margin: 20px 0; padding: 20px; border: 1px solid #ddd; }
+        .success { color: green; }
+        .error { color: red; }
+        pre { background: #f5f5f5; padding: 10px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>占い診断フォーム送信シミュレーション</h1>
+    
+    <div class="test-section">
+        <h2>テスト用HTML要素</h2>
+        
+        <!-- 占い結果表示用の要素（実際のHTMLと同じID） -->
+        <div id="fortune-overall-title">未決定</div>
+        <div id="fortune-overall-intro">未決定</div>
+        <div id="fortune-overall-text">未決定</div>
+        <div id="fortune-love-text">未決定</div>
+        <div id="fortune-work-text">未決定</div>
+        
+        <!-- 月別セクション -->
+        <div class="fortune-section destiny">
+            <div class="month-box">
+                <h3>未決定</h3>
+                <p>未決定</p>
+            </div>
+            <div class="month-box">
+                <h3>未決定</h3>
+                <p>未決定</p>
+            </div>
+            <div class="month-box">
+                <h3>未決定</h3>
+                <p>未決定</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="test-section">
+        <h2>診断実行</h2>
+        <button onclick="runDiagnosis()">診断を実行（パターン0: 新月×新月）</button>
+        <button onclick="runDiagnosis2()">診断を実行（パターン10: 三日月×上弦の月）</button>
+    </div>
+    
+    <div id="test-log" class="test-section">
+        <h2>実行ログ</h2>
+        <pre id="log-content"></pre>
+    </div>
+    
+    <script>
+        function log(message, isError = false) {
+            const logEl = document.getElementById('log-content');
+            const timestamp = new Date().toLocaleTimeString();
+            const className = isError ? 'error' : 'success';
+            logEl.innerHTML += `<span class="${className}">[${timestamp}] ${message}</span>\n`;
+        }
+        
+        async function runDiagnosis() {
+            log('診断開始: パターン0（新月×新月）');
+            
+            // データローダーの確認
+            if (!window.OtsukisamaDataLoader) {
+                log('エラー: OtsukisamaDataLoaderが見つかりません', true);
+                return;
+            }
+            
+            // データ読み込み待機
+            if (!window.OtsukisamaDataLoader.isLoaded()) {
+                log('データ読み込み中...');
+                await new Promise(resolve => {
+                    window.addEventListener('otsukisama-data-loaded', resolve, { once: true });
+                });
+            }
+            
+            log('データ読み込み完了');
+            
+            // updateMoonPhaseContent関数を実行
+            if (typeof updateMoonPhaseContent === 'function') {
+                log('updateMoonPhaseContent関数を実行');
+                await updateMoonPhaseContent(0);
+                
+                // 更新後の値を確認
+                checkUpdates();
+            } else {
+                log('エラー: updateMoonPhaseContent関数が見つかりません', true);
+            }
+        }
+        
+        async function runDiagnosis2() {
+            log('診断開始: パターン10（三日月×上弦の月）');
+            
+            if (typeof updateMoonPhaseContent === 'function') {
+                await updateMoonPhaseContent(10);
+                checkUpdates();
+            }
+        }
+        
+        function checkUpdates() {
+            log('===== 更新結果確認 =====');
+            
+            const elements = [
+                'fortune-overall-title',
+                'fortune-overall-intro',
+                'fortune-overall-text',
+                'fortune-love-text',
+                'fortune-work-text'
+            ];
+            
+            elements.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    const text = el.textContent;
+                    if (text && text !== '未決定' && text.length > 0) {
+                        log(`✓ ${id}: 更新済み（${text.substring(0, 50)}...）`);
+                    } else {
+                        log(`✗ ${id}: 未更新（値: ${text}）`, true);
+                    }
+                }
+            });
+            
+            // 月別ボックスの確認
+            const monthBoxes = document.querySelectorAll('.fortune-section.destiny .month-box');
+            monthBoxes.forEach((box, index) => {
+                const h3 = box.querySelector('h3');
+                const p = box.querySelector('p');
+                if (h3 && h3.textContent !== '未決定') {
+                    log(`✓ ${index + 1}ヶ月目タイトル: ${h3.textContent}`);
+                } else {
+                    log(`✗ ${index + 1}ヶ月目タイトル: 未更新`, true);
+                }
+            });
+        }
+        
+        // ページ読み込み時にデータローダーを初期化
+        window.addEventListener('DOMContentLoaded', () => {
+            log('ページ読み込み完了');
+        });
+    </script>
+    
+    <!-- 必要なスクリプトを読み込み -->
+    <script src="public/js/otsukisama-data-loader.js"></script>
+    <script src="public/js/lp-otsukisama-moon.js"></script>
+    <script src="public/js/lp-otsukisama-display.js?v=20241228010"></script>
+</body>
+</html>
