@@ -582,8 +582,8 @@
         /* 六角形の頂点配置（数学的に正確） */
         .type-item[data-position="0"] {
             left: 50%;
-            top: 0;
-            transform: translate(-50%, 0);
+            top: 10%;  /* 中心から適切な距離に調整 */
+            transform: translate(-50%, -50%);
         }
         
         .type-item[data-position="60"] {
@@ -600,8 +600,8 @@
         
         .type-item[data-position="180"] {
             left: 50%;
-            top: 100%;
-            transform: translate(-50%, -100%);
+            top: 90%;  /* 中心から適切な距離に調整 */
+            transform: translate(-50%, -50%);
         }
         
         .type-item[data-position="240"] {
