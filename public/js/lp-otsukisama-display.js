@@ -2,6 +2,7 @@
 
 // 月相パターンに応じてコンテンツを更新
 async function updateMoonPhaseContent(patternId) {
+    console.log('updateMoonPhaseContent called with patternId:', patternId);
     // データローダーが読み込み完了するまで待つ
     if (!window.OtsukisamaDataLoader || !window.OtsukisamaDataLoader.isLoaded()) {
         await new Promise(resolve => {
@@ -14,9 +15,15 @@ async function updateMoonPhaseContent(patternId) {
         console.log('Pattern data not found for ID:', patternId);
         return;
     }
+    console.log('Pattern loaded:', pattern);
     
     // 動的コンテンツを更新
+    console.log('Checking for dynamicContent:', pattern.dynamicContent);
     if (pattern.dynamicContent) {
+        updateDynamicContentFromPattern(pattern);
+    } else {
+        // v3形式のデータは直接アクセス可能
+        console.log('No dynamicContent, calling updateDynamicContentFromPattern directly');
         updateDynamicContentFromPattern(pattern);
     }
     
@@ -253,42 +260,8 @@ async function updateMoonPhaseContent(patternId) {
     }
     } // profile block end
     
-    // 運勢テキストの更新
-    if (pattern.overall || pattern.love || pattern.work || pattern.relationship || pattern.money) {
-        console.log(`Updating fortune for pattern ${patternId}: ${pattern.moonPhase}×${pattern.hiddenPhase}`);
-        
-        // 全体運
-        const overallText = document.getElementById('fortune-overall-text');
-        if (overallText && pattern.overall && pattern.overall.mainText) {
-            overallText.textContent = pattern.overall.mainText;
-            console.log('Overall fortune updated');
-        }
-        
-        // 恋愛運
-        const loveText = document.getElementById('fortune-love-text');
-        if (loveText && pattern.love && pattern.love.mainText) {
-            loveText.textContent = pattern.love.mainText;
-            console.log('Love fortune updated');
-        }
-        
-        // 仕事運
-        const workText = document.getElementById('fortune-work-text');
-        if (workText && pattern.work && pattern.work.mainText) {
-            workText.textContent = pattern.work.mainText;
-        }
-        
-        // 人間関係運
-        const relationshipText = document.getElementById('fortune-relationship-text');
-        if (relationshipText && pattern.relationship && pattern.relationship.mainText) {
-            relationshipText.textContent = pattern.relationship.mainText;
-        }
-        
-        // 金運
-        const moneyText = document.getElementById('fortune-money-text');
-        if (moneyText && pattern.money && pattern.money.mainText) {
-            moneyText.textContent = pattern.money.mainText;
-        }
-    }
+    // 運勢テキストの更新は updateDynamicContentFromPattern で行うため、ここでは行わない
+    // （重複を避けるため）
     
     console.log('Moon phase content updated for pattern:', patternId);
 }
@@ -745,10 +718,12 @@ async function updateUserDisplayContent(userData, profile = null) {
 
 // 動的コンテンツを更新する関数（パターンから）
 function updateDynamicContentFromPattern(pattern) {
+    console.log('updateDynamicContentFromPattern called with pattern:', pattern);
     if (!pattern || !pattern.overall) {
-        console.warn('Pattern data not found');
+        console.warn('Pattern data not found or missing overall:', pattern);
         return;
     }
+    console.log('Pattern has overall data:', pattern.overall);
     
     // 全体運のタイトルと導入文
     const overallTitle = document.getElementById('fortune-overall-title');
@@ -793,38 +768,46 @@ function updateDynamicContentFromPattern(pattern) {
         
         // 重要な転機の時期を更新
         const highlightSection = destinyContent.querySelector('.fortune-highlight:last-child');
-        if (highlightSection) {
+        if (highlightSection && pattern.overall.criticalTimings) {
             const transitionTexts = highlightSection.querySelectorAll('p');
             if (transitionTexts.length >= 3) {
-                if (dc.criticalTiming1) transitionTexts[0].innerHTML = dc.criticalTiming1;
-                if (dc.criticalTiming2) transitionTexts[1].innerHTML = dc.criticalTiming2;
-                if (dc.criticalTiming3) transitionTexts[2].innerHTML = dc.criticalTiming3;
+                if (pattern.overall.criticalTimings[0]) transitionTexts[0].innerHTML = pattern.overall.criticalTimings[0];
+                if (pattern.overall.criticalTimings[1]) transitionTexts[1].innerHTML = pattern.overall.criticalTimings[1];
+                if (pattern.overall.criticalTimings[2]) transitionTexts[2].innerHTML = pattern.overall.criticalTimings[2];
             }
         }
     }
     
     // 恋愛運の導入文
     const loveIntro = document.getElementById('fortune-love-intro');
-    if (loveIntro) loveIntro.textContent = dc.loveIntro || pattern.fortune.love;
+    if (loveIntro && pattern.love) loveIntro.textContent = pattern.love.intro || pattern.love.mainText;
     
     // 恋愛運の新規セクション
-    if (pattern.newSections && pattern.newSections.love) {
+    if (pattern.love) {
         const destinyMeeting = document.getElementById('fortune-love-destiny-meeting');
-        if (destinyMeeting) destinyMeeting.textContent = pattern.newSections.love.destinyMeeting || '';
+        if (destinyMeeting) destinyMeeting.textContent = pattern.love.destinyMeeting || '';
         
         const admirerType = document.getElementById('fortune-love-admirer-type');
-        if (admirerType) admirerType.textContent = pattern.newSections.love.admirerType || '';
+        if (admirerType) admirerType.textContent = pattern.love.admirerType || '';
         
         const dangerousType = document.getElementById('fortune-love-dangerous-type');
-        if (dangerousType) dangerousType.textContent = pattern.newSections.love.dangerousType || '';
+        if (dangerousType) dangerousType.textContent = pattern.love.dangerousType || '';
     }
     
     // 恋愛運の月別タイトル
     const loveSection = document.querySelector('.fortune-section.love');
-    if (loveSection) {
+    if (loveSection && pattern.love) {
         const loveMonthBoxes = loveSection.querySelectorAll('.month-box');
-        const loveMonthTitles = [dc.loveMonth1Title, dc.loveMonth2Title, dc.loveMonth3Title];
-        const loveMonthTexts = [dc.loveMonth1Text, dc.loveMonth2Text, dc.loveMonth3Text];
+        const loveMonthTitles = [
+            pattern.love.month1?.title, 
+            pattern.love.month2?.title, 
+            pattern.love.month3?.title
+        ];
+        const loveMonthTexts = [
+            pattern.love.month1?.text,
+            pattern.love.month2?.text,
+            pattern.love.month3?.text
+        ];
         
         loveMonthBoxes.forEach((box, index) => {
             const h3 = box.querySelector('h3');
@@ -836,13 +819,13 @@ function updateDynamicContentFromPattern(pattern) {
         // 恋愛の注意ポイント
         const loveCautionBox = loveSection.querySelector('.point-box p');
         if (loveCautionBox) {
-            loveCautionBox.textContent = dc.loveCaution || '相手の気持ちも大切にしましょう。';
+            loveCautionBox.textContent = pattern.love.caution || '相手の気持ちも大切にしましょう。';
         }
     }
     
     // 仕事運のタイトル
     const workTitle = document.getElementById('fortune-work-title');
-    if (workTitle) workTitle.textContent = dc.workTitle || '仕事運の展開';
+    if (workTitle && pattern.work) workTitle.textContent = pattern.work.title || '仕事運の展開';
     
     // 人間関係の転機と注意
     const relationshipSection = document.querySelector('.fortune-section.relationship');
@@ -882,10 +865,47 @@ function updateDynamicContentFromPattern(pattern) {
         if (moneyTrouble) moneyTrouble.textContent = pattern.money.moneyTrouble || '';
     }
     
-    // 全体運のメインテキスト（最初の部分）
+    // 各運勢のメインテキストを設定
+    // 全体運
     const overallText = document.getElementById('fortune-overall-text');
+    console.log('Setting overall text:', {
+        element: overallText,
+        hasPattern: !!pattern.overall,
+        mainText: pattern.overall?.mainText?.substring(0, 50)
+    });
     if (overallText && pattern.overall && pattern.overall.mainText) {
         overallText.textContent = pattern.overall.mainText;
+        console.log('Overall text set successfully');
+    } else {
+        console.log('Failed to set overall text');
+    }
+    
+    // 恋愛運
+    const loveText = document.getElementById('fortune-love-text');
+    if (loveText && pattern.love && pattern.love.mainText) {
+        loveText.textContent = pattern.love.mainText;
+        console.log('Love text set successfully');
+    }
+    
+    // 仕事運
+    const workText = document.getElementById('fortune-work-text');
+    if (workText && pattern.work && pattern.work.mainText) {
+        workText.textContent = pattern.work.mainText;
+        console.log('Work text set successfully');
+    }
+    
+    // 人間関係運
+    const relationshipText = document.getElementById('fortune-relationship-text');
+    if (relationshipText && pattern.relationship && pattern.relationship.mainText) {
+        relationshipText.textContent = pattern.relationship.mainText;
+        console.log('Relationship text set successfully');
+    }
+    
+    // 金運
+    const moneyText = document.getElementById('fortune-money-text');
+    if (moneyText && pattern.money && pattern.money.mainText) {
+        moneyText.textContent = pattern.money.mainText;
+        console.log('Money text set successfully');
     }
 }
 
