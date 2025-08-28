@@ -57,7 +57,7 @@ async function updateFortuneGraph(patternId) {
     
     const ctx = canvas.getContext('2d');
     
-    // 今月から3ヶ月分のデータを取得
+    // 12週間分のデータを取得
     const monthlyData = extractThreeMonthsData(graphData.fortune_data);
     
     // 既存のチャートがあれば破棄
@@ -156,12 +156,9 @@ async function updateFortuneGraph(patternId) {
     updateFortuneCharacteristics(graphData);
 }
 
-// 3ヶ月分のデータを抽出
+// 12週間分のデータを抽出
 function extractThreeMonthsData(fortuneData) {
-    const currentMonth = new Date().getMonth();
-    const monthNames = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'];
-    
-    // 今月から3ヶ月分のラベルとデータを生成
+    // 12週間分のラベルとデータを生成
     const labels = [];
     const overall = [];
     const love = [];
@@ -169,16 +166,21 @@ function extractThreeMonthsData(fortuneData) {
     const relationship = [];
     const money = [];
     
-    for (let i = 0; i < 3; i++) {
-        const monthIndex = (currentMonth + i) % 12;
-        labels.push(monthNames[monthIndex]);
+    // 現在の週を起点として12週間分のデータを作成
+    const currentWeek = Math.floor(new Date().getDate() / 7);
+    
+    for (let i = 1; i <= 12; i++) {
+        labels.push(`第${i}週`);
+        
+        // 週ごとのデータインデックス（0-11の循環）
+        const weekIndex = (currentWeek + i - 1) % 12;
         
         // 各運勢のデータを取得（1-5の値）
-        overall.push(fortuneData.overall[monthIndex]);
-        love.push(fortuneData.love[monthIndex]);
-        career.push(fortuneData.career[monthIndex]);
-        relationship.push(fortuneData.relationship[monthIndex]);
-        money.push(fortuneData.money[monthIndex]);
+        overall.push(fortuneData.overall[weekIndex]);
+        love.push(fortuneData.love[weekIndex]);
+        career.push(fortuneData.career[weekIndex]);
+        relationship.push(fortuneData.relationship[weekIndex]);
+        money.push(fortuneData.money[weekIndex]);
     }
     
     return {
