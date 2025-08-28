@@ -756,7 +756,7 @@ function updateDynamicContentFromPattern(pattern) {
     if (overallTitle) overallTitle.textContent = dc.overallTitle || '運命の3ヶ月';
     
     const overallIntro = document.getElementById('fortune-overall-intro');
-    if (overallIntro) overallIntro.textContent = dc.overallIntro || pattern.fortune.overall.substring(0, 100) + '...';
+    if (overallIntro) overallIntro.textContent = dc.overallIntro || pattern.fortune.overall;
     
     // 全体運の月別タイトルと説明を更新
     const destinySection = document.querySelector('.fortune-section.destiny');
@@ -806,7 +806,7 @@ function updateDynamicContentFromPattern(pattern) {
     
     // 恋愛運の導入文
     const loveIntro = document.getElementById('fortune-love-intro');
-    if (loveIntro) loveIntro.textContent = dc.loveIntro || pattern.fortune.love.substring(0, 100) + '...';
+    if (loveIntro) loveIntro.textContent = dc.loveIntro || pattern.fortune.love;
     
     // 恋愛運の新規セクション
     if (pattern.newSections && pattern.newSections.love) {
@@ -886,7 +886,7 @@ function updateDynamicContentFromPattern(pattern) {
     // 全体運のメインテキスト（最初の部分）
     const overallText = document.getElementById('fortune-overall-text');
     if (overallText && pattern.fortune.overall) {
-        overallText.textContent = pattern.fortune.overall.substring(0, 200) + '...';
+        overallText.textContent = pattern.fortune.overall;
     }
 }
 
