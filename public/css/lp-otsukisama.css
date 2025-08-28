@@ -2121,14 +2121,56 @@
         }
         
         /* 新規セクションのスタイル */
-        .love-new-section,
-        .relationship-new-section,
-        .money-new-section {
-            margin: 30px 0;
-            padding: 20px;
-            background: linear-gradient(135deg, rgba(20, 10, 50, 0.9), rgba(40, 20, 70, 0.9));
-            border-radius: 15px;
+        /* バナー画像のスタイル - 横幅いっぱいに広がる */
+        .section-banner {
+            width: calc(100% + 40px);
+            margin-left: -20px;
+            margin-right: -20px;
+            height: auto;
+            display: block;
+            margin-bottom: -25px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* fortune-content内のバナーは親要素の幅制限を超える */
+        .fortune-content .section-banner {
+            width: calc(100% + 20px);
+            margin-left: -10px;
+            margin-right: -10px;
+        }
+        
+        @media (max-width: 768px) {
+            .section-banner {
+                width: calc(100% + 16px);
+                margin-left: -8px;
+                margin-right: -8px;
+            }
+            
+            .fortune-content .section-banner {
+                width: calc(100% + 20px);
+                margin-left: -10px;
+                margin-right: -10px;
+            }
+        }
+        
+        /* テキストセクションのスタイル - バナーの下に吊り下がるデザイン */
+        .hanging-text {
+            margin-top: 0;
+            padding: 35px 30px 25px;
+            background: linear-gradient(135deg, rgba(20, 10, 50, 0.95), rgba(40, 20, 70, 0.95));
+            border-radius: 0 0 20px 20px;
             border: 1px solid rgba(255, 215, 0, 0.2);
+            border-top: none;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+            position: relative;
+            z-index: 0;
+        }
+        
+        .love-new-section.hanging-text,
+        .relationship-new-section.hanging-text,
+        .money-new-section.hanging-text {
+            margin: 0 0 40px 0;
         }
         
         .love-new-section h3,
@@ -2148,4 +2190,5 @@
             line-height: 1.8;
             font-size: 16px;
             text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+            margin: 0;
         }
