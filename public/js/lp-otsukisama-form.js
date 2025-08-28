@@ -36,13 +36,23 @@ function initDateSelects() {
 
 // 生年月日フォームに値を設定する補助関数
 function fillBirthdateForm(year, month, day) {
+    console.log('fillBirthdateForm called with:', { year, month, day });
     const yearSelect = document.getElementById('year');
     const monthSelect = document.getElementById('month');
     const daySelect = document.getElementById('day');
     
-    if (yearSelect) yearSelect.value = year;
-    if (monthSelect) monthSelect.value = month;
-    if (daySelect) daySelect.value = day;
+    if (yearSelect) {
+        yearSelect.value = year;
+        console.log('Year set to:', yearSelect.value);
+    }
+    if (monthSelect) {
+        monthSelect.value = month;
+        console.log('Month set to:', monthSelect.value);
+    }
+    if (daySelect) {
+        daySelect.value = day;
+        console.log('Day set to:', daySelect.value);
+    }
 }
 
 // フォームの初期化とイベントリスナーの設定

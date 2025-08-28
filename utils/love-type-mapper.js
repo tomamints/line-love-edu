@@ -61,12 +61,17 @@ async function getUserLoveProfile(userId) {
     return null;
   }
   
-  return mapToLoveTypes({
-    emotionalExpression,
-    distanceStyle,
-    loveValues,
-    loveEnergy
-  });
+  // 4軸のタイプに加えて、生年月日と名前も返す
+  return {
+    ...mapToLoveTypes({
+      emotionalExpression,
+      distanceStyle,
+      loveValues,
+      loveEnergy
+    }),
+    birthdate: profile.birthDate || profile.personalInfo.userBirthdate,
+    name: profile.userName
+  };
 }
 
 module.exports = {

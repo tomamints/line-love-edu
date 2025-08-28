@@ -110,18 +110,24 @@ async function loadUserProfile() {
 
 // ユーザーデータから生年月日を自動入力する関数
 async function loadUserBirthdate() {
+    console.log('loadUserBirthdate called');
     const userId = getUserIdFromUrl();
+    console.log('userId from URL:', userId);
     if (!userId) {
+        console.log('No userId found in URL, skipping auto-fill');
         // URLにuserIDがない場合はスキップ
         return;
     }
     
     try {
         // プロフィール情報を取得
+        console.log('Fetching profile from:', `/api/get-love-profile?userId=${userId}`);
         const response = await fetch(`/api/get-love-profile?userId=${userId}`);
         const data = await response.json();
+        console.log('API response:', data);
         
         if (data.success && data.profile && data.profile.birthdate) {
+            console.log('Birthdate found:', data.profile.birthdate);
             // 生年月日をパース (YYYY-MM-DD形式を想定)
             const birthdate = new Date(data.profile.birthdate);
             const year = birthdate.getFullYear();
