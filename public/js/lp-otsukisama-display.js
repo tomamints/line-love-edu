@@ -254,39 +254,39 @@ async function updateMoonPhaseContent(patternId) {
     } // profile block end
     
     // 運勢テキストの更新
-    if (pattern.fortune) {
+    if (pattern.overall || pattern.love || pattern.work || pattern.relationship || pattern.money) {
         console.log(`Updating fortune for pattern ${patternId}: ${pattern.moonPhase}×${pattern.hiddenPhase}`);
         
         // 全体運
         const overallText = document.getElementById('fortune-overall-text');
-        if (overallText && pattern.fortune.overall) {
-            overallText.textContent = pattern.fortune.overall;
+        if (overallText && pattern.overall && pattern.overall.mainText) {
+            overallText.textContent = pattern.overall.mainText;
             console.log('Overall fortune updated');
         }
         
         // 恋愛運
         const loveText = document.getElementById('fortune-love-text');
-        if (loveText && pattern.fortune.love) {
-            loveText.textContent = pattern.fortune.love;
+        if (loveText && pattern.love && pattern.love.mainText) {
+            loveText.textContent = pattern.love.mainText;
             console.log('Love fortune updated');
         }
         
         // 仕事運
         const workText = document.getElementById('fortune-work-text');
-        if (workText && pattern.fortune.work) {
-            workText.textContent = pattern.fortune.work;
+        if (workText && pattern.work && pattern.work.mainText) {
+            workText.textContent = pattern.work.mainText;
         }
         
         // 人間関係運
         const relationshipText = document.getElementById('fortune-relationship-text');
-        if (relationshipText && pattern.fortune.relationship) {
-            relationshipText.textContent = pattern.fortune.relationship;
+        if (relationshipText && pattern.relationship && pattern.relationship.mainText) {
+            relationshipText.textContent = pattern.relationship.mainText;
         }
         
         // 金運
         const moneyText = document.getElementById('fortune-money-text');
-        if (moneyText && pattern.fortune.money) {
-            moneyText.textContent = pattern.fortune.money;
+        if (moneyText && pattern.money && pattern.money.mainText) {
+            moneyText.textContent = pattern.money.mainText;
         }
     }
     
@@ -884,8 +884,8 @@ function updateDynamicContentFromPattern(pattern) {
     
     // 全体運のメインテキスト（最初の部分）
     const overallText = document.getElementById('fortune-overall-text');
-    if (overallText && pattern.fortune.overall) {
-        overallText.textContent = pattern.fortune.overall;
+    if (overallText && pattern.overall && pattern.overall.mainText) {
+        overallText.textContent = pattern.overall.mainText;
     }
 }
 
