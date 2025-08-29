@@ -713,7 +713,8 @@ async function updateUserDisplayContent(userData, profile = null) {
         if (elem) elem.textContent = name;
     });
     
-    // 月相情報を表示
+    // 月相情報を表示（非表示に変更）
+    /*
     const moonDisplay = document.getElementById('userMoonPhase');
     if (moonDisplay) {
         moonDisplay.innerHTML = `
@@ -735,6 +736,7 @@ async function updateUserDisplayContent(userData, profile = null) {
             </div>
         `;
     }
+    */
     
     // 運勢グラフを更新
     if (typeof updateFortuneGraph === 'function') {
