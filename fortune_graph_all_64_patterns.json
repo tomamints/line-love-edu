@@ -1,0 +1,1284 @@
+{
+  "patterns": [
+    {
+      "pattern_id": "新月×新月",
+      "pattern_number": 1,
+      "fortune_data": {
+        "overall": [
+          3,
+          4,
+          5,
+          5,
+          3,
+          2,
+          1,
+          2,
+          4,
+          5,
+          5,
+          5
+        ]
+      }
+    },
+    {
+      "pattern_id": "新月×三日月",
+      "pattern_number": 2,
+      "fortune_data": {
+        "overall": [
+          4,
+          5,
+          5,
+          5,
+          4,
+          3,
+          2,
+          2,
+          3,
+          4,
+          5,
+          5
+        ]
+      }
+    },
+    {
+      "pattern_id": "新月×上弦",
+      "pattern_number": 3,
+      "fortune_data": {
+        "overall": [
+          5,
+          5,
+          5,
+          4,
+          3,
+          2,
+          2,
+          3,
+          5,
+          5,
+          5,
+          5
+        ]
+      }
+    },
+    {
+      "pattern_id": "新月×十三夜",
+      "pattern_number": 4,
+      "fortune_data": {
+        "overall": [
+          5,
+          5,
+          4,
+          4,
+          3,
+          3,
+          2,
+          3,
+          4,
+          4,
+          5,
+          5
+        ]
+      }
+    },
+    {
+      "pattern_id": "新月×満月",
+      "pattern_number": 5,
+      "fortune_data": {
+        "overall": [
+          5,
+          4,
+          3,
+          2,
+          3,
+          4,
+          5,
+          5,
+          5,
+          4,
+          3,
+          3
+        ]
+      }
+    },
+    {
+      "pattern_id": "新月×十六夜",
+      "pattern_number": 6,
+      "fortune_data": {
+        "overall": [
+          4,
+          3,
+          3,
+          2,
+          2,
+          3,
+          3,
+          4,
+          5,
+          5,
+          5,
+          5
+        ]
+      }
+    },
+    {
+      "pattern_id": "新月×下弦",
+      "pattern_number": 7,
+      "fortune_data": {
+        "overall": [
+          3,
+          2,
+          1,
+          2,
+          3,
+          4,
+          5,
+          5,
+          4,
+          3,
+          2,
+          2
+        ]
+      }
+    },
+    {
+      "pattern_id": "新月×暁",
+      "pattern_number": 8,
+      "fortune_data": {
+        "overall": [
+          2,
+          1,
+          2,
+          3,
+          5,
+          5,
+          4,
+          2,
+          2,
+          3,
+          5,
+          5
+        ]
+      }
+    },
+    {
+      "pattern_id": "三日月×新月",
+      "pattern_number": 9,
+      "fortune_data": {
+        "overall": [
+          2,
+          2,
+          2,
+          3,
+          4,
+          5,
+          5,
+          5,
+          4,
+          4,
+          3,
+          3
+        ]
+      }
+    },
+    {
+      "pattern_id": "三日月×三日月",
+      "pattern_number": 10,
+      "fortune_data": {
+        "overall": [
+          3,
+          3,
+          3,
+          3,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          3
+        ]
+      }
+    },
+    {
+      "pattern_id": "三日月×上弦",
+      "pattern_number": 11,
+      "fortune_data": {
+        "overall": [
+          3,
+          3,
+          4,
+          4,
+          5,
+          5,
+          5,
+          4,
+          4,
+          3,
+          2,
+          2
+        ]
+      }
+    },
+    {
+      "pattern_id": "三日月×十三夜",
+      "pattern_number": 12,
+      "fortune_data": {
+        "overall": [
+          3,
+          3,
+          4,
+          4,
+          4,
+          5,
+          5,
+          5,
+          5,
+          4,
+          4,
+          4
+        ]
+      }
+    },
+    {
+      "pattern_id": "三日月×満月",
+      "pattern_number": 13,
+      "fortune_data": {
+        "overall": [
+          4,
+          5,
+          5,
+          2,
+          3,
+          5,
+          5,
+          3,
+          2,
+          4,
+          5,
+          4
+        ]
+      }
+    },
+    {
+      "pattern_id": "三日月×十六夜",
+      "pattern_number": 14,
+      "fortune_data": {
+        "overall": [
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          3,
+          3,
+          2,
+          2,
+          2
+        ]
+      }
+    },
+    {
+      "pattern_id": "三日月×下弦",
+      "pattern_number": 15,
+      "fortune_data": {
+        "overall": [
+          4,
+          4,
+          5,
+          4,
+          3,
+          3,
+          2,
+          2,
+          3,
+          3,
+          4,
+          5
+        ]
+      }
+    },
+    {
+      "pattern_id": "三日月×暁",
+      "pattern_number": 16,
+      "fortune_data": {
+        "overall": [
+          5,
+          5,
+          4,
+          2,
+          2,
+          2,
+          2,
+          4,
+          5,
+          5,
+          4,
+          3
+        ]
+      }
+    },
+    {
+      "pattern_id": "上弦×新月",
+      "pattern_number": 17,
+      "fortune_data": {
+        "overall": [
+          5,
+          5,
+          4,
+          3,
+          2,
+          2,
+          3,
+          5,
+          5,
+          5,
+          5,
+          4
+        ]
+      }
+    },
+    {
+      "pattern_id": "上弦×三日月",
+      "pattern_number": 18,
+      "fortune_data": {
+        "overall": [
+          5,
+          5,
+          4,
+          3,
+          3,
+          3,
+          3,
+          3,
+          4,
+          5,
+          5,
+          5
+        ]
+      }
+    },
+    {
+      "pattern_id": "上弦×上弦",
+      "pattern_number": 19,
+      "fortune_data": {
+        "overall": [
+          5,
+          4,
+          3,
+          3,
+          3,
+          4,
+          4,
+          5,
+          5,
+          5,
+          4,
+          3
+        ]
+      }
+    },
+    {
+      "pattern_id": "上弦×十三夜",
+      "pattern_number": 20,
+      "fortune_data": {
+        "overall": [
+          4,
+          4,
+          3,
+          3,
+          3,
+          3,
+          4,
+          4,
+          5,
+          5,
+          5,
+          5
+        ]
+      }
+    },
+    {
+      "pattern_id": "上弦×満月",
+      "pattern_number": 21,
+      "fortune_data": {
+        "overall": [
+          4,
+          3,
+          3,
+          4,
+          5,
+          5,
+          5,
+          4,
+          3,
+          2,
+          3,
+          4
+        ]
+      }
+    },
+    {
+      "pattern_id": "上弦×十六夜",
+      "pattern_number": 22,
+      "fortune_data": {
+        "overall": [
+          3,
+          2,
+          3,
+          3,
+          4,
+          4,
+          4,
+          5,
+          4,
+          4,
+          3,
+          3
+        ]
+      }
+    },
+    {
+      "pattern_id": "上弦×下弦",
+      "pattern_number": 23,
+      "fortune_data": {
+        "overall": [
+          2,
+          3,
+          4,
+          5,
+          5,
+          5,
+          4,
+          3,
+          2,
+          2,
+          2,
+          3
+        ]
+      }
+    },
+    {
+      "pattern_id": "上弦×暁",
+      "pattern_number": 24,
+      "fortune_data": {
+        "overall": [
+          2,
+          3,
+          5,
+          5,
+          5,
+          4,
+          2,
+          2,
+          3,
+          4,
+          5,
+          5
+        ]
+      }
+    },
+    {
+      "pattern_id": "十三夜×新月",
+      "pattern_number": 25,
+      "fortune_data": {
+        "overall": [
+          3,
+          4,
+          4,
+          5,
+          5,
+          5,
+          5,
+          4,
+          3,
+          3,
+          3,
+          3
+        ]
+      }
+    },
+    {
+      "pattern_id": "十三夜×三日月",
+      "pattern_number": 26,
+      "fortune_data": {
+        "overall": [
+          4,
+          4,
+          4,
+          5,
+          5,
+          5,
+          5,
+          4,
+          4,
+          4,
+          3,
+          3
+        ]
+      }
+    },
+    {
+      "pattern_id": "十三夜×上弦",
+      "pattern_number": 27,
+      "fortune_data": {
+        "overall": [
+          5,
+          5,
+          5,
+          5,
+          5,
+          5,
+          4,
+          3,
+          3,
+          3,
+          3,
+          3
+        ]
+      }
+    },
+    {
+      "pattern_id": "十三夜×十三夜",
+      "pattern_number": 28,
+      "fortune_data": {
+        "overall": [
+          5,
+          5,
+          5,
+          5,
+          5,
+          5,
+          4,
+          4,
+          4,
+          4,
+          3,
+          3
+        ]
+      }
+    },
+    {
+      "pattern_id": "十三夜×満月",
+      "pattern_number": 29,
+      "fortune_data": {
+        "overall": [
+          5,
+          5,
+          5,
+          4,
+          3,
+          3,
+          3,
+          4,
+          5,
+          5,
+          5,
+          5
+        ]
+      }
+    },
+    {
+      "pattern_id": "十三夜×十六夜",
+      "pattern_number": 30,
+      "fortune_data": {
+        "overall": [
+          5,
+          4,
+          4,
+          4,
+          3,
+          3,
+          3,
+          2,
+          2,
+          2,
+          3,
+          3
+        ]
+      }
+    },
+    {
+      "pattern_id": "十三夜×下弦",
+      "pattern_number": 31,
+      "fortune_data": {
+        "overall": [
+          4,
+          4,
+          3,
+          2,
+          2,
+          2,
+          3,
+          4,
+          4,
+          5,
+          5,
+          5
+        ]
+      }
+    },
+    {
+      "pattern_id": "十三夜×暁",
+      "pattern_number": 32,
+      "fortune_data": {
+        "overall": [
+          4,
+          3,
+          2,
+          2,
+          3,
+          4,
+          5,
+          5,
+          5,
+          4,
+          3,
+          2
+        ]
+      }
+    },
+    {
+      "pattern_id": "満月×新月",
+      "pattern_number": 33,
+      "fortune_data": {
+        "overall": [
+          3,
+          2,
+          2,
+          3,
+          5,
+          5,
+          5,
+          4,
+          3,
+          3,
+          4,
+          5
+        ]
+      }
+    },
+    {
+      "pattern_id": "満月×三日月",
+      "pattern_number": 34,
+      "fortune_data": {
+        "overall": [
+          4,
+          5,
+          5,
+          2,
+          3,
+          5,
+          5,
+          3,
+          2,
+          4,
+          5,
+          4
+        ]
+      }
+    },
+    {
+      "pattern_id": "満月×上弦",
+      "pattern_number": 35,
+      "fortune_data": {
+        "overall": [
+          3,
+          3,
+          4,
+          5,
+          5,
+          5,
+          5,
+          3,
+          2,
+          3,
+          4,
+          5
+        ]
+      }
+    },
+    {
+      "pattern_id": "満月×十三夜",
+      "pattern_number": 36,
+      "fortune_data": {
+        "overall": [
+          3,
+          3,
+          4,
+          5,
+          5,
+          5,
+          5,
+          5,
+          4,
+          3,
+          3,
+          4
+        ]
+      }
+    },
+    {
+      "pattern_id": "満月×満月",
+      "pattern_number": 37,
+      "fortune_data": {
+        "overall": [
+          4,
+          5,
+          3,
+          3,
+          5,
+          5,
+          2,
+          5,
+          5,
+          2,
+          4,
+          5
+        ]
+      }
+    },
+    {
+      "pattern_id": "満月×十六夜",
+      "pattern_number": 38,
+      "fortune_data": {
+        "overall": [
+          3,
+          4,
+          5,
+          5,
+          5,
+          4,
+          3,
+          2,
+          2,
+          3,
+          4,
+          4
+        ]
+      }
+    },
+    {
+      "pattern_id": "満月×下弦",
+      "pattern_number": 39,
+      "fortune_data": {
+        "overall": [
+          4,
+          5,
+          3,
+          2,
+          5,
+          5,
+          2,
+          3,
+          5,
+          4,
+          2,
+          4
+        ]
+      }
+    },
+    {
+      "pattern_id": "満月×暁",
+      "pattern_number": 40,
+      "fortune_data": {
+        "overall": [
+          4,
+          5,
+          2,
+          3,
+          5,
+          2,
+          3,
+          5,
+          2,
+          3,
+          5,
+          3
+        ]
+      }
+    },
+    {
+      "pattern_id": "十六夜×新月",
+      "pattern_number": 41,
+      "fortune_data": {
+        "overall": [
+          5,
+          5,
+          4,
+          4,
+          3,
+          2,
+          2,
+          3,
+          3,
+          4,
+          5,
+          5
+        ]
+      }
+    },
+    {
+      "pattern_id": "十六夜×三日月",
+      "pattern_number": 42,
+      "fortune_data": {
+        "overall": [
+          4,
+          4,
+          4,
+          4,
+          3,
+          3,
+          2,
+          2,
+          2,
+          2,
+          3,
+          3
+        ]
+      }
+    },
+    {
+      "pattern_id": "十六夜×上弦",
+      "pattern_number": 43,
+      "fortune_data": {
+        "overall": [
+          5,
+          4,
+          4,
+          3,
+          2,
+          2,
+          2,
+          3,
+          3,
+          4,
+          4,
+          4
+        ]
+      }
+    },
+    {
+      "pattern_id": "十六夜×十三夜",
+      "pattern_number": 44,
+      "fortune_data": {
+        "overall": [
+          4,
+          4,
+          3,
+          3,
+          3,
+          3,
+          2,
+          2,
+          3,
+          3,
+          3,
+          3
+        ]
+      }
+    },
+    {
+      "pattern_id": "十六夜×満月",
+      "pattern_number": 45,
+      "fortune_data": {
+        "overall": [
+          4,
+          3,
+          2,
+          2,
+          3,
+          4,
+          5,
+          5,
+          5,
+          4,
+          3,
+          2
+        ]
+      }
+    },
+    {
+      "pattern_id": "十六夜×十六夜",
+      "pattern_number": 46,
+      "fortune_data": {
+        "overall": [
+          3,
+          3,
+          2,
+          2,
+          2,
+          3,
+          3,
+          3,
+          4,
+          4,
+          4,
+          4
+        ]
+      }
+    },
+    {
+      "pattern_id": "十六夜×下弦",
+      "pattern_number": 47,
+      "fortune_data": {
+        "overall": [
+          2,
+          2,
+          2,
+          3,
+          3,
+          4,
+          4,
+          4,
+          4,
+          3,
+          2,
+          2
+        ]
+      }
+    },
+    {
+      "pattern_id": "十六夜×暁",
+      "pattern_number": 48,
+      "fortune_data": {
+        "overall": [
+          2,
+          2,
+          3,
+          4,
+          5,
+          4,
+          3,
+          2,
+          1,
+          1,
+          2,
+          3
+        ]
+      }
+    },
+    {
+      "pattern_id": "下弦×新月",
+      "pattern_number": 49,
+      "fortune_data": {
+        "overall": [
+          1,
+          2,
+          4,
+          5,
+          5,
+          4,
+          3,
+          2,
+          2,
+          3,
+          5,
+          5
+        ]
+      }
+    },
+    {
+      "pattern_id": "下弦×三日月",
+      "pattern_number": 50,
+      "fortune_data": {
+        "overall": [
+          3,
+          3,
+          4,
+          5,
+          4,
+          4,
+          3,
+          2,
+          2,
+          2,
+          2,
+          3
+        ]
+      }
+    },
+    {
+      "pattern_id": "下弦×上弦",
+      "pattern_number": 51,
+      "fortune_data": {
+        "overall": [
+          4,
+          5,
+          5,
+          5,
+          4,
+          3,
+          2,
+          2,
+          2,
+          3,
+          4,
+          5
+        ]
+      }
+    },
+    {
+      "pattern_id": "下弦×十三夜",
+      "pattern_number": 52,
+      "fortune_data": {
+        "overall": [
+          4,
+          4,
+          5,
+          5,
+          4,
+          4,
+          3,
+          3,
+          3,
+          3,
+          3,
+          4
+        ]
+      }
+    },
+    {
+      "pattern_id": "下弦×満月",
+      "pattern_number": 53,
+      "fortune_data": {
+        "overall": [
+          4,
+          5,
+          3,
+          2,
+          5,
+          5,
+          2,
+          3,
+          5,
+          4,
+          2,
+          4
+        ]
+      }
+    },
+    {
+      "pattern_id": "下弦×十六夜",
+      "pattern_number": 54,
+      "fortune_data": {
+        "overall": [
+          4,
+          4,
+          4,
+          3,
+          2,
+          2,
+          2,
+          2,
+          3,
+          3,
+          4,
+          4
+        ]
+      }
+    },
+    {
+      "pattern_id": "下弦×下弦",
+      "pattern_number": 55,
+      "fortune_data": {
+        "overall": [
+          4,
+          3,
+          2,
+          1,
+          2,
+          3,
+          4,
+          5,
+          4,
+          3,
+          2,
+          1
+        ]
+      }
+    },
+    {
+      "pattern_id": "下弦×暁",
+      "pattern_number": 56,
+      "fortune_data": {
+        "overall": [
+          5,
+          3,
+          1,
+          1,
+          3,
+          4,
+          5,
+          4,
+          2,
+          1,
+          2,
+          3
+        ]
+      }
+    },
+    {
+      "pattern_id": "暁×新月",
+      "pattern_number": 57,
+      "fortune_data": {
+        "overall": [
+          4,
+          2,
+          1,
+          2,
+          4,
+          5,
+          5,
+          3,
+          2,
+          2,
+          3,
+          5
+        ]
+      }
+    },
+    {
+      "pattern_id": "暁×三日月",
+      "pattern_number": 58,
+      "fortune_data": {
+        "overall": [
+          3,
+          2,
+          2,
+          2,
+          4,
+          5,
+          5,
+          4,
+          3,
+          1,
+          2,
+          2
+        ]
+      }
+    },
+    {
+      "pattern_id": "暁×上弦",
+      "pattern_number": 59,
+      "fortune_data": {
+        "overall": [
+          3,
+          2,
+          3,
+          4,
+          5,
+          5,
+          4,
+          2,
+          2,
+          2,
+          3,
+          5
+        ]
+      }
+    },
+    {
+      "pattern_id": "暁×十三夜",
+      "pattern_number": 60,
+      "fortune_data": {
+        "overall": [
+          2,
+          2,
+          3,
+          4,
+          5,
+          5,
+          5,
+          4,
+          3,
+          2,
+          2,
+          3
+        ]
+      }
+    },
+    {
+      "pattern_id": "暁×満月",
+      "pattern_number": 61,
+      "fortune_data": {
+        "overall": [
+          4,
+          5,
+          2,
+          3,
+          5,
+          2,
+          3,
+          5,
+          2,
+          3,
+          5,
+          3
+        ]
+      }
+    },
+    {
+      "pattern_id": "暁×十六夜",
+      "pattern_number": 62,
+      "fortune_data": {
+        "overall": [
+          2,
+          3,
+          4,
+          5,
+          4,
+          3,
+          2,
+          2,
+          1,
+          2,
+          3,
+          4
+        ]
+      }
+    },
+    {
+      "pattern_id": "暁×下弦",
+      "pattern_number": 63,
+      "fortune_data": {
+        "overall": [
+          2,
+          4,
+          5,
+          5,
+          3,
+          1,
+          1,
+          3,
+          4,
+          5,
+          4,
+          2
+        ]
+      }
+    },
+    {
+      "pattern_id": "暁×暁",
+      "pattern_number": 64,
+      "fortune_data": {
+        "overall": [
+          3,
+          5,
+          5,
+          2,
+          1,
+          2,
+          4,
+          5,
+          4,
+          1,
+          1,
+          2
+        ]
+      }
+    }
+  ]
+}
