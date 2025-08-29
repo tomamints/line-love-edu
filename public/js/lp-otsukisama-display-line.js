@@ -14,20 +14,20 @@ function displayLineRedirectMessage() {
                         margin-bottom: 30px;
                         text-align: center;">
                 <h3 style="color: #ffd700; margin-bottom: 15px;">
-                    💫 4つの恋愛タイプ診断結果を表示するには
+                    🌙 より詳しい診断結果を見るには
                 </h3>
                 <p style="color: #fff; line-height: 1.8; margin-bottom: 20px;">
-                    LINE公式アカウントで診断を受けてください
+                    月詠のLINE公式アカウントで、あなただけの詳細な運勢をお届けします
                 </p>
                 <div style="background: rgba(0,0,0,0.3); padding: 20px; border-radius: 10px; margin: 20px 0;">
                     <p style="color: #87ceeb; font-size: 14px; margin-bottom: 10px;">
-                        📱 診断の受け方：
+                        月詠のLINEで受けられること：
                     </p>
                     <ol style="text-align: left; color: #ccc; line-height: 1.8; margin: 0 auto; max-width: 400px;">
-                        <li>下のボタンからLINE公式アカウントを友だち追加</li>
-                        <li>「恋愛タイプ診断」メニューを選択</li>
-                        <li>7つの質問に回答</li>
-                        <li>診断完了後、専用URLからこのページで結果が見られます</li>
+                        <li>今日の月齢に合わせた運勢メッセージ</li>
+                        <li>毎週の運勢グラフ更新</li>
+                        <li>月相別の開運アドバイス</li>
+                        <li>あなただけの特別な月のメッセージ</li>
                     </ol>
                 </div>
                 <a href="https://line.me/R/ti/p/%40644vtivc" 
@@ -42,7 +42,7 @@ function displayLineRedirectMessage() {
                           font-size: 16px;
                           box-shadow: 0 4px 15px rgba(0,185,0,0.3);
                           transition: all 0.3s ease;">
-                    📱 LINEで診断を始める
+                    🌙 LINE友だち追加
                 </a>
             </div>
         `;

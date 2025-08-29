@@ -612,26 +612,39 @@ function displayNoProfileMessage() {
                         margin-bottom: 30px;
                         text-align: center;">
                 <h3 style="color: #ffd700; margin-bottom: 15px;">
-                    💫 4つの恋愛タイプ診断を表示するには
+                    🌙 より詳しい診断結果を見るには
                 </h3>
                 <p style="color: #fff; line-height: 1.8; margin-bottom: 20px;">
-                    この部分は、LINEで事前に恋愛タイプ診断を受けていただいた方に<br>
-                    パーソナライズされた結果を表示しています。
+                    月詠のLINE公式アカウントで、あなただけの詳細な運勢をお届けします
                 </p>
                 <div style="background: rgba(0,0,0,0.3); padding: 20px; border-radius: 10px; margin: 20px 0;">
                     <p style="color: #87ceeb; font-size: 14px; margin-bottom: 10px;">
-                        📱 LINEで診断を受けるには：
+                        月詠のLINEで受けられること：
                     </p>
                     <ol style="text-align: left; color: #ccc; line-height: 1.8; margin: 0 auto; max-width: 400px;">
-                        <li>LINE公式アカウントを友だち追加</li>
-                        <li>「恋愛タイプ診断」メニューを選択</li>
-                        <li>4つの質問に回答</li>
-                        <li>診断完了後、個人用URLが発行されます</li>
+                        <li>今日の月齢に合わせた運勢メッセージ</li>
+                        <li>毎週の運勢グラフ更新</li>
+                        <li>月相別の開運アドバイス</li>
+                        <li>あなただけの特別な月のメッセージ</li>
                     </ol>
                 </div>
-                <p style="color: #ffd700; font-size: 12px;">
-                    ※ 現在は月相診断のみお楽しみいただけます
-                </p>
+                <a href="https://line.me/R/ti/p/%40644vtivc" 
+                   target="_blank"
+                   style="display: inline-block; 
+                          background: linear-gradient(135deg, #00b900 0%, #00a000 100%); 
+                          color: white; 
+                          padding: 15px 40px; 
+                          border-radius: 30px; 
+                          text-decoration: none; 
+                          font-weight: bold; 
+                          font-size: 16px; 
+                          box-shadow: 0 4px 15px rgba(0,185,0,0.3); 
+                          transition: transform 0.3s ease, box-shadow 0.3s ease; 
+                          margin-top: 20px;"
+                   onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(0,185,0,0.4)';"
+                   onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(0,185,0,0.3)';">
+                    🌙 LINE友だち追加
+                </a>
             </div>
         `;
         
