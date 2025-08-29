@@ -1389,6 +1389,30 @@
             margin: 15px 0 5px;
         }
         
+        /* バナー画像を横幅いっぱいに広げる（2-anata.png から 5-1-3tsuno.png） */
+        .full-width-banner {
+            width: 100%;
+            max-width: none;
+            height: auto;
+            margin: 20px 0;
+            display: block;
+        }
+        
+        /* コンテナの余白を超えて横幅いっぱいに広げる */
+        .container .full-width-banner {
+            width: calc(100% + 40px);
+            margin-left: -20px;
+            margin-right: -20px;
+        }
+        
+        @media (max-width: 768px) {
+            .container .full-width-banner {
+                width: calc(100% + 10px);
+                margin-left: -5px;
+                margin-right: -5px;
+            }
+        }
+        
         /* 円形要素内の画像 */
         .circle-element-image {
             width: 100%;
@@ -2245,6 +2269,14 @@
                 max-width: 85%;
                 margin: 10px auto;
                 display: block;
+            }
+            
+            /* フルワイドバナーはモバイルでも横幅いっぱい */
+            .full-width-banner {
+                width: 100vw;
+                margin-left: calc(-50vw + 50%);
+                margin-right: calc(-50vw + 50%);
+                max-width: 100vw;
             }
             
             .header {
