@@ -1112,7 +1112,7 @@ async function handleTextMessage(event) {
               },
               {
                 type: 'text',
-                text: '🌙 あなただけの詳細な運勢',
+                text: 'あなただけの詳細な運勢',
                 size: 'lg',
                 weight: 'bold',
                 align: 'center',
@@ -1131,22 +1131,22 @@ async function handleTextMessage(event) {
                 contents: [
                   {
                     type: 'text',
-                    text: '🌙 直近3ヶ月の運勢グラフ',
+                    text: '• 直近3ヶ月の運勢グラフ',
                     size: 'sm'
                   },
                   {
                     type: 'text',
-                    text: '🌙 恋愛・仕事・金運の詳細予測',
+                    text: '• 恋愛・仕事・金運の詳細予測',
                     size: 'sm'
                   },
                   {
                     type: 'text',
-                    text: '🌙 月相別の開運アドバイス',
+                    text: '• 月相別の開運アドバイス',
                     size: 'sm'
                   },
                   {
                     type: 'text',
-                    text: '🌙 あなただけの月齢カレンダー',
+                    text: '• あなただけの月齢カレンダー',
                     size: 'sm'
                   }
                 ]
@@ -1164,7 +1164,7 @@ async function handleTextMessage(event) {
                 height: 'md',
                 action: {
                   type: 'uri',
-                  label: '🌙 診断結果を見る',
+                  label: '診断結果を見る',
                   uri: lpUrl
                 },
                 color: '#764ba2'
