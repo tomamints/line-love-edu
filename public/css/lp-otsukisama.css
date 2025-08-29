@@ -2227,3 +2227,388 @@
             margin: 0;
             font-weight: 400;
         }
+
+        /* ========================================
+           モバイル最適化改善 (2025年1月)
+           主にスマホユーザー向けの改善
+        ======================================== */
+        
+        /* 1. バナー/ロゴサイズの最適化 */
+        @media (max-width: 768px) {
+            .responsive-image {
+                max-width: 80%;
+                margin: 10px auto;
+                display: block;
+            }
+            
+            .responsive-image-medium {
+                max-width: 85%;
+                margin: 10px auto;
+                display: block;
+            }
+            
+            .header {
+                padding: 35px 15px 25px;
+            }
+            
+            .main-moon {
+                width: 110px;
+                height: 110px;
+                margin: 0 auto 20px;
+                box-shadow: 
+                    0 0 40px rgba(255,255,255,0.7),
+                    0 0 60px rgba(200,200,255,0.5);
+            }
+            
+            .subtitle {
+                font-size: 18px;
+                margin: 10px 0;
+            }
+            
+            .sub-description {
+                font-size: 14px;
+                line-height: 1.6;
+                padding: 0 10px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .responsive-image {
+                max-width: 70%;
+            }
+            
+            .responsive-image-medium {
+                max-width: 75%;
+            }
+            
+            .header {
+                padding: 25px 10px 20px;
+            }
+            
+            .main-moon {
+                width: 90px;
+                height: 90px;
+                margin: 0 auto 15px;
+            }
+            
+            .subtitle {
+                font-size: 16px;
+            }
+            
+            .sub-description {
+                font-size: 13px;
+            }
+        }
+        
+        /* 2. フォームUX改善 */
+        .form-section {
+            position: relative;
+        }
+        
+        /* フォーム進捗インジケータ */
+        .form-progress {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            padding: 0 20px;
+        }
+        
+        .form-progress-step {
+            flex: 1;
+            text-align: center;
+            position: relative;
+        }
+        
+        .form-progress-step::after {
+            content: '';
+            position: absolute;
+            top: 15px;
+            right: -50%;
+            width: 100%;
+            height: 2px;
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .form-progress-step:last-child::after {
+            display: none;
+        }
+        
+        .form-progress-step.active::after {
+            background: linear-gradient(90deg, #ffd700 0%, rgba(255,255,255,0.2) 100%);
+        }
+        
+        .form-progress-number {
+            width: 30px;
+            height: 30px;
+            background: rgba(255,255,255,0.1);
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255,255,255,0.5);
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .form-progress-step.active .form-progress-number {
+            background: #ffd700;
+            border-color: #ffd700;
+            color: #1a1a2e;
+        }
+        
+        .form-progress-step.completed .form-progress-number {
+            background: #4CAF50;
+            border-color: #4CAF50;
+            color: white;
+        }
+        
+        .form-progress-label {
+            font-size: 12px;
+            color: rgba(255,255,255,0.6);
+        }
+        
+        .form-progress-step.active .form-progress-label {
+            color: #ffd700;
+        }
+        
+        /* フォームバリデーション */
+        .form-group.error input,
+        .form-group.error select {
+            border-color: #ff6b6b;
+            background: rgba(255,107,107,0.1);
+        }
+        
+        .form-error-message {
+            color: #ff6b6b;
+            font-size: 12px;
+            margin-top: 5px;
+            display: none;
+        }
+        
+        .form-group.error .form-error-message {
+            display: block;
+        }
+        
+        /* 入力フィールドの成功状態 */
+        .form-group.success input,
+        .form-group.success select {
+            border-color: #4CAF50;
+            background: rgba(76,175,80,0.05);
+        }
+        
+        /* 3. モバイル操作性改善 */
+        @media (max-width: 768px) {
+            /* タッチターゲットサイズを拡大 */
+            button,
+            input,
+            select,
+            textarea {
+                min-height: 48px;
+                font-size: 16px; /* iOS自動ズーム防止 */
+            }
+            
+            .date-selects select {
+                min-height: 48px;
+                padding: 12px 35px 12px 15px;
+                font-size: 16px;
+            }
+            
+            button[type="submit"] {
+                min-height: 56px;
+                font-size: 18px;
+                padding: 16px 40px;
+            }
+            
+            /* フォームグループの間隔調整 */
+            .form-group {
+                margin-bottom: 25px;
+            }
+            
+            /* ラベルを見やすく */
+            .form-group label {
+                font-size: 15px;
+                margin-bottom: 10px;
+                font-weight: 600;
+            }
+            
+            /* 必須マークを目立たせる */
+            .required {
+                font-size: 13px;
+                padding: 2px 6px;
+                background: rgba(255,107,107,0.2);
+                border-radius: 4px;
+                margin-left: 8px;
+            }
+        }
+        
+        /* 4. コントラスト比改善 */
+        .subtitle {
+            color: #ffffff;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.8);
+        }
+        
+        .sub-description {
+            color: #e0e0e0;
+            text-shadow: 1px 1px 4px rgba(0,0,0,0.6);
+        }
+        
+        .form-title {
+            color: #ffffff;
+            text-shadow: 2px 2px 6px rgba(0,0,0,0.7);
+        }
+        
+        /* フォームラベルのコントラスト強化 */
+        .form-group label {
+            color: #ffffff;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+        }
+        
+        /* 5. セクション間の視覚的流れ改善 */
+        .section-divider {
+            width: 80%;
+            height: 1px;
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                rgba(255,255,255,0.3) 20%,
+                rgba(255,255,255,0.5) 50%,
+                rgba(255,255,255,0.3) 80%,
+                transparent 100%);
+            margin: 60px auto;
+            position: relative;
+        }
+        
+        .section-divider::before {
+            content: "✦";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #1a1a2e;
+            padding: 0 20px;
+            color: #ffd700;
+            font-size: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .section-divider {
+                margin: 40px auto;
+                width: 90%;
+            }
+        }
+        
+        /* 6. ローディング状態 */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(26,26,46,0.95);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+        
+        .loading-overlay.active {
+            display: flex;
+        }
+        
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 3px solid rgba(255,255,255,0.1);
+            border-top-color: #ffd700;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .loading-text {
+            color: #ffffff;
+            margin-top: 20px;
+            font-size: 14px;
+            text-align: center;
+        }
+        
+        /* ボタンのローディング状態 */
+        button[type="submit"].loading {
+            position: relative;
+            color: transparent;
+            pointer-events: none;
+        }
+        
+        button[type="submit"].loading::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            top: 50%;
+            left: 50%;
+            margin: -10px 0 0 -10px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        
+        /* 7. パフォーマンス最適化 */
+        @media (max-width: 768px) {
+            /* 複雑なアニメーションを簡略化 */
+            .stars-container {
+                display: none; /* モバイルでは星空アニメーションを非表示 */
+            }
+            
+            @keyframes moonGlow {
+                0%, 100% { opacity: 1; }
+                50% { opacity: 0.9; }
+            }
+            
+            /* 影の簡略化 */
+            .fortune-section {
+                box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            }
+            
+            .type-item {
+                box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            }
+        }
+        
+        /* 8. アクセシビリティ改善 */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+        
+        /* フォーカス状態の強化 */
+        button:focus,
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: 3px solid #ffd700;
+            outline-offset: 2px;
+        }
+        
+        /* スキップリンク */
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 0;
+            background: #ffd700;
+            color: #1a1a2e;
+            padding: 8px 16px;
+            text-decoration: none;
+            border-radius: 0 0 8px 0;
+            font-weight: bold;
+        }
+        
+        .skip-link:focus {
+            top: 0;
+        }

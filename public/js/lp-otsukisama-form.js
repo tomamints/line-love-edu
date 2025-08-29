@@ -73,51 +73,153 @@ function setupForm() {
         return;
     }
     
-    moonForm.addEventListener('submit', function(e) {
+    moonForm.addEventListener('submit', async function(e) {
         e.preventDefault();
+        
+        // フォームバリデーション
+        let isValid = true;
+        const formGroups = moonForm.querySelectorAll('.form-group');
+        formGroups.forEach(group => {
+            group.classList.remove('error', 'success');
+        });
         
         const name = document.getElementById('name').value;
         const year = parseInt(document.getElementById('year').value);
         const month = parseInt(document.getElementById('month').value);
         const day = parseInt(document.getElementById('day').value);
         
-        if (!name || !year || !month || !day) {
-            alert('すべての項目を入力してください');
+        // 名前のバリデーション
+        const nameGroup = document.getElementById('name').closest('.form-group');
+        if (!name || name.trim().length < 1) {
+            nameGroup.classList.add('error');
+            showErrorMessage(nameGroup, 'お名前を入力してください');
+            isValid = false;
+        } else {
+            nameGroup.classList.add('success');
+        }
+        
+        // 生年月日のバリデーション
+        const dateGroup = document.getElementById('year').closest('.form-group');
+        if (!year || !month || !day) {
+            dateGroup.classList.add('error');
+            showErrorMessage(dateGroup, '生年月日を選択してください');
+            isValid = false;
+        } else if (!isValidDate(year, month, day)) {
+            dateGroup.classList.add('error');
+            showErrorMessage(dateGroup, '有効な日付を選択してください');
+            isValid = false;
+        } else {
+            dateGroup.classList.add('success');
+        }
+        
+        if (!isValid) {
             return;
         }
         
-        // 月相と裏月相を計算
-        const moonPhase = calculateMoonPhaseType(year, month, day);
-        const hiddenMoonPhase = getHiddenMoonPhaseName(year, month, day);
-        const patternId = generatePatternId(year, month, day);
-        currentPatternId = patternId; // グローバル変数を更新
+        // ローディング状態を表示
+        const submitButton = moonForm.querySelector('button[type="submit"]');
+        submitButton.classList.add('loading');
+        submitButton.disabled = true;
         
-        // ユーザーデータを作成
-        const userData = {
-            name: name,
-            birthdate: { year, month, day },
-            moonPhase: moonPhase,
-            hiddenMoonPhase: hiddenMoonPhase,
-            patternId: patternId
-        };
+        // ローディングオーバーレイを表示（存在する場合）
+        const loadingOverlay = document.querySelector('.loading-overlay');
+        if (loadingOverlay) {
+            loadingOverlay.classList.add('active');
+        }
         
-        // 結果セクションに名前を表示
-        document.getElementById('resultName').textContent = name;
-        
-        // フォームを非表示にして結果を表示
-        document.getElementById('formSection').style.display = 'none';
-        document.getElementById('resultSection').style.display = 'block';
-        
-        // ユーザープロフィールを読み込む（非同期）
-        loadUserProfile().then((profile) => {
-            // 動的コンテンツを更新（プロフィールを渡す）
-            updateUserDisplayContent(userData, profile);
-        });
-        
-        // スムーズにスクロール
-        window.scrollTo({
-            top: 0,
-            behavior: 'smooth'
+        try {
+            // 月相と裏月相を計算
+            const moonPhase = calculateMoonPhaseType(year, month, day);
+            const hiddenMoonPhase = getHiddenMoonPhaseName(year, month, day);
+            const patternId = generatePatternId(year, month, day);
+            currentPatternId = patternId; // グローバル変数を更新
+            
+            // ユーザーデータを作成
+            const userData = {
+                name: name,
+                birthdate: { year, month, day },
+                moonPhase: moonPhase,
+                hiddenMoonPhase: hiddenMoonPhase,
+                patternId: patternId
+            };
+            
+            // 少し待機（ローディング表示のため）
+            await new Promise(resolve => setTimeout(resolve, 800));
+            
+            // 結果セクションに名前を表示
+            document.getElementById('resultName').textContent = name;
+            
+            // フォームを非表示にして結果を表示
+            document.getElementById('formSection').style.display = 'none';
+            document.getElementById('resultSection').style.display = 'block';
+            
+            // ユーザープロフィールを読み込む（非同期）
+            loadUserProfile().then((profile) => {
+                // 動的コンテンツを更新（プロフィールを渡す）
+                updateUserDisplayContent(userData, profile);
+            });
+            
+            // スムーズにスクロール
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        } finally {
+            // ローディング状態を解除
+            submitButton.classList.remove('loading');
+            submitButton.disabled = false;
+            if (loadingOverlay) {
+                loadingOverlay.classList.remove('active');
+            }
+        }
+    });
+    
+    // エラーメッセージを表示する関数
+    function showErrorMessage(formGroup, message) {
+        let errorElement = formGroup.querySelector('.form-error-message');
+        if (!errorElement) {
+            errorElement = document.createElement('div');
+            errorElement.className = 'form-error-message';
+            formGroup.appendChild(errorElement);
+        }
+        errorElement.textContent = message;
+    }
+    
+    // 有効な日付かチェックする関数
+    function isValidDate(year, month, day) {
+        const date = new Date(year, month - 1, day);
+        return date.getFullYear() === year && 
+               date.getMonth() === month - 1 && 
+               date.getDate() === day &&
+               date <= new Date(); // 未来の日付は無効
+    }
+    
+    // リアルタイムバリデーション
+    document.getElementById('name').addEventListener('input', function() {
+        const formGroup = this.closest('.form-group');
+        if (this.value.trim().length >= 1) {
+            formGroup.classList.remove('error');
+            formGroup.classList.add('success');
+        } else {
+            formGroup.classList.remove('success');
+        }
+    });
+    
+    const dateSelects = document.querySelectorAll('#year, #month, #day');
+    dateSelects.forEach(select => {
+        select.addEventListener('change', function() {
+            const year = parseInt(document.getElementById('year').value);
+            const month = parseInt(document.getElementById('month').value);
+            const day = parseInt(document.getElementById('day').value);
+            const formGroup = this.closest('.form-group');
+            
+            if (year && month && day && isValidDate(year, month, day)) {
+                formGroup.classList.remove('error');
+                formGroup.classList.add('success');
+            } else if (year && month && day) {
+                formGroup.classList.add('error');
+                showErrorMessage(formGroup, '有効な日付を選択してください');
+            }
         });
     });
     
