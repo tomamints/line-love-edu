@@ -177,10 +177,11 @@ function extractThreeMonthsData(fortuneData) {
         
         // 各運勢のデータを取得（1-5の値）
         overall.push(fortuneData.overall[weekIndex]);
-        love.push(fortuneData.love[weekIndex]);
-        career.push(fortuneData.career[weekIndex]);
-        relationship.push(fortuneData.relationship[weekIndex]);
-        money.push(fortuneData.money[weekIndex]);
+        // 他の運勢データが存在しない場合は、overallの値を使用
+        love.push(fortuneData.love ? fortuneData.love[weekIndex] : fortuneData.overall[weekIndex]);
+        career.push(fortuneData.career ? fortuneData.career[weekIndex] : fortuneData.overall[weekIndex]);
+        relationship.push(fortuneData.relationship ? fortuneData.relationship[weekIndex] : fortuneData.overall[weekIndex]);
+        money.push(fortuneData.money ? fortuneData.money[weekIndex] : fortuneData.overall[weekIndex]);
     }
     
     return {
