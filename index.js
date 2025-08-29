@@ -1072,7 +1072,7 @@ async function handleTextMessage(event) {
             contents: [
               {
                 type: 'text',
-                text: '✨ 本格おつきさま診断 ✨',
+                text: '🌙 本格おつきさま診断 🌙',
                 size: 'xl',
                 color: '#ffffff',
                 align: 'center',
@@ -1096,37 +1096,23 @@ async function handleTextMessage(event) {
             contents: [
               {
                 type: 'text',
-                text: '🌙 あなたの生まれた瞬間の月の形',
+                text: '🌙 あなたの生まれた瞬間の月の形から',
                 size: 'md',
                 weight: 'bold',
                 color: '#764ba2',
-                wrap: true
+                wrap: true,
+                align: 'center'
               },
               {
                 type: 'text',
-                text: 'と',
+                text: '導き出される',
                 size: 'sm',
                 align: 'center',
                 margin: 'sm'
               },
               {
                 type: 'text',
-                text: '💝 4つの恋愛タイプ診断',
-                size: 'md',
-                weight: 'bold',
-                color: '#ff69b4',
-                wrap: true
-              },
-              {
-                type: 'text',
-                text: 'から導き出される',
-                size: 'sm',
-                align: 'center',
-                margin: 'sm'
-              },
-              {
-                type: 'text',
-                text: '📊 あなただけの詳細な運勢',
+                text: '🌙 あなただけの詳細な運勢',
                 size: 'lg',
                 weight: 'bold',
                 align: 'center',
@@ -1145,22 +1131,22 @@ async function handleTextMessage(event) {
                 contents: [
                   {
                     type: 'text',
-                    text: '📅 直近3ヶ月の運勢が分かる',
+                    text: '🌙 直近3ヶ月の運勢グラフ',
                     size: 'sm'
                   },
                   {
                     type: 'text',
-                    text: '💕 恋愛運の波を月単位で予測',
+                    text: '🌙 恋愛・仕事・金運の詳細予測',
                     size: 'sm'
                   },
                   {
                     type: 'text',
-                    text: '💰 金運アップのタイミング',
+                    text: '🌙 月相別の開運アドバイス',
                     size: 'sm'
                   },
                   {
                     type: 'text',
-                    text: '🎯 あなたの性格に合った開運法',
+                    text: '🌙 あなただけの月齢カレンダー',
                     size: 'sm'
                   }
                 ]
@@ -1178,7 +1164,7 @@ async function handleTextMessage(event) {
                 height: 'md',
                 action: {
                   type: 'uri',
-                  label: '✨ 診断結果を見る',
+                  label: '🌙 診断結果を見る',
                   uri: lpUrl
                 },
                 color: '#764ba2'
