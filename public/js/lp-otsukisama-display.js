@@ -1,5 +1,21 @@
 // Display-related functions for LP Otsukisama page
 
+// personality-axes-descriptions.jsonのデータを格納
+let personalityAxesData = null;
+
+// personality-axes-descriptions.jsonを読み込む
+async function loadPersonalityAxesData() {
+    try {
+        const response = await fetch('/data/personality-axes-descriptions.json');
+        personalityAxesData = await response.json();
+        console.log('Personality axes data loaded');
+        return true;
+    } catch (error) {
+        console.error('Failed to load personality axes data:', error);
+        return false;
+    }
+}
+
 // 月相パターンに応じてコンテンツを更新
 async function updateMoonPhaseContent(patternId) {
     console.log('updateMoonPhaseContent called with patternId:', patternId);
@@ -1013,71 +1029,67 @@ function updateDynamicContentFromPattern(pattern) {
 }
 
 // 各タイプの説明を更新する関数
-function updateEmotionalExpressionContent(type) {
-    const contents = {
-        'ストレート告白型': '好きな人には素直に気持ちを伝えるタイプ。駆け引きは苦手で、思ったことがすぐ顔に出てしまいます。その純粋さが、相手の心を動かす最大の魅力。',
-        'スキンシップ型': '言葉よりも行動で愛を表現するタイプ。手をつなぐ、ハグする、そばにいることで愛情を伝えます。触れ合いを通じて深い絆を築いていきます。',
-        'さりげない気遣い型': '大げさな言葉よりも、日常の小さな優しさで愛を示すタイプ。相手の好みを覚えて、さりげなくプレゼントしたり、疲れた時にそっと寄り添います。',
-        '奥手シャイ型': '心の中では大きな愛を抱えているけれど、なかなか表現できないタイプ。でも、その控えめな愛情表現が、かえって相手の心を掴むことも。'
-    };
-    const content = contents[type];
-    if (content) {
-        document.getElementById('emotionalExpressionContent').textContent = content;
+async function updateEmotionalExpressionContent(type) {
+    // データが読み込まれていない場合は読み込む
+    if (!personalityAxesData) {
+        await loadPersonalityAxesData();
+    }
+    
+    const element = document.getElementById('emotionalExpressionContent');
+    if (!element || !personalityAxesData) return;
+    
+    const typeData = personalityAxesData.emotionalExpression[type];
+    if (typeData) {
+        element.textContent = typeData.description;
     }
 }
 
-function updateDistanceStyleContent(type) {
-    const contents = {
-        'ベッタリ依存型': '恋人とは常に繋がっていたいタイプ。毎日会いたいし、連絡も頻繁。二人の世界に浸ることで、最高の幸せを感じます。',
-        '安心セーフ型': '適度な連絡と会う頻度で安心感を得るタイプ。毎日一回は連絡を取り合い、週末はデート。バランスの取れた関係を築きます。',
-        '自由マイペース型': '束縛されることを嫌い、自分のペースを大切にします。相手にも自由を与え、お互いに成長できる関係を理想とします。',
-        '壁あり慎重型': 'すぐには心を開かず、じっくりと距離を縮めていくタイプ。時間をかけて築いた信頼関係は、誰よりも深く強固なものになります。'
-    };
-    const content = contents[type];
-    if (content) {
-        document.getElementById('distanceStyleContent').textContent = content;
+async function updateDistanceStyleContent(type) {
+    // データが読み込まれていない場合は読み込む
+    if (!personalityAxesData) {
+        await loadPersonalityAxesData();
+    }
+    
+    const element = document.getElementById('distanceStyleContent');
+    if (!element || !personalityAxesData) return;
+    
+    const typeData = personalityAxesData.distanceStyle[type];
+    if (typeData) {
+        element.textContent = typeData.description;
     }
 }
 
-function updateLoveValuesContent(type) {
-    // LP_love-type-descriptions.mdから取得した詳細な説明を使用
+async function updateLoveValuesContent(type) {
+    // データが読み込まれていない場合は読み込む
+    if (!personalityAxesData) {
+        await loadPersonalityAxesData();
+    }
+    
     const element = document.getElementById('loveValuesContent');
-    if (!element) return;
+    if (!element || !personalityAxesData) return;
     
-    // 既存の長い説明をそのまま使用（タイプによって切り替え）
-    // ここでは簡略版を表示（詳細版は別途実装可能）
-    if (type !== 'ロマンチスト型') {
-        element.innerHTML = getLoveValuesDetailedContent(type);
+    const typeData = personalityAxesData.loveValues[type];
+    if (typeData) {
+        element.textContent = typeData.description;
     }
 }
 
-function updateLoveEnergyContent(type) {
+async function updateLoveEnergyContent(type) {
+    // データが読み込まれていない場合は読み込む
+    if (!personalityAxesData) {
+        await loadPersonalityAxesData();
+    }
+    
     const element = document.getElementById('loveEnergyContent');
-    if (!element) return;
+    if (!element || !personalityAxesData) return;
     
-    if (type !== '燃え上がり型') {
-        element.innerHTML = getLoveEnergyDetailedContent(type);
+    const typeData = personalityAxesData.loveEnergy[type];
+    if (typeData) {
+        element.textContent = typeData.description;
     }
 }
 
-function getLoveValuesDetailedContent(type) {
-    // 詳細な説明を返す（LP_love-type-descriptions.mdの内容を参照）
-    const contents = {
-        'リアリスト型': '現実的で堅実な恋愛観を持つあなた。愛は日常の積み重ねだと考え、派手な演出よりも確実な幸せを求めます。',
-        '刺激ハンター型': '新しい体験やドキドキを求めるあなた。マンネリは大敵で、常に新鮮な刺激を恋愛に求めます。',
-        '成長パートナー型': '恋愛を通じて共に成長することを重視するあなた。相手と切磋琢磨し、より良い自分になることを目指します。'
-    };
-    return contents[type] || '';
-}
-
-function getLoveEnergyDetailedContent(type) {
-    const contents = {
-        '持続型': '安定した愛情を長く注ぎ続けるタイプ。激しい恋ではないけれど、確実に深まっていく愛を育みます。',
-        '波あり型': '感情の浮き沈みがあるタイプ。時に情熱的、時にクール。その変化が恋愛にスパイスを与えます。',
-        'クール型': '恋愛に全てを捧げず、冷静さを保つタイプ。バランスの取れた大人の恋愛を楽しみます。'
-    };
-    return contents[type] || '';
-}
+// 削除 - JSONから直接読み込むため不要
 
 // 月相の解説を更新する関数
 async function updateMoonPhaseExplanations(moonPhase, hiddenMoonPhase) {
