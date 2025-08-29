@@ -698,20 +698,24 @@ function displayCombinedPersonality(profile) {
 async function updateUserDisplayContent(userData, profile = null) {
     const { name, moonPhase, hiddenMoonPhase, patternId } = userData;
     
-    // 占い文章を含む月相コンテンツを更新
-    await updateMoonPhaseContent(patternId);
+    // まずローディングを表示
+    showLoadingOverlay();
     
-    // 6つの円形要素を更新（月相とプロフィールを渡す）
-    if (typeof updateSixElements === 'function') {
-        await updateSixElements(patternId, moonPhase, hiddenMoonPhase, profile);
-    }
-    
-    // ユーザー名を複数箇所に表示
-    const nameElements = ['resultName', 'resultName2', 'resultName3'];
-    nameElements.forEach(id => {
-        const elem = document.getElementById(id);
-        if (elem) elem.textContent = name;
-    });
+    try {
+        // 占い文章を含む月相コンテンツを更新
+        await updateMoonPhaseContent(patternId);
+        
+        // 6つの円形要素を更新（月相とプロフィールを渡す）
+        if (typeof updateSixElements === 'function') {
+            await updateSixElements(patternId, moonPhase, hiddenMoonPhase, profile);
+        }
+        
+        // ユーザー名を複数箇所に表示
+        const nameElements = ['resultName', 'resultName2', 'resultName3'];
+        nameElements.forEach(id => {
+            const elem = document.getElementById(id);
+            if (elem) elem.textContent = name;
+        });
     
     // 月相情報を表示（非表示に変更）
     /*
@@ -754,8 +758,32 @@ async function updateUserDisplayContent(userData, profile = null) {
         updateDynamicContentFromPattern(patternData);
     }
     
-    // 月相の解説を更新
-    await updateMoonPhaseExplanations(moonPhase, hiddenMoonPhase);
+        // 月相の解説を更新
+        await updateMoonPhaseExplanations(moonPhase, hiddenMoonPhase);
+        
+        // すべての更新が完了してから少し待機（アニメーション完了を待つ）
+        await new Promise(resolve => setTimeout(resolve, 100));
+        
+    } finally {
+        // 最後にローディングを非表示
+        hideLoadingOverlay();
+    }
+}
+
+// ローディングオーバーレイを表示
+function showLoadingOverlay() {
+    const overlay = document.querySelector('.loading-overlay');
+    if (overlay) {
+        overlay.style.display = 'flex';
+    }
+}
+
+// ローディングオーバーレイを非表示
+function hideLoadingOverlay() {
+    const overlay = document.querySelector('.loading-overlay');
+    if (overlay) {
+        overlay.style.display = 'none';
+    }
 }
 
 // 動的コンテンツを更新する関数（パターンから）
