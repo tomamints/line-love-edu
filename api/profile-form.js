@@ -34,38 +34,46 @@ module.exports = async (req, res) => {
       }
       
       try {
-        // ユーザーIDからプロファイルを取得
-        const profiles = await profilesDB.getAllProfiles();
+        // Supabaseから直接診断データを取得
+        const { supabase } = require('../core/database/supabase');
         
-        // 診断IDで検索
-        let diagnosis = null;
-        for (const [userId, profile] of Object.entries(profiles)) {
-          if (profile.diagnosisId === id) {
-            diagnosis = {
-              id: profile.diagnosisId,
-              user_id: userId,
-              user_name: profile.userName,
-              birth_date: profile.birthDate,
-              pattern_id: profile.moonPatternId,
-              diagnosis_type: profile.diagnosisType || 'otsukisama',
-              is_paid: profile.isPaid || false,
-              created_at: profile.diagnosisDate
-            };
-            break;
+        if (supabase) {
+          const { data, error } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('diagnosis_id', id)
+            .single();
+            
+          if (error || !data) {
+            console.log('診断データが見つかりません:', id);
+            return res.status(404).json({ 
+              success: false,
+              error: '診断データが見つかりません' 
+            });
           }
-        }
-        
-        if (!diagnosis) {
-          return res.status(404).json({ 
+          
+          const diagnosis = {
+            id: data.diagnosis_id,
+            user_id: data.user_id,
+            user_name: data.user_name,
+            birth_date: data.birth_date,
+            pattern_id: data.moon_pattern_id,
+            diagnosis_type: data.diagnosis_type || 'otsukisama',
+            is_paid: data.is_paid || false,
+            created_at: data.diagnosis_date || data.created_at
+          };
+          
+          return res.json({
+            success: true,
+            diagnosis: diagnosis
+          });
+        } else {
+          // ファイルベースのフォールバック
+          return res.status(500).json({ 
             success: false,
-            error: '診断データが見つかりません' 
+            error: 'データベース接続エラー' 
           });
         }
-        
-        return res.json({
-          success: true,
-          diagnosis: diagnosis
-        });
       } catch (error) {
         console.error('診断データ取得エラー:', error);
         return res.status(500).json({ 
