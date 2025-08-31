@@ -2213,13 +2213,19 @@
         .hanging-text {
             margin-top: -20px;
             padding: 35px 30px 25px;
-            background: #ffffff;
+            background: rgba(20, 30, 50, 0.95);
             border-radius: 0 0 20px 20px;
-            border: 1px solid rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             border-top: none;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
             position: relative;
             z-index: 0;
+        }
+        
+        .hanging-text p {
+            color: #ffffff;
+            line-height: 1.8;
+            margin: 0;
         }
         
         /* 恋愛運、人間関係運、仕事運の解説部分も吊り下げデザインに */
