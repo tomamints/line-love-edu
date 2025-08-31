@@ -970,14 +970,17 @@
             if (diagnosisId) {
                 try {
                     console.log('診断データを取得中:', diagnosisId);
-                    const response = await fetch(`/api/profile-form?action=get-diagnosis&id=${diagnosisId}`);
+                    const userId = urlParams.get('userId');
+                    const response = await fetch(`/api/profile-form-v2?action=get-diagnosis&id=${diagnosisId}&userId=${userId || ''}`);
                     const data = await response.json();
                     console.log('取得したデータ:', data);
                     
                     if (data.success && data.diagnosis) {
-                        // APIレスポンスに基づいてモードを設定
-                        const mode = setDisplayMode(data.isPaid);
+                        // アクセスレベルに基づいてモードを設定
+                        const isPaid = data.accessLevel === 'full';
+                        const mode = setDisplayMode(isPaid);
                         window.currentMode = mode;  // グローバルに保存
+                        window.currentUserId = userId;  // ユーザーIDも保存
                         // 名前を表示
                         const resultName = document.getElementById('resultName');
                         if (resultName) {
@@ -1113,27 +1116,24 @@
                         purchaseButton.textContent = '処理中...';
                         
                         try {
-                            const response = await fetch('/api/profile-form?action=create-checkout', {
+                            const response = await fetch('/api/create-checkout-session', {
                                 method: 'POST',
                                 headers: {
                                     'Content-Type': 'application/json'
                                 },
                                 body: JSON.stringify({
                                     diagnosisId: diagnosisId,
-                                    userId: userId || ''
+                                    userId: window.currentUserId || 'anonymous'
                                 })
                             });
                             
                             const data = await response.json();
                             
-                            if (data.success) {
-                                if (data.isPaid) {
-                                    window.location.href = data.redirectUrl;
-                                } else {
-                                    window.location.href = data.checkoutUrl;
-                                }
+                            if (data.success && data.checkoutUrl) {
+                                // Stripe決済ページへリダイレクト
+                                window.location.href = data.checkoutUrl;
                             } else {
-                                throw new Error(data.error || '決済処理に失敗しました');
+                                throw new Error(data.error || '決済セッションの作成に失敗しました');
                             }
                         } catch (error) {
                             console.error('決済エラー:', error);

@@ -171,20 +171,44 @@
             
             // データを保存してプレビューページへ遷移
             try {
-                // APIでデータベースに保存
+                // 新しいAPI構造でデータベースに保存
                 if (userId) {
-                    const saveResponse = await fetch('/api/profile-form', {
+                    // 月相データを計算
+                    const moonPhaseIndex = Math.floor(patternId / 8);
+                    const hiddenPhaseIndex = patternId % 8;
+                    const moonPhaseNames = ['新月', '三日月', '上弦の月', '十三夜', '満月', '十六夜', '下弦の月', '暁'];
+                    
+                    // 4つの軸データをランダムに生成（実際はパターンIDから計算すべき）
+                    const emotionalTypes = ['straight', 'physical', 'subtle', 'shy'];
+                    const distanceTypes = ['close', 'moderate', 'independent', 'cautious'];
+                    const valueTypes = ['romantic', 'realistic', 'excitement', 'growth'];
+                    const energyTypes = ['intense', 'stable', 'fluctuating', 'cool'];
+                    
+                    const resultData = {
+                        moon_pattern_id: patternId,
+                        moon_phase: moonPhaseNames[moonPhaseIndex],
+                        hidden_moon_phase: moonPhaseNames[hiddenPhaseIndex],
+                        emotional_expression: emotionalTypes[moonPhaseIndex % 4],
+                        distance_style: distanceTypes[hiddenPhaseIndex % 4],
+                        love_values: valueTypes[(moonPhaseIndex + hiddenPhaseIndex) % 4],
+                        love_energy: energyTypes[patternId % 4],
+                        moon_power_1: '直感力',
+                        moon_power_2: '創造力',
+                        moon_power_3: '浄化力'
+                    };
+                    
+                    const saveResponse = await fetch('/api/profile-form-v2', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
                         },
                         body: JSON.stringify({
-                            action: 'save-otsukisama',
+                            action: 'save-diagnosis',
                             userId: userId,
-                            name: formData.name,
+                            userName: formData.name,
                             birthDate: `${formData.year}-${String(formData.month).padStart(2, '0')}-${String(formData.day).padStart(2, '0')}`,
-                            patternId: patternId,
-                            diagnosisType: 'otsukisama'
+                            diagnosisType: 'otsukisama',
+                            resultData: resultData
                         })
                     });
                     
@@ -192,7 +216,7 @@
                     
                     if (result.success && result.diagnosisId) {
                         // データベースに保存されたIDを使用してプレビューページへ
-                        window.location.href = `/lp-otsukisama-unified.html?id=${result.diagnosisId}`;
+                        window.location.href = `/lp-otsukisama-unified.html?id=${result.diagnosisId}&userId=${userId}`;
                         return;
                     }
                 }
