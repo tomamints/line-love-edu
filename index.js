@@ -100,6 +100,12 @@ app.get('/api/profile-form-success', async (req, res) => {
   await successPage(req, res);
 });
 
+// プロファイル取得API
+app.get('/api/get-love-profile', async (req, res) => {
+  const getLoveProfile = require('./api/get-love-profile');
+  await getLoveProfile(req, res);
+});
+
 // ── ③ 重複防止
 const recentMessageIds = new Set();
 const recentPostbackIds = new Set();
