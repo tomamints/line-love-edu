@@ -265,6 +265,11 @@ class ProfilesDB {
       distanceStyle: data.distance_style,
       loveValues: data.love_values,
       loveEnergy: data.love_energy,
+      moonPatternId: data.moon_pattern_id,
+      diagnosisType: data.diagnosis_type,
+      diagnosisId: data.diagnosis_id,
+      diagnosisDate: data.diagnosis_date,
+      isPaid: data.is_paid,
       createdAt: data.created_at,
       updatedAt: data.updated_at,
       // lastFortuneResultなどの追加データは元のprofileDataから継承

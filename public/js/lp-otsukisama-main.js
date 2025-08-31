@@ -91,7 +91,7 @@ window.addEventListener('DOMContentLoaded', async function() {
                 }
                 
                 // パターンIDをグローバル変数に設定
-                currentPatternId = diagnosis.pattern_id;
+                currentPatternId = diagnosis.moon_pattern_id || diagnosis.pattern_id;
                 
                 // 月相コンテンツを更新
                 updateMoonPhaseContent(currentPatternId);
@@ -103,9 +103,17 @@ window.addEventListener('DOMContentLoaded', async function() {
                 const moonPhase = moonPhaseNames[moonPhaseIndex];
                 const hiddenMoonPhase = moonPhaseNames[hiddenPhaseIndex];
                 
+                // 4つの軸データを設定
+                const loveProfile = {
+                    emotionalExpression: diagnosis.emotional_expression,
+                    distanceStyle: diagnosis.distance_style,
+                    loveValues: diagnosis.love_values,
+                    loveEnergy: diagnosis.love_energy
+                };
+                
                 // 6つの要素を更新
                 if (typeof updateSixElements === 'function') {
-                    updateSixElements(currentPatternId, moonPhase, hiddenMoonPhase, null);
+                    updateSixElements(currentPatternId, moonPhase, hiddenMoonPhase, loveProfile);
                 }
                 
                 // グラフデータも更新

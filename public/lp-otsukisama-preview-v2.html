@@ -388,7 +388,7 @@
                         }
                         
                         // パターンIDから月相を計算
-                        const patternId = data.diagnosis.pattern_id;
+                        const patternId = data.diagnosis.moon_pattern_id || data.diagnosis.pattern_id;
                         const moonPhaseIndex = Math.floor(patternId / 8);
                         const hiddenPhaseIndex = patternId % 8;
                         
@@ -398,13 +398,21 @@
                             moonPhaseImg.src = `/images/moon/omote-${moonPhaseIndex}.png`;
                         }
                         
+                        // 4つの軸データを設定
+                        const loveProfile = {
+                            emotionalExpression: data.diagnosis.emotional_expression,
+                            distanceStyle: data.diagnosis.distance_style,
+                            loveValues: data.diagnosis.love_values,
+                            loveEnergy: data.diagnosis.love_energy
+                        };
+                        
                         // データを設定（本番ページと同じ関数を使用）
                         if (typeof updateMoonPhaseContent === 'function') {
                             updateMoonPhaseContent(patternId);
                         }
                         if (typeof updateSixElements === 'function') {
                             const moonPhaseNames = ['新月', '三日月', '上弦の月', '十三夜', '満月', '十六夜', '下弦の月', '暁'];
-                            updateSixElements(patternId, moonPhaseNames[moonPhaseIndex], moonPhaseNames[hiddenPhaseIndex], null);
+                            updateSixElements(patternId, moonPhaseNames[moonPhaseIndex], moonPhaseNames[hiddenPhaseIndex], loveProfile);
                         }
                     }
                 } catch (error) {
