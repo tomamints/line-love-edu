@@ -949,6 +949,9 @@
                             loveEnergy: energyMap[data.diagnosis.love_energy] || data.diagnosis.love_energy
                         };
                         
+                        // エネルギータイプの英語キーを保存（updateLoveEnergyContent用）
+                        window.currentEnergyTypeKey = data.diagnosis.love_energy;
+                        
                         // 6つの要素を更新
                         if (typeof updateSixElements === 'function') {
                             updateSixElements(currentPatternId, moonPhase, hiddenMoonPhase, loveProfile);
@@ -957,6 +960,11 @@
                         // 4つの軸データを表示（完全版と同じ処理）
                         if (typeof updatePersonalityDisplay === 'function') {
                             updatePersonalityDisplay(loveProfile);
+                        }
+                        
+                        // エネルギーコンテンツを英語キーで更新
+                        if (typeof updateLoveEnergyContent === 'function') {
+                            updateLoveEnergyContent(window.currentEnergyTypeKey);
                         }
                         
                         // グラフデータも更新
@@ -969,8 +977,8 @@
                         if (typeof initFortuneChart === 'function') {
                             initFortuneChart(currentPatternId, birthdate);
                         }
-                        if (typeof initPersonalizedCalendar === 'function') {
-                            initPersonalizedCalendar(currentPatternId, birthdate);
+                        if (typeof generatePersonalizedCalendar === 'function') {
+                            generatePersonalizedCalendar(currentPatternId);
                         }
                         
                         // 運勢コンテンツを更新（全体運、恋愛運、人間関係運、仕事運、金運）
@@ -999,9 +1007,8 @@
                         }
                         
                         // カレンダーを初期化
-                        if (typeof initPersonalizedCalendar === 'function') {
-                            const birthdate = new Date(data.diagnosis.birth_date);
-                            initPersonalizedCalendar(currentPatternId, birthdate);
+                        if (typeof generatePersonalizedCalendar === 'function') {
+                            generatePersonalizedCalendar(currentPatternId);
                         }
                         
                         
