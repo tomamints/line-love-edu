@@ -21,11 +21,11 @@ CREATE TABLE IF NOT EXISTS Payments (
     completed_at TIMESTAMP WITH TIME ZONE, -- 支払い完了時刻
     
     -- メタデータ
-    metadata JSONB, -- 追加情報（割引コード、キャンペーン情報等）
+    metadata JSONB -- 追加情報（割引コード、キャンペーン情報等）
     
-    -- インデックス
-    CONSTRAINT fk_diagnosis FOREIGN KEY (diagnosis_id) 
-        REFERENCES Diagnoses(id) ON DELETE CASCADE
+    -- 外部キー制約は後で追加（Diagnosesテーブルが存在する場合）
+    -- CONSTRAINT fk_diagnosis FOREIGN KEY (diagnosis_id) 
+    --     REFERENCES Diagnoses(id) ON DELETE CASCADE
 );
 
 -- インデックスの作成
@@ -35,7 +35,9 @@ CREATE INDEX idx_payments_status ON Payments(status);
 CREATE INDEX idx_payments_created_at ON Payments(created_at DESC);
 CREATE INDEX idx_payments_stripe_session ON Payments(stripe_session_id);
 
--- 診断テーブルの支払い状態を更新するトリガー
+-- 診断テーブルの支払い状態を更新するトリガー（Diagnosesテーブルが存在する場合のみ）
+-- 注: Diagnosesテーブルが存在しない場合はコメントアウトしてください
+/*
 CREATE OR REPLACE FUNCTION update_diagnosis_payment_status()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -65,6 +67,7 @@ CREATE TRIGGER trigger_payment_status_update
     BEFORE UPDATE ON Payments
     FOR EACH ROW
     EXECUTE FUNCTION update_diagnosis_payment_status();
+*/
 
 -- サンプルデータ（テスト用）
 -- INSERT INTO Payments (
