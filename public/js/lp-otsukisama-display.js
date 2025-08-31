@@ -930,7 +930,11 @@ function updateDynamicContentFromPattern(pattern) {
         if (newConnections) newConnections.textContent = pattern.relationship.newConnections || '';
         
         const challenges = document.getElementById('fortune-relationship-challenges');
-        if (challenges) challenges.textContent = pattern.relationship.challengesAndSolutions || '';
+        if (challenges) {
+            // デフォルトテキストを設定
+            const defaultChallengesText = '切るべき縁は、あなたの成長を阻害し、エネルギーを奪う人たち。一方的に依存してくる人、否定的な言葉ばかりを投げかける人、あなたの可能性を信じない人とは距離を置きましょう。繋ぐべき縁は、互いに高め合い、前向きなエネルギーを共有できる人たちです。';
+            challenges.textContent = (pattern.relationship && pattern.relationship.challengesAndSolutions) || defaultChallengesText;
+        }
     }
     
     // 金運のピークタイミング
@@ -980,14 +984,16 @@ function updateDynamicContentFromPattern(pattern) {
     // 仕事運の新規セクション
     if (pattern.work) {
         const newTalent = document.getElementById('fortune-work-new-talent');
-        if (newTalent && pattern.work.newTalent) {
-            newTalent.textContent = pattern.work.newTalent;
+        if (newTalent) {
+            const defaultTalentText = 'この3ヶ月で開花するのは、あなたの中に眠っていたリーダーシップの才能。今までは裏方に徹していたあなたが、チームを率いる立場に立つことになります。また、クリエイティブなアイデアを形にする力も向上し、周りから注目される成果を上げるでしょう。';
+            newTalent.textContent = (pattern.work && pattern.work.newTalent) || defaultTalentText;
             console.log('Work new talent set successfully');
         }
         
         const turningPoint = document.getElementById('fortune-work-turning-point');
-        if (turningPoint && pattern.work.turningPoint) {
-            turningPoint.textContent = pattern.work.turningPoint;
+        if (turningPoint) {
+            const defaultTurningText = '診断から2ヶ月目の第3週頃、重要な転機が訪れます。新しいプロジェクトへの参加打診、昇進の話、転職のチャンスなど、キャリアを大きく変える出来事が起こりそう。そのサインは、上司からの思いがけない声かけや、突然のミーティング設定として現れるでしょう。';
+            turningPoint.textContent = (pattern.work && pattern.work.turningPoint) || defaultTurningText;
             console.log('Work turning point set successfully');
         }
     }
