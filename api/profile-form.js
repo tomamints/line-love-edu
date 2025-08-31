@@ -1067,10 +1067,50 @@ module.exports = async (req, res) => {
       }
       
       try {
-        // lp-otsukisama-moon.jsの関数を使用
-        const { generatePatternId } = require('../public/js/lp-otsukisama-moon');
-        const date = new Date(birthDate);
-        const moonPatternId = generatePatternId(date.getFullYear(), date.getMonth() + 1, date.getDate());
+        // 月のパターンを計算（lp-otsukisama-moon.jsと同じロジック）
+        const calculateMoonPattern = (birthDate) => {
+          const date = new Date(birthDate);
+          const year = date.getFullYear();
+          const month = date.getMonth() + 1;
+          const day = date.getDate();
+          
+          // 月齢を計算（LINEバックエンドと同じ）
+          const referenceDate = new Date('2000-01-06 18:14:00');
+          const lunarCycle = 29.53059;
+          const daysDiff = (date - referenceDate) / (1000 * 60 * 60 * 24);
+          let moonAge = daysDiff % lunarCycle;
+          if (moonAge < 0) moonAge += lunarCycle;
+          
+          // 月齢から月相を判定
+          const ranges = [
+            { index: 0, min: 0, max: 3.7 },      // 新月
+            { index: 1, min: 3.7, max: 7.4 },    // 三日月
+            { index: 2, min: 7.4, max: 11.1 },   // 上弦
+            { index: 3, min: 11.1, max: 14.8 },  // 十三夜
+            { index: 4, min: 14.8, max: 18.5 },  // 満月
+            { index: 5, min: 18.5, max: 22.1 },  // 十六夜
+            { index: 6, min: 22.1, max: 25.8 },  // 下弦
+            { index: 7, min: 25.8, max: 29.53 }  // 暁
+          ];
+          
+          let moonPhaseIndex = 0;
+          for (const range of ranges) {
+            if (moonAge >= range.min && moonAge < range.max) {
+              moonPhaseIndex = range.index;
+              break;
+            }
+          }
+          
+          // 隠れ月相のインデックスを計算（既存のロジック）
+          const seed = (month * 31 + day) % 8;
+          const hiddenIndex = (moonPhaseIndex + seed + 4) % 8;
+          
+          // パターンID計算（0-63）
+          const patternId = moonPhaseIndex * 8 + hiddenIndex;
+          return patternId;
+        };
+        
+        const moonPatternId = calculateMoonPattern(birthDate);
         const diagnosisId = `diag_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
         
         // プロファイルを保存
