@@ -701,16 +701,20 @@
                             resultName.textContent = data.diagnosis.user_name || 'あなた';
                         }
                         
-                        // パターンIDから月相を計算
-                        const patternId = data.diagnosis.moon_pattern_id || data.diagnosis.pattern_id;
-                        const moonPhaseIndex = Math.floor(patternId / 8);
-                        const hiddenPhaseIndex = patternId % 8;
+                        // パターンIDをグローバル変数に設定
+                        currentPatternId = data.diagnosis.moon_pattern_id || data.diagnosis.pattern_id;
                         
-                        // 月相画像を更新
-                        const moonPhaseImg = document.querySelector('.moon-phase-image');
-                        if (moonPhaseImg) {
-                            moonPhaseImg.src = `/images/moon/omote-${moonPhaseIndex}.png`;
+                        // 月相コンテンツを更新
+                        if (typeof updateMoonPhaseContent === 'function') {
+                            updateMoonPhaseContent(currentPatternId);
                         }
+                        
+                        // 月相を計算して表示
+                        const moonPhaseIndex = Math.floor(currentPatternId / 8);
+                        const hiddenPhaseIndex = currentPatternId % 8;
+                        const moonPhaseNames = ['新月', '三日月', '上弦の月', '十三夜', '満月', '十六夜', '下弦の月', '暁'];
+                        const moonPhase = moonPhaseNames[moonPhaseIndex];
+                        const hiddenMoonPhase = moonPhaseNames[hiddenPhaseIndex];
                         
                         // 4つの軸データを設定
                         const loveProfile = {
@@ -720,30 +724,28 @@
                             loveEnergy: data.diagnosis.love_energy
                         };
                         
-                        // データを設定（完全版と同じロジック）
-                        // 月相コンテンツを更新
-                        if (typeof updateMoonPhaseContent === 'function') {
-                            updateMoonPhaseContent(patternId);
-                        }
-                        
-                        // 月相名を取得
-                        const moonPhaseNames = ['新月', '三日月', '上弦の月', '十三夜', '満月', '十六夜', '下弦の月', '暁'];
-                        const moonPhase = moonPhaseNames[moonPhaseIndex];
-                        const hiddenMoonPhase = moonPhaseNames[hiddenPhaseIndex];
-                        
                         // 6つの要素を更新
                         if (typeof updateSixElements === 'function') {
-                            updateSixElements(patternId, moonPhase, hiddenMoonPhase, loveProfile);
+                            updateSixElements(currentPatternId, moonPhase, hiddenMoonPhase, loveProfile);
                         }
                         
-                        // 4つの軸データを表示（updatePersonalityDisplay）
+                        // 4つの軸データを表示（完全版と同じ処理）
                         if (typeof updatePersonalityDisplay === 'function') {
                             updatePersonalityDisplay(loveProfile);
                         }
                         
                         // グラフデータも更新
                         if (typeof updateFortuneGraph === 'function') {
-                            updateFortuneGraph(patternId);
+                            updateFortuneGraph(currentPatternId);
+                        }
+                        
+                        // 月齢カレンダーとグラフを初期化
+                        const birthdate = new Date(data.diagnosis.birth_date);
+                        if (typeof initFortuneChart === 'function') {
+                            initFortuneChart(currentPatternId, birthdate);
+                        }
+                        if (typeof initPersonalizedCalendar === 'function') {
+                            initPersonalizedCalendar(currentPatternId, birthdate);
                         }
                         
                         // 運勢コンテンツを更新（全体運、恋愛運、人間関係運、仕事運、金運）
@@ -777,23 +779,6 @@
                             initPersonalizedCalendar(patternId, birthdate);
                         }
                         
-                        // 3つの月の力を更新（データから直接設定）
-                        if (window.OtsukisamaDataLoader && window.OtsukisamaDataLoader.isLoaded()) {
-                            const moonPhaseNames = ['新月', '三日月', '上弦の月', '十三夜', '満月', '十六夜', '下弦の月', '暁'];
-                            const actualMoonPhase = moonPhaseNames[moonPhaseIndex];
-                            const threePowers = window.OtsukisamaDataLoader.getThreePowers(actualMoonPhase);
-                            if (threePowers && threePowers.length === 3) {
-                                const powerItems = document.querySelectorAll('.three-powers .energy-item');
-                                powerItems.forEach((item, index) => {
-                                    if (threePowers[index]) {
-                                        const titleEl = item.querySelector('.energy-title');
-                                        const descEl = item.querySelector('.energy-description');
-                                        if (titleEl) titleEl.textContent = threePowers[index].title;
-                                        if (descEl) descEl.textContent = threePowers[index].description;
-                                    }
-                                });
-                            }
-                        }
                         
                         console.log('データ表示完了');
                     } else {
@@ -853,6 +838,9 @@
                 }
             });
         }
+        
+        // グローバル変数を設定
+        let currentPatternId = null;
         
         // DOMロード後に初期化
         document.addEventListener('DOMContentLoaded', async function() {
