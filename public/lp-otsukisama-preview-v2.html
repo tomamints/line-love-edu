@@ -310,6 +310,13 @@
                 <button class="purchase-button" id="purchaseButton">
                     診断結果を購入する
                 </button>
+                
+                <!-- テスト用：決済をスキップして完全版を見る -->
+                <div style="margin-top: 20px; text-align: center;">
+                    <a href="#" id="skipPaymentLink" style="color: #666; font-size: 12px; text-decoration: underline;">
+                        ※ テスト用：決済をスキップして完全版を見る
+                    </a>
+                </div>
             </div>
             
             <!-- 以降の内容はぼかし表示 -->
@@ -444,7 +451,27 @@
         }
         
         // DOMロード後に初期化
-        document.addEventListener('DOMContentLoaded', initPreview);
+        document.addEventListener('DOMContentLoaded', function() {
+            initPreview();
+            
+            // テスト用：決済スキップリンク
+            const skipPaymentLink = document.getElementById('skipPaymentLink');
+            if (skipPaymentLink) {
+                skipPaymentLink.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const diagnosisId = urlParams.get('id');
+                    const userId = urlParams.get('userId');
+                    
+                    // 完全版ページへ遷移
+                    let url = '/lp-otsukisama.html';
+                    if (diagnosisId) url += '?id=' + diagnosisId;
+                    if (userId) url += (diagnosisId ? '&' : '?') + 'userId=' + userId;
+                    
+                    window.location.href = url;
+                });
+            }
+        });
     </script>
 </body>
 </html>
