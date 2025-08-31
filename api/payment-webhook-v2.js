@@ -3,8 +3,8 @@
  * 支払い完了時にpurchasesテーブルに記録し、アクセス権限を付与
  */
 
-import { createClient } from '@supabase/supabase-js';
-import Stripe from 'stripe';
+const { createClient } = require('@supabase/supabase-js');
+const Stripe = require('stripe');
 
 // Supabase設定 - 環境変数の確認
 // Vercel環境変数に合わせて修正（SUPABASE_ANON_KEYを優先）
@@ -19,7 +19,7 @@ const stripeKey = process.env.STRIPE_SECRET_KEY;
 const stripe = stripeKey ? new Stripe(stripeKey) : null;
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
     if (req.method !== 'POST') {
         return res.status(405).json({ error: 'Method not allowed' });
     }
@@ -263,7 +263,7 @@ async function sendLineNotification(userId, productName, amount) {
 }
 
 // Vercelの設定: raw bodyを受け取る
-export const config = {
+module.exports.config = {
     api: {
         bodyParser: false, // Stripeのwebhookはraw bodyが必要
     },

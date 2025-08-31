@@ -886,7 +886,7 @@
             if (diagnosisId) {
                 try {
                     console.log('診断データを取得中:', diagnosisId);
-                    const response = await fetch(`/api/profile-form?action=get-diagnosis&id=${diagnosisId}`);
+                    const response = await fetch(`/api/profile-form-v2?action=get-diagnosis&id=${diagnosisId}`);
                     const data = await response.json();
                     console.log('取得したデータ:', data);
                     
@@ -1040,7 +1040,7 @@
                 button.textContent = '処理中...';
                 
                 try {
-                    const response = await fetch('/api/profile-form?action=create-checkout', {
+                    const response = await fetch('/api/create-checkout-session', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'

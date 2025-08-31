@@ -88,10 +88,28 @@ app.use('/api', express.urlencoded({ extended: true }));
 
 // 古いエンドポイントは削除（新しいフローを使用）
 
-// プロフィールフォーム
+// プロフィールフォーム（旧バージョン - 互換性のため残す）
 app.all('/api/profile-form', async (req, res) => {
   const profileForm = require('./api/profile-form');
   await profileForm(req, res);
+});
+
+// 新しいAPIエンドポイント（V2）
+app.all('/api/profile-form-v2', async (req, res) => {
+  const profileFormV2 = require('./api/profile-form-v2');
+  await profileFormV2(req, res);
+});
+
+// Checkout Session作成
+app.post('/api/create-checkout-session', async (req, res) => {
+  const createCheckout = require('./api/create-checkout-session');
+  await createCheckout(req, res);
+});
+
+// Payment Webhook V2
+app.post('/api/payment-webhook-v2', express.raw({ type: 'application/json' }), async (req, res) => {
+  const paymentWebhook = require('./api/payment-webhook-v2');
+  await paymentWebhook(req, res);
 });
 
 // プロフィール保存成功ページ

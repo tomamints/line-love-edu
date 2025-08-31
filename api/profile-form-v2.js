@@ -3,7 +3,7 @@
  * 診断の作成、取得、アクセス権限管理
  */
 
-import { createClient } from '@supabase/supabase-js';
+const { createClient } = require('@supabase/supabase-js');
 
 // Supabase設定 - 環境変数の確認とエラーハンドリング
 // Vercel環境変数に合わせて修正
@@ -19,7 +19,7 @@ if (!supabaseServiceKey) {
 // Supabaseクライアントの作成（環境変数がある場合のみ）
 const supabase = supabaseUrl && supabaseServiceKey ? createClient(supabaseUrl, supabaseServiceKey) : null;
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
     // Supabaseクライアントが初期化されていない場合はエラー
     if (!supabase) {
         return res.status(500).json({ 

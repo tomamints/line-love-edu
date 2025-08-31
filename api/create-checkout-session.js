@@ -3,8 +3,8 @@
  * 診断結果の購入用決済ページを作成
  */
 
-import { createClient } from '@supabase/supabase-js';
-import Stripe from 'stripe';
+const { createClient } = require('@supabase/supabase-js');
+const Stripe = require('stripe');
 
 // Supabase設定 - 環境変数の確認
 // Vercel環境変数に合わせて修正（SUPABASE_ANON_KEYを優先）
@@ -18,7 +18,7 @@ const supabase = supabaseUrl && supabaseServiceKey ? createClient(supabaseUrl, s
 const stripeKey = process.env.STRIPE_SECRET_KEY;
 const stripe = stripeKey ? new Stripe(stripeKey) : null;
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
     if (req.method !== 'POST') {
         return res.status(405).json({ error: 'Method not allowed' });
     }
