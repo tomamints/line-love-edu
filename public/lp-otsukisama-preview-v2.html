@@ -951,7 +951,7 @@
                         // 運勢コンテンツを更新（全体運、恋愛運、人間関係運、仕事運、金運）
                         // データローダーが準備できているか確認
                         if (window.OtsukisamaDataLoader && window.OtsukisamaDataLoader.isLoaded()) {
-                            const pattern = window.OtsukisamaDataLoader.getPatternFortune(patternId);
+                            const pattern = window.OtsukisamaDataLoader.getPatternFortune(currentPatternId);
                             console.log('Pattern data for fortune:', pattern);
                             if (pattern && typeof updateDynamicContentFromPattern === 'function') {
                                 updateDynamicContentFromPattern(pattern);
@@ -959,7 +959,7 @@
                         } else {
                             // データローダーの読み込みを待ってから再試行
                             window.addEventListener('otsukisama-data-loaded', () => {
-                                const pattern = window.OtsukisamaDataLoader.getPatternFortune(patternId);
+                                const pattern = window.OtsukisamaDataLoader.getPatternFortune(currentPatternId);
                                 console.log('Pattern data for fortune (after wait):', pattern);
                                 if (pattern && typeof updateDynamicContentFromPattern === 'function') {
                                     updateDynamicContentFromPattern(pattern);
@@ -970,13 +970,13 @@
                         // グラフを初期化
                         if (typeof initFortuneChart === 'function') {
                             const birthdate = new Date(data.diagnosis.birth_date);
-                            initFortuneChart(patternId, birthdate);
+                            initFortuneChart(currentPatternId, birthdate);
                         }
                         
                         // カレンダーを初期化
                         if (typeof initPersonalizedCalendar === 'function') {
                             const birthdate = new Date(data.diagnosis.birth_date);
-                            initPersonalizedCalendar(patternId, birthdate);
+                            initPersonalizedCalendar(currentPatternId, birthdate);
                         }
                         
                         
