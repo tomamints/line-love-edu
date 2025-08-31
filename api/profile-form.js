@@ -2,13 +2,13 @@
 // プロフィール入力用Webフォーム
 
 const ordersDB = require('../core/database/orders-db');
-const ProfilesDB = require('../core/database/profiles-db');
+const profilesDB = require('../core/database/profiles-db');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const { createClient } = require('@supabase/supabase-js');
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_KEY
+  process.env.SUPABASE_ANON_KEY || process.env.SUPABASE_SERVICE_KEY
 );
 
 module.exports = async (req, res) => {
@@ -34,13 +34,28 @@ module.exports = async (req, res) => {
       }
       
       try {
-        const { data: diagnosis, error } = await supabase
-          .from('diagnoses')
-          .select('*')
-          .eq('id', id)
-          .single();
+        // ユーザーIDからプロファイルを取得
+        const profiles = await profilesDB.getAllProfiles();
         
-        if (error || !diagnosis) {
+        // 診断IDで検索
+        let diagnosis = null;
+        for (const [userId, profile] of Object.entries(profiles)) {
+          if (profile.diagnosisId === id) {
+            diagnosis = {
+              id: profile.diagnosisId,
+              user_id: userId,
+              user_name: profile.userName,
+              birth_date: profile.birthDate,
+              pattern_id: profile.moonPatternId,
+              diagnosis_type: profile.diagnosisType || 'otsukisama',
+              is_paid: profile.isPaid || false,
+              created_at: profile.diagnosisDate
+            };
+            break;
+          }
+        }
+        
+        if (!diagnosis) {
           return res.status(404).json({ 
             success: false,
             error: '診断データが見つかりません' 
@@ -245,39 +260,37 @@ module.exports = async (req, res) => {
           });
         }
         
-        // Supabaseクライアントを初期化
-        const { createClient } = require('@supabase/supabase-js');
-        const supabase = createClient(
-          process.env.SUPABASE_URL,
-          process.env.SUPABASE_SERVICE_KEY
-        );
+        // 診断IDを生成
+        const diagnosisId = `diag_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
         
-        // 診断データをSupabaseに保存
-        const { data: diagnosis, error: saveError } = await supabase
-          .from('diagnoses')
-          .insert({
-            user_id: userId || null,
-            user_name: name,
-            birth_date: birthDate,
-            pattern_id: patternId,
-            diagnosis_type: 'otsukisama',
-            is_paid: false,
-            created_at: new Date().toISOString()
-          })
-          .select()
-          .single();
+        // プロファイルデータとして保存
+        const diagnosisData = {
+          diagnosisId: diagnosisId,
+          userName: name,
+          birthDate: birthDate,
+          moonPatternId: patternId,
+          diagnosisDate: new Date().toISOString(),
+          diagnosisType: 'otsukisama',
+          isPaid: false
+        };
         
-        if (saveError) {
-          console.error('診断データ保存エラー:', saveError);
-          return res.status(500).json({ 
-            error: 'Failed to save diagnosis',
-            details: saveError.message
-          });
+        if (userId) {
+          await profilesDB.saveProfile(userId, diagnosisData);
         }
+        
+        const diagnosis = {
+          id: diagnosisId,
+          user_id: userId || null,
+          user_name: name,
+          birth_date: birthDate,
+          pattern_id: patternId,
+          diagnosis_type: 'otsukisama',
+          is_paid: false,
+          created_at: new Date().toISOString()
+        };
         
         // プロファイルもprofiles DBに保存（LINE連携用）
         if (userId) {
-          const profilesDB = new ProfilesDB();
           const profileData = {
             userName: name,
             birthDate: birthDate,

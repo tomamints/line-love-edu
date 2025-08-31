@@ -24,6 +24,25 @@ module.exports = async (req, res) => {
   }
   
   try {
+    // まずおつきさま診断のデータをチェック
+    const profilesDB = require('../core/database/profiles-db');
+    const profile = await profilesDB.getProfile(userId);
+    
+    if (profile && profile.diagnosisType === 'otsukisama') {
+      // おつきさま診断のデータを返す
+      return res.status(200).json({
+        success: true,
+        profile: {
+          userName: profile.userName,
+          birthDate: profile.birthDate,
+          moonPatternId: profile.moonPatternId,
+          diagnosisType: 'otsukisama'
+        },
+        userId: userId
+      });
+    }
+    
+    // 恋愛占いのデータをチェック
     const loveProfile = await getUserLoveProfile(userId);
     
     if (!loveProfile) {
