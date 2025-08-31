@@ -13,7 +13,9 @@ class PaymentHandler {
     this.pdfGenerator = new PDFReportGenerator();
     // 定期的に期限切れ注文をクリーンアップ
     setInterval(() => {
-      ordersDB.cleanupExpiredOrders();
+      if (ordersDB.cleanupExpiredOrders) {
+        ordersDB.cleanupExpiredOrders();
+      }
     }, 60 * 60 * 1000); // 1時間ごと
   }
   

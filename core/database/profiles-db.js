@@ -105,6 +105,11 @@ class ProfilesDB {
         distance_style: mergedData.distanceStyle || null,
         love_values: mergedData.loveValues || null,
         love_energy: mergedData.loveEnergy || null,
+        moon_pattern_id: mergedData.moonPatternId || null,
+        diagnosis_type: mergedData.diagnosisType || null,
+        diagnosis_id: mergedData.diagnosisId || null,
+        diagnosis_date: mergedData.diagnosisDate || null,
+        is_paid: mergedData.isPaid || false,
         updated_at: new Date().toISOString()
       };
       

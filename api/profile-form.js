@@ -1019,20 +1019,79 @@ module.exports = async (req, res) => {
     
   // POSTリクエスト: データ保存
   } else if (req.method === 'POST') {
-    // フォームデータをパース
-    if (!req.body || !req.body.userId) {
-      // URLエンコードされたフォームデータの場合
+    console.log('📮 POST request received');
+    console.log('req.body:', req.body);
+    
+    // ボディが既にパースされていない場合のみパース
+    if (!req.body) {
       await new Promise((resolve) => {
         let body = '';
         req.on('data', chunk => body += chunk);
         req.on('end', () => {
-          const params = new URLSearchParams(body);
-          req.body = Object.fromEntries(params);
+          console.log('Raw body:', body);
+          try {
+            // JSONパースを試みる
+            req.body = JSON.parse(body);
+            console.log('Parsed as JSON:', req.body);
+          } catch (e) {
+            // URLエンコードされたフォームデータの場合
+            const params = new URLSearchParams(body);
+            req.body = Object.fromEntries(params);
+            console.log('Parsed as form data:', req.body);
+          }
           resolve();
         });
       });
     }
     
+    // save-otsuきsamaアクションの処理
+    if (req.body.action === 'save-otsukisama') {
+      console.log('📝 save-otsukisama action received:', req.body);
+      const { userId, name, birthDate } = req.body;
+      
+      if (!userId || !name || !birthDate) {
+        return res.status(400).json({ error: 'Missing required fields' });
+      }
+      
+      try {
+        // 月のパターンを計算
+        const calculateMoonPattern = (birthDate) => {
+          const date = new Date(birthDate);
+          const month = date.getMonth() + 1;
+          const day = date.getDate();
+          return ((month - 1) * 5 + Math.floor((day - 1) / 6)) % 64 + 1;
+        };
+        
+        const moonPatternId = calculateMoonPattern(birthDate);
+        const diagnosisId = `diag_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        
+        // プロファイルを保存
+        const profileData = {
+          userName: name,
+          birthDate: birthDate,
+          moonPatternId: moonPatternId,
+          diagnosisType: 'otsukisama',
+          diagnosisId: diagnosisId,
+          diagnosisDate: new Date().toISOString()
+        };
+        
+        await profilesDB.saveProfile(userId, profileData);
+        
+        console.log('✅ Profile saved successfully:', { userId, diagnosisId, moonPatternId });
+        
+        return res.json({
+          success: true,
+          diagnosisId: diagnosisId,
+          moonPatternId: moonPatternId
+        });
+      } catch (error) {
+        console.error('❌ Save profile error:', error);
+        console.error('Error stack:', error.stack);
+        return res.status(500).json({ error: 'Failed to save profile' });
+      }
+    }
+    
+    // 既存の恋愛占いフォームデータ処理
     const { 
       userId, userBirthdate, userAge, userGender, 
       partnerBirthdate, partnerAge, partnerGender, 
@@ -1046,7 +1105,7 @@ module.exports = async (req, res) => {
     
     try {
       // プロフィールを保存
-      const profile = await ProfilesDB.getProfile(userId) || {};
+      const profile = await profilesDB.getProfile(userId) || {};
       
       profile.personalInfo = {
         ...profile.personalInfo,
@@ -1071,7 +1130,7 @@ module.exports = async (req, res) => {
       profile.partnerBirthDate = partnerBirthdate;
       profile.partnerGender = partnerGender;
       
-      await ProfilesDB.saveProfile(userId, profile);
+      await profilesDB.saveProfile(userId, profile);
       
       console.log('✅ Profile saved for user:', userId);
       
