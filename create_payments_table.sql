@@ -1,8 +1,8 @@
 -- 支払い履歴テーブルの作成
-CREATE TABLE IF NOT EXISTS Payments (
+CREATE TABLE IF NOT EXISTS payments (
     id SERIAL PRIMARY KEY,
     payment_id TEXT UNIQUE NOT NULL, -- 一意の支払いID (例: pay_xxxxx)
-    diagnosis_id TEXT NOT NULL, -- DiagnosesテーブルのIDと紐付け
+    diagnosis_id TEXT NOT NULL, -- diagnosesテーブルのIDと紐付け
     user_id TEXT NOT NULL, -- LINEユーザーID
     diagnosis_type TEXT NOT NULL, -- 診断タイプ (otsukisama, aijou等)
     
@@ -21,29 +21,27 @@ CREATE TABLE IF NOT EXISTS Payments (
     completed_at TIMESTAMP WITH TIME ZONE, -- 支払い完了時刻
     
     -- メタデータ
-    metadata JSONB -- 追加情報（割引コード、キャンペーン情報等）
+    metadata JSONB, -- 追加情報（割引コード、キャンペーン情報等）
     
-    -- 外部キー制約は後で追加（Diagnosesテーブルが存在する場合）
-    -- CONSTRAINT fk_diagnosis FOREIGN KEY (diagnosis_id) 
-    --     REFERENCES Diagnoses(id) ON DELETE CASCADE
+    -- 外部キー制約
+    CONSTRAINT fk_diagnosis FOREIGN KEY (diagnosis_id) 
+        REFERENCES diagnoses(id) ON DELETE CASCADE
 );
 
 -- インデックスの作成
-CREATE INDEX idx_payments_user_id ON Payments(user_id);
-CREATE INDEX idx_payments_diagnosis_id ON Payments(diagnosis_id);
-CREATE INDEX idx_payments_status ON Payments(status);
-CREATE INDEX idx_payments_created_at ON Payments(created_at DESC);
-CREATE INDEX idx_payments_stripe_session ON Payments(stripe_session_id);
+CREATE INDEX IF NOT EXISTS idx_payments_user_id ON payments(user_id);
+CREATE INDEX IF NOT EXISTS idx_payments_diagnosis_id ON payments(diagnosis_id);
+CREATE INDEX IF NOT EXISTS idx_payments_status ON payments(status);
+CREATE INDEX IF NOT EXISTS idx_payments_created_at ON payments(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_payments_stripe_session ON payments(stripe_session_id);
 
--- 診断テーブルの支払い状態を更新するトリガー（Diagnosesテーブルが存在する場合のみ）
--- 注: Diagnosesテーブルが存在しない場合はコメントアウトしてください
-/*
+-- 診断テーブルの支払い状態を更新するトリガー
 CREATE OR REPLACE FUNCTION update_diagnosis_payment_status()
 RETURNS TRIGGER AS $$
 BEGIN
     -- 支払い完了時に診断テーブルのis_paidフラグを更新
-    IF NEW.status = 'completed' AND OLD.status != 'completed' THEN
-        UPDATE Diagnoses 
+    IF NEW.status = 'completed' AND (OLD.status IS NULL OR OLD.status != 'completed') THEN
+        UPDATE diagnoses 
         SET is_paid = true 
         WHERE id = NEW.diagnosis_id;
         
@@ -53,7 +51,7 @@ BEGIN
     
     -- 返金時にフラグを戻す
     IF NEW.status = 'refunded' AND OLD.status = 'completed' THEN
-        UPDATE Diagnoses 
+        UPDATE diagnoses 
         SET is_paid = false 
         WHERE id = NEW.diagnosis_id;
     END IF;
@@ -63,14 +61,22 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- トリガーの作成
+DROP TRIGGER IF EXISTS trigger_payment_status_update ON payments;
 CREATE TRIGGER trigger_payment_status_update
-    BEFORE UPDATE ON Payments
+    BEFORE INSERT OR UPDATE ON payments
     FOR EACH ROW
     EXECUTE FUNCTION update_diagnosis_payment_status();
-*/
+
+-- 既存のdiagnosesテーブルにis_paidカラムが無い場合は追加
+ALTER TABLE diagnoses 
+ADD COLUMN IF NOT EXISTS is_paid BOOLEAN DEFAULT false;
+
+-- is_paidカラムにインデックスを追加（支払い済み診断の検索高速化）
+CREATE INDEX IF NOT EXISTS idx_diagnoses_is_paid ON diagnoses(is_paid);
+CREATE INDEX IF NOT EXISTS idx_diagnoses_user_id_paid ON diagnoses(user_id, is_paid);
 
 -- サンプルデータ（テスト用）
--- INSERT INTO Payments (
+-- INSERT INTO payments (
 --     payment_id, 
 --     diagnosis_id, 
 --     user_id, 

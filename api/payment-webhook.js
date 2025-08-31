@@ -92,9 +92,9 @@ async function handleCheckoutSessionCompleted(session) {
             }
         };
 
-        // Paymentsテーブルに挿入
+        // paymentsテーブルに挿入（テーブル名は小文字）
         const { data: payment, error: paymentError } = await supabase
-            .from('Payments')
+            .from('payments')
             .insert([paymentData])
             .select()
             .single();
@@ -108,7 +108,7 @@ async function handleCheckoutSessionCompleted(session) {
 
         // 診断の支払い状態を更新（トリガーで自動更新されるが念のため）
         const { error: updateError } = await supabase
-            .from('Diagnoses')
+            .from('diagnoses')
             .update({ is_paid: true })
             .eq('id', diagnosis_id);
 
@@ -134,7 +134,7 @@ async function handlePaymentIntentSucceeded(paymentIntent) {
     
     // Checkout Sessionで処理済みの場合はスキップ
     const { data: existingPayment } = await supabase
-        .from('Payments')
+        .from('payments')
         .select('id')
         .eq('stripe_payment_intent_id', paymentIntent.id)
         .single();
@@ -162,7 +162,7 @@ async function handlePaymentFailed(paymentIntent) {
     if (diagnosis_id) {
         // 失敗記録を作成
         await supabase
-            .from('Payments')
+            .from('payments')
             .insert([{
                 payment_id: `pay_failed_${Date.now()}`,
                 diagnosis_id,
