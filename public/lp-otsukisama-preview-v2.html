@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>診断結果プレビュー - おつきさま診断</title>
+    <link rel="stylesheet" href="css/lp-otsukisama.css">
+    <style>
+        /* プレビュー専用のスタイル */
+        .form-section {
+            display: none !important;
+        }
+        
+        .result-section {
+            display: block !important;
+        }
+        
+        /* ぼかし効果とロックオーバーレイ */
+        .content-locked {
+            position: relative;
+            filter: blur(8px);
+            user-select: none;
+            pointer-events: none;
+        }
+        
+        .lock-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 255, 255, 0.98);
+            padding: 40px 30px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(138, 97, 250, 0.2);
+            border: 2px solid rgba(138, 97, 250, 0.1);
+            z-index: 100;
+            filter: none;
+        }
+        
+        .lock-icon {
+            font-size: 48px;
+            display: block;
+            margin-bottom: 20px;
+        }
+        
+        .lock-overlay h3 {
+            color: #4a3a8c;
+            font-size: 20px;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+        
+        .lock-overlay p {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        
+        .unlock-button {
+            background: linear-gradient(135deg, #8a61fa 0%, #c77dff 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .unlock-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(138, 97, 250, 0.4);
+        }
+        
+        /* 有料コンテンツのラッパー */
+        .premium-content-wrapper {
+            position: relative;
+        }
+        
+        /* CTAセクション */
+        .preview-cta {
+            background: linear-gradient(135deg, #f8f4ff 0%, #fff5fb 100%);
+            padding: 60px 20px;
+            margin: 60px 0;
+            border-radius: 30px;
+            text-align: center;
+            border: 2px solid rgba(138, 97, 250, 0.1);
+        }
+        
+        .preview-cta h2 {
+            color: #4a3a8c;
+            font-size: 28px;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+        
+        .preview-cta p {
+            color: #666;
+            font-size: 16px;
+            margin-bottom: 30px;
+            line-height: 1.8;
+        }
+        
+        .price-info {
+            margin: 30px 0;
+        }
+        
+        .original-price {
+            color: #999;
+            text-decoration: line-through;
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+        
+        .special-price {
+            font-size: 36px;
+            color: #8a61fa;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .price-note {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .purchase-button {
+            background: linear-gradient(135deg, #8a61fa 0%, #c77dff 100%);
+            color: white;
+            border: none;
+            padding: 20px 60px;
+            border-radius: 30px;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-block;
+            text-decoration: none;
+            margin-top: 20px;
+        }
+        
+        .purchase-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(138, 97, 250, 0.4);
+        }
+    </style>
+</head>
+<body>
+    <!-- ローディングオーバーレイ -->
+    <div class="loading-overlay" id="loadingOverlay" style="display: none;">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">診断結果を読み込んでいます...</div>
+        </div>
+    </div>
+    
+    <!-- スクロール進捗バー -->
+    <div class="scroll-progress" id="scrollProgress"></div>
+    <!-- 星空背景 -->
+    <div class="stars-container" id="starsContainer"></div>
+    
+    <!-- メインコンテンツ -->
+    <div class="container">
+        <!-- ヘッダー -->
+        <div class="header">
+            <div class="main-moon"></div>
+            <img src="/images/banner/1-title.png" alt="おつきさま診断" class="responsive-image">
+            <p class="subtitle">診断結果（プレビュー版）</p>
+            <p class="sub-description">
+                一部の内容のみ表示されています
+            </p>
+        </div>
+        
+        <!-- 結果セクション（本番ページと同じ内容） -->
+        <div class="result-section" id="resultSection">
+            <!-- 月詠の挨拶 -->
+            <div class="tsukuyomi-section">
+                <div class="tsukuyomi-character">
+                    <img src="/images/tsukuyomi/2.png" alt="月詠">
+                </div>
+                <div class="tsukuyomi-bubble">
+                    <div class="tsukuyomi-name">月詠</div>
+                    <p>
+                        こんにちは、<span id="resultName"></span>さん。私は月詠（つくよみ）と申します。今夜の月が、あなたの運命を照らし出します。あなたが生まれた日の月は、特別な形をしていました。その月が持つメッセージを、今からお伝えしていきますね。
+                    </p>
+                </div>
+            </div>
+            
+            <!-- タイプ診断タイトル -->
+            <img src="/images/banner/2-anata.png" alt="おつきさま診断で読み解くあなた" class="full-width-banner">
+            
+            <!-- 月詠による診断説明 -->
+            <div class="tsukuyomi-section right">
+                <div class="tsukuyomi-character">
+                    <img src="/images/tsukuyomi/4.png" alt="月詠">
+                </div>
+                <div class="tsukuyomi-bubble">
+                    <div class="tsukuyomi-name">月詠</div>
+                    <p>
+                        さて、ここからが本題です。これから、あなたの生まれた日の月相を基に、6つの要素からあなたの本質を明らかにしていきます。まずは、この6つの要素が何を意味するのかご覧ください。
+                    </p>
+                </div>
+            </div>
+            
+            <!-- 6つのタイプを円形配置（無料プレビュー） -->
+            <div class="moon-types-circle">
+                <!-- 軌道線 -->
+                <div class="orbit-path"></div>
+                
+                <!-- 中心の月 -->
+                <div class="center-moon"></div>
+                
+                <!-- 要素コンテナ -->
+                <div class="elements-container">
+                    <!-- 月相 (0度 - 上) -->
+                    <div class="type-item moon-phase-item" data-position="0" data-moon-type="omote" data-moon-phase="0">
+                        <img src="" alt="" class="circle-element-image">
+                        <span class="circle-element-label-top label-color-gold">月相</span>
+                        <span class="circle-element-label-bottom">読み込み中...</span>
+                    </div>
+                    
+                    <!-- 裏月相 (60度 - 右上) -->
+                    <div class="type-item moon-phase-item" data-position="60" data-moon-type="ura" data-moon-phase="1">
+                        <img src="" alt="" class="circle-element-image">
+                        <span class="circle-element-label-top label-color-purple">裏月相</span>
+                        <span class="circle-element-label-bottom">読み込み中...</span>
+                    </div>
+                    
+                    <!-- 感情表現 (120度 - 右下) -->
+                    <div class="type-item love-type-item" data-position="120" data-type="emotional" data-value="">
+                        <img src="" alt="" class="circle-element-image-contain">
+                        <span class="circle-element-label-top label-color-pink">感情表現</span>
+                        <span class="circle-element-label-bottom">...</span>
+                    </div>
+                    
+                    <!-- 距離感 (180度 - 下) -->
+                    <div class="type-item love-type-item" data-position="180" data-type="distance" data-value="">
+                        <img src="" alt="" class="circle-element-image-contain">
+                        <span class="circle-element-label-top label-color-green">距離感</span>
+                        <span class="circle-element-label-bottom">...</span>
+                    </div>
+                    
+                    <!-- 価値観 (240度 - 左下) -->
+                    <div class="type-item love-type-item" data-position="240" data-type="values" data-value="">
+                        <img src="" alt="" class="circle-element-image-contain">
+                        <span class="circle-element-label-top label-color-blue">価値観</span>
+                        <span class="circle-element-label-bottom">...</span>
+                    </div>
+                    
+                    <!-- エネルギー (300度 - 左上) -->
+                    <div class="type-item love-type-item" data-position="300" data-type="energy" data-value="">
+                        <img src="" alt="" class="circle-element-image-contain">
+                        <span class="circle-element-label-top label-color-orange">エネルギー</span>
+                        <span class="circle-element-label-bottom">...</span>
+                    </div>
+                </div>
+            </div>
+            
+            <p class="section-description">
+                生まれた日の月相から読み解く、あなたの「本当の自分」
+            </p>
+            
+            <!-- 月相説明セクション（無料プレビュー） -->
+            <div class="section-header-container">
+                <img src="/images/banner/3-getsusou.png" alt="まずは、あなたの月相から見ていきましょう" class="full-width-banner">
+                <p class="section-description">
+                    月相とは、あなたが生まれた日の月の形。これによって、あなたの基本的な性格や人生のテーマがわかります。あなたの月相は...
+                </p>
+            </div>
+            
+            <!-- 月相タイプ -->
+            <div class="moon-phase-card new-moon">
+                <div class="moon-phase-header">
+                    <img src="/images/moon/omote-0.png" alt="新月" class="moon-phase-visual moon-phase-image">
+                    <div class="moon-phase-info">
+                        <h2>新月</h2>
+                        <p class="moon-phase-subtitle">新しい始まりの力。無限の可能性を秘めた開拓者</p>
+                    </div>
+                </div>
+                <div class="moon-phase-description" id="moon-phase-description">
+                    あなたは新月の日に生まれた、始まりのエネルギーを持つ人。何もないところから何かを生み出す力があり、ゼロから1を作り出すことに長けています。純粋で素直な心を持ち、新しいことへの好奇心が旺盛。まだ誰も踏み入れていない道を進むパイオニア精神があります。時に無鉄砲に見えることもありますが、その勇気こそがあなたの最大の武器なのです。
+                </div>
+            </div>
+            
+            <!-- 購入CTA -->
+            <div class="preview-cta">
+                <h2>🔒 完全版で全ての内容を見る</h2>
+                <p>
+                    以下の内容を含む、あなただけの完全な診断結果をご覧いただけます：
+                </p>
+                <ul style="text-align: left; max-width: 500px; margin: 0 auto; color: #666; line-height: 2;">
+                    <li>裏の月相とあなたの隠された顔</li>
+                    <li>3つの月の力の詳細解説</li>
+                    <li>4つの軸から見た恋愛性格の完全分析</li>
+                    <li>直近3ヶ月の詳細な運勢予測</li>
+                    <li>恋愛運・人間関係運・仕事運・金運の完全版</li>
+                    <li>あなただけの月齢カレンダー</li>
+                    <li>月が教えてくれる5つの教え</li>
+                </ul>
+                
+                <div class="price-info">
+                    <div class="original-price">通常価格 ¥2,980</div>
+                    <div class="special-price">特別価格 ¥980</div>
+                    <div class="price-note">（税込）</div>
+                </div>
+                
+                <button class="purchase-button" id="purchaseButton">
+                    診断結果を購入する
+                </button>
+            </div>
+            
+            <!-- 以降の内容はぼかし表示 -->
+            <div class="premium-content-wrapper">
+                <div class="content-locked">
+                    <!-- 裏月相説明 -->
+                    <div class="section-header-container">
+                        <img src="/images/banner/4-2-uranokao.png" alt="そして、あなたの裏の顔も見てみましょう" class="full-width-banner">
+                        <p class="section-description-compact">
+                            表の月相が社会的な顔だとすれば、裏月相はあなたのプライベートな顔。親しい人の前でだけ見せる、もう一つのあなたです。
+                        </p>
+                    </div>
+                    
+                    <!-- 裏月相 -->
+                    <div class="moon-phase-card crescent">
+                        <div class="moon-phase-header">
+                            <img src="/images/moon/ura-1.png" alt="三日月" class="moon-phase-visual moon-phase-image">
+                            <div class="moon-phase-info">
+                                <h2>三日月（裏の顔）</h2>
+                                <p class="moon-phase-subtitle">内なる繊細さと慎重さを秘めた策士</p>
+                            </div>
+                        </div>
+                        <div class="moon-phase-description" id="hidden-phase-description">
+                            表向きは勢いよく突き進むあなたですが、実は内面では細やかな配慮ができる繊細な人。新しいことを始める前に、実はしっかりと下調べをしていたり、リスクを計算していたりするでしょう。その慎重さと大胆さのバランスが、あなたの成功の秘訣。時々弱音を吐きたくなることもありますが、それは成長の証です。
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="lock-overlay">
+                    <span class="lock-icon">🔒</span>
+                    <h3>プレミアムコンテンツ</h3>
+                    <p>この先の詳細な診断結果を<br>ご覧いただくには購入が必要です</p>
+                    <button class="unlock-button" onclick="document.getElementById('purchaseButton').click()">
+                        完全版を見る
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js/otsukisama-data-loader.js?v=20250829001"></script>
+    <script src="js/lp-otsukisama-moon.js?v=20241228006"></script>
+    <script src="js/lp-otsukisama-api.js?v=20241228006"></script>
+    <script src="js/lp-otsukisama-display.js?v=20250829007"></script>
+    <script src="js/lp-otsukisama-display-line.js?v=20241228006"></script>
+    <script src="js/lp-otsukisama-calendar.js?v=20241228008"></script>
+    <script src="js/lp-otsukisama-graph.js?v=20241228006"></script>
+    
+    <script>
+        // プレビュー用の初期化
+        async function initPreview() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const diagnosisId = urlParams.get('id');
+            const userId = urlParams.get('userId');
+            
+            // 診断データを読み込み
+            if (diagnosisId) {
+                try {
+                    const response = await fetch(`/api/get-diagnosis?id=${diagnosisId}`);
+                    const data = await response.json();
+                    
+                    if (data.success && data.diagnosis) {
+                        // 名前を表示
+                        const resultName = document.getElementById('resultName');
+                        if (resultName) {
+                            resultName.textContent = data.diagnosis.user_name || 'あなた';
+                        }
+                        
+                        // パターンIDから月相を計算
+                        const patternId = data.diagnosis.pattern_id;
+                        const moonPhaseIndex = Math.floor(patternId / 8);
+                        const hiddenPhaseIndex = patternId % 8;
+                        
+                        // 月相画像を更新
+                        const moonPhaseImg = document.querySelector('.moon-phase-image');
+                        if (moonPhaseImg) {
+                            moonPhaseImg.src = `/images/moon/omote-${moonPhaseIndex}.png`;
+                        }
+                        
+                        // データを設定（本番ページと同じ関数を使用）
+                        if (typeof updateMoonPhaseContent === 'function') {
+                            updateMoonPhaseContent(patternId);
+                        }
+                        if (typeof updateSixElements === 'function') {
+                            const moonPhaseNames = ['新月', '三日月', '上弦の月', '十三夜', '満月', '十六夜', '下弦の月', '暁'];
+                            updateSixElements(patternId, moonPhaseNames[moonPhaseIndex], moonPhaseNames[hiddenPhaseIndex], null);
+                        }
+                    }
+                } catch (error) {
+                    console.error('診断データの読み込みエラー:', error);
+                }
+            }
+            
+            // 購入ボタンの設定
+            document.getElementById('purchaseButton').addEventListener('click', async () => {
+                const button = document.getElementById('purchaseButton');
+                button.disabled = true;
+                button.textContent = '処理中...';
+                
+                try {
+                    const response = await fetch('/api/create-otsukisama-checkout', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            diagnosisId: diagnosisId,
+                            userId: userId || ''
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        if (data.isPaid) {
+                            window.location.href = data.redirectUrl;
+                        } else {
+                            window.location.href = data.checkoutUrl;
+                        }
+                    } else {
+                        throw new Error(data.error || '決済処理に失敗しました');
+                    }
+                } catch (error) {
+                    console.error('決済エラー:', error);
+                    alert('決済処理中にエラーが発生しました。もう一度お試しください。');
+                    button.disabled = false;
+                    button.textContent = '診断結果を購入する';
+                }
+            });
+        }
+        
+        // DOMロード後に初期化
+        document.addEventListener('DOMContentLoaded', initPreview);
+    </script>
+</body>
+</html>
