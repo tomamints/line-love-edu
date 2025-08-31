@@ -57,8 +57,15 @@
         </div>
     </div>
     
-    <!-- 既存のAPI連携JavaScript -->
-    <script src="/js/lp-otsukisama-api.js"></script>
+    <!-- JavaScript（元のlp-otsukisama.htmlと同じ構成） -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js/otsukisama-data-loader.js?v=20250829001"></script>
+    <script src="js/lp-otsukisama-moon.js?v=20241228006"></script>
+    <script src="js/lp-otsukisama-api.js?v=20241228006"></script>
+    <script src="js/lp-otsukisama-display.js?v=20250829007"></script>
+    <script src="js/lp-otsukisama-display-line.js?v=20241228006"></script>
+    <script src="js/lp-otsukisama-calendar.js?v=20241228008"></script>
+    <script src="js/lp-otsukisama-graph.js?v=20241228006"></script>
     
     <!-- 入力ページ専用のJavaScript -->
     <script>
@@ -159,11 +166,8 @@
                 day: parseInt(document.getElementById('day').value)
             };
             
-            // 生年月日からDateオブジェクトを作成
-            const birthDate = new Date(formData.year, formData.month - 1, formData.day);
-            
-            // 月相の計算
-            const patternId = calculateMoonPattern(birthDate);
+            // 月相の計算（lp-otsukisama-moon.jsのgeneratePatternId関数を使用）
+            const patternId = generatePatternId(formData.year, formData.month, formData.day);
             
             // データを保存してプレビューページへ遷移
             try {
@@ -178,7 +182,7 @@
                             action: 'save-otsukisama',
                             userId: userId,
                             name: formData.name,
-                            birthDate: birthDate.toISOString(),
+                            birthDate: new Date(formData.year, formData.month - 1, formData.day).toISOString(),
                             patternId: patternId,
                             diagnosisType: 'otsukisama'
                         })
@@ -194,6 +198,7 @@
                 }
                 
                 // フォールバック：ローカルストレージを使用
+                const birthDate = new Date(formData.year, formData.month - 1, formData.day);
                 const diagnosisData = {
                     name: formData.name,
                     birthDate: birthDate.toISOString(),
@@ -212,32 +217,6 @@
                 console.error('診断データの保存に失敗しました:', error);
                 alert('エラーが発生しました。もう一度お試しください。');
             }
-        }
-        
-        // 月相パターンの計算（既存のロジックを使用）
-        function calculateMoonPattern(birthDate) {
-            // 生年月日から表と裏の月相を計算
-            const dayOfMonth = birthDate.getDate();
-            const month = birthDate.getMonth() + 1;
-            const year = birthDate.getFullYear();
-            
-            // 表の月相（1-31日を8段階に分類）
-            let moonPhaseIndex;
-            if (dayOfMonth <= 4) moonPhaseIndex = 0; // 新月
-            else if (dayOfMonth <= 8) moonPhaseIndex = 1; // 三日月
-            else if (dayOfMonth <= 12) moonPhaseIndex = 2; // 上弦の月
-            else if (dayOfMonth <= 16) moonPhaseIndex = 3; // 十三夜
-            else if (dayOfMonth <= 20) moonPhaseIndex = 4; // 満月
-            else if (dayOfMonth <= 24) moonPhaseIndex = 5; // 居待月
-            else if (dayOfMonth <= 28) moonPhaseIndex = 6; // 下弦の月
-            else moonPhaseIndex = 7; // 有明月
-            
-            // 裏の月相（月と年の組み合わせ）
-            const hiddenPhaseIndex = ((month - 1) + (year % 8)) % 8;
-            
-            // パターンID計算（0-63）
-            const patternId = moonPhaseIndex * 8 + hiddenPhaseIndex;
-            return patternId;
         }
         
         // 初期化

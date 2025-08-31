@@ -1062,15 +1062,10 @@ module.exports = async (req, res) => {
       }
       
       try {
-        // 月のパターンを計算
-        const calculateMoonPattern = (birthDate) => {
-          const date = new Date(birthDate);
-          const month = date.getMonth() + 1;
-          const day = date.getDate();
-          return ((month - 1) * 5 + Math.floor((day - 1) / 6)) % 64 + 1;
-        };
-        
-        const moonPatternId = calculateMoonPattern(birthDate);
+        // lp-otsukisama-moon.jsの関数を使用
+        const { generatePatternId } = require('../public/js/lp-otsukisama-moon');
+        const date = new Date(birthDate);
+        const moonPatternId = generatePatternId(date.getFullYear(), date.getMonth() + 1, date.getDate());
         const diagnosisId = `diag_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
         
         // プロファイルを保存
