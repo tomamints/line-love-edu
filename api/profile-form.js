@@ -6,6 +6,56 @@ const ProfilesDB = require('../core/database/profiles-db');
 
 module.exports = async (req, res) => {
   
+  // POSTリクエスト: 診断データ保存（/api/save-diagnosisの代替）
+  if (req.method === 'POST' && req.headers['content-type']?.includes('application/json')) {
+    // CORSヘッダー
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    
+    try {
+      const { userId, name, birthDate, patternId, diagnosisType } = req.body;
+      
+      // おつきさま診断データの保存
+      if (diagnosisType === 'otsukisama' || patternId !== undefined) {
+        if (!userId || !name || !birthDate) {
+          return res.status(400).json({ 
+            error: 'Missing required fields',
+            required: ['userId', 'name', 'birthDate']
+          });
+        }
+        
+        const profilesDB = new ProfilesDB();
+        
+        // 診断データを保存
+        const diagnosisData = {
+          userName: name,
+          birthDate: birthDate,
+          moonPatternId: patternId,
+          diagnosisDate: new Date().toISOString(),
+          diagnosisType: 'otsukisama'
+        };
+        
+        await profilesDB.saveProfile(userId, diagnosisData);
+        
+        // 診断IDを生成
+        const diagnosisId = `diag_${userId}_${Date.now()}`;
+        
+        return res.status(200).json({
+          success: true,
+          diagnosisId: diagnosisId,
+          message: '診断データを保存しました'
+        });
+      }
+    } catch (error) {
+      console.error('診断データ保存エラー:', error);
+      return res.status(500).json({ 
+        error: 'Internal server error',
+        message: error.message 
+      });
+    }
+  }
+  
   // GETリクエスト: フォーム表示
   if (req.method === 'GET') {
     const { userId, liffId } = req.query;

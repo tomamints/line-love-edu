@@ -169,7 +169,7 @@
             try {
                 // APIでデータベースに保存
                 if (userId) {
-                    const saveResponse = await fetch('/api/save-diagnosis', {
+                    const saveResponse = await fetch('/api/profile-form', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
@@ -178,7 +178,8 @@
                             userId: userId,
                             name: formData.name,
                             birthDate: birthDate.toISOString(),
-                            patternId: patternId
+                            patternId: patternId,
+                            diagnosisType: 'otsukisama'
                         })
                     });
                     
