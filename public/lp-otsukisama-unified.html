@@ -1011,24 +1011,27 @@
                         };
                         console.log('Database values:', loveProfile);
                         console.log('API response:', data.diagnosis);
+                        console.log('Access level:', data.accessLevel);
                         
                         
                         // 6つの要素を更新
                         if (typeof updateSixElements === 'function') {
-                            updateSixElements(currentPatternId, moonPhase, hiddenMoonPhase, loveProfile);
+                            // プレビューモードでは4軸データがないため、nullを渡す
+                            const profileForSix = (data.accessLevel === 'preview' || data.accessLevel === 'none') ? null : loveProfile;
+                            updateSixElements(currentPatternId, moonPhase, hiddenMoonPhase, profileForSix);
                         }
                         
-                        // 4つの軸データを表示（完全版と同じ処理）
-                        if (typeof updatePersonalityDisplay === 'function') {
+                        // 4つの軸データを表示（完全版のみ）
+                        if (data.accessLevel === 'full' && typeof updatePersonalityDisplay === 'function') {
                             console.log('Calling updatePersonalityDisplay with:', loveProfile);
                             await updatePersonalityDisplay(loveProfile);
                             console.log('updatePersonalityDisplay completed');
-                        } else {
-                            console.error('updatePersonalityDisplay is not defined');
+                        } else if (data.accessLevel !== 'full') {
+                            console.log('Preview mode - skipping personality display update');
                         }
                         
-                        // エネルギーコンテンツを更新（日本語キーで）
-                        if (typeof updateLoveEnergyContent === 'function') {
+                        // エネルギーコンテンツを更新（完全版のみ）
+                        if (data.accessLevel === 'full' && typeof updateLoveEnergyContent === 'function') {
                             await updateLoveEnergyContent(loveProfile.loveEnergy);
                         }
                         
