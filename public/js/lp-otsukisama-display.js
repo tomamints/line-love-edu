@@ -832,19 +832,18 @@ function updateDynamicContentFromPattern(pattern) {
     if (overallIntro) overallIntro.textContent = pattern.overall.intro || pattern.overall.mainText;
     
     // 全体運の月別タイトルと説明を更新
+    // month1, month2, month3は削除されたため、この処理はスキップ
     const destinySection = document.querySelector('.fortune-section.destiny');
     if (destinySection) {
         const monthBoxes = destinySection.querySelectorAll('.month-box');
         if (monthBoxes.length >= 3) {
-            const overallMonthTitles = [pattern.overall.month1.title, pattern.overall.month2.title, pattern.overall.month3.title];
-            const overallMonthTexts = [pattern.overall.month1.text, pattern.overall.month2.text, pattern.overall.month3.text];
-            
+            // monthプロパティが存在しないため、デフォルト値を設定
             monthBoxes.forEach((box, index) => {
                 if (index < 3) {
                     const h3 = box.querySelector('h3');
                     const p = box.querySelector('p');
-                    if (h3) h3.textContent = overallMonthTitles[index] || `${index + 1}ヶ月目の展開`;
-                    if (p) p.textContent = overallMonthTexts[index] || `${index + 1}ヶ月目の詳細な運勢...`;
+                    if (h3) h3.textContent = `${index + 1}ヶ月目の展開`;
+                    if (p) p.textContent = `${index + 1}ヶ月目の詳細な運勢は、あなたの行動次第で大きく変わります。`;
                 }
             });
         }
@@ -893,26 +892,17 @@ function updateDynamicContentFromPattern(pattern) {
         if (dangerousType) dangerousType.textContent = pattern.love.dangerousType || '';
     }
     
-    // 恋愛運の月別タイトル
+    // 恋愛運の月別タイトル - month1, month2, month3は削除されたため無効化
     const loveSection = document.querySelector('.fortune-section.love');
     if (loveSection && pattern.love) {
         const loveMonthBoxes = loveSection.querySelectorAll('.month-box');
-        const loveMonthTitles = [
-            pattern.love.month1?.title, 
-            pattern.love.month2?.title, 
-            pattern.love.month3?.title
-        ];
-        const loveMonthTexts = [
-            pattern.love.month1?.text,
-            pattern.love.month2?.text,
-            pattern.love.month3?.text
-        ];
+        // month1, month2, month3は存在しないため、デフォルト値を使用
         
         loveMonthBoxes.forEach((box, index) => {
             const h3 = box.querySelector('h3');
             const p = box.querySelector('p');
-            if (h3) h3.textContent = loveMonthTitles[index] || `恋愛${index + 1}ヶ月目`;
-            if (p) p.textContent = loveMonthTexts[index] || `${index + 1}ヶ月目の恋愛運...`;
+            if (h3) h3.textContent = `恋愛${index + 1}ヶ月目`;
+            if (p) p.textContent = `${index + 1}ヶ月目の恋愛運は、あなたの選択によって変わります。`;
         });
         
         // 恋愛の注意ポイント
