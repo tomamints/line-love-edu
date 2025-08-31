@@ -311,7 +311,7 @@
         
         /* 結果セクション（初期は非表示） */
         .result-section {
-            display: none;
+            display: block;
         }
         
         /* タイトルスタイル */

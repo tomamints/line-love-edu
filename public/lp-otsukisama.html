@@ -8,7 +8,6 @@
 </head>
 <body>
     <!-- アクセシビリティ: スキップリンク -->
-    <a href="#formSection" class="skip-link">メインコンテンツへスキップ</a>
     
     <!-- ローディングオーバーレイ -->
     <div class="loading-overlay">
@@ -33,38 +32,6 @@
             <p class="sub-description">
                 生まれた日の月相から読み解く、あなただけの特別な運勢メッセージ
             </p>
-        </div>
-        
-        <!-- フォームセクション -->
-        <div class="form-section" id="formSection">
-            <h2 class="form-title">あなたの生年月日を教えてください</h2>
-            
-            <form id="moonForm">
-                <div class="form-group">
-                    <label>お名前（ニックネーム可）<span class="required">*必須</span></label>
-                    <input type="text" id="name" placeholder="例：月読みゆき" required>
-                </div>
-                
-                <div class="form-group">
-                    <label>生年月日<span class="required">*必須</span></label>
-                    <div class="date-selects">
-                        <select id="year" required>
-                            <option value="">年</option>
-                        </select>
-                        <select id="month" required>
-                            <option value="">月</option>
-                        </select>
-                        <select id="day" required>
-                            <option value="">日</option>
-                        </select>
-                    </div>
-                </div>
-                
-                <button type="submit">
-                    診断する
-                    <div class="button-subtitle">無料で全ての結果が見れます</div>
-                </button>
-            </form>
         </div>
         
         <!-- 結果セクション -->
@@ -753,7 +720,6 @@
     <script src="js/otsukisama-data-loader.js?v=20250829001"></script>
     <script src="js/lp-otsukisama-moon.js?v=20241228006"></script>
     <script src="js/lp-otsukisama-api.js?v=20241228006"></script>
-    <script src="js/lp-otsukisama-form.js?v=20241228006"></script>
     <script src="js/lp-otsukisama-display.js?v=20250829007"></script>
     <script src="js/lp-otsukisama-display-line.js?v=20241228006"></script>
     <script src="js/lp-otsukisama-calendar.js?v=20241228008"></script>
