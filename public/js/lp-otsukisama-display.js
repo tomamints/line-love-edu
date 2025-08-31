@@ -363,87 +363,115 @@ async function updateSixElements(patternId, moonPhase, hiddenMoonPhase, profile 
         const valuesElement = document.querySelector('.type-item[data-type="values"]');
         const energyElement = document.querySelector('.type-item[data-type="energy"]');
         
+        // 英語キーから日本語へのマッピング
+        const emotionalEngToJp = {
+            'straight': 'ストレート告白型',
+            'physical': 'スキンシップ型',
+            'subtle': 'さりげない気遣い型',
+            'shy': '奥手シャイ型'
+        };
+        
         // 感情表現
         if (emotionalElement && profile.emotionalExpression) {
             emotionalElement.style.display = ''; // 表示に戻す
             const label = emotionalElement.querySelectorAll('span')[1];
             const img = emotionalElement.querySelector('img');
-            const typeMapping = {
-                'ストレート告白型': { name: 'ストレート告白型', image: 'straight' },
-                'さりげない気遣い型': { name: 'さりげない気遣い型', image: 'subtle' },
-                'スキンシップ型': { name: 'スキンシップ型', image: 'physical' },
-                '奥手シャイ型': { name: '奥手シャイ型', image: 'shy' }
-            };
-            const mapped = typeMapping[profile.emotionalExpression] || typeMapping['ストレート告白型'];
+            
+            // 英語キーの場合は日本語に変換
+            const displayName = emotionalEngToJp[profile.emotionalExpression] || profile.emotionalExpression;
+            // 画像名は英語キーを使用
+            const imageName = emotionalEngToJp[profile.emotionalExpression] ? profile.emotionalExpression : 'straight';
+            
             if (label) {
-                label.textContent = mapped.name;
+                label.textContent = displayName;
             }
             if (img) {
-                img.src = `/images/love-types/emotional/${mapped.image}.png`;
-                img.alt = mapped.name;
+                img.src = `/images/love-types/emotional/${imageName}.png`;
+                img.alt = displayName;
             }
         }
+        
+        // 英語キーから日本語へのマッピング
+        const distanceEngToJp = {
+            'close': 'ベッタリ依存型',
+            'moderate': '安心セーフ型',
+            'independent': '自由マイペース型',
+            'cautious': '壁あり慎重型'
+        };
         
         // 距離感
         if (distanceElement && profile.distanceStyle) {
             distanceElement.style.display = ''; // 表示に戻す
             const label = distanceElement.querySelectorAll('span')[1];
             const img = distanceElement.querySelector('img');
-            const typeMapping = {
-                'ベッタリ依存型': { name: 'ベッタリ依存型', image: 'close' },
-                '安心セーフ型': { name: '安心セーフ型', image: 'moderate' },
-                '壁あり慎重型': { name: '壁あり慎重型', image: 'cautious' },
-                '自由マイペース型': { name: '自由マイペース型', image: 'independent' }
-            };
-            const mapped = typeMapping[profile.distanceStyle] || typeMapping['安心セーフ型'];
+            
+            // 英語キーの場合は日本語に変換
+            const displayName = distanceEngToJp[profile.distanceStyle] || profile.distanceStyle;
+            // 画像名は英語キーを使用
+            const imageName = distanceEngToJp[profile.distanceStyle] ? profile.distanceStyle : 'moderate';
+            
             if (label) {
-                label.textContent = mapped.name;
+                label.textContent = displayName;
             }
             if (img) {
-                img.src = `/images/love-types/distance/${mapped.image}.png`;
-                img.alt = mapped.name;
+                img.src = `/images/love-types/distance/${imageName}.png`;
+                img.alt = displayName;
             }
         }
+        
+        // 英語キーから日本語へのマッピング
+        const valuesEngToJp = {
+            'romantic': 'ロマンチスト型',
+            'realistic': 'リアリスト型',
+            'excitement': '刺激ハンター型',
+            'growth': '成長パートナー型'
+        };
         
         // 価値観
         if (valuesElement && profile.loveValues) {
             valuesElement.style.display = ''; // 表示に戻す
             const label = valuesElement.querySelectorAll('span')[1];
             const img = valuesElement.querySelector('img');
-            const typeMapping = {
-                'ロマンチスト型': { name: 'ロマンチスト型', image: 'romantic' },
-                '成長パートナー型': { name: '成長パートナー型', image: 'growth' },
-                'リアリスト型': { name: 'リアリスト型', image: 'realistic' },
-                '刺激ハンター型': { name: '刺激ハンター型', image: 'excitement' }
-            };
-            const mapped = typeMapping[profile.loveValues] || typeMapping['ロマンチスト型'];
+            
+            // 英語キーの場合は日本語に変換
+            const displayName = valuesEngToJp[profile.loveValues] || profile.loveValues;
+            // 画像名は英語キーを使用
+            const imageName = valuesEngToJp[profile.loveValues] ? profile.loveValues : 'romantic';
+            
             if (label) {
-                label.textContent = mapped.name;
+                label.textContent = displayName;
             }
             if (img) {
-                img.src = `/images/love-types/values/${mapped.image}.png`;
-                img.alt = mapped.name;
+                img.src = `/images/love-types/values/${imageName}.png`;
+                img.alt = displayName;
             }
         }
+        
+        // 英語キーから日本語へのマッピング
+        const energyEngToJp = {
+            'intense': '燃え上がり型',
+            'stable': '安定持続型',
+            'fluctuating': '波あり型',
+            'cool': 'クール型'
+        };
         
         // エネルギー
         if (energyElement && profile.loveEnergy) {
             energyElement.style.display = ''; // 表示に戻す
             const label = energyElement.querySelectorAll('span')[1];
             const img = energyElement.querySelector('img');
-            const typeMapping = {
-                '燃え上がり型': { name: '燃え上がり型', image: 'intense' },
-                '持続型': { name: '持続型', image: 'stable' },
-                '波あり型': { name: '波あり型', image: 'fluctuating' },
-                'クール型': { name: 'クール型', image: 'cool' }
-            };
-            const mapped = typeMapping[profile.loveEnergy] || typeMapping['燃え上がり型'];
+            
+            // 英語キーの場合は日本語に変換
+            const displayName = energyEngToJp[profile.loveEnergy] || profile.loveEnergy;
+            // 画像名は英語キーを使用
+            const imageName = energyEngToJp[profile.loveEnergy] ? profile.loveEnergy : 'intense';
+            
             if (label) {
-                label.textContent = mapped.name;
+                label.textContent = displayName;
             }
             if (img) {
-                img.src = `/images/love-types/energy/${mapped.image}.png`;
-                img.alt = mapped.name;
+                img.src = `/images/love-types/energy/${imageName}.png`;
+                img.alt = displayName;
             }
         }
     } else {
@@ -505,92 +533,96 @@ async function updateSixElements(patternId, moonPhase, hiddenMoonPhase, profile 
 
 // 恋愛タイプの表示を更新
 async function updatePersonalityDisplay(profile) {
+    console.log('updatePersonalityDisplay called with profile:', profile);
+    
+    // 英語キーから日本語表示名へのマッピング
+    const emotionalMapping = {
+        'straight': 'ストレート告白型',
+        'physical': 'スキンシップ型',
+        'subtle': 'さりげない気遣い型',
+        'shy': '奥手シャイ型'
+    };
     
     // 感情表現を更新（画像も含む）
     if (profile.emotionalExpression) {
-        document.getElementById('emotionalExpressionType').textContent = profile.emotionalExpression;
+        // 英語キーの場合は日本語に変換、既に日本語の場合はそのまま使用
+        const displayName = emotionalMapping[profile.emotionalExpression] || profile.emotionalExpression;
+        document.getElementById('emotionalExpressionType').textContent = displayName;
         await updateEmotionalExpressionContent(profile.emotionalExpression);
         
-        // 画像を更新
+        // 画像を更新（英語キーをそのまま使用）
         const emotionalImg = document.querySelector('.love-type-card:nth-child(1) img');
         if (emotionalImg) {
-            const typeMapping = {
-                'ストレート告白型': 'straight',
-                'スキンシップ型': 'physical',
-                'さりげない気遣い型': 'subtle',
-                '奥手シャイ型': 'shy'
-            };
-            const imageName = typeMapping[profile.emotionalExpression] || 'straight';
+            const imageName = emotionalMapping[profile.emotionalExpression] ? profile.emotionalExpression : 'straight';
             emotionalImg.src = `/images/love-types/emotional/${imageName}.png`;
         }
     }
     
+    // 英語キーから日本語表示名へのマッピング
+    const distanceMapping = {
+        'close': 'ベッタリ依存型',
+        'moderate': '安心セーフ型',
+        'independent': '自由マイペース型',
+        'cautious': '壁あり慎重型'
+    };
+    
     // 距離感を更新（画像も含む）
     if (profile.distanceStyle) {
-        document.getElementById('distanceStyleType').textContent = profile.distanceStyle;
+        // 英語キーの場合は日本語に変換、既に日本語の場合はそのまま使用
+        const displayName = distanceMapping[profile.distanceStyle] || profile.distanceStyle;
+        document.getElementById('distanceStyleType').textContent = displayName;
         await updateDistanceStyleContent(profile.distanceStyle);
         
-        // 画像を更新
+        // 画像を更新（英語キーをそのまま使用）
         const distanceImg = document.querySelector('.love-type-card:nth-child(2) img');
         if (distanceImg) {
-            const typeMapping = {
-                'ベッタリ依存型': 'close',
-                'ベッタリ型': 'close',
-                '安心セーフ型': 'moderate',
-                'ちょうどいい距離型': 'moderate',
-                'じっくり型': 'cautious',
-                '自由マイペース型': 'independent',
-                'マイペース型': 'independent',
-                '壁あり慎重型': 'cautious',
-                '超慎重型': 'cautious'
-            };
-            const imageName = typeMapping[profile.distanceStyle] || 'moderate';
+            const imageName = distanceMapping[profile.distanceStyle] ? profile.distanceStyle : 'moderate';
             distanceImg.src = `/images/love-types/distance/${imageName}.png`;
         }
     }
     
+    // 英語キーから日本語表示名へのマッピング
+    const valuesMapping = {
+        'romantic': 'ロマンチスト型',
+        'realistic': 'リアリスト型',
+        'excitement': '刺激ハンター型',
+        'growth': '成長パートナー型'
+    };
+    
     // 価値観を更新（画像も含む）
     if (profile.loveValues) {
-        document.getElementById('loveValuesType').textContent = profile.loveValues;
+        // 英語キーの場合は日本語に変換、既に日本語の場合はそのまま使用
+        const displayName = valuesMapping[profile.loveValues] || profile.loveValues;
+        document.getElementById('loveValuesType').textContent = displayName;
         await updateLoveValuesContent(profile.loveValues);
         
-        // 画像を更新
+        // 画像を更新（英語キーをそのまま使用）
         const valuesImg = document.querySelector('.love-type-card:nth-child(3) img');
         if (valuesImg) {
-            const typeMapping = {
-                'ロマンチスト型': 'romantic',
-                'ロマンス重視': 'romantic',
-                'リアリスト型': 'realistic',
-                '安心感重視': 'realistic',
-                '刺激ハンター型': 'excitement',
-                '刺激重視': 'excitement',
-                '成長パートナー型': 'growth',
-                '成長重視': 'growth'
-            };
-            const imageName = typeMapping[profile.loveValues] || 'romantic';
+            const imageName = valuesMapping[profile.loveValues] ? profile.loveValues : 'romantic';
             valuesImg.src = `/images/love-types/values/${imageName}.png`;
         }
     }
     
+    // 英語キーから日本語表示名へのマッピング
+    const energyMapping = {
+        'intense': '燃え上がり型',
+        'stable': '安定持続型',
+        'fluctuating': '波あり型',
+        'cool': 'クール型'
+    };
+    
     // エネルギーを更新（画像も含む）
     if (profile.loveEnergy) {
-        document.getElementById('loveEnergyType').textContent = profile.loveEnergy;
+        // 英語キーの場合は日本語に変換、既に日本語の場合はそのまま使用
+        const displayName = energyMapping[profile.loveEnergy] || profile.loveEnergy;
+        document.getElementById('loveEnergyType').textContent = displayName;
         await updateLoveEnergyContent(profile.loveEnergy);
         
-        // 画像を更新
+        // 画像を更新（英語キーをそのまま使用）
         const energyImg = document.querySelector('.love-type-card:nth-child(4) img');
         if (energyImg) {
-            const typeMapping = {
-                '燃え上がり型': 'intense',
-                '情熱的': 'intense',
-                '持続型': 'stable',
-                '安定的': 'stable',
-                '波あり型': 'fluctuating',
-                '変動的': 'fluctuating',
-                'クール型': 'cool',
-                '冷静': 'cool'
-            };
-            const imageName = typeMapping[profile.loveEnergy] || 'intense';
+            const imageName = energyMapping[profile.loveEnergy] ? profile.loveEnergy : 'intense';
             energyImg.src = `/images/love-types/energy/${imageName}.png`;
         }
     }

@@ -875,7 +875,7 @@
     <script src="js/otsukisama-data-loader.js?v=20250829001"></script>
     <script src="js/lp-otsukisama-moon.js?v=20241228006"></script>
     <script src="js/lp-otsukisama-api.js?v=20241228006"></script>
-    <script src="js/lp-otsukisama-display.js?v=20250829007"></script>
+    <script src="js/lp-otsukisama-display.js?v=20250831002"></script>
     <script src="js/lp-otsukisama-display-line.js?v=20241228006"></script>
     <script src="js/lp-otsukisama-calendar.js?v=20241228008"></script>
     <script src="js/lp-otsukisama-graph.js?v=20241228006"></script>
@@ -1009,6 +1009,8 @@
                             loveValues: data.diagnosis.love_values,
                             loveEnergy: data.diagnosis.love_energy
                         };
+                        console.log('Database values:', loveProfile);
+                        console.log('API response:', data.diagnosis);
                         
                         
                         // 6つの要素を更新
@@ -1018,7 +1020,11 @@
                         
                         // 4つの軸データを表示（完全版と同じ処理）
                         if (typeof updatePersonalityDisplay === 'function') {
+                            console.log('Calling updatePersonalityDisplay with:', loveProfile);
                             await updatePersonalityDisplay(loveProfile);
+                            console.log('updatePersonalityDisplay completed');
+                        } else {
+                            console.error('updatePersonalityDisplay is not defined');
                         }
                         
                         // エネルギーコンテンツを更新（日本語キーで）
