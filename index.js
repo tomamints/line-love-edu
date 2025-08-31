@@ -1058,7 +1058,7 @@ async function handleTextMessage(event) {
   try {
     // 「本格」キーワードでLPへ誘導
     if (text === '本格') {
-      const lpUrl = `${process.env.BASE_URL || 'https://line-love-edu.vercel.app'}/lp-otsukisama.html?userId=${userId}`;
+      const lpUrl = `${process.env.BASE_URL || 'https://line-love-edu.vercel.app'}/lp-otsukisama-input.html?userId=${userId}`;
       
       await client.replyMessage(event.replyToken, {
         type: 'flex',

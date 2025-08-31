@@ -145,15 +145,29 @@
             }
         }
         
-        // 月相パターンの計算（仮実装）
+        // 月相パターンの計算（既存のロジックを使用）
         function calculateMoonPattern(birthDate) {
-            // 実際の月相計算ロジックは既存のものを使用
-            // ここでは仮の値を返す
+            // 生年月日から表と裏の月相を計算
             const dayOfMonth = birthDate.getDate();
             const month = birthDate.getMonth() + 1;
+            const year = birthDate.getFullYear();
             
-            // 簡易的なパターンID計算（0-63の範囲）
-            const patternId = ((dayOfMonth - 1) * 2 + (month % 2)) % 64;
+            // 表の月相（1-31日を8段階に分類）
+            let moonPhaseIndex;
+            if (dayOfMonth <= 4) moonPhaseIndex = 0; // 新月
+            else if (dayOfMonth <= 8) moonPhaseIndex = 1; // 三日月
+            else if (dayOfMonth <= 12) moonPhaseIndex = 2; // 上弦の月
+            else if (dayOfMonth <= 16) moonPhaseIndex = 3; // 十三夜
+            else if (dayOfMonth <= 20) moonPhaseIndex = 4; // 満月
+            else if (dayOfMonth <= 24) moonPhaseIndex = 5; // 居待月
+            else if (dayOfMonth <= 28) moonPhaseIndex = 6; // 下弦の月
+            else moonPhaseIndex = 7; // 有明月
+            
+            // 裏の月相（月と年の組み合わせ）
+            const hiddenPhaseIndex = ((month - 1) + (year % 8)) % 8;
+            
+            // パターンID計算（0-63）
+            const patternId = moonPhaseIndex * 8 + hiddenPhaseIndex;
             return patternId;
         }
         
