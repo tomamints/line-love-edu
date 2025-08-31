@@ -10,13 +10,47 @@ class DiagnosisRenderer {
     // 診断データの読み込み
     async loadDiagnosisData(diagnosisId) {
         try {
-            // URLパラメータから診断IDを取得
+            // URLパラメータから診断IDとuserIdを取得
+            const urlParams = new URLSearchParams(window.location.search);
             if (!diagnosisId) {
-                const urlParams = new URLSearchParams(window.location.search);
                 diagnosisId = urlParams.get('id');
             }
+            const userId = urlParams.get('userId');
 
-            // 一時的にローカルストレージから読み込み（後でDB連携に変更）
+            // userIdがある場合はAPIからデータを取得
+            if (userId) {
+                try {
+                    const response = await fetch(`/api/get-love-profile?userId=${userId}`);
+                    const data = await response.json();
+                    
+                    if (data.profile) {
+                        // プロファイルデータから必要な情報を取得
+                        const birthDate = new Date(data.profile.birthDate);
+                        const patternId = data.profile.moonPatternId || this.calculatePatternFromDate(birthDate);
+                        
+                        // パターンデータの読み込み
+                        await this.loadPatternData(patternId);
+                        
+                        // 4軸データも取得
+                        this.diagnosisData = {
+                            name: data.profile.userName || data.profile.user_name || 'あなた',
+                            birthDate: data.profile.birthDate,
+                            patternId: patternId,
+                            emotionalType: data.profile.emotionalExpression || data.profile.emotional_expression,
+                            distanceType: data.profile.distanceStyle || data.profile.distance_style,
+                            valuesType: data.profile.loveValues || data.profile.love_values,
+                            energyType: data.profile.loveEnergy || data.profile.love_energy,
+                            ...this.patternData
+                        };
+                        
+                        return this.diagnosisData;
+                    }
+                } catch (apiError) {
+                    console.error('APIからのデータ取得エラー:', apiError);
+                }
+            }
+
+            // フォールバック：ローカルストレージから読み込み
             const storedData = localStorage.getItem('otsukisama_diagnosis');
             if (storedData) {
                 const parsedData = JSON.parse(storedData);
@@ -31,16 +65,36 @@ class DiagnosisRenderer {
                 
                 return this.diagnosisData;
             }
-
-            // TODO: サーバーからデータを取得
-            // const response = await fetch(`/api/diagnosis/${diagnosisId}`);
-            // this.diagnosisData = await response.json();
             
-            return this.diagnosisData;
+            throw new Error('診断データが見つかりません');
         } catch (error) {
             console.error('診断データの読み込みに失敗しました:', error);
             throw error;
         }
+    }
+    
+    // 生年月日からパターンIDを計算
+    calculatePatternFromDate(birthDate) {
+        const date = new Date(birthDate);
+        const dayOfMonth = date.getDate();
+        const month = date.getMonth() + 1;
+        const year = date.getFullYear();
+        
+        // 表の月相（1-31日を8段階に分類）
+        let moonPhaseIndex;
+        if (dayOfMonth <= 4) moonPhaseIndex = 0;
+        else if (dayOfMonth <= 8) moonPhaseIndex = 1;
+        else if (dayOfMonth <= 12) moonPhaseIndex = 2;
+        else if (dayOfMonth <= 16) moonPhaseIndex = 3;
+        else if (dayOfMonth <= 20) moonPhaseIndex = 4;
+        else if (dayOfMonth <= 24) moonPhaseIndex = 5;
+        else if (dayOfMonth <= 28) moonPhaseIndex = 6;
+        else moonPhaseIndex = 7;
+        
+        // 裏の月相
+        const hiddenPhaseIndex = ((month - 1) + (year % 8)) % 8;
+        
+        return moonPhaseIndex * 8 + hiddenPhaseIndex;
     }
 
     // パターンデータの読み込み

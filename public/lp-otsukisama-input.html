@@ -57,6 +57,9 @@
         </div>
     </div>
     
+    <!-- 既存のAPI連携JavaScript -->
+    <script src="/js/lp-otsukisama-api.js"></script>
+    
     <!-- 入力ページ専用のJavaScript -->
     <script>
         // 星空背景の生成
@@ -107,10 +110,48 @@
             }
         }
         
+        // URLからuserIdを取得
+        function getUserIdFromUrl() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get('userId');
+        }
+        
+        // ユーザープロファイルを取得して自動入力
+        async function loadUserProfile() {
+            const userId = getUserIdFromUrl();
+            if (!userId) {
+                console.log('No userId in URL');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/api/get-love-profile?userId=${userId}`);
+                const data = await response.json();
+                
+                if (data.profile) {
+                    // 名前の自動入力
+                    if (data.profile.userName) {
+                        document.getElementById('name').value = data.profile.userName;
+                    }
+                    
+                    // 生年月日の自動入力
+                    if (data.profile.birthDate) {
+                        const birthDate = new Date(data.profile.birthDate);
+                        document.getElementById('year').value = birthDate.getFullYear();
+                        document.getElementById('month').value = birthDate.getMonth() + 1;
+                        document.getElementById('day').value = birthDate.getDate();
+                    }
+                }
+            } catch (error) {
+                console.error('プロファイル取得エラー:', error);
+            }
+        }
+        
         // フォーム送信処理
         async function handleFormSubmit(e) {
             e.preventDefault();
             
+            const userId = getUserIdFromUrl();
             const formData = {
                 name: document.getElementById('name').value,
                 year: parseInt(document.getElementById('year').value),
@@ -121,23 +162,49 @@
             // 生年月日からDateオブジェクトを作成
             const birthDate = new Date(formData.year, formData.month - 1, formData.day);
             
-            // 月相の計算（簡易版 - 実際の計算ロジックは別途実装）
+            // 月相の計算
             const patternId = calculateMoonPattern(birthDate);
             
             // データを保存してプレビューページへ遷移
             try {
-                // ローカルストレージに一時保存（後でDB保存に変更）
+                // APIでデータベースに保存
+                if (userId) {
+                    const saveResponse = await fetch('/api/save-diagnosis', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            userId: userId,
+                            name: formData.name,
+                            birthDate: birthDate.toISOString(),
+                            patternId: patternId
+                        })
+                    });
+                    
+                    const result = await saveResponse.json();
+                    
+                    if (result.success && result.diagnosisId) {
+                        // データベースに保存されたIDを使用してプレビューページへ
+                        window.location.href = `/lp-otsukisama-preview.html?id=${result.diagnosisId}&userId=${userId}`;
+                        return;
+                    }
+                }
+                
+                // フォールバック：ローカルストレージを使用
                 const diagnosisData = {
                     name: formData.name,
                     birthDate: birthDate.toISOString(),
                     patternId: patternId,
-                    timestamp: new Date().toISOString()
+                    timestamp: new Date().toISOString(),
+                    userId: userId
                 };
                 
                 localStorage.setItem('otsukisama_diagnosis', JSON.stringify(diagnosisData));
                 
                 // プレビューページへ遷移
-                window.location.href = `/lp-otsukisama-preview.html?id=temp_${Date.now()}`;
+                const diagnosisId = `temp_${Date.now()}`;
+                window.location.href = `/lp-otsukisama-preview.html?id=${diagnosisId}${userId ? '&userId=' + userId : ''}`;
                 
             } catch (error) {
                 console.error('診断データの保存に失敗しました:', error);
@@ -172,9 +239,12 @@
         }
         
         // 初期化
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', async function() {
             createStars();
             initDateSelects();
+            
+            // ユーザープロファイルを読み込んで自動入力
+            await loadUserProfile();
             
             // フォーム送信イベント
             document.getElementById('moonForm').addEventListener('submit', handleFormSubmit);
