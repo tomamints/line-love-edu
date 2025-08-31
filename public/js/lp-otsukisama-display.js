@@ -1041,7 +1041,18 @@ async function updateEmotionalExpressionContent(type) {
     const element = document.getElementById('emotionalExpressionContent');
     if (!element || !personalityAxesData) return;
     
-    const typeData = personalityAxesData.emotionalExpression[type];
+    // 英語キーから日本語キーへのマッピング
+    const keyMapping = {
+        'straight': 'ストレート告白型',
+        'physical': 'スキンシップ型',
+        'subtle': 'さりげない気遣い型',
+        'shy': '奥手シャイ型'
+    };
+    
+    // 英語キーの場合は日本語に変換
+    const japaneseKey = keyMapping[type] || type;
+    
+    const typeData = personalityAxesData.emotionalExpression[japaneseKey];
     if (typeData) {
         element.textContent = typeData.description;
     }
@@ -1056,7 +1067,18 @@ async function updateDistanceStyleContent(type) {
     const element = document.getElementById('distanceStyleContent');
     if (!element || !personalityAxesData) return;
     
-    const typeData = personalityAxesData.distanceStyle[type];
+    // 英語キーから日本語キーへのマッピング
+    const keyMapping = {
+        'close': 'ベッタリ依存型',
+        'moderate': '安心セーフ型',
+        'independent': '自由マイペース型',
+        'cautious': '壁あり慎重型'
+    };
+    
+    // 英語キーの場合は日本語に変換
+    const japaneseKey = keyMapping[type] || type;
+    
+    const typeData = personalityAxesData.distanceStyle[japaneseKey];
     if (typeData) {
         element.textContent = typeData.description;
     }
@@ -1071,7 +1093,18 @@ async function updateLoveValuesContent(type) {
     const element = document.getElementById('loveValuesContent');
     if (!element || !personalityAxesData) return;
     
-    const typeData = personalityAxesData.loveValues[type];
+    // 英語キーから日本語キーへのマッピング
+    const keyMapping = {
+        'romantic': 'ロマンチスト型',
+        'realistic': 'リアリスト型',
+        'excitement': '刺激ハンター型',
+        'growth': '成長パートナー型'
+    };
+    
+    // 英語キーの場合は日本語に変換
+    const japaneseKey = keyMapping[type] || type;
+    
+    const typeData = personalityAxesData.loveValues[japaneseKey];
     if (typeData) {
         element.textContent = typeData.description;
     }
@@ -1086,7 +1119,18 @@ async function updateLoveEnergyContent(type) {
     const element = document.getElementById('loveEnergyContent');
     if (!element || !personalityAxesData) return;
     
-    const typeData = personalityAxesData.loveEnergy[type];
+    // 英語キーから日本語キーへのマッピング
+    const keyMapping = {
+        'intense': '燃え上がり型',
+        'stable': '安定持続型',
+        'fluctuating': '波あり型',
+        'cool': 'クール型'
+    };
+    
+    // 英語キーの場合は日本語に変換
+    const japaneseKey = keyMapping[type] || type;
+    
+    const typeData = personalityAxesData.loveEnergy[japaneseKey];
     if (typeData) {
         element.textContent = typeData.description;
     }
