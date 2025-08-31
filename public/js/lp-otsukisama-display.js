@@ -832,7 +832,32 @@ function updateDynamicContentFromPattern(pattern) {
     if (overallIntro) overallIntro.textContent = pattern.overall.intro || pattern.overall.mainText;
     
     // 全体運の月別タイトルと説明を更新
-    // month1, month2, month3関連の処理は削除（HTMLからも削除済み）
+    // 全体運の月別表示（全体運は残す）
+    const destinySection = document.querySelector('.fortune-section.destiny');
+    if (destinySection) {
+        const monthBoxes = destinySection.querySelectorAll('.month-box');
+        if (monthBoxes.length >= 3 && pattern.overall) {
+            const overallMonthTitles = [
+                pattern.overall.month1?.title, 
+                pattern.overall.month2?.title, 
+                pattern.overall.month3?.title
+            ];
+            const overallMonthTexts = [
+                pattern.overall.month1?.text,
+                pattern.overall.month2?.text,
+                pattern.overall.month3?.text
+            ];
+            
+            monthBoxes.forEach((box, index) => {
+                if (index < 3) {
+                    const h3 = box.querySelector('h3');
+                    const p = box.querySelector('p');
+                    if (h3) h3.textContent = overallMonthTitles[index] || `${index + 1}ヶ月目の展開`;
+                    if (p) p.textContent = overallMonthTexts[index] || `${index + 1}ヶ月目の詳細な運勢...`;
+                }
+            });
+        }
+    }
     
     // 注意ポイント
     const overallCautionBox = document.querySelector('.fortune-section.destiny .point-box p');
