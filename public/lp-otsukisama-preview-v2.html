@@ -916,12 +916,37 @@
                         const moonPhase = moonPhaseNames[moonPhaseIndex];
                         const hiddenMoonPhase = moonPhaseNames[hiddenPhaseIndex];
                         
-                        // 4つの軸データを設定
+                        // 4つの軸データを設定（英語キーから日本語表示名へ変換）
+                        const emotionalMap = {
+                            'straight': 'ストレート告白型',
+                            'physical': 'スキンシップ型',
+                            'subtle': 'さりげない気遣い型',
+                            'shy': '奥手シャイ型'
+                        };
+                        const distanceMap = {
+                            'close': 'ベッタリ依存型',
+                            'moderate': '安心セーフ型',
+                            'independent': '自由マイペース型',
+                            'cautious': '壁あり慎重型'
+                        };
+                        const valuesMap = {
+                            'romantic': 'ロマンチスト型',
+                            'realistic': 'リアリスト型',
+                            'excitement': '刺激ハンター型',
+                            'growth': '成長パートナー型'
+                        };
+                        const energyMap = {
+                            'intense': '燃え上がり型',
+                            'stable': '安定持続型',
+                            'fluctuating': '波あり型',
+                            'cool': 'クール型'
+                        };
+                        
                         const loveProfile = {
-                            emotionalExpression: data.diagnosis.emotional_expression,
-                            distanceStyle: data.diagnosis.distance_style,
-                            loveValues: data.diagnosis.love_values,
-                            loveEnergy: data.diagnosis.love_energy
+                            emotionalExpression: emotionalMap[data.diagnosis.emotional_expression] || data.diagnosis.emotional_expression,
+                            distanceStyle: distanceMap[data.diagnosis.distance_style] || data.diagnosis.distance_style,
+                            loveValues: valuesMap[data.diagnosis.love_values] || data.diagnosis.love_values,
+                            loveEnergy: energyMap[data.diagnosis.love_energy] || data.diagnosis.love_energy
                         };
                         
                         // 6つの要素を更新
