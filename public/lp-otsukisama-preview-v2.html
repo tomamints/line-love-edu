@@ -344,6 +344,118 @@
                             表向きは勢いよく突き進むあなたですが、実は内面では細やかな配慮ができる繊細な人。新しいことを始める前に、実はしっかりと下調べをしていたり、リスクを計算していたりするでしょう。その慎重さと大胆さのバランスが、あなたの成功の秘訣。時々弱音を吐きたくなることもありますが、それは成長の証です。
                         </div>
                     </div>
+                    
+                    <!-- ここから追加：3つの月の力以降のコンテンツ -->
+                    
+                    <!-- 3つの月の力セクション -->
+                    <div class="section-header-container">
+                        <img src="/images/banner/5-1-3tsuno.png" alt="あなたが持っている3つの力は〇〇です" class="full-width-banner">
+                        <p style="color: #ffffff; font-size: 18px; font-weight: 600; line-height: 2; text-shadow: 1px 1px 3px rgba(0,0,0,0.5);">
+                            さらに深く、あなたの月が持つ特別な力を見ていきましょう。月には3つの力があり、それぞれがあなたの人生を導いています。
+                        </p>
+                    </div>
+                    
+                    <div class="energy-types three-powers">
+                        <div class="energy-item">
+                            <div class="energy-title">直感力</div>
+                            <div class="energy-description">
+                                第六感が鋭く、見えない危険を察知する能力があります。迷った時は、理屈より直感を信じることで正しい道を選べるでしょう。
+                            </div>
+                        </div>
+                        <div class="energy-item">
+                            <div class="energy-title">創造力</div>
+                            <div class="energy-description">
+                                無から有を生み出す力。アイデアが湧き出る泉のような存在で、周りの人に新しい視点を与えることができます。
+                            </div>
+                        </div>
+                        <div class="energy-item">
+                            <div class="energy-title">浄化力</div>
+                            <div class="energy-description">
+                                ネガティブなエネルギーを跳ね返し、周りの空気を清める力。あなたがいるだけで、場の雰囲気が明るくなります。
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 4つの軸からあなたを紐解く -->
+                    <div style="padding: 20px 0 10px; text-align: center;">
+                        <img src="/images/banner/5-2-tikara.png" alt="4つの軸からあなたを紐解く" style="max-width: 100%; height: auto; margin-bottom: 5px;">
+                        <p style="color: #ffffff; font-size: 18px; font-weight: 600; line-height: 2; text-shadow: 1px 1px 3px rgba(0,0,0,0.5);">
+                            次に、4つの軸から見たあなたの特性を見ていきます。
+                        </p>
+                    </div>
+                    
+                    <div class="love-type-grid">
+                        <div class="love-type-card">
+                            <div class="love-type-title">
+                                <img src="/images/love-types/emotional/straight.png" alt="ストレート型">
+                                感情表現：<span id="emotionalExpressionType">ストレート型</span>
+                            </div>
+                            <div class="love-type-content" id="emotionalExpressionContent">
+                                好きな人には素直に気持ちを伝えるタイプ。駆け引きは苦手で、思ったことがすぐ顔に出てしまいます。その純粋さが、相手の心を動かす最大の魅力。
+                            </div>
+                        </div>
+                        <div class="love-type-card">
+                            <div class="love-type-title">
+                                <img src="/images/love-types/distance/independent.png" alt="自由マイペース型">
+                                距離感：<span id="distanceStyleType">自由マイペース型</span>
+                            </div>
+                            <div class="love-type-content" id="distanceStyleContent">
+                                束縛されることを嫌い、自分のペースを大切にします。相手にも自由を与え、お互いに成長できる関係を理想とします。
+                            </div>
+                        </div>
+                        <div class="love-type-card">
+                            <div class="love-type-title">
+                                <img src="/images/love-types/values/romantic.png" alt="ロマンチスト型">
+                                価値観：<span id="loveValuesType">ロマンチスト型</span>
+                            </div>
+                            <div class="love-type-content" id="loveValuesContent">
+                            </div>
+                        </div>
+                        <div class="love-type-card">
+                            <div class="love-type-title">
+                                <img src="/images/love-types/energy/intense.png" alt="燃え上がり型">
+                                エネルギー：<span id="loveEnergyType">燃え上がり型</span>
+                            </div>
+                            <div class="love-type-content" id="loveEnergyContent">
+                                あなたは恋愛において、一気に感情が燃え上がるタイプです。
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 運勢グラフセクション -->
+                    <div class="fortune-graph-section" style="margin: 40px 0;">
+                        <div style="background: linear-gradient(135deg, rgba(20, 10, 50, 0.95), rgba(40, 20, 70, 0.95)); padding: 20px 15px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.3);">
+                            <h4 style="color: #ffd700; margin-bottom: 20px; text-align: center; font-size: 24px; font-weight: bold; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">
+                                3ヶ月の運勢推移グラフ
+                            </h4>
+                            <div style="background: rgba(0, 0, 0, 0.2); border-radius: 10px; padding: 10px; position: relative;">
+                                <div style="height: 420px;">
+                                    <canvas id="fortuneChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 月齢カレンダー -->
+                    <div class="monthly-fortune">
+                        <h4 style="color: #ffd700; font-size: 22px; text-align: center; margin-bottom: 20px; font-weight: bold; text-shadow: 1px 1px 3px rgba(0,0,0,0.5);">
+                            あなただけの月齢カレンダー（<span id="calendarMonthYear"></span>）
+                        </h4>
+                        <div class="calendar-wrapper">
+                            <div class="weekday-header">
+                                <div class="weekday">日</div>
+                                <div class="weekday">月</div>
+                                <div class="weekday">火</div>
+                                <div class="weekday">水</div>
+                                <div class="weekday">木</div>
+                                <div class="weekday">金</div>
+                                <div class="weekday">土</div>
+                            </div>
+                            <div id="personalizedCalendar" class="calendar-grid">
+                                <!-- JavaScriptで動的に生成 -->
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 
                 <div class="lock-overlay">
@@ -375,11 +487,19 @@
             const diagnosisId = urlParams.get('id');
             const userId = urlParams.get('userId');
             
+            // ローディング表示
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            if (loadingOverlay) {
+                loadingOverlay.style.display = 'flex';
+            }
+            
             // 診断データを読み込み
             if (diagnosisId) {
                 try {
+                    console.log('診断データを取得中:', diagnosisId);
                     const response = await fetch(`/api/profile-form?action=get-diagnosis&id=${diagnosisId}`);
                     const data = await response.json();
+                    console.log('取得したデータ:', data);
                     
                     if (data.success && data.diagnosis) {
                         // 名前を表示
@@ -415,9 +535,59 @@
                             const moonPhaseNames = ['新月', '三日月', '上弦の月', '十三夜', '満月', '十六夜', '下弦の月', '暁'];
                             updateSixElements(patternId, moonPhaseNames[moonPhaseIndex], moonPhaseNames[hiddenPhaseIndex], loveProfile);
                         }
+                        // 4つの軸データを表示
+                        if (typeof updatePersonalityDisplay === 'function') {
+                            updatePersonalityDisplay(loveProfile);
+                        }
+                        
+                        // グラフを初期化
+                        if (typeof initFortuneChart === 'function') {
+                            const birthdate = new Date(data.diagnosis.birth_date);
+                            initFortuneChart(patternId, birthdate);
+                        }
+                        
+                        // カレンダーを初期化
+                        if (typeof initPersonalizedCalendar === 'function') {
+                            const birthdate = new Date(data.diagnosis.birth_date);
+                            initPersonalizedCalendar(patternId, birthdate);
+                        }
+                        
+                        // 3つの月の力を更新（データから直接設定）
+                        if (window.OtsukisamaDataLoader && window.OtsukisamaDataLoader.isLoaded()) {
+                            const moonPhaseNames = ['新月', '三日月', '上弦の月', '十三夜', '満月', '十六夜', '下弦の月', '暁'];
+                            const actualMoonPhase = moonPhaseNames[moonPhaseIndex];
+                            const threePowers = window.OtsukisamaDataLoader.getThreePowers(actualMoonPhase);
+                            if (threePowers && threePowers.length === 3) {
+                                const powerItems = document.querySelectorAll('.three-powers .energy-item');
+                                powerItems.forEach((item, index) => {
+                                    if (threePowers[index]) {
+                                        const titleEl = item.querySelector('.energy-title');
+                                        const descEl = item.querySelector('.energy-description');
+                                        if (titleEl) titleEl.textContent = threePowers[index].title;
+                                        if (descEl) descEl.textContent = threePowers[index].description;
+                                    }
+                                });
+                            }
+                        }
+                        
+                        console.log('データ表示完了');
+                    } else {
+                        console.error('診断データが取得できませんでした:', data);
                     }
                 } catch (error) {
                     console.error('診断データの読み込みエラー:', error);
+                } finally {
+                    // ローディングを非表示
+                    if (loadingOverlay) {
+                        setTimeout(() => {
+                            loadingOverlay.style.display = 'none';
+                        }, 500);
+                    }
+                }
+            } else {
+                // 診断IDがない場合もローディングを非表示
+                if (loadingOverlay) {
+                    loadingOverlay.style.display = 'none';
                 }
             }
             
@@ -460,8 +630,32 @@
         }
         
         // DOMロード後に初期化
-        document.addEventListener('DOMContentLoaded', function() {
-            initPreview();
+        document.addEventListener('DOMContentLoaded', async function() {
+            // データローダーの読み込みを待つ
+            if (!window.OtsukisamaDataLoader || !window.OtsukisamaDataLoader.isLoaded()) {
+                console.log('データローダーの読み込みを待機中...');
+                await new Promise(resolve => {
+                    window.addEventListener('otsukisama-data-loaded', resolve, { once: true });
+                });
+                console.log('データローダー読み込み完了');
+            }
+            
+            // 星空背景を生成
+            const starsContainer = document.getElementById('starsContainer');
+            if (starsContainer && !starsContainer.children.length) {
+                for (let i = 0; i < 100; i++) {
+                    const star = document.createElement('div');
+                    star.className = 'star';
+                    star.style.left = Math.random() * 100 + '%';
+                    star.style.top = Math.random() * 100 + '%';
+                    star.style.animationDelay = Math.random() * 3 + 's';
+                    star.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                    starsContainer.appendChild(star);
+                }
+            }
+            
+            // プレビューを初期化
+            await initPreview();
             
             // テスト用：決済スキップリンク
             const skipPaymentLink = document.getElementById('skipPaymentLink');
