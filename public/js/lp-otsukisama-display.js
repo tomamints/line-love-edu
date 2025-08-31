@@ -877,9 +877,12 @@ function updateDynamicContentFromPattern(pattern) {
         // criticalTimingsも削除されたため、この処理も削除
     }
     
-    // 恋愛運の導入文
+    // 恋愛運の導入文とメインテキスト
     const loveIntro = document.getElementById('fortune-love-intro');
-    if (loveIntro && pattern.love) loveIntro.textContent = pattern.love.intro || pattern.love.mainText;
+    if (loveIntro && pattern.love) loveIntro.textContent = pattern.love.intro || '';
+    
+    const loveMainText = document.getElementById('fortune-love-text');
+    if (loveMainText && pattern.love) loveMainText.textContent = pattern.love.mainText || '';
     
     // 恋愛運の新規セクション
     if (pattern.love) {
@@ -903,9 +906,15 @@ function updateDynamicContentFromPattern(pattern) {
         }
     }
     
-    // 仕事運のタイトル
+    // 仕事運のintro、タイトル、メインテキスト
+    const workIntro = document.getElementById('fortune-work-intro');
+    if (workIntro && pattern.work) workIntro.textContent = pattern.work.intro || '';
+    
     const workTitle = document.getElementById('fortune-work-title');
     if (workTitle && pattern.work) workTitle.textContent = pattern.work.title || '仕事運の展開';
+    
+    const workMainText = document.getElementById('fortune-work-text');
+    if (workMainText && pattern.work) workMainText.textContent = pattern.work.mainText || '';
     
     // 人間関係の転機と注意
     const relationshipSection = document.querySelector('.fortune-section.relationship');
@@ -989,14 +998,20 @@ function updateDynamicContentFromPattern(pattern) {
         }
     }
     
-    // 人間関係運
+    // 人間関係運のintroとメインテキスト
+    const relationshipIntro = document.getElementById('fortune-relationship-intro');
+    if (relationshipIntro && pattern.relationship) relationshipIntro.textContent = pattern.relationship.intro || '';
+    
     const relationshipText = document.getElementById('fortune-relationship-text');
     if (relationshipText && pattern.relationship && pattern.relationship.mainText) {
         relationshipText.textContent = pattern.relationship.mainText;
         console.log('Relationship text set successfully');
     }
     
-    // 金運
+    // 金運のintroとメインテキスト
+    const moneyIntro = document.getElementById('fortune-money-intro');
+    if (moneyIntro && pattern.money) moneyIntro.textContent = pattern.money.intro || '';
+    
     const moneyText = document.getElementById('fortune-money-text');
     if (moneyText && pattern.money && pattern.money.mainText) {
         moneyText.textContent = pattern.money.mainText;
