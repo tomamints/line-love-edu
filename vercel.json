@@ -7,15 +7,7 @@
     },
     {
       "source": "/api/stripe/webhook",
-      "destination": "/api/stripe-webhook-simple"
-    },
-    {
-      "source": "/payment/success",
-      "destination": "/api/payment-success"
-    },
-    {
-      "source": "/payment/cancel",
-      "destination": "/api/payment-cancel"
+      "destination": "/api/payment-webhook-v2"
     },
     {
       "source": "/api/download-report",
@@ -31,7 +23,7 @@
       "maxDuration": 60,
       "memory": 1024
     },
-    "api/stripe-webhook-simple.js": {
+    "api/payment-webhook-v2.js": {
       "maxDuration": 60,
       "memory": 1024
     },
