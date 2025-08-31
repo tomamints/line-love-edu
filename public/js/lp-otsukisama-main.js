@@ -40,15 +40,89 @@ function updateScrollProgress() {
     }
 }
 
+// 診断データを読み込む関数
+async function loadDiagnosisData(diagnosisId) {
+    try {
+        const response = await fetch(`/api/get-diagnosis?id=${diagnosisId}`);
+        const data = await response.json();
+        
+        if (data.success && data.diagnosis) {
+            return data.diagnosis;
+        }
+        return null;
+    } catch (error) {
+        console.error('診断データの読み込みエラー:', error);
+        return null;
+    }
+}
+
 // ページロード時の初期化
 window.addEventListener('DOMContentLoaded', async function() {
     console.log('DOM Content Loaded - Initializing...');
     
+    // URLパラメータを取得
+    const urlParams = new URLSearchParams(window.location.search);
+    const diagnosisId = urlParams.get('id');
+    const isPaid = urlParams.get('paid') === 'true';
+    
     // データファイルを読み込み
     await loadDataFiles();
     
-    // フォームを初期化
-    initializeForm();
+    // 診断IDがある場合（支払い後のリダイレクト）
+    if (diagnosisId && isPaid) {
+        console.log('Loading diagnosis data...', diagnosisId);
+        
+        // 診断データを読み込む
+        const diagnosis = await loadDiagnosisData(diagnosisId);
+        
+        if (diagnosis) {
+            // フォームを非表示にして結果を表示
+            const formSection = document.getElementById('formSection');
+            const resultSection = document.getElementById('resultSection');
+            
+            if (formSection) formSection.style.display = 'none';
+            if (resultSection) {
+                resultSection.style.display = 'block';
+                
+                // 名前を表示
+                const resultName = document.getElementById('resultName');
+                if (resultName && diagnosis.user_name) {
+                    resultName.textContent = diagnosis.user_name;
+                }
+                
+                // パターンIDをグローバル変数に設定
+                currentPatternId = diagnosis.pattern_id;
+                
+                // 月相コンテンツを更新
+                updateMoonPhaseContent(currentPatternId);
+                
+                // 月相を計算して表示
+                const moonPhaseIndex = Math.floor(currentPatternId / 8);
+                const hiddenPhaseIndex = currentPatternId % 8;
+                const moonPhaseNames = ['新月', '三日月', '上弦の月', '十三夜', '満月', '十六夜', '下弦の月', '暁'];
+                const moonPhase = moonPhaseNames[moonPhaseIndex];
+                const hiddenMoonPhase = moonPhaseNames[hiddenPhaseIndex];
+                
+                // 6つの要素を更新
+                if (typeof updateSixElements === 'function') {
+                    updateSixElements(currentPatternId, moonPhase, hiddenMoonPhase, null);
+                }
+                
+                // グラフデータも更新
+                if (typeof updateFortuneGraph === 'function') {
+                    updateFortuneGraph(currentPatternId);
+                }
+                
+                // スクロールして結果を表示
+                setTimeout(() => {
+                    resultSection.scrollIntoView({ behavior: 'smooth' });
+                }, 500);
+            }
+        }
+    } else {
+        // 通常のフォーム表示
+        initializeForm();
+    }
     
     // キラキラエフェクトを生成
     createTwinkleStars();

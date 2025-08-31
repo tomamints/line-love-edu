@@ -18,32 +18,59 @@ module.exports = async (req, res) => {
       
       // おつきさま診断データの保存
       if (diagnosisType === 'otsukisama' || patternId !== undefined) {
-        if (!userId || !name || !birthDate) {
+        if (!name || !birthDate) {
           return res.status(400).json({ 
             error: 'Missing required fields',
-            required: ['userId', 'name', 'birthDate']
+            required: ['name', 'birthDate']
           });
         }
         
-        const profilesDB = new ProfilesDB();
+        // Supabaseクライアントを初期化
+        const { createClient } = require('@supabase/supabase-js');
+        const supabase = createClient(
+          process.env.SUPABASE_URL,
+          process.env.SUPABASE_SERVICE_KEY
+        );
         
-        // 診断データを保存
-        const diagnosisData = {
-          userName: name,
-          birthDate: birthDate,
-          moonPatternId: patternId,
-          diagnosisDate: new Date().toISOString(),
-          diagnosisType: 'otsukisama'
-        };
+        // 診断データをSupabaseに保存
+        const { data: diagnosis, error: saveError } = await supabase
+          .from('diagnoses')
+          .insert({
+            user_id: userId || null,
+            user_name: name,
+            birth_date: birthDate,
+            pattern_id: patternId,
+            diagnosis_type: 'otsukisama',
+            is_paid: false,
+            created_at: new Date().toISOString()
+          })
+          .select()
+          .single();
         
-        await profilesDB.saveProfile(userId, diagnosisData);
+        if (saveError) {
+          console.error('診断データ保存エラー:', saveError);
+          return res.status(500).json({ 
+            error: 'Failed to save diagnosis',
+            details: saveError.message
+          });
+        }
         
-        // 診断IDを生成
-        const diagnosisId = `diag_${userId}_${Date.now()}`;
+        // プロファイルもprofiles DBに保存（LINE連携用）
+        if (userId) {
+          const profilesDB = new ProfilesDB();
+          const profileData = {
+            userName: name,
+            birthDate: birthDate,
+            moonPatternId: patternId,
+            diagnosisDate: new Date().toISOString(),
+            diagnosisType: 'otsukisama'
+          };
+          await profilesDB.saveProfile(userId, profileData);
+        }
         
         return res.status(200).json({
           success: true,
-          diagnosisId: diagnosisId,
+          diagnosisId: diagnosis.id,
           message: '診断データを保存しました'
         });
       }
