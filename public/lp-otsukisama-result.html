@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>診断結果（完全版） - おつきさま診断</title>
+    <link rel="stylesheet" href="css/lp-otsukisama.css">
+    <style>
+        /* 完全版専用のスタイル */
+        .share-section {
+            background: linear-gradient(135deg, #f8f4ff 0%, #fff5fb 100%);
+            padding: 40px 20px;
+            margin-top: 60px;
+            border-radius: 30px;
+            border: 2px solid rgba(138, 97, 250, 0.1);
+            text-align: center;
+        }
+        
+        .share-title {
+            font-size: 20px;
+            color: #4a3a8c;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+        
+        .share-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+        
+        .share-button {
+            background: white;
+            border: 2px solid rgba(138, 97, 250, 0.2);
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .share-button:hover {
+            background: rgba(138, 97, 250, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .share-button.line {
+            color: #00b900;
+            border-color: #00b900;
+        }
+        
+        .share-button.twitter {
+            color: #1da1f2;
+            border-color: #1da1f2;
+        }
+        
+        .share-button.facebook {
+            color: #1877f2;
+            border-color: #1877f2;
+        }
+        
+        .share-button.copy {
+            color: #8a61fa;
+            border-color: #8a61fa;
+        }
+        
+        .download-section {
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 1px solid rgba(138, 97, 250, 0.1);
+        }
+        
+        .download-button {
+            background: linear-gradient(135deg, #8a61fa 0%, #c77dff 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .download-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(138, 97, 250, 0.4);
+        }
+        
+        .complete-badge {
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+            color: #4a3a8c;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 20px;
+            box-shadow: 0 3px 10px rgba(255, 215, 0, 0.3);
+        }
+        
+        .thank-you-message {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+        }
+        
+        .thank-you-message h2 {
+            color: #4a3a8c;
+            font-size: 22px;
+            margin-bottom: 15px;
+        }
+        
+        .thank-you-message p {
+            color: #666;
+            line-height: 1.8;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <!-- ローディングオーバーレイ -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">完全版の診断結果を準備しています...</div>
+        </div>
+    </div>
+    
+    <!-- スクロール進捗バー -->
+    <div class="scroll-progress" id="scrollProgress"></div>
+    <!-- 星空背景 -->
+    <div class="stars-container" id="starsContainer"></div>
+    
+    <!-- メインコンテンツ -->
+    <div class="container">
+        <!-- ヘッダー -->
+        <div class="header">
+            <div class="main-moon"></div>
+            <img src="/images/banner/1-title.png" alt="おつきさま診断" class="responsive-image">
+            <div class="complete-badge">✨ 完全版 ✨</div>
+            <p class="subtitle">あなただけの特別な診断結果</p>
+        </div>
+        
+        <!-- お礼メッセージ -->
+        <div class="thank-you-message">
+            <h2>🌙 診断をご購入いただきありがとうございます</h2>
+            <p>
+                これからお見せする内容は、あなたの生まれた日の月相から導き出された、
+                世界でただ一つの特別なメッセージです。
+                月の導きに従って、素晴らしい未来を歩んでいってください。
+            </p>
+        </div>
+        
+        <!-- 結果セクション -->
+        <div class="result-section" id="content">
+            <!-- ここに動的にコンテンツが挿入されます -->
+        </div>
+        
+        <!-- 共有セクション -->
+        <div class="share-section">
+            <h3 class="share-title">診断結果をシェアして運気アップ！</h3>
+            <p style="color: #666; font-size: 14px; margin-bottom: 20px;">
+                月のエネルギーは共有することで増幅します
+            </p>
+            
+            <div class="share-buttons">
+                <button class="share-button line" onclick="shareToLine()">
+                    <span>📱</span> LINEで共有
+                </button>
+                <button class="share-button twitter" onclick="shareToTwitter()">
+                    <span>🐦</span> Xで共有
+                </button>
+                <button class="share-button facebook" onclick="shareToFacebook()">
+                    <span>📘</span> Facebookで共有
+                </button>
+                <button class="share-button copy" onclick="copyLink()">
+                    <span>📋</span> リンクをコピー
+                </button>
+            </div>
+            
+            <div class="download-section">
+                <p style="color: #666; font-size: 14px; margin-bottom: 15px;">
+                    診断結果を保存していつでも見返せます
+                </p>
+                <button class="download-button" onclick="downloadResult()">
+                    📥 診断結果をダウンロード
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 共通JavaScript -->
+    <script src="/js/lp-otsukisama-content.js"></script>
+    <script src="/js/lp-otsukisama-render.js"></script>
+    
+    <!-- 完全版ページ専用の初期化 -->
+    <script>
+        // 星空背景の生成
+        function createStars() {
+            const container = document.getElementById('starsContainer');
+            const starCount = 100;
+            
+            for (let i = 0; i < starCount; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.animationDelay = Math.random() * 3 + 's';
+                star.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                container.appendChild(star);
+            }
+        }
+        
+        // スクロール進捗バーの更新
+        function updateScrollProgress() {
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrollPercent = (scrollTop / scrollHeight) * 100;
+            
+            const progressBar = document.getElementById('scrollProgress');
+            if (progressBar) {
+                progressBar.style.width = scrollPercent + '%';
+            }
+        }
+        
+        // ページ初期化
+        async function initPage() {
+            try {
+                // 星空背景を生成
+                createStars();
+                
+                // スクロール進捗バーの設定
+                window.addEventListener('scroll', updateScrollProgress);
+                
+                // TODO: 決済状態の確認
+                // const isPaymentValid = await checkPaymentStatus();
+                // if (!isPaymentValid) {
+                //     window.location.href = '/lp-otsukisama-preview.html';
+                //     return;
+                // }
+                
+                // レンダラーを初期化（フルモード）
+                const renderer = new DiagnosisRenderer('full');
+                
+                // 診断データを読み込み
+                const urlParams = new URLSearchParams(window.location.search);
+                const diagnosisId = urlParams.get('id');
+                
+                await renderer.loadDiagnosisData(diagnosisId);
+                
+                // コンテンツをレンダリング
+                await renderer.render('content');
+                
+                // ローディング画面を非表示
+                const loadingOverlay = document.getElementById('loadingOverlay');
+                if (loadingOverlay) {
+                    loadingOverlay.style.display = 'none';
+                }
+                
+            } catch (error) {
+                console.error('ページの初期化に失敗しました:', error);
+                document.getElementById('content').innerHTML = `
+                    <div style="text-align: center; padding: 40px;">
+                        <p style="color: #666;">診断結果の読み込みに失敗しました。</p>
+                        <a href="/lp-otsukisama-input.html" style="color: #8a61fa;">診断をやり直す</a>
+                    </div>
+                `;
+                
+                // ローディング画面を非表示
+                const loadingOverlay = document.getElementById('loadingOverlay');
+                if (loadingOverlay) {
+                    loadingOverlay.style.display = 'none';
+                }
+            }
+        }
+        
+        // 共有機能
+        function shareToLine() {
+            const url = encodeURIComponent(window.location.href);
+            const text = encodeURIComponent('おつきさま診断で自分の運命を知りました！🌙');
+            window.open(`https://line.me/R/msg/text/?${text}%20${url}`);
+        }
+        
+        function shareToTwitter() {
+            const url = encodeURIComponent(window.location.href);
+            const text = encodeURIComponent('おつきさま診断で自分の運命を知りました！🌙 #おつきさま診断');
+            window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`);
+        }
+        
+        function shareToFacebook() {
+            const url = encodeURIComponent(window.location.href);
+            window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`);
+        }
+        
+        function copyLink() {
+            navigator.clipboard.writeText(window.location.href).then(() => {
+                alert('リンクをコピーしました！');
+            }).catch(() => {
+                alert('コピーに失敗しました。手動でURLをコピーしてください。');
+            });
+        }
+        
+        function downloadResult() {
+            // TODO: PDF生成機能の実装
+            alert('ダウンロード機能は準備中です。\nブラウザの印刷機能（Ctrl+P）をご利用ください。');
+            // window.print();
+        }
+        
+        // DOMロード完了後に初期化
+        document.addEventListener('DOMContentLoaded', initPage);
+    </script>
+</body>
+</html>

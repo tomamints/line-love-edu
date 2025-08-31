@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>おつきさま診断 - 月が導くあなたの運命</title>
+    <link rel="stylesheet" href="css/lp-otsukisama.css">
+</head>
+<body>
+    <!-- スクロール進捗バー -->
+    <div class="scroll-progress" id="scrollProgress"></div>
+    <!-- 星空背景 -->
+    <div class="stars-container" id="starsContainer"></div>
+    
+    <!-- メインコンテンツ -->
+    <div class="container">
+        <!-- ヘッダー -->
+        <div class="header">
+            <div class="main-moon"></div>
+            <img src="/images/banner/1-title.png" alt="おつきさま診断" class="responsive-image">
+            <p class="subtitle">月が導くあなたの運命</p>
+            <p class="sub-description">
+                生まれた日の月相から読み解く、あなただけの特別な運勢メッセージ
+            </p>
+        </div>
+        
+        <!-- フォームセクション -->
+        <div class="form-section" id="formSection">
+            <h2 class="form-title">あなたの生年月日を教えてください</h2>
+            
+            <form id="moonForm">
+                <div class="form-group">
+                    <label>お名前（ニックネーム可）<span class="required">*必須</span></label>
+                    <input type="text" id="name" placeholder="例：月読みゆき" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>生年月日<span class="required">*必須</span></label>
+                    <div class="date-selects">
+                        <select id="year" required>
+                            <option value="">年</option>
+                        </select>
+                        <select id="month" required>
+                            <option value="">月</option>
+                        </select>
+                        <select id="day" required>
+                            <option value="">日</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <button type="submit">
+                    診断する
+                    <div class="button-subtitle">無料で診断結果が見れます</div>
+                </button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- 入力ページ専用のJavaScript -->
+    <script>
+        // 星空背景の生成
+        function createStars() {
+            const container = document.getElementById('starsContainer');
+            const starCount = 100;
+            
+            for (let i = 0; i < starCount; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.animationDelay = Math.random() * 3 + 's';
+                star.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                container.appendChild(star);
+            }
+        }
+        
+        // 年月日セレクトボックスの初期化
+        function initDateSelects() {
+            const yearSelect = document.getElementById('year');
+            const monthSelect = document.getElementById('month');
+            const daySelect = document.getElementById('day');
+            
+            // 年（1920年から現在年まで）
+            const currentYear = new Date().getFullYear();
+            for (let y = currentYear; y >= 1920; y--) {
+                const option = document.createElement('option');
+                option.value = y;
+                option.textContent = y + '年';
+                yearSelect.appendChild(option);
+            }
+            
+            // 月
+            for (let m = 1; m <= 12; m++) {
+                const option = document.createElement('option');
+                option.value = m;
+                option.textContent = m + '月';
+                monthSelect.appendChild(option);
+            }
+            
+            // 日
+            for (let d = 1; d <= 31; d++) {
+                const option = document.createElement('option');
+                option.value = d;
+                option.textContent = d + '日';
+                daySelect.appendChild(option);
+            }
+        }
+        
+        // フォーム送信処理
+        async function handleFormSubmit(e) {
+            e.preventDefault();
+            
+            const formData = {
+                name: document.getElementById('name').value,
+                year: parseInt(document.getElementById('year').value),
+                month: parseInt(document.getElementById('month').value),
+                day: parseInt(document.getElementById('day').value)
+            };
+            
+            // 生年月日からDateオブジェクトを作成
+            const birthDate = new Date(formData.year, formData.month - 1, formData.day);
+            
+            // 月相の計算（簡易版 - 実際の計算ロジックは別途実装）
+            const patternId = calculateMoonPattern(birthDate);
+            
+            // データを保存してプレビューページへ遷移
+            try {
+                // ローカルストレージに一時保存（後でDB保存に変更）
+                const diagnosisData = {
+                    name: formData.name,
+                    birthDate: birthDate.toISOString(),
+                    patternId: patternId,
+                    timestamp: new Date().toISOString()
+                };
+                
+                localStorage.setItem('otsukisama_diagnosis', JSON.stringify(diagnosisData));
+                
+                // プレビューページへ遷移
+                window.location.href = `/lp-otsukisama-preview.html?id=temp_${Date.now()}`;
+                
+            } catch (error) {
+                console.error('診断データの保存に失敗しました:', error);
+                alert('エラーが発生しました。もう一度お試しください。');
+            }
+        }
+        
+        // 月相パターンの計算（仮実装）
+        function calculateMoonPattern(birthDate) {
+            // 実際の月相計算ロジックは既存のものを使用
+            // ここでは仮の値を返す
+            const dayOfMonth = birthDate.getDate();
+            const month = birthDate.getMonth() + 1;
+            
+            // 簡易的なパターンID計算（0-63の範囲）
+            const patternId = ((dayOfMonth - 1) * 2 + (month % 2)) % 64;
+            return patternId;
+        }
+        
+        // 初期化
+        document.addEventListener('DOMContentLoaded', function() {
+            createStars();
+            initDateSelects();
+            
+            // フォーム送信イベント
+            document.getElementById('moonForm').addEventListener('submit', handleFormSubmit);
+        });
+    </script>
+</body>
+</html>
