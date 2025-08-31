@@ -6,15 +6,14 @@
 import { createClient } from '@supabase/supabase-js';
 
 // Supabase設定 - 環境変数の確認とエラーハンドリング
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+// Vercel環境変数に合わせて修正
+const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://sxqxuebvhdpqyktxvofe.supabase.co';
+const supabaseServiceKey = process.env.SUPABASE_ANON_KEY || process.env.SUPABASE_SERVICE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
 // 環境変数が設定されていない場合のエラーメッセージ
-if (!supabaseUrl) {
-    console.error('Missing SUPABASE_URL or NEXT_PUBLIC_SUPABASE_URL environment variable');
-}
 if (!supabaseServiceKey) {
-    console.error('Missing SUPABASE_SERVICE_KEY or SUPABASE_ANON_KEY environment variable');
+    console.error('Missing SUPABASE_ANON_KEY environment variable');
+    console.error('Available env vars:', Object.keys(process.env).filter(k => k.includes('SUPABASE')));
 }
 
 // Supabaseクライアントの作成（環境変数がある場合のみ）
