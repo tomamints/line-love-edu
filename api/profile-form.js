@@ -52,7 +52,11 @@ module.exports = async (req, res) => {
             });
           }
           
-          const diagnosis = {
+          // 支払い状態をチェック
+          const isPaid = data.is_paid || false;
+          
+          // 基本データ（プレビュー版でも表示）
+          const basicDiagnosis = {
             id: data.diagnosis_id,
             user_id: data.user_id,
             user_name: data.user_name,
@@ -64,13 +68,26 @@ module.exports = async (req, res) => {
             distance_style: data.distance_style,
             love_values: data.love_values,
             love_energy: data.love_energy,
-            is_paid: data.is_paid || false,
+            is_paid: isPaid,
             created_at: data.diagnosis_date || data.created_at
           };
           
+          // 支払い済みの場合は完全データを返す
+          if (isPaid) {
+            return res.json({
+              success: true,
+              diagnosis: basicDiagnosis,
+              isPaid: true,
+              accessLevel: 'full'
+            });
+          }
+          
+          // 未払いの場合は基本データのみ（プレビュー用）
           return res.json({
             success: true,
-            diagnosis: diagnosis
+            diagnosis: basicDiagnosis,
+            isPaid: false,
+            accessLevel: 'preview'
           });
         } else {
           // ファイルベースのフォールバック
@@ -113,7 +130,7 @@ module.exports = async (req, res) => {
           })
           .eq('id', diagnosis_id);
         
-        const redirectUrl = `/lp-otsukisama-unified.html?mode=complete&userId=${diagnosis_id}&paid=true`;
+        const redirectUrl = `/lp-otsukisama-unified.html?id=${diagnosis_id}`;
         
         res.send(`
           <!DOCTYPE html>
@@ -201,7 +218,7 @@ module.exports = async (req, res) => {
         return res.json({
           success: true,
           isPaid: true,
-          redirectUrl: `/lp-otsukisama-unified.html?mode=complete&userId=${diagnosisId}&paid=true`
+          redirectUrl: `/lp-otsukisama-unified.html?id=${diagnosisId}`
         });
       }
       
@@ -228,7 +245,7 @@ module.exports = async (req, res) => {
           diagnosisType: 'otsukisama'
         },
         success_url: `${process.env.BASE_URL}/api/profile-form?action=payment-success&session_id={CHECKOUT_SESSION_ID}&diagnosis_id=${diagnosisId}`,
-        cancel_url: `${process.env.BASE_URL}/lp-otsukisama-unified.html?mode=preview&userId=${diagnosisId}`,
+        cancel_url: `${process.env.BASE_URL}/lp-otsukisama-unified.html?id=${diagnosisId}`,
         expires_at: Math.floor(Date.now() / 1000) + (30 * 60),
       });
       

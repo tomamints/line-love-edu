@@ -880,48 +880,85 @@
     <script src="js/lp-otsukisama-calendar.js?v=20241228008"></script>
     <script src="js/lp-otsukisama-graph.js?v=20241228006"></script>
     
+    <!-- lp-otsukisama-main.jsは統合版では使用しない（重複を避けるため） -->
+    
     <script>
-        // URLパラメータから表示モードを決定
-        function initializeDisplayMode() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const mode = urlParams.get('mode');
+        // グローバル変数
+        let currentPatternId = null;
+        window.moonPhaseData = null;
+        window.hiddenPhaseData = null;
+        window.uiTexts = null;
+        
+        // データの読み込み
+        async function loadDataFiles() {
+            try {
+                const [moonPhases, hiddenPhases, texts] = await Promise.all([
+                    fetch('/data/moon-phase-descriptions.json').then(r => r.json()),
+                    fetch('/data/hidden-phase-descriptions.json').then(r => r.json()),
+                    fetch('/data/ui-texts.json').then(r => r.json())
+                ]);
+                
+                window.moonPhaseData = moonPhases;
+                window.hiddenPhaseData = hiddenPhases;
+                window.uiTexts = texts;
+                
+                console.log('Data files loaded successfully');
+                return true;
+            } catch (error) {
+                console.error('Failed to load data files:', error);
+                return false;
+            }
+        }
+        
+        // スクロール進捗バーの更新
+        function updateScrollProgress() {
+            const scrollProgress = document.getElementById('scrollProgress');
+            if (scrollProgress) {
+                const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+                const scrollPercent = (scrollTop / scrollHeight) * 100;
+                scrollProgress.style.width = scrollPercent + '%';
+            }
+        }
+        
+        // 表示モードを設定（APIレスポンスに基づいて動的に決定）
+        function setDisplayMode(isPaid) {
             const pageBody = document.getElementById('pageBody');
             const pageSubtitle = document.getElementById('pageSubtitle');
             const pageDescription = document.getElementById('pageDescription');
             const loadingText = document.querySelector('.loading-text');
             
-            if (mode === 'complete') {
+            if (isPaid) {
                 // 完全版モード
-                pageBody.className = 'complete-mode';
-                pageSubtitle.textContent = '月が導くあなたの運命';
-                pageDescription.textContent = '生まれた日の月相から読み解く、あなただけの特別な運勢メッセージ';
+                document.body.className = 'complete-mode';
+                if (pageBody) pageBody.className = 'complete-mode';
+                if (pageSubtitle) pageSubtitle.textContent = '月が導くあなたの運命';
+                if (pageDescription) pageDescription.textContent = '生まれた日の月相から読み解く、あなただけの特別な運勢メッセージ';
                 if (loadingText) {
                     loadingText.textContent = '診断結果を準備しています...';
                 }
                 // ページタイトルも更新
                 document.title = 'おつきさま診断 - 月が導くあなたの運命';
+                return 'complete';
             } else {
-                // プレビューモード（デフォルト）
-                pageBody.className = 'preview-mode';
-                pageSubtitle.textContent = '診断結果（プレビュー版）';
-                pageDescription.textContent = '一部の内容のみ表示されています';
+                // プレビューモード
+                document.body.className = 'preview-mode';
+                if (pageBody) pageBody.className = 'preview-mode';
+                if (pageSubtitle) pageSubtitle.textContent = '診断結果（プレビュー版）';
+                if (pageDescription) pageDescription.textContent = '一部の内容のみ表示されています';
                 if (loadingText) {
                     loadingText.textContent = '診断結果を読み込んでいます...';
                 }
                 // ページタイトルも更新
                 document.title = '診断結果プレビュー - おつきさま診断';
+                return 'preview';
             }
         }
-        
-        // ページロード時にモードを初期化
-        initializeDisplayMode();
         
         // プレビュー・完全版統合の初期化関数
         async function initUnified() {
             const urlParams = new URLSearchParams(window.location.search);
             const diagnosisId = urlParams.get('id');
-            const userId = urlParams.get('userId');
-            const mode = urlParams.get('mode');
             
             // ローディング表示
             const loadingOverlay = document.getElementById('loadingOverlay');
@@ -938,6 +975,9 @@
                     console.log('取得したデータ:', data);
                     
                     if (data.success && data.diagnosis) {
+                        // APIレスポンスに基づいてモードを設定
+                        const mode = setDisplayMode(data.isPaid);
+                        window.currentMode = mode;  // グローバルに保存
                         // 名前を表示
                         const resultName = document.getElementById('resultName');
                         if (resultName) {
@@ -1011,7 +1051,7 @@
                         }
                         
                         // 完全版モードの場合、運勢データも読み込む
-                        if (mode === 'complete') {
+                        if (data.isPaid) {
                             // 運勢コンテンツを更新（全体運、恋愛運、人間関係運、仕事運、金運）
                             // データローダーが準備できているか確認
                             if (window.OtsukisamaDataLoader && window.OtsukisamaDataLoader.isLoaded()) {
@@ -1065,7 +1105,7 @@
             }
             
             // プレビューモードの場合、購入ボタンの設定
-            if (mode !== 'complete') {
+            if (window.currentMode !== 'complete') {
                 const purchaseButton = document.getElementById('purchaseButton');
                 if (purchaseButton) {
                     purchaseButton.addEventListener('click', async () => {
@@ -1110,18 +1150,20 @@
                     skipPaymentLink.addEventListener('click', function(e) {
                         e.preventDefault();
                         const currentUrl = new URL(window.location.href);
-                        currentUrl.searchParams.set('mode', 'complete');
+                        // paid=trueは使わない（セキュリティのため）
                         window.location.href = currentUrl.toString();
                     });
                 }
             }
         }
         
-        // グローバル変数を設定
-        let currentPatternId = null;
-        
         // DOMロード後に初期化
         document.addEventListener('DOMContentLoaded', async function() {
+            console.log('DOM Content Loaded - Initializing unified page...');
+            
+            // データファイルを読み込み
+            await loadDataFiles();
+            
             // データローダーの読み込みを待つ
             if (!window.OtsukisamaDataLoader || !window.OtsukisamaDataLoader.isLoaded()) {
                 console.log('データローダーの読み込みを待機中...');
@@ -1145,7 +1187,10 @@
                 }
             }
             
-            // 統合版を初期化
+            // スクロール進捗バーの設定
+            window.addEventListener('scroll', updateScrollProgress);
+            
+            // 統合初期化を実行
             await initUnified();
         });
     </script>
