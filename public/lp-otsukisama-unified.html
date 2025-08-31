@@ -875,7 +875,7 @@
     <script src="js/otsukisama-data-loader.js?v=20250829001"></script>
     <script src="js/lp-otsukisama-moon.js?v=20241228006"></script>
     <script src="js/lp-otsukisama-api.js?v=20241228006"></script>
-    <script src="js/lp-otsukisama-display.js?v=20250831002"></script>
+    <script src="js/lp-otsukisama-display.js?v=20250831004"></script>
     <script src="js/lp-otsukisama-display-line.js?v=20241228006"></script>
     <script src="js/lp-otsukisama-calendar.js?v=20241228008"></script>
     <script src="js/lp-otsukisama-graph.js?v=20241228006"></script>
@@ -1054,9 +1054,11 @@
                             }
                             
                             // グラフを初期化
-                            if (typeof initFortuneChart === 'function') {
-                                const birthdate = new Date(data.diagnosis.birth_date);
-                                initFortuneChart(currentPatternId, birthdate);
+                            if (typeof updateFortuneGraph === 'function') {
+                                console.log('Initializing fortune graph for pattern:', currentPatternId);
+                                updateFortuneGraph(currentPatternId);
+                            } else {
+                                console.error('updateFortuneGraph function not found');
                             }
                             
                             // カレンダーを初期化

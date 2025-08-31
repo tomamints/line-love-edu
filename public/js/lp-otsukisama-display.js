@@ -547,7 +547,13 @@ async function updatePersonalityDisplay(profile) {
     if (profile.emotionalExpression) {
         // 英語キーの場合は日本語に変換、既に日本語の場合はそのまま使用
         const displayName = emotionalMapping[profile.emotionalExpression] || profile.emotionalExpression;
-        document.getElementById('emotionalExpressionType').textContent = displayName;
+        const element = document.getElementById('emotionalExpressionType');
+        if (element) {
+            console.log('Updating emotionalExpressionType:', profile.emotionalExpression, '->', displayName);
+            element.textContent = displayName;
+        } else {
+            console.error('Element emotionalExpressionType not found');
+        }
         await updateEmotionalExpressionContent(profile.emotionalExpression);
         
         // 画像を更新（英語キーをそのまま使用）
