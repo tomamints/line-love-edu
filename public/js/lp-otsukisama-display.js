@@ -877,10 +877,7 @@ function updateDynamicContentFromPattern(pattern) {
         // criticalTimingsも削除されたため、この処理も削除
     }
     
-    // 恋愛運の導入文とメインテキスト
-    const loveIntro = document.getElementById('fortune-love-intro');
-    if (loveIntro && pattern.love) loveIntro.textContent = pattern.love.intro || '';
-    
+    // 恋愛運のメインテキスト
     const loveMainText = document.getElementById('fortune-love-text');
     if (loveMainText && pattern.love) loveMainText.textContent = pattern.love.mainText || '';
     
@@ -906,10 +903,7 @@ function updateDynamicContentFromPattern(pattern) {
         }
     }
     
-    // 仕事運のintro、タイトル、メインテキスト
-    const workIntro = document.getElementById('fortune-work-intro');
-    if (workIntro && pattern.work) workIntro.textContent = pattern.work.intro || '';
-    
+    // 仕事運のタイトル、メインテキスト
     const workTitle = document.getElementById('fortune-work-title');
     if (workTitle && pattern.work) workTitle.textContent = pattern.work.title || '仕事運の展開';
     
@@ -998,20 +992,14 @@ function updateDynamicContentFromPattern(pattern) {
         }
     }
     
-    // 人間関係運のintroとメインテキスト
-    const relationshipIntro = document.getElementById('fortune-relationship-intro');
-    if (relationshipIntro && pattern.relationship) relationshipIntro.textContent = pattern.relationship.intro || '';
-    
+    // 人間関係運のメインテキスト
     const relationshipText = document.getElementById('fortune-relationship-text');
     if (relationshipText && pattern.relationship && pattern.relationship.mainText) {
         relationshipText.textContent = pattern.relationship.mainText;
         console.log('Relationship text set successfully');
     }
     
-    // 金運のintroとメインテキスト
-    const moneyIntro = document.getElementById('fortune-money-intro');
-    if (moneyIntro && pattern.money) moneyIntro.textContent = pattern.money.intro || '';
-    
+    // 金運のメインテキスト
     const moneyText = document.getElementById('fortune-money-text');
     if (moneyText && pattern.money && pattern.money.mainText) {
         moneyText.textContent = pattern.money.mainText;
