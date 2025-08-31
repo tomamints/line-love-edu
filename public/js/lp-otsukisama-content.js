@@ -55,7 +55,7 @@ const DIAGNOSIS_CONTENT = {
                         <!-- 表の月相 -->
                         <div class="moon-phase-card new-moon">
                             <div class="moon-phase-visual">
-                                <img src="/images/moon-phases/${data.moonPhaseImage || 'new-moon'}.png" alt="${data.moonPhase || '新月'}">
+                                <img src="/images/moon/omote-${data.moonPhaseIndex !== undefined ? data.moonPhaseIndex : 0}.png" alt="${data.moonPhase || '新月'}">
                             </div>
                             <div class="moon-phase-info">
                                 <div class="phase-label">表の月相</div>
@@ -69,7 +69,7 @@ const DIAGNOSIS_CONTENT = {
                         <!-- 裏の月相 -->
                         <div class="moon-phase-card full-moon">
                             <div class="moon-phase-visual">
-                                <img src="/images/moon-phases/${data.hiddenPhaseImage || 'full-moon'}.png" alt="${data.hiddenPhase || '満月'}">
+                                <img src="/images/moon/ura-${data.hiddenPhaseIndex !== undefined ? data.hiddenPhaseIndex : 4}.png" alt="${data.hiddenPhase || '満月'}">
                             </div>
                             <div class="moon-phase-info">
                                 <div class="phase-label">隠された月相</div>
@@ -91,15 +91,12 @@ const DIAGNOSIS_CONTENT = {
             order: 4,
             html: (data) => `
                 <div class="four-axes-diagnosis">
-                    <img src="/images/banner/3-4jiku.png" alt="4つの軸から読み解くあなたの恋愛性格" class="section-banner">
+                    <img src="/images/banner/5-2-tikara.png" alt="4つの軸からあなたを紐解く" class="section-banner">
                     
                     <div class="type-wheel-container">
-                        <div class="center-image">
-                            <img src="/images/center-moon.png" alt="中心の月">
-                        </div>
                         
                         <div class="type-item top" data-type="emotional">
-                            <img src="/images/love-types/emotional/${data.emotionalImage || 'default'}.png" alt="${data.emotionalType || '感情表現'}">
+                            <img src="/images/love-types/emotional/${data.emotionalImage || 'straight'}.png" alt="${data.emotionalType || '感情表現'}">
                             <div class="type-label">
                                 <span>感情表現</span>
                                 <span>${data.emotionalType || 'ストレート告白型'}</span>
@@ -107,7 +104,7 @@ const DIAGNOSIS_CONTENT = {
                         </div>
                         
                         <div class="type-item right" data-type="distance">
-                            <img src="/images/love-types/distance/${data.distanceImage || 'default'}.png" alt="${data.distanceType || '距離感'}">
+                            <img src="/images/love-types/distance/${data.distanceImage || 'moderate'}.png" alt="${data.distanceType || '距離感'}">
                             <div class="type-label">
                                 <span>距離感</span>
                                 <span>${data.distanceType || '安心セーフ型'}</span>
@@ -115,7 +112,7 @@ const DIAGNOSIS_CONTENT = {
                         </div>
                         
                         <div class="type-item bottom" data-type="values">
-                            <img src="/images/love-types/values/${data.valuesImage || 'default'}.png" alt="${data.valuesType || '価値観'}">
+                            <img src="/images/love-types/values/${data.valuesImage || 'romantic'}.png" alt="${data.valuesType || '価値観'}">
                             <div class="type-label">
                                 <span>価値観</span>
                                 <span>${data.valuesType || 'ロマンチスト型'}</span>
@@ -123,7 +120,7 @@ const DIAGNOSIS_CONTENT = {
                         </div>
                         
                         <div class="type-item left" data-type="energy">
-                            <img src="/images/love-types/energy/${data.energyImage || 'default'}.png" alt="${data.energyType || 'エネルギー'}">
+                            <img src="/images/love-types/energy/${data.energyImage || 'intense'}.png" alt="${data.energyType || 'エネルギー'}">
                             <div class="type-label">
                                 <span>エネルギー</span>
                                 <span>${data.energyType || '燃え上がり型'}</span>
@@ -170,7 +167,7 @@ const DIAGNOSIS_CONTENT = {
             order: 6,
             html: (data) => `
                 <div class="overall-fortune">
-                    <img src="/images/banner/5-zenntai.png" alt="直近3ヶ月の全体運" class="section-banner">
+                    <img src="/images/banner/7-unmei.png" alt="直近3ヶ月の運命" class="section-banner">
                     
                     <div class="fortune-content">
                         <h2>${data.overallTitle || '運命の転換期'}</h2>

@@ -105,9 +105,15 @@ class DiagnosisRenderer {
             const pattern = patterns[patternId] || patterns[0];
             
             // パターンデータをフラット化
+            // 月相インデックスを計算
+            const moonPhaseIndex = Math.floor(patternId / 8);
+            const hiddenPhaseIndex = patternId % 8;
+            
             this.patternData = {
                 moonPhase: pattern.moonPhase,
                 hiddenPhase: pattern.hiddenPhase,
+                moonPhaseIndex: moonPhaseIndex,
+                hiddenPhaseIndex: hiddenPhaseIndex,
                 overallTitle: pattern.overall?.title,
                 overallIntro: pattern.overall?.intro,
                 overallMainText: pattern.overall?.mainText,
