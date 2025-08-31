@@ -527,17 +527,30 @@
                             loveEnergy: data.diagnosis.love_energy
                         };
                         
-                        // データを設定（本番ページと同じ関数を使用）
+                        // データを設定（完全版と同じロジック）
+                        // 月相コンテンツを更新
                         if (typeof updateMoonPhaseContent === 'function') {
                             updateMoonPhaseContent(patternId);
                         }
+                        
+                        // 月相名を取得
+                        const moonPhaseNames = ['新月', '三日月', '上弦の月', '十三夜', '満月', '十六夜', '下弦の月', '暁'];
+                        const moonPhase = moonPhaseNames[moonPhaseIndex];
+                        const hiddenMoonPhase = moonPhaseNames[hiddenPhaseIndex];
+                        
+                        // 6つの要素を更新
                         if (typeof updateSixElements === 'function') {
-                            const moonPhaseNames = ['新月', '三日月', '上弦の月', '十三夜', '満月', '十六夜', '下弦の月', '暁'];
-                            updateSixElements(patternId, moonPhaseNames[moonPhaseIndex], moonPhaseNames[hiddenPhaseIndex], loveProfile);
+                            updateSixElements(patternId, moonPhase, hiddenMoonPhase, loveProfile);
                         }
-                        // 4つの軸データを表示
+                        
+                        // 4つの軸データを表示（updatePersonalityDisplay）
                         if (typeof updatePersonalityDisplay === 'function') {
                             updatePersonalityDisplay(loveProfile);
+                        }
+                        
+                        // グラフデータも更新
+                        if (typeof updateFortuneGraph === 'function') {
+                            updateFortuneGraph(patternId);
                         }
                         
                         // グラフを初期化
