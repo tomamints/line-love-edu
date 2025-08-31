@@ -113,7 +113,7 @@ module.exports = async (req, res) => {
           })
           .eq('id', diagnosis_id);
         
-        const redirectUrl = `/lp-otsukisama.html?id=${diagnosis_id}&paid=true`;
+        const redirectUrl = `/lp-otsukisama-unified.html?mode=complete&userId=${diagnosis_id}&paid=true`;
         
         res.send(`
           <!DOCTYPE html>
@@ -201,7 +201,7 @@ module.exports = async (req, res) => {
         return res.json({
           success: true,
           isPaid: true,
-          redirectUrl: `/lp-otsukisama.html?id=${diagnosisId}&paid=true`
+          redirectUrl: `/lp-otsukisama-unified.html?mode=complete&userId=${diagnosisId}&paid=true`
         });
       }
       
@@ -228,7 +228,7 @@ module.exports = async (req, res) => {
           diagnosisType: 'otsukisama'
         },
         success_url: `${process.env.BASE_URL}/api/profile-form?action=payment-success&session_id={CHECKOUT_SESSION_ID}&diagnosis_id=${diagnosisId}`,
-        cancel_url: `${process.env.BASE_URL}/lp-otsukisama-preview.html?id=${diagnosisId}&userId=${userId || ''}`,
+        cancel_url: `${process.env.BASE_URL}/lp-otsukisama-unified.html?mode=preview&userId=${diagnosisId}`,
         expires_at: Math.floor(Date.now() / 1000) + (30 * 60),
       });
       

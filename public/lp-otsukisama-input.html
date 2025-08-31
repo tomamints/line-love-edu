@@ -192,7 +192,7 @@
                     
                     if (result.success && result.diagnosisId) {
                         // データベースに保存されたIDを使用してプレビューページへ
-                        window.location.href = `/lp-otsukisama-preview-v2.html?id=${result.diagnosisId}&userId=${userId}`;
+                        window.location.href = `/lp-otsukisama-unified.html?mode=preview&userId=${result.diagnosisId}`;
                         return;
                     }
                 }
@@ -210,7 +210,7 @@
                 
                 // プレビューページへ遷移
                 const diagnosisId = `temp_${Date.now()}`;
-                window.location.href = `/lp-otsukisama-preview-v2.html?id=${diagnosisId}${userId ? '&userId=' + userId : ''}`;
+                window.location.href = `/lp-otsukisama-unified.html?mode=preview&userId=${diagnosisId}`;
                 
             } catch (error) {
                 console.error('診断データの保存に失敗しました:', error);
