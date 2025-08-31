@@ -504,12 +504,12 @@ async function updateSixElements(patternId, moonPhase, hiddenMoonPhase, profile 
 
 
 // 恋愛タイプの表示を更新
-function updatePersonalityDisplay(profile) {
+async function updatePersonalityDisplay(profile) {
     
     // 感情表現を更新（画像も含む）
     if (profile.emotionalExpression) {
         document.getElementById('emotionalExpressionType').textContent = profile.emotionalExpression;
-        updateEmotionalExpressionContent(profile.emotionalExpression);
+        await updateEmotionalExpressionContent(profile.emotionalExpression);
         
         // 画像を更新
         const emotionalImg = document.querySelector('.love-type-card:nth-child(1) img');
@@ -528,7 +528,7 @@ function updatePersonalityDisplay(profile) {
     // 距離感を更新（画像も含む）
     if (profile.distanceStyle) {
         document.getElementById('distanceStyleType').textContent = profile.distanceStyle;
-        updateDistanceStyleContent(profile.distanceStyle);
+        await updateDistanceStyleContent(profile.distanceStyle);
         
         // 画像を更新
         const distanceImg = document.querySelector('.love-type-card:nth-child(2) img');
@@ -552,7 +552,7 @@ function updatePersonalityDisplay(profile) {
     // 価値観を更新（画像も含む）
     if (profile.loveValues) {
         document.getElementById('loveValuesType').textContent = profile.loveValues;
-        updateLoveValuesContent(profile.loveValues);
+        await updateLoveValuesContent(profile.loveValues);
         
         // 画像を更新
         const valuesImg = document.querySelector('.love-type-card:nth-child(3) img');
@@ -575,7 +575,7 @@ function updatePersonalityDisplay(profile) {
     // エネルギーを更新（画像も含む）
     if (profile.loveEnergy) {
         document.getElementById('loveEnergyType').textContent = profile.loveEnergy;
-        updateLoveEnergyContent(profile.loveEnergy);
+        await updateLoveEnergyContent(profile.loveEnergy);
         
         // 画像を更新
         const energyImg = document.querySelector('.love-type-card:nth-child(4) img');
