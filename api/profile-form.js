@@ -338,7 +338,7 @@ module.exports = async (req, res) => {
     }
     
     // 既存のプロフィールを取得
-    const profile = await ProfilesDB.getProfile(userId);
+    const profile = await profilesDB.getProfile(userId);
     const existing = profile?.personalInfo || {};
     
     const html = `
