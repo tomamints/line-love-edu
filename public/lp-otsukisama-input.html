@@ -182,7 +182,7 @@
                             action: 'save-otsukisama',
                             userId: userId,
                             name: formData.name,
-                            birthDate: new Date(formData.year, formData.month - 1, formData.day).toISOString(),
+                            birthDate: `${formData.year}-${String(formData.month).padStart(2, '0')}-${String(formData.day).padStart(2, '0')}`,
                             patternId: patternId,
                             diagnosisType: 'otsukisama'
                         })
@@ -198,10 +198,9 @@
                 }
                 
                 // フォールバック：ローカルストレージを使用
-                const birthDate = new Date(formData.year, formData.month - 1, formData.day);
                 const diagnosisData = {
                     name: formData.name,
-                    birthDate: birthDate.toISOString(),
+                    birthDate: `${formData.year}-${String(formData.month).padStart(2, '0')}-${String(formData.day).padStart(2, '0')}`,
                     patternId: patternId,
                     timestamp: new Date().toISOString(),
                     userId: userId
