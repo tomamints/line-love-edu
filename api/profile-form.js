@@ -57,8 +57,13 @@ module.exports = async (req, res) => {
             user_id: data.user_id,
             user_name: data.user_name,
             birth_date: data.birth_date,
-            pattern_id: data.moon_pattern_id,
+            moon_pattern_id: data.moon_pattern_id,
+            pattern_id: data.moon_pattern_id,  // 互換性のため両方提供
             diagnosis_type: data.diagnosis_type || 'otsukisama',
+            emotional_expression: data.emotional_expression,
+            distance_style: data.distance_style,
+            love_values: data.love_values,
+            love_energy: data.love_energy,
             is_paid: data.is_paid || false,
             created_at: data.diagnosis_date || data.created_at
           };
