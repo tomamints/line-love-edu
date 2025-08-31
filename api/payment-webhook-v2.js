@@ -6,18 +6,30 @@
 import { createClient } from '@supabase/supabase-js';
 import Stripe from 'stripe';
 
-// Supabase設定
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_KEY;
-const supabase = createClient(supabaseUrl, supabaseServiceKey);
+// Supabase設定 - 環境変数の確認
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_ANON_KEY;
+
+// Supabaseクライアントの作成（環境変数がある場合のみ）
+const supabase = supabaseUrl && supabaseServiceKey ? createClient(supabaseUrl, supabaseServiceKey) : null;
 
 // Stripe設定
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+const stripeKey = process.env.STRIPE_SECRET_KEY;
+const stripe = stripeKey ? new Stripe(stripeKey) : null;
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
 export default async function handler(req, res) {
     if (req.method !== 'POST') {
         return res.status(405).json({ error: 'Method not allowed' });
+    }
+
+    // 必要な設定が不足している場合はエラー
+    if (!stripe || !supabase) {
+        console.error('Missing required configuration:', { stripe: !!stripe, supabase: !!supabase });
+        return res.status(500).json({ 
+            error: 'Server configuration error',
+            details: 'Required services are not properly configured'
+        });
     }
 
     const sig = req.headers['stripe-signature'];

@@ -5,12 +5,30 @@
 
 import { createClient } from '@supabase/supabase-js';
 
-// Supabase設定
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-const supabase = createClient(supabaseUrl, supabaseServiceKey);
+// Supabase設定 - 環境変数の確認とエラーハンドリング
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+// 環境変数が設定されていない場合のエラーメッセージ
+if (!supabaseUrl) {
+    console.error('Missing SUPABASE_URL or NEXT_PUBLIC_SUPABASE_URL environment variable');
+}
+if (!supabaseServiceKey) {
+    console.error('Missing SUPABASE_SERVICE_KEY or SUPABASE_ANON_KEY environment variable');
+}
+
+// Supabaseクライアントの作成（環境変数がある場合のみ）
+const supabase = supabaseUrl && supabaseServiceKey ? createClient(supabaseUrl, supabaseServiceKey) : null;
 
 export default async function handler(req, res) {
+    // Supabaseクライアントが初期化されていない場合はエラー
+    if (!supabase) {
+        return res.status(500).json({ 
+            error: 'Database configuration error',
+            details: 'Supabase environment variables are not properly configured'
+        });
+    }
+    
     if (req.method !== 'POST' && req.method !== 'GET') {
         return res.status(405).json({ error: 'Method not allowed' });
     }
