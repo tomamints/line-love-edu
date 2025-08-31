@@ -517,18 +517,52 @@
                                 <div class="love-new-section hanging-text">
                                     <p id="fortune-love-destiny-meeting" class="fortune-text"></p>
                                 </div>
+                                
+                                <!-- 新規セクション：恋の矢を向けている相手 -->
+                                <img src="/images/banner/love-2.png" alt="今後3ヶ月、あなたに恋の矢を向けているお相手はこんな人" class="section-banner">
+                                <div class="love-new-section hanging-text">
+                                    <p id="fortune-love-admirer-type" class="fortune-text"></p>
+                                </div>
+                                
+                                <!-- 新規セクション：危険な異性のタイプ -->
+                                <img src="/images/banner/love-3.png" alt="危険な恋の罠？この3ヶ月、あなたが出会うと危険な異性のタイプ" class="section-banner">
+                                <div class="love-new-section hanging-text">
+                                    <p id="fortune-love-dangerous-type" class="fortune-text"></p>
+                                </div>
+                                
+                                <div class="point-box">
+                                    <strong>⚠️ 恋愛の注意ポイント</strong>
+                                    <p></p>
+                                </div>
                             </div>
                         </div>
                     </div>
                     
                     <!-- 人間関係運 -->
                     <div class="fortune-banner-wrapper">
-                        <img src="/images/banner/9-ningen.png" alt="あなたの人間関係運" class="fortune-main-banner">
+                        <img src="/images/banner/9-ningenn.png" alt="あなたの人間関係運" class="fortune-main-banner">
                         
                         <div class="fortune-section relationship">
                             <div class="fortune-content">
                                 <div class="fortune-highlight">
                                     <p class="fortune-relationship-text" id="fortune-relationship-text"></p>
+                                </div>
+                                
+                                <!-- 新規セクション：新しい人間関係 -->
+                                <img src="/images/banner/relation-1.png" alt="今後3ヶ月であなたが築くことになる、新しい人間関係とは" class="section-banner">
+                                <div class="relationship-new-section hanging-text">
+                                    <p id="fortune-relationship-new-connections" class="fortune-text"></p>
+                                </div>
+                                
+                                <!-- 新規セクション：人間関係の転機 -->
+                                <img src="/images/banner/relation-2.png" alt="人間関係の転機が訪れます。切るべき縁と繋ぐべき縁とは？" class="section-banner">
+                                <div class="relationship-new-section hanging-text">
+                                    <p id="fortune-relationship-turning-point" class="fortune-text"></p>
+                                </div>
+                                
+                                <div class="point-box">
+                                    <strong>⚠️ 人間関係の注意ポイント</strong>
+                                    <p></p>
                                 </div>
                             </div>
                         </div>
@@ -543,6 +577,23 @@
                                 <div class="fortune-highlight">
                                     <p class="fortune-work-text" id="fortune-work-text"></p>
                                 </div>
+                                
+                                <!-- 新規セクション：仕事での躍進チャンス -->
+                                <img src="/images/banner/work-1.png" alt="仕事での躍進チャンスは今にも手に届きそう" class="section-banner">
+                                <div class="work-new-section hanging-text">
+                                    <p id="fortune-work-breakthrough" class="fortune-text"></p>
+                                </div>
+                                
+                                <!-- 新規セクション：避けるべき落とし穴 -->
+                                <img src="/images/banner/work-2.png" alt="仕事で陥りがちな落とし穴" class="section-banner">
+                                <div class="work-new-section hanging-text">
+                                    <p id="fortune-work-pitfall" class="fortune-text"></p>
+                                </div>
+                                
+                                <div class="point-box">
+                                    <strong>⚠️ 仕事の注意ポイント</strong>
+                                    <p></p>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -555,6 +606,20 @@
                             <div class="fortune-content">
                                 <div class="fortune-highlight">
                                     <p class="fortune-money-text" id="fortune-money-text"></p>
+                                </div>
+                                
+                                <!-- 新規セクション：ラッキーアクション -->
+                                <img src="/images/banner/money-1.png" alt="あなたの金運を底上げする、とっておきのラッキーアクション" class="section-banner">
+                                <div class="money-new-section hanging-text">
+                                    <p>
+                                        新月の日に財布を新調し、満月の夜に財布を月光浴させると金運UP。月が欠けていく時期は無駄遣いを控え、毎月の新月と満月に財布を整理することが大切。
+                                    </p>
+                                </div>
+                                
+                                <!-- 新規セクション：金銭トラブル回避 -->
+                                <img src="/images/banner/money-2.png" alt="お金の貸し借りは慎重に。人間関係にヒビを入れる金銭問題" class="section-banner">
+                                <div class="money-new-section hanging-text">
+                                    <p id="fortune-money-trouble" class="fortune-text"></p>
                                 </div>
                             </div>
                         </div>
@@ -682,11 +747,22 @@
                         }
                         
                         // 運勢コンテンツを更新（全体運、恋愛運、人間関係運、仕事運、金運）
-                        if (typeof updateDynamicContentFromPattern === 'function') {
+                        // データローダーが準備できているか確認
+                        if (window.OtsukisamaDataLoader && window.OtsukisamaDataLoader.isLoaded()) {
                             const pattern = window.OtsukisamaDataLoader.getPatternFortune(patternId);
-                            if (pattern) {
+                            console.log('Pattern data for fortune:', pattern);
+                            if (pattern && typeof updateDynamicContentFromPattern === 'function') {
                                 updateDynamicContentFromPattern(pattern);
                             }
+                        } else {
+                            // データローダーの読み込みを待ってから再試行
+                            window.addEventListener('otsukisama-data-loaded', () => {
+                                const pattern = window.OtsukisamaDataLoader.getPatternFortune(patternId);
+                                console.log('Pattern data for fortune (after wait):', pattern);
+                                if (pattern && typeof updateDynamicContentFromPattern === 'function') {
+                                    updateDynamicContentFromPattern(pattern);
+                                }
+                            }, { once: true });
                         }
                         
                         // グラフを初期化
