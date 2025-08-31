@@ -370,7 +370,7 @@
             // 診断データを読み込み
             if (diagnosisId) {
                 try {
-                    const response = await fetch(`/api/get-diagnosis?id=${diagnosisId}`);
+                    const response = await fetch(`/api/profile-form?action=get-diagnosis&id=${diagnosisId}`);
                     const data = await response.json();
                     
                     if (data.success && data.diagnosis) {
@@ -412,7 +412,7 @@
                 button.textContent = '処理中...';
                 
                 try {
-                    const response = await fetch('/api/create-otsukisama-checkout', {
+                    const response = await fetch('/api/profile-form?action=create-checkout', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'

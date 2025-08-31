@@ -389,7 +389,7 @@
                     
                     try {
                         // Stripe Checkoutセッションを作成
-                        const response = await fetch('/api/create-otsukisama-checkout', {
+                        const response = await fetch('/api/profile-form?action=create-checkout', {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json'

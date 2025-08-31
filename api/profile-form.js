@@ -3,8 +3,228 @@
 
 const ordersDB = require('../core/database/orders-db');
 const ProfilesDB = require('../core/database/profiles-db');
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const { createClient } = require('@supabase/supabase-js');
+
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_KEY
+);
 
 module.exports = async (req, res) => {
+  // CORSヘッダー
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+  
+  // GETリクエストのアクション処理
+  if (req.method === 'GET' && req.query.action) {
+    const { action } = req.query;
+    
+    // 診断データ取得
+    if (action === 'get-diagnosis') {
+      const { id } = req.query;
+      
+      if (!id) {
+        return res.status(400).json({ error: '診断IDが必要です' });
+      }
+      
+      try {
+        const { data: diagnosis, error } = await supabase
+          .from('diagnoses')
+          .select('*')
+          .eq('id', id)
+          .single();
+        
+        if (error || !diagnosis) {
+          return res.status(404).json({ 
+            success: false,
+            error: '診断データが見つかりません' 
+          });
+        }
+        
+        return res.json({
+          success: true,
+          diagnosis: diagnosis
+        });
+      } catch (error) {
+        console.error('診断データ取得エラー:', error);
+        return res.status(500).json({ 
+          success: false,
+          error: 'サーバーエラーが発生しました' 
+        });
+      }
+    }
+    
+    // 決済成功処理
+    if (action === 'payment-success') {
+      const { session_id, diagnosis_id } = req.query;
+      
+      if (!session_id || !diagnosis_id) {
+        return res.status(400).send('必要なパラメータが不足しています');
+      }
+      
+      try {
+        const session = await stripe.checkout.sessions.retrieve(session_id);
+        
+        if (session.payment_status !== 'paid') {
+          return res.status(400).send('支払いが確認できません');
+        }
+        
+        await supabase
+          .from('diagnoses')
+          .update({ 
+            is_paid: true,
+            paid_at: new Date().toISOString(),
+            stripe_session_id: session_id,
+            payment_amount: session.amount_total
+          })
+          .eq('id', diagnosis_id);
+        
+        const redirectUrl = `/lp-otsukisama.html?id=${diagnosis_id}&paid=true`;
+        
+        res.send(`
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <meta charset="UTF-8">
+            <title>決済完了</title>
+            <style>
+              body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+                margin: 0;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+              }
+              .container {
+                text-align: center;
+                padding: 40px;
+                background: rgba(255, 255, 255, 0.1);
+                border-radius: 20px;
+                backdrop-filter: blur(10px);
+              }
+              h1 { margin-bottom: 20px; }
+              p { margin-bottom: 30px; opacity: 0.9; }
+              .spinner {
+                border: 3px solid rgba(255, 255, 255, 0.3);
+                border-top: 3px solid white;
+                border-radius: 50%;
+                width: 40px;
+                height: 40px;
+                animation: spin 1s linear infinite;
+                margin: 0 auto;
+              }
+              @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+              }
+            </style>
+            <script>
+              setTimeout(function() {
+                window.location.href = '${redirectUrl}';
+              }, 2000);
+            </script>
+          </head>
+          <body>
+            <div class="container">
+              <h1>✨ お支払いありがとうございます</h1>
+              <p>診断結果ページへ移動しています...</p>
+              <div class="spinner"></div>
+            </div>
+          </body>
+          </html>
+        `);
+      } catch (error) {
+        console.error('Payment success処理エラー:', error);
+        res.status(500).send('エラーが発生しました');
+      }
+      return;
+    }
+  }
+  
+  // POSTリクエストのアクション処理
+  if (req.method === 'POST' && req.query.action === 'create-checkout') {
+    const { diagnosisId, userId } = req.body;
+    
+    if (!diagnosisId) {
+      return res.status(400).json({ error: '診断IDが必要です' });
+    }
+    
+    try {
+      const { data: diagnosis, error: diagError } = await supabase
+        .from('diagnoses')
+        .select('*')
+        .eq('id', diagnosisId)
+        .single();
+      
+      if (diagError || !diagnosis) {
+        return res.status(404).json({ error: '診断データが見つかりません' });
+      }
+      
+      if (diagnosis.is_paid) {
+        return res.json({
+          success: true,
+          isPaid: true,
+          redirectUrl: `/lp-otsukisama.html?id=${diagnosisId}&paid=true`
+        });
+      }
+      
+      const session = await stripe.checkout.sessions.create({
+        payment_method_types: ['card'],
+        line_items: [
+          {
+            price_data: {
+              currency: 'jpy',
+              product_data: {
+                name: 'おつきさま診断 - 完全版',
+                description: 'あなただけの月相診断結果と詳細な運勢分析',
+                images: ['https://honkaku-ccln.com/images/banner/1-title.png']
+              },
+              unit_amount: 980,
+            },
+            quantity: 1,
+          },
+        ],
+        mode: 'payment',
+        metadata: {
+          diagnosisId: diagnosisId,
+          userId: userId || '',
+          diagnosisType: 'otsukisama'
+        },
+        success_url: `${process.env.BASE_URL}/api/profile-form?action=payment-success&session_id={CHECKOUT_SESSION_ID}&diagnosis_id=${diagnosisId}`,
+        cancel_url: `${process.env.BASE_URL}/lp-otsukisama-preview.html?id=${diagnosisId}&userId=${userId || ''}`,
+        expires_at: Math.floor(Date.now() / 1000) + (30 * 60),
+      });
+      
+      await supabase
+        .from('diagnoses')
+        .update({ 
+          stripe_session_id: session.id,
+          checkout_created_at: new Date().toISOString()
+        })
+        .eq('id', diagnosisId);
+      
+      return res.json({
+        success: true,
+        checkoutUrl: session.url,
+        sessionId: session.id
+      });
+    } catch (error) {
+      console.error('Checkout作成エラー:', error);
+      return res.status(500).json({ 
+        error: '決済セッションの作成に失敗しました',
+        details: error.message 
+      });
+    }
+  }
   
   // POSTリクエスト: 診断データ保存（/api/save-diagnosisの代替）
   if (req.method === 'POST' && req.headers['content-type']?.includes('application/json')) {

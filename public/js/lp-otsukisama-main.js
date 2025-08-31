@@ -43,7 +43,7 @@ function updateScrollProgress() {
 // 診断データを読み込む関数
 async function loadDiagnosisData(diagnosisId) {
     try {
-        const response = await fetch(`/api/get-diagnosis?id=${diagnosisId}`);
+        const response = await fetch(`/api/profile-form?action=get-diagnosis&id=${diagnosisId}`);
         const data = await response.json();
         
         if (data.success && data.diagnosis) {
