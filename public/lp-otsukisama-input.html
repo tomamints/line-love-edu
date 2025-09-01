@@ -178,20 +178,44 @@
                     const hiddenPhaseIndex = patternId % 8;
                     const moonPhaseNames = ['新月', '三日月', '上弦の月', '十三夜', '満月', '十六夜', '下弦の月', '暁'];
                     
-                    // 4つの軸データをランダムに生成（実際はパターンIDから計算すべき）
-                    const emotionalTypes = ['straight', 'physical', 'subtle', 'shy'];
-                    const distanceTypes = ['close', 'moderate', 'independent', 'cautious'];
-                    const valueTypes = ['romantic', 'realistic', 'excitement', 'growth'];
-                    const energyTypes = ['intense', 'stable', 'fluctuating', 'cool'];
+                    // profilesテーブルから4つの軸データを取得
+                    let emotionalExpression = 'straight';
+                    let distanceStyle = 'moderate';
+                    let loveValues = 'romantic';
+                    let loveEnergy = 'intense';
+                    
+                    // プロフィールから4つの軸データを取得
+                    try {
+                        const profileResponse = await fetch(`/api/get-love-profile?userId=${userId}`);
+                        const profileData = await profileResponse.json();
+                        
+                        if (profileData.success && profileData.profile) {
+                            // profilesテーブルからデータを使用
+                            emotionalExpression = profileData.profile.emotionalExpression || 'straight';
+                            distanceStyle = profileData.profile.distanceStyle || 'moderate';
+                            loveValues = profileData.profile.loveValues || 'romantic';
+                            loveEnergy = profileData.profile.loveEnergy || 'intense';
+                            console.log('Profilesテーブルから4つの軸データ取得:', {
+                                emotionalExpression,
+                                distanceStyle,
+                                loveValues,
+                                loveEnergy
+                            });
+                        } else {
+                            console.log('プロフィールデータが見つからないため、デフォルト値を使用');
+                        }
+                    } catch (error) {
+                        console.error('プロフィール取得エラー:', error);
+                    }
                     
                     const resultData = {
                         moon_pattern_id: patternId,
                         moon_phase: moonPhaseNames[moonPhaseIndex],
                         hidden_moon_phase: moonPhaseNames[hiddenPhaseIndex],
-                        emotional_expression: emotionalTypes[moonPhaseIndex % 4],
-                        distance_style: distanceTypes[hiddenPhaseIndex % 4],
-                        love_values: valueTypes[(moonPhaseIndex + hiddenPhaseIndex) % 4],
-                        love_energy: energyTypes[patternId % 4],
+                        emotional_expression: emotionalExpression,
+                        distance_style: distanceStyle,
+                        love_values: loveValues,
+                        love_energy: loveEnergy,
                         moon_power_1: '直感力',
                         moon_power_2: '創造力',
                         moon_power_3: '浄化力'

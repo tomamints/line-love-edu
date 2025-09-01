@@ -29,14 +29,18 @@ module.exports = async (req, res) => {
     const profile = await profilesDB.getProfile(userId);
     
     if (profile && profile.diagnosisType === 'otsukisama') {
-      // おつきさま診断のデータを返す
+      // おつきさま診断のデータを返す（4つの軸データを含む）
       return res.status(200).json({
         success: true,
         profile: {
           userName: profile.userName,
           birthDate: profile.birthDate,
           moonPatternId: profile.moonPatternId,
-          diagnosisType: 'otsukisama'
+          diagnosisType: 'otsukisama',
+          emotionalExpression: profile.emotionalExpression,
+          distanceStyle: profile.distanceStyle,
+          loveValues: profile.loveValues,
+          loveEnergy: profile.loveEnergy
         },
         userId: userId
       });
@@ -52,9 +56,18 @@ module.exports = async (req, res) => {
       });
     }
     
+    // loveProfileに4つの軸データを追加
+    const completeProfile = {
+      ...loveProfile,
+      emotionalExpression: profile.emotionalExpression,
+      distanceStyle: profile.distanceStyle,
+      loveValues: profile.loveValues,
+      loveEnergy: profile.loveEnergy
+    };
+    
     return res.status(200).json({
       success: true,
-      profile: loveProfile,
+      profile: completeProfile,
       userId: userId
     });
     
