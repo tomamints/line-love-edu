@@ -23,6 +23,12 @@
             pointer-events: none;
         }
         
+        /* バナー画像はモザイクを解除 */
+        .preview-mode .content-locked img[src*="/images/banner/"] {
+            filter: none !important;
+            opacity: 1 !important;
+        }
+        
         .preview-mode .lock-overlay {
             position: absolute;
             top: 50%;
