@@ -117,7 +117,15 @@ async function handleCheckoutSessionCompleted(session) {
         
         // デバッグ用ログ
         console.log('Session amount_total:', session.amount_total);
-        console.log('Converted amount:', Math.floor(session.amount_total / 100));
+        console.log('Session currency:', session.currency);
+        
+        // 日本円の場合、Stripeは円単位で送信（最小通貨単位が円のため）
+        // 他の通貨（USD等）はセント単位なので100で割る必要がある
+        const amountInYen = session.currency === 'jpy' 
+            ? session.amount_total 
+            : Math.floor(session.amount_total / 100);
+        
+        console.log('Converted amount:', amountInYen);
         
         const purchaseData = {
             purchase_id: purchaseId,
@@ -126,7 +134,7 @@ async function handleCheckoutSessionCompleted(session) {
             product_type: product_type,
             product_id: diagnosis_type || 'otsukisama',
             product_name: productName,
-            amount: session.amount_total ? Math.floor(session.amount_total / 100) : 980, // センから円に変換（整数）、デフォルト980円
+            amount: amountInYen || 980, // 日本円の場合はそのまま、他通貨は変換、デフォルト980円
             currency: session.currency ? session.currency.toUpperCase() : 'JPY',
             payment_method: 'stripe',
             stripe_session_id: session.id,
