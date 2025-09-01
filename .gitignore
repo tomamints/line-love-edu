@@ -36,3 +36,8 @@ public/images/*_original.jpg
 
 # 動画バックアップ
 public/videos/*.backup
+
+# Archive files (test and temporary files)
+archive/
+*.test.js
+*.test.html
