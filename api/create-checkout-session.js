@@ -32,10 +32,10 @@ module.exports = async function handler(req, res) {
         });
     }
 
-    // ベースURLを決定（本番環境ではVercelのURL、ローカルではlocalhost）
-    const baseUrl = process.env.VERCEL_URL 
-        ? `https://${process.env.VERCEL_URL}`
-        : process.env.NEXT_PUBLIC_BASE_URL || 'https://line-love-edu.vercel.app';
+    // ベースURLを決定（本番環境では固定URL、ローカルではlocalhost）
+    const baseUrl = process.env.NODE_ENV === 'production'
+        ? 'https://line-love-edu.vercel.app'
+        : 'http://localhost:3000';
 
     const { 
         diagnosisId,
