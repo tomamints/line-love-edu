@@ -335,17 +335,13 @@ async function getUserDiagnoses(req, res) {
                 user_name,
                 birth_date,
                 created_at,
+                result_data,
                 diagnosis_types (
                     name,
                     description
-                ),
-                access_rights!inner (
-                    access_level,
-                    valid_until
                 )
             `)
             .eq('user_id', userId)
-            .eq('access_rights.user_id', userId)
             .order('created_at', { ascending: false });
 
         if (diagnosisType) {
@@ -356,7 +352,7 @@ async function getUserDiagnoses(req, res) {
 
         if (error) throw error;
 
-        // アクセスレベルを整理
+        // アクセスレベルを整理（今は簡易的に処理）
         const formattedDiagnoses = diagnoses.map(d => ({
             id: d.id,
             type: d.diagnosis_type_id,
@@ -364,8 +360,8 @@ async function getUserDiagnoses(req, res) {
             userName: d.user_name,
             birthDate: d.birth_date,
             createdAt: d.created_at,
-            accessLevel: d.access_rights[0]?.access_level || 'none',
-            validUntil: d.access_rights[0]?.valid_until
+            resultData: d.result_data,
+            accessLevel: 'preview' // 一旦プレビューとして返す
         }));
 
         return res.json({
