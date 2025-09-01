@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>診断履歴 - おつきさま診断</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background: linear-gradient(135deg, #0a0020 0%, #1a0033 100%);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .header h1 {
+            font-size: 32px;
+            color: #ffd700;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        .header p {
+            color: #87ceeb;
+            font-size: 14px;
+        }
+        
+        .diagnosis-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .diagnosis-card {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .diagnosis-card:hover {
+            background: rgba(255, 255, 255, 0.12);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        
+        .diagnosis-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 15px;
+        }
+        
+        .diagnosis-date {
+            font-size: 18px;
+            font-weight: bold;
+            color: #fff;
+        }
+        
+        .diagnosis-status {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .status-paid {
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            color: #333;
+        }
+        
+        .status-preview {
+            background: rgba(135, 206, 235, 0.2);
+            border: 1px solid #87ceeb;
+            color: #87ceeb;
+        }
+        
+        .diagnosis-details {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .detail-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #ccc;
+            font-size: 14px;
+        }
+        
+        .detail-label {
+            color: #87ceeb;
+        }
+        
+        .view-button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .view-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #87ceeb;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            margin-top: 40px;
+        }
+        
+        .empty-state h2 {
+            color: #ffd700;
+            margin-bottom: 20px;
+        }
+        
+        .empty-state p {
+            color: #ccc;
+            margin-bottom: 30px;
+        }
+        
+        .create-button {
+            display: inline-block;
+            padding: 15px 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 30px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        .create-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌙 診断履歴</h1>
+            <p>あなたの過去の診断結果を確認できます</p>
+        </div>
+        
+        <div id="diagnosisList" class="diagnosis-list">
+            <div class="loading">診断履歴を読み込み中...</div>
+        </div>
+    </div>
+    
+    <script>
+        // URLパラメータからuserIdを取得
+        function getUserIdFromUrl() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get('userId');
+        }
+        
+        // 日付をフォーマット
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+            return `${year}年${month}月${day}日 ${hours}:${minutes}`;
+        }
+        
+        // 診断履歴を読み込み
+        async function loadDiagnosisHistory() {
+            const userId = getUserIdFromUrl();
+            if (!userId) {
+                document.getElementById('diagnosisList').innerHTML = `
+                    <div class="empty-state">
+                        <h2>ユーザーIDが必要です</h2>
+                        <p>URLにユーザーIDパラメータを追加してください</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/api/profile-form-v2?action=get-user-diagnoses&userId=${userId}`);
+                const data = await response.json();
+                
+                if (data.success && data.diagnoses && data.diagnoses.length > 0) {
+                    displayDiagnoses(data.diagnoses, userId);
+                } else {
+                    displayEmptyState();
+                }
+            } catch (error) {
+                console.error('診断履歴の読み込みエラー:', error);
+                document.getElementById('diagnosisList').innerHTML = `
+                    <div class="empty-state">
+                        <h2>エラーが発生しました</h2>
+                        <p>${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+        
+        // 診断一覧を表示
+        function displayDiagnoses(diagnoses, userId) {
+            const listElement = document.getElementById('diagnosisList');
+            
+            // 新しい順にソート
+            diagnoses.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+            
+            listElement.innerHTML = diagnoses.map(diagnosis => {
+                const isPaid = diagnosis.isPaid || false;
+                const resultData = diagnosis.resultData || {};
+                
+                // 4つの軸の日本語名
+                const typeNames = {
+                    emotional: {
+                        'straight': 'ストレート告白型',
+                        'physical': 'スキンシップ型',
+                        'subtle': 'さりげない気遣い型',
+                        'shy': '奥手シャイ型'
+                    },
+                    distance: {
+                        'close': 'ベッタリ依存型',
+                        'moderate': '安心セーフ型',
+                        'independent': '自由マイペース型',
+                        'cautious': '壁あり慎重型'
+                    },
+                    values: {
+                        'romantic': 'ロマンチスト型',
+                        'realistic': 'リアリスト型',
+                        'excitement': '刺激ハンター型',
+                        'growth': '成長パートナー型'
+                    },
+                    energy: {
+                        'intense': '燃え上がり型',
+                        'stable': '安定持続型',
+                        'fluctuating': '波あり型',
+                        'cool': 'クール型'
+                    }
+                };
+                
+                return `
+                    <div class="diagnosis-card" onclick="viewDiagnosis('${diagnosis.id}', '${userId}')">
+                        <div class="diagnosis-header">
+                            <div class="diagnosis-date">
+                                ${formatDate(diagnosis.createdAt)}
+                            </div>
+                            <div class="diagnosis-status ${isPaid ? 'status-paid' : 'status-preview'}">
+                                ${isPaid ? '✨ 購入済み' : '🔒 プレビュー'}
+                            </div>
+                        </div>
+                        
+                        <div class="diagnosis-details">
+                            <div class="detail-item">
+                                <span class="detail-label">月相:</span>
+                                <span>${resultData.moon_phase || '—'}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">裏の月相:</span>
+                                <span>${resultData.hidden_moon_phase || '—'}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">感情表現:</span>
+                                <span>${typeNames.emotional[resultData.emotional_expression] || '—'}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">距離感:</span>
+                                <span>${typeNames.distance[resultData.distance_style] || '—'}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">価値観:</span>
+                                <span>${typeNames.values[resultData.love_values] || '—'}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">エネルギー:</span>
+                                <span>${typeNames.energy[resultData.love_energy] || '—'}</span>
+                            </div>
+                        </div>
+                        
+                        <button class="view-button">
+                            診断結果を見る →
+                        </button>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        // 空の状態を表示
+        function displayEmptyState() {
+            document.getElementById('diagnosisList').innerHTML = `
+                <div class="empty-state">
+                    <h2>まだ診断履歴がありません</h2>
+                    <p>新しい診断を作成して、あなたの月相を見つけましょう</p>
+                    <a href="/lp-otsukisama-input.html?userId=${getUserIdFromUrl()}" class="create-button">
+                        診断を始める
+                    </a>
+                </div>
+            `;
+        }
+        
+        // 診断結果を表示
+        function viewDiagnosis(diagnosisId, userId) {
+            window.location.href = `/lp-otsukisama-unified.html?id=${diagnosisId}&userId=${userId}`;
+        }
+        
+        // ページ読み込み時に診断履歴を読み込み
+        document.addEventListener('DOMContentLoaded', loadDiagnosisHistory);
+    </script>
+</body>
+</html>

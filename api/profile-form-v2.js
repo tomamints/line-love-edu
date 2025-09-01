@@ -76,14 +76,14 @@ async function saveDiagnosis(req, res) {
         });
     }
 
-    // 診断IDを生成
+    // 診断IDを生成（常に新規）
     const diagnosisId = `diag_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
     try {
-        // 1. 診断を作成または更新（同じユーザー、同じ診断タイプ、同じ生年月日の場合は更新）
+        // 1. 常に新しい診断を作成
         const { data: diagnosis, error: diagnosisError } = await supabase
             .from('diagnoses')
-            .upsert({
+            .insert({
                 id: diagnosisId,
                 user_id: userId,
                 diagnosis_type_id: diagnosisType,
@@ -94,44 +94,11 @@ async function saveDiagnosis(req, res) {
                     source: 'line',
                     version: '2.0'
                 }
-            }, {
-                onConflict: 'user_id,diagnosis_type_id,birth_date',
-                ignoreDuplicates: false
             })
             .select()
             .single();
 
         if (diagnosisError) {
-            // 重複の場合は既存のデータを取得
-            if (diagnosisError.code === '23505') { // Unique violation
-                const { data: existingDiagnosis } = await supabase
-                    .from('diagnoses')
-                    .select('*')
-                    .eq('user_id', userId)
-                    .eq('diagnosis_type_id', diagnosisType)
-                    .eq('birth_date', birthDate)
-                    .single();
-
-                if (existingDiagnosis) {
-                    // 既存の診断を更新
-                    const { data: updatedDiagnosis } = await supabase
-                        .from('diagnoses')
-                        .update({
-                            result_data: resultData,
-                            updated_at: new Date().toISOString()
-                        })
-                        .eq('id', existingDiagnosis.id)
-                        .select()
-                        .single();
-
-                    return res.json({
-                        success: true,
-                        diagnosisId: existingDiagnosis.id,
-                        isUpdate: true,
-                        diagnosis: updatedDiagnosis
-                    });
-                }
-            }
             throw diagnosisError;
         }
 
@@ -152,7 +119,7 @@ async function saveDiagnosis(req, res) {
         return res.json({
             success: true,
             diagnosisId: diagnosis.id,
-            isUpdate: false,
+            isNew: true,
             diagnosis: diagnosis
         });
 
@@ -342,7 +309,8 @@ async function getUserDiagnoses(req, res) {
                 )
             `)
             .eq('user_id', userId)
-            .order('created_at', { ascending: false });
+            .order('created_at', { ascending: false })
+            .limit(100);
 
         if (diagnosisType) {
             query = query.eq('diagnosis_type_id', diagnosisType);
@@ -352,7 +320,23 @@ async function getUserDiagnoses(req, res) {
 
         if (error) throw error;
 
-        // アクセスレベルを整理（今は簡易的に処理）
+        // アクセスレベルを取得
+        const diagnosisIds = diagnoses.map(d => d.id);
+        const { data: accessRights } = await supabase
+            .from('access_rights')
+            .select('resource_id, access_level')
+            .eq('user_id', userId)
+            .eq('resource_type', 'diagnosis')
+            .in('resource_id', diagnosisIds);
+        
+        const accessMap = {};
+        if (accessRights) {
+            accessRights.forEach(ar => {
+                accessMap[ar.resource_id] = ar.access_level;
+            });
+        }
+        
+        // 診断データを整理
         const formattedDiagnoses = diagnoses.map(d => ({
             id: d.id,
             type: d.diagnosis_type_id,
@@ -361,7 +345,8 @@ async function getUserDiagnoses(req, res) {
             birthDate: d.birth_date,
             createdAt: d.created_at,
             resultData: d.result_data,
-            accessLevel: 'preview' // 一旦プレビューとして返す
+            accessLevel: accessMap[d.id] || 'none',
+            isPaid: accessMap[d.id] === 'full'
         }));
 
         return res.json({
