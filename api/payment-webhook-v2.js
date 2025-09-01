@@ -5,6 +5,7 @@
 
 const { createClient } = require('@supabase/supabase-js');
 const Stripe = require('stripe');
+const getRawBody = require('raw-body');
 
 // Supabase設定 - 環境変数の確認
 // Vercel環境変数に合わせて修正（SUPABASE_ANON_KEYを優先）
@@ -19,7 +20,7 @@ const stripeKey = process.env.STRIPE_SECRET_KEY;
 const stripe = stripeKey ? new Stripe(stripeKey) : null;
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
-module.exports = async function handler(req, res) {
+async function handler(req, res) {
     if (req.method !== 'POST') {
         return res.status(405).json({ error: 'Method not allowed' });
     }
@@ -35,11 +36,19 @@ module.exports = async function handler(req, res) {
 
     const sig = req.headers['stripe-signature'];
     let event;
+    let rawBody;
 
     try {
+        // Raw bodyを取得
+        rawBody = await getRawBody(req, {
+            length: req.headers['content-length'],
+            limit: '1mb',
+            encoding: 'utf8'
+        });
+
         // Webhookイベントの検証
         event = stripe.webhooks.constructEvent(
-            req.body,
+            rawBody,
             sig,
             endpointSecret
         );
@@ -261,6 +270,9 @@ async function sendLineNotification(userId, productName, amount) {
         console.error('Error sending LINE notification:', error);
     }
 }
+
+// handlerをエクスポート
+module.exports = handler;
 
 // Vercelの設定: raw bodyを受け取る
 module.exports.config = {
