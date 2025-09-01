@@ -256,10 +256,10 @@ async function getDiagnosis(req, res) {
             }
         }
 
-        // 3. アクセスレベルに応じてデータを返す（一旦全データを返す）
+        // 3. アクセスレベルに応じてデータを返す
         const response = {
             success: true,
-            accessLevel: 'full', // 一旦常にfullとして返す
+            accessLevel: accessLevel, // 実際のアクセスレベルを返す
             diagnosis: {
                 id: diagnosis.id,
                 user_id: diagnosis.user_id,
@@ -271,7 +271,7 @@ async function getDiagnosis(req, res) {
             }
         };
 
-        // 一旦全データを常に返す（アクセス制限を後で実装）
+        // アクセスレベルに関わらず基本データは返す（表示側で制御）
         const resultData = diagnosis.result_data || {};
         response.diagnosis.moon_pattern_id = resultData.moon_pattern_id;
         response.diagnosis.moon_phase = resultData.moon_phase;
