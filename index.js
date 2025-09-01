@@ -1080,6 +1080,147 @@ async function handleTextMessage(event) {
   const text = event.message.text;
   
   try {
+    // 「履歴」キーワードで購入履歴を表示
+    if (text === '履歴') {
+      // Supabaseから購入履歴を取得
+      const profileDb = require('./services/profileDb');
+      const supabase = profileDb.getSupabaseClient();
+      
+      if (!supabase) {
+        await client.replyMessage(event.replyToken, {
+          type: 'text',
+          text: '申し訳ございません。現在履歴を取得できません。'
+        });
+        return;
+      }
+      
+      // ユーザーの購入履歴を取得
+      const { data: purchases, error } = await supabase
+        .from('purchases')
+        .select(`
+          *,
+          diagnoses:diagnosis_id (
+            user_name,
+            birth_date,
+            diagnosis_type_id,
+            created_at
+          )
+        `)
+        .eq('user_id', userId)
+        .eq('status', 'completed')
+        .order('created_at', { ascending: false })
+        .limit(10);
+      
+      if (error || !purchases || purchases.length === 0) {
+        await client.replyMessage(event.replyToken, {
+          type: 'text',
+          text: '購入履歴がありません。\n\n「本格」と入力すると、本格おつきさま診断を始められます。'
+        });
+        return;
+      }
+      
+      // Flex Messageで履歴を表示
+      const historyItems = purchases.map(p => ({
+        type: 'box',
+        layout: 'horizontal',
+        spacing: 'md',
+        contents: [
+          {
+            type: 'box',
+            layout: 'vertical',
+            flex: 3,
+            contents: [
+              {
+                type: 'text',
+                text: p.product_name || 'おつきさま診断',
+                size: 'sm',
+                weight: 'bold',
+                color: '#333333'
+              },
+              {
+                type: 'text',
+                text: `¥${p.amount.toLocaleString()}`,
+                size: 'xs',
+                color: '#666666'
+              },
+              {
+                type: 'text',
+                text: new Date(p.created_at).toLocaleDateString('ja-JP'),
+                size: 'xxs',
+                color: '#999999'
+              }
+            ]
+          },
+          {
+            type: 'button',
+            action: {
+              type: 'uri',
+              label: '見る',
+              uri: `${process.env.BASE_URL || 'https://line-love-edu.vercel.app'}/lp-otsukisama-unified.html?id=${p.diagnosis_id}&userId=${userId}`
+            },
+            style: 'primary',
+            height: 'sm'
+          }
+        ],
+        margin: 'md',
+        paddingAll: 'sm',
+        backgroundColor: '#f7f7f7',
+        cornerRadius: 'md'
+      }));
+      
+      await client.replyMessage(event.replyToken, {
+        type: 'flex',
+        altText: '購入履歴',
+        contents: {
+          type: 'bubble',
+          size: 'mega',
+          header: {
+            type: 'box',
+            layout: 'vertical',
+            contents: [
+              {
+                type: 'text',
+                text: '📚 購入履歴',
+                size: 'xl',
+                weight: 'bold',
+                color: '#ffffff'
+              },
+              {
+                type: 'text',
+                text: `${purchases.length}件の診断結果`,
+                size: 'sm',
+                color: '#ffffff'
+              }
+            ],
+            backgroundColor: '#667eea'
+          },
+          body: {
+            type: 'box',
+            layout: 'vertical',
+            spacing: 'md',
+            contents: historyItems
+          },
+          footer: {
+            type: 'box',
+            layout: 'vertical',
+            contents: [
+              {
+                type: 'button',
+                action: {
+                  type: 'message',
+                  label: '新しい診断を始める',
+                  text: '本格'
+                },
+                style: 'primary',
+                color: '#667eea'
+              }
+            ]
+          }
+        }
+      });
+      return;
+    }
+    
     // 「本格」キーワードでLPへ誘導
     if (text === '本格') {
       const lpUrl = `${process.env.BASE_URL || 'https://line-love-edu.vercel.app'}/lp-otsukisama-input.html?userId=${userId}`;
