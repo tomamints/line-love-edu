@@ -872,13 +872,13 @@
     
     <!-- JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="js/otsukisama-data-loader.js?v=20250829001"></script>
-    <script src="js/lp-otsukisama-moon.js?v=20241228006"></script>
-    <script src="js/lp-otsukisama-api.js?v=20241228006"></script>
-    <script src="js/lp-otsukisama-display.js?v=20250831004"></script>
-    <script src="js/lp-otsukisama-display-line.js?v=20241228006"></script>
-    <script src="js/lp-otsukisama-calendar.js?v=20241228008"></script>
-    <script src="js/lp-otsukisama-graph.js?v=20241228006"></script>
+    <script src="js/otsukisama-data-loader.js?v=20250901001"></script>
+    <script src="js/lp-otsukisama-moon.js?v=20250901001"></script>
+    <script src="js/lp-otsukisama-api.js?v=20250901001"></script>
+    <script src="js/lp-otsukisama-display.js?v=20250901001"></script>
+    <script src="js/lp-otsukisama-display-line.js?v=20250901001"></script>
+    <script src="js/lp-otsukisama-calendar.js?v=20250901001"></script>
+    <script src="js/lp-otsukisama-graph.js?v=20250901001"></script>
     
     <!-- lp-otsukisama-main.jsは統合版では使用しない（重複を避けるため） -->
     
@@ -1009,9 +1009,11 @@
                             loveValues: data.diagnosis.love_values,
                             loveEnergy: data.diagnosis.love_energy
                         };
+                        console.log('=== 4つの軸データ確認 ===');
                         console.log('Database values:', loveProfile);
                         console.log('API response:', data.diagnosis);
                         console.log('Access level:', data.accessLevel);
+                        console.log('Cache version: 20250901001');
                         
                         
                         // 6つの要素を更新
