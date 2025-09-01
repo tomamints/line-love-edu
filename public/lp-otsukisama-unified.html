@@ -985,7 +985,10 @@
                     
                     if (data.success && data.diagnosis) {
                         // アクセスレベルに基づいてモードを設定
+                        console.log('アクセスレベル:', data.accessLevel);
+                        console.log('userId:', userId);
                         const isPaid = data.accessLevel === 'full';
+                        console.log('isPaid:', isPaid);
                         const mode = setDisplayMode(isPaid);
                         window.currentMode = mode;  // グローバルに保存
                         window.currentUserId = userId;  // ユーザーIDも保存
