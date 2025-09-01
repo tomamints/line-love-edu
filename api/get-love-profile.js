@@ -28,8 +28,19 @@ module.exports = async (req, res) => {
     const profilesDB = require('../core/database/profiles-db');
     const profile = await profilesDB.getProfile(userId);
     
+    console.log('Profile fetched for user:', userId);
+    console.log('Profile data:', profile);
+    console.log('Diagnosis type:', profile?.diagnosisType);
+    
     if (profile && profile.diagnosisType === 'otsukisama') {
       // おつきさま診断のデータを返す（4つの軸データを含む）
+      console.log('Returning otsukisama data with 4 axes:', {
+        emotionalExpression: profile.emotionalExpression,
+        distanceStyle: profile.distanceStyle,
+        loveValues: profile.loveValues,
+        loveEnergy: profile.loveEnergy
+      });
+      
       return res.status(200).json({
         success: true,
         profile: {

@@ -80,26 +80,57 @@ async function saveDiagnosis(req, res) {
     const diagnosisId = `diag_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
     try {
-        // 1. 常に新しい診断を作成
-        const { data: diagnosis, error: diagnosisError } = await supabase
+        // 既存の診断があるか確認
+        const { data: existing } = await supabase
             .from('diagnoses')
-            .insert({
-                id: diagnosisId,
-                user_id: userId,
-                diagnosis_type_id: diagnosisType,
-                user_name: userName,
-                birth_date: birthDate,
-                result_data: resultData,
-                metadata: {
-                    source: 'line',
-                    version: '2.0'
-                }
-            })
-            .select()
+            .select('id')
+            .eq('user_id', userId)
+            .eq('birth_date', birthDate)
+            .eq('diagnosis_type_id', diagnosisType)
             .single();
-
-        if (diagnosisError) {
-            throw diagnosisError;
+        
+        let diagnosis;
+        
+        if (existing) {
+            // 既存の診断を更新
+            const { data: updated, error: updateError } = await supabase
+                .from('diagnoses')
+                .update({
+                    user_name: userName,
+                    result_data: resultData,
+                    metadata: {
+                        source: 'line',
+                        version: '2.0',
+                        updated_at: new Date().toISOString()
+                    }
+                })
+                .eq('id', existing.id)
+                .select()
+                .single();
+            
+            if (updateError) throw updateError;
+            diagnosis = updated;
+        } else {
+            // 新しい診断を作成
+            const { data: created, error: createError } = await supabase
+                .from('diagnoses')
+                .insert({
+                    id: diagnosisId,
+                    user_id: userId,
+                    diagnosis_type_id: diagnosisType,
+                    user_name: userName,
+                    birth_date: birthDate,
+                    result_data: resultData,
+                    metadata: {
+                        source: 'line',
+                        version: '2.0'
+                    }
+                })
+                .select()
+                .single();
+            
+            if (createError) throw createError;
+            diagnosis = created;
         }
 
         // 2. プレビュー用のアクセス権限を付与（無料）
@@ -119,7 +150,7 @@ async function saveDiagnosis(req, res) {
         return res.json({
             success: true,
             diagnosisId: diagnosis.id,
-            isNew: true,
+            isNew: !existing,
             diagnosis: diagnosis
         });
 

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <title>プロフィール4軸データ設定</title>
+    <meta charset="utf-8">
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #f5f5f5; }
+        .container { max-width: 600px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; }
+        h1 { color: #333; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        select, input { width: 100%; padding: 10px; font-size: 16px; border: 1px solid #ddd; border-radius: 5px; }
+        button { background: #4CAF50; color: white; padding: 12px 30px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; }
+        button:hover { background: #45a049; }
+        .result { margin-top: 20px; padding: 15px; background: #e8f5e9; border-radius: 5px; }
+        .error { background: #ffebee; color: #c62828; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>プロフィール4軸データ設定</h1>
+        
+        <div class="form-group">
+            <label>ユーザーID:</label>
+            <input type="text" id="userId" value="U69bf66f589f5303a9615e94d7a7dc693">
+        </div>
+        
+        <div class="form-group">
+            <label>Q3: 感情表現 (emotional_expression)</label>
+            <select id="emotional">
+                <option value="straight">ストレート告白型</option>
+                <option value="physical">スキンシップ型</option>
+                <option value="subtle">さりげない気遣い型</option>
+                <option value="shy">奥手シャイ型</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label>Q4: 距離感 (distance_style)</label>
+            <select id="distance">
+                <option value="close">ベッタリ依存型</option>
+                <option value="moderate">安心セーフ型</option>
+                <option value="independent">自由マイペース型</option>
+                <option value="cautious">壁あり慎重型</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label>Q5: 価値観 (love_values)</label>
+            <select id="values">
+                <option value="romantic">ロマンチスト型</option>
+                <option value="realistic">リアリスト型</option>
+                <option value="excitement">刺激ハンター型</option>
+                <option value="growth">成長パートナー型</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label>Q6: エネルギー (love_energy)</label>
+            <select id="energy">
+                <option value="intense">燃え上がり型</option>
+                <option value="stable">安定持続型</option>
+                <option value="fluctuating">波あり型</option>
+                <option value="cool">クール型</option>
+            </select>
+        </div>
+        
+        <button onclick="saveProfile()">プロフィールを保存</button>
+        
+        <div id="result"></div>
+    </div>
+    
+    <script>
+        async function saveProfile() {
+            const userId = document.getElementById('userId').value;
+            const profileData = {
+                emotionalExpression: document.getElementById('emotional').value,
+                distanceStyle: document.getElementById('distance').value,
+                loveValues: document.getElementById('values').value,
+                loveEnergy: document.getElementById('energy').value
+            };
+            
+            try {
+                const response = await fetch('/api/update-profile-axes', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        userId: userId,
+                        ...profileData
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    // 確認のため再取得
+                    const checkResponse = await fetch(`/api/get-love-profile?userId=${userId}`);
+                    const checkData = await checkResponse.json();
+                    
+                    document.getElementById('result').innerHTML = `
+                        <div class="result">
+                            <h3>✅ プロフィール保存成功!</h3>
+                            <p><strong>保存したデータ:</strong></p>
+                            <ul>
+                                <li>感情表現: ${profileData.emotionalExpression}</li>
+                                <li>距離感: ${profileData.distanceStyle}</li>
+                                <li>価値観: ${profileData.loveValues}</li>
+                                <li>エネルギー: ${profileData.loveEnergy}</li>
+                            </ul>
+                            <p><strong>確認結果:</strong></p>
+                            <pre>${JSON.stringify(checkData.profile, null, 2)}</pre>
+                            <p style="margin-top: 20px;">
+                                <a href="/lp-otsukisama-input.html?userId=${userId}" target="_blank">
+                                    診断ページを開く →
+                                </a>
+                            </p>
+                        </div>
+                    `;
+                } else {
+                    document.getElementById('result').innerHTML = `
+                        <div class="result error">
+                            エラー: ${JSON.stringify(result)}
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                document.getElementById('result').innerHTML = `
+                    <div class="result error">
+                        エラー: ${error.message}
+                    </div>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>
