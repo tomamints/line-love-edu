@@ -158,6 +158,36 @@
         async function handleFormSubmit(e) {
             e.preventDefault();
             
+            // 即座にローディング表示を開始
+            const submitButton = e.target.querySelector('button[type="submit"]');
+            const originalButtonContent = submitButton.innerHTML;
+            submitButton.disabled = true;
+            submitButton.innerHTML = '<span style="display: inline-block;">🌙</span> 診断中...';
+            
+            // 全画面ローディングオーバーレイを表示
+            const overlay = document.createElement('div');
+            overlay.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(26,26,46,1);
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                z-index: 99999;
+                color: white;
+                font-size: 18px;
+            `;
+            overlay.innerHTML = `
+                <div style="font-size: 48px; margin-bottom: 20px;">🌙</div>
+                <div>診断結果を準備しています...</div>
+            `;
+            document.body.appendChild(overlay);
+            document.body.style.overflow = 'hidden';
+            
             const userId = getUserIdFromUrl();
             const formData = {
                 name: document.getElementById('name').value,
@@ -262,6 +292,13 @@
                 
             } catch (error) {
                 console.error('診断データの保存に失敗しました:', error);
+                // エラー時はオーバーレイを削除
+                if (overlay && overlay.parentNode) {
+                    document.body.removeChild(overlay);
+                    document.body.style.overflow = '';
+                }
+                submitButton.disabled = false;
+                submitButton.innerHTML = originalButtonContent;
                 alert('エラーが発生しました。もう一度お試しください。');
             }
         }
