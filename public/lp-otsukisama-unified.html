@@ -966,11 +966,19 @@
                 loadingOverlay.style.display = 'flex';
             }
             
+            // 診断IDがない場合はエラー表示
+            if (!diagnosisId) {
+                if (loadingOverlay) {
+                    loadingOverlay.style.display = 'none';
+                }
+                alert('診断IDが指定されていません。\nLINEから「履歴」と送信して診断結果を確認してください。');
+                return;
+            }
+            
             // 診断データを読み込み
-            if (diagnosisId) {
-                try {
-                    console.log('診断データを取得中:', diagnosisId);
-                    const userId = urlParams.get('userId');
+            try {
+                console.log('診断データを取得中:', diagnosisId);
+                const userId = urlParams.get('userId');
                     const response = await fetch(`/api/profile-form-v2?action=get-diagnosis&id=${diagnosisId}&userId=${userId || ''}`);
                     const data = await response.json();
                     console.log('取得したデータ:', data);
