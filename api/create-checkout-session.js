@@ -32,6 +32,11 @@ module.exports = async function handler(req, res) {
         });
     }
 
+    // ベースURLを決定（本番環境ではVercelのURL、ローカルではlocalhost）
+    const baseUrl = process.env.VERCEL_URL 
+        ? `https://${process.env.VERCEL_URL}`
+        : process.env.NEXT_PUBLIC_BASE_URL || 'https://line-love-edu.vercel.app';
+
     const { 
         diagnosisId,
         userId,
@@ -108,8 +113,8 @@ module.exports = async function handler(req, res) {
                 quantity: 1
             }],
             mode: 'payment',
-            success_url: successUrl || `${process.env.NEXT_PUBLIC_BASE_URL}/lp-otsukisama-unified.html?id=${diagnosisId}&payment=success`,
-            cancel_url: cancelUrl || `${process.env.NEXT_PUBLIC_BASE_URL}/lp-otsukisama-unified.html?id=${diagnosisId}&payment=cancelled`,
+            success_url: successUrl || `${baseUrl}/lp-otsukisama-unified.html?id=${diagnosisId}&payment=success`,
+            cancel_url: cancelUrl || `${baseUrl}/lp-otsukisama-unified.html?id=${diagnosisId}&payment=cancelled`,
             metadata: {
                 diagnosis_id: diagnosisId,
                 user_id: userId,
