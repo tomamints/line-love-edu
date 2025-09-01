@@ -450,7 +450,7 @@ async function updateSixElements(patternId, moonPhase, hiddenMoonPhase, profile 
         // 英語キーから日本語へのマッピング
         const energyEngToJp = {
             'intense': '燃え上がり型',
-            'stable': '安定持続型',
+            'stable': '持続型',
             'fluctuating': '波あり型',
             'cool': 'クール型'
         };
@@ -613,7 +613,7 @@ async function updatePersonalityDisplay(profile) {
     // 英語キーから日本語表示名へのマッピング
     const energyMapping = {
         'intense': '燃え上がり型',
-        'stable': '安定持続型',
+        'stable': '持続型',
         'fluctuating': '波あり型',
         'cool': 'クール型'
     };
@@ -1160,7 +1160,7 @@ async function updateLoveEnergyContent(type) {
     // 英語キーから日本語キーへのマッピング
     const keyMapping = {
         'intense': '燃え上がり型',
-        'stable': '安定持続型',
+        'stable': '持続型',
         'fluctuating': '波あり型',
         'cool': 'クール型'
     };
