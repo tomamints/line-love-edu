@@ -115,6 +115,10 @@ async function handleCheckoutSessionCompleted(session) {
         // 2. 購入記録を作成
         const purchaseId = `pur_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
         
+        // デバッグ用ログ
+        console.log('Session amount_total:', session.amount_total);
+        console.log('Converted amount:', Math.floor(session.amount_total / 100));
+        
         const purchaseData = {
             purchase_id: purchaseId,
             user_id: user_id,
@@ -122,8 +126,8 @@ async function handleCheckoutSessionCompleted(session) {
             product_type: product_type,
             product_id: diagnosis_type || 'otsukisama',
             product_name: productName,
-            amount: session.amount_total / 100, // センから円に変換
-            currency: session.currency.toUpperCase(),
+            amount: session.amount_total ? Math.floor(session.amount_total / 100) : 980, // センから円に変換（整数）、デフォルト980円
+            currency: session.currency ? session.currency.toUpperCase() : 'JPY',
             payment_method: 'stripe',
             stripe_session_id: session.id,
             stripe_payment_intent_id: session.payment_intent,
