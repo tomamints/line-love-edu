@@ -162,21 +162,6 @@
             box-shadow: 0 10px 30px rgba(138, 97, 250, 0.4);
         }
         
-        /* デバッグ用のテストリンク */
-        .test-skip-link {
-            margin-top: 20px;
-            text-align: center;
-        }
-        
-        .test-skip-link a {
-            color: #666;
-            font-size: 12px;
-            text-decoration: underline;
-        }
-        
-        .complete-mode .test-skip-link {
-            display: none;
-        }
     </style>
 </head>
 <body class="preview-mode loading-active" id="pageBody">
@@ -355,13 +340,6 @@
                 <button class="purchase-button" id="purchaseButton">
                     診断結果を購入する
                 </button>
-                
-                <!-- テスト用：決済をスキップして完全版を見る -->
-                <div class="test-skip-link">
-                    <a href="#" id="skipPaymentLink">
-                        ※ テスト用：決済をスキップして完全版を見る
-                    </a>
-                </div>
             </div>
             
             <!-- 以降の内容（プレミアムコンテンツ） -->
@@ -1169,16 +1147,6 @@
                     });
                 }
                 
-                // テスト用：決済スキップリンク
-                const skipPaymentLink = document.getElementById('skipPaymentLink');
-                if (skipPaymentLink) {
-                    skipPaymentLink.addEventListener('click', function(e) {
-                        e.preventDefault();
-                        const currentUrl = new URL(window.location.href);
-                        // paid=trueは使わない（セキュリティのため）
-                        window.location.href = currentUrl.toString();
-                    });
-                }
             }
         }
         
