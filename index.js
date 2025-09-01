@@ -1083,8 +1083,10 @@ async function handleTextMessage(event) {
     // 「履歴」キーワードで購入履歴を表示
     if (text === '履歴') {
       // Supabaseから購入履歴を取得
-      const profileDb = require('./services/profileDb');
-      const supabase = profileDb.getSupabaseClient();
+      const { createClient } = require('@supabase/supabase-js');
+      const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
+      const supabaseKey = process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+      const supabase = supabaseUrl && supabaseKey ? createClient(supabaseUrl, supabaseKey) : null;
       
       if (!supabase) {
         await client.replyMessage(event.replyToken, {
