@@ -187,6 +187,18 @@
         <div class="loading-content">
             <div class="loading-spinner"></div>
             <div class="loading-text">診断結果を読み込んでいます...</div>
+            <div class="loading-progress-container">
+                <div class="loading-progress-bar" id="loadingProgress">
+                    <span class="loading-moon-character">🌙</span>
+                </div>
+                <div class="loading-stars">
+                    <span class="loading-star" style="left: 10%; animation-delay: 0s;">✨</span>
+                    <span class="loading-star" style="left: 30%; animation-delay: 0.3s;">✨</span>
+                    <span class="loading-star" style="left: 50%; animation-delay: 0.6s;">✨</span>
+                    <span class="loading-star" style="left: 70%; animation-delay: 0.9s;">✨</span>
+                    <span class="loading-star" style="left: 90%; animation-delay: 1.2s;">✨</span>
+                </div>
+            </div>
         </div>
     </div>
     
@@ -960,10 +972,25 @@
             const urlParams = new URLSearchParams(window.location.search);
             const diagnosisId = urlParams.get('id');
             
-            // ローディング表示
+            // ローディング表示とスクロール無効化
             const loadingOverlay = document.getElementById('loadingOverlay');
+            const loadingProgress = document.getElementById('loadingProgress');
             if (loadingOverlay) {
                 loadingOverlay.style.display = 'flex';
+                document.body.classList.add('loading-active');
+                
+                // 進捗バーアニメーション
+                let progress = 0;
+                const progressInterval = setInterval(() => {
+                    progress += Math.random() * 20;
+                    if (progress > 90) progress = 90; // 90%で一旦止める
+                    if (loadingProgress) {
+                        loadingProgress.style.width = progress + '%';
+                    }
+                }, 300);
+                
+                // データ読み込み完了時にクリア
+                window.loadingProgressInterval = progressInterval;
             }
             
             // 診断データを読み込み
@@ -1082,10 +1109,19 @@
                 } catch (error) {
                     console.error('診断データの読み込みエラー:', error);
                 } finally {
-                    // ローディングを非表示
+                    // ローディングを非表示（進捗バーを100%にしてから）
                     if (loadingOverlay) {
+                        // 進捗バーを100%に
+                        if (loadingProgress) {
+                            loadingProgress.style.width = '100%';
+                        }
+                        // インターバルをクリア
+                        if (window.loadingProgressInterval) {
+                            clearInterval(window.loadingProgressInterval);
+                        }
                         setTimeout(() => {
                             loadingOverlay.style.display = 'none';
+                            document.body.classList.remove('loading-active');
                         }, 500);
                     }
                 }
@@ -1093,6 +1129,10 @@
                 // 診断IDがない場合もローディングを非表示
                 if (loadingOverlay) {
                     loadingOverlay.style.display = 'none';
+                    document.body.classList.remove('loading-active');
+                    if (window.loadingProgressInterval) {
+                        clearInterval(window.loadingProgressInterval);
+                    }
                 }
             }
             

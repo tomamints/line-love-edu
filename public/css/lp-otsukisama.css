@@ -2578,15 +2578,23 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(26,26,46,0.95);
+            background: rgba(26,26,46,1); /* 完全不透明に変更 */
             display: none;
             align-items: center;
             justify-content: center;
-            z-index: 9999;
+            z-index: 99999; /* より高い優先度 */
             /* モバイル対応のための追加スタイル */
             width: 100vw;
             height: 100vh;
             overflow: hidden;
+        }
+        
+        /* スクロール無効化 */
+        body.loading-active {
+            overflow: hidden !important;
+            position: fixed !important;
+            width: 100% !important;
+            height: 100% !important;
         }
         
         .loading-overlay.active {
@@ -2603,6 +2611,65 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
+            width: 90%;
+            max-width: 400px;
+        }
+        
+        /* 進捗バーコンテナ */
+        .loading-progress-container {
+            width: 100%;
+            height: 40px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 20px;
+            margin-top: 30px;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid rgba(255,215,0,0.3);
+        }
+        
+        /* 進捗バー */
+        .loading-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #ffd700, #ffed4e);
+            border-radius: 18px;
+            width: 0%;
+            transition: width 0.3s ease;
+            position: relative;
+        }
+        
+        /* 月のキャラクター */
+        .loading-moon-character {
+            position: absolute;
+            right: -30px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 30px;
+            animation: float 2s ease-in-out infinite;
+            z-index: 2;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(-50%) translateX(0); }
+            50% { transform: translateY(-50%) translateX(-5px); }
+        }
+        
+        /* 星のパーティクル */
+        .loading-stars {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        
+        .loading-star {
+            position: absolute;
+            color: #ffd700;
+            animation: twinkle 1s ease-in-out infinite;
+        }
+        
+        @keyframes twinkle {
+            0%, 100% { opacity: 0; transform: scale(0); }
+            50% { opacity: 1; transform: scale(1); }
         }
         
         .loading-spinner {
