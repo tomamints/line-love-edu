@@ -179,11 +179,11 @@
         }
     </style>
 </head>
-<body class="preview-mode" id="pageBody">
+<body class="preview-mode loading-active" id="pageBody">
     <!-- アクセシビリティ: スキップリンク -->
     
-    <!-- ローディングオーバーレイ -->
-    <div class="loading-overlay" id="loadingOverlay" style="display: none;">
+    <!-- ローディングオーバーレイ（最初から表示） -->
+    <div class="loading-overlay" id="loadingOverlay" style="display: flex;">
         <div class="loading-content">
             <div class="loading-spinner"></div>
             <div class="loading-text">診断結果を読み込んでいます...</div>
@@ -972,26 +972,22 @@
             const urlParams = new URLSearchParams(window.location.search);
             const diagnosisId = urlParams.get('id');
             
-            // ローディング表示とスクロール無効化
+            // ローディングは既に表示されているので、進捗バーアニメーションのみ開始
             const loadingOverlay = document.getElementById('loadingOverlay');
             const loadingProgress = document.getElementById('loadingProgress');
-            if (loadingOverlay) {
-                loadingOverlay.style.display = 'flex';
-                document.body.classList.add('loading-active');
-                
-                // 進捗バーアニメーション
-                let progress = 0;
-                const progressInterval = setInterval(() => {
-                    progress += Math.random() * 20;
-                    if (progress > 90) progress = 90; // 90%で一旦止める
-                    if (loadingProgress) {
-                        loadingProgress.style.width = progress + '%';
-                    }
-                }, 300);
-                
-                // データ読み込み完了時にクリア
-                window.loadingProgressInterval = progressInterval;
-            }
+            
+            // 進捗バーアニメーション
+            let progress = 0;
+            const progressInterval = setInterval(() => {
+                progress += Math.random() * 20;
+                if (progress > 90) progress = 90; // 90%で一旦止める
+                if (loadingProgress) {
+                    loadingProgress.style.width = progress + '%';
+                }
+            }, 300);
+            
+            // データ読み込み完了時にクリア
+            window.loadingProgressInterval = progressInterval;
             
             // 診断データを読み込み
             if (diagnosisId) {
