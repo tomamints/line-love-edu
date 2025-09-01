@@ -80,8 +80,8 @@ async function saveDiagnosis(req, res) {
     const diagnosisId = `diag_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
     try {
-        // 既存の診断があるか確認
-        const { data: existing } = await supabase
+        // 既存の診断があるか確認（エラーは無視）
+        const { data: existing, error: checkError } = await supabase
             .from('diagnoses')
             .select('id')
             .eq('user_id', userId)
@@ -91,7 +91,8 @@ async function saveDiagnosis(req, res) {
         
         let diagnosis;
         
-        if (existing) {
+        // checkErrorがPGRST116（レコードなし）の場合は新規作成
+        if (existing && !checkError) {
             // 既存の診断を更新
             const { data: updated, error: updateError } = await supabase
                 .from('diagnoses')
@@ -129,8 +130,45 @@ async function saveDiagnosis(req, res) {
                 .select()
                 .single();
             
-            if (createError) throw createError;
-            diagnosis = created;
+            if (createError) {
+                // 重複エラーの場合は、既存のレコードを取得して更新
+                if (createError.code === '23505') {
+                    console.log('[Save Diagnosis] Duplicate found, updating existing record');
+                    const { data: existingDiag } = await supabase
+                        .from('diagnoses')
+                        .select('id')
+                        .eq('user_id', userId)
+                        .eq('birth_date', birthDate)
+                        .eq('diagnosis_type_id', diagnosisType)
+                        .single();
+                    
+                    if (existingDiag) {
+                        const { data: updated, error: updateError } = await supabase
+                            .from('diagnoses')
+                            .update({
+                                user_name: userName,
+                                result_data: resultData,
+                                metadata: {
+                                    source: 'line',
+                                    version: '2.0',
+                                    updated_at: new Date().toISOString()
+                                }
+                            })
+                            .eq('id', existingDiag.id)
+                            .select()
+                            .single();
+                        
+                        if (updateError) throw updateError;
+                        diagnosis = updated;
+                    } else {
+                        throw createError;
+                    }
+                } else {
+                    throw createError;
+                }
+            } else {
+                diagnosis = created;
+            }
         }
 
         // 2. プレビュー用のアクセス権限を付与（無料）
