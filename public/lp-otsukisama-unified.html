@@ -1034,40 +1034,44 @@
                             await updateLoveEnergyContent(loveProfile.loveEnergy);
                         }
                         
-                        // 完全版モードの場合、運勢データも読み込む
-                        if (data.isPaid) {
-                            // 運勢コンテンツを更新（全体運、恋愛運、人間関係運、仕事運、金運）
-                            // データローダーが準備できているか確認
-                            if (window.OtsukisamaDataLoader && window.OtsukisamaDataLoader.isLoaded()) {
+                        // 運勢コンテンツを更新（全体運、恋愛運、人間関係運、仕事運、金運）
+                        // データローダーが準備できているか確認
+                        if (window.OtsukisamaDataLoader && window.OtsukisamaDataLoader.isLoaded()) {
+                            const pattern = window.OtsukisamaDataLoader.getPatternFortune(currentPatternId);
+                            console.log('Pattern data for fortune:', pattern);
+                            if (pattern && typeof updateDynamicContentFromPattern === 'function') {
+                                updateDynamicContentFromPattern(pattern);
+                            }
+                        } else {
+                            // データローダーの読み込みを待ってから再試行
+                            window.addEventListener('otsukisama-data-loaded', () => {
                                 const pattern = window.OtsukisamaDataLoader.getPatternFortune(currentPatternId);
-                                console.log('Pattern data for fortune:', pattern);
+                                console.log('Pattern data for fortune (after wait):', pattern);
                                 if (pattern && typeof updateDynamicContentFromPattern === 'function') {
                                     updateDynamicContentFromPattern(pattern);
                                 }
-                            } else {
-                                // データローダーの読み込みを待ってから再試行
-                                window.addEventListener('otsukisama-data-loaded', () => {
-                                    const pattern = window.OtsukisamaDataLoader.getPatternFortune(currentPatternId);
-                                    console.log('Pattern data for fortune (after wait):', pattern);
-                                    if (pattern && typeof updateDynamicContentFromPattern === 'function') {
-                                        updateDynamicContentFromPattern(pattern);
-                                    }
-                                }, { once: true });
-                            }
-                            
-                            // グラフを初期化
+                            }, { once: true });
+                        }
+                        
+                        // グラフを初期化（常に表示） - 少し遅延を入れて確実に実行
+                        setTimeout(async () => {
                             if (typeof updateFortuneGraph === 'function') {
                                 console.log('Initializing fortune graph for pattern:', currentPatternId);
-                                updateFortuneGraph(currentPatternId);
+                                await updateFortuneGraph(currentPatternId);
                             } else {
                                 console.error('updateFortuneGraph function not found');
                             }
-                            
-                            // カレンダーを初期化
+                        }, 100);
+                        
+                        // カレンダーを初期化（常に表示） - 少し遅延を入れて確実に実行
+                        setTimeout(async () => {
                             if (typeof generatePersonalizedCalendar === 'function') {
-                                generatePersonalizedCalendar(currentPatternId);
+                                console.log('Initializing calendar for pattern:', currentPatternId);
+                                await generatePersonalizedCalendar(currentPatternId);
+                            } else {
+                                console.error('generatePersonalizedCalendar function not found');
                             }
-                        }
+                        }, 200);
                         
                         console.log('データ表示完了');
                     } else {
