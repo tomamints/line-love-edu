@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <title>自動診断実行</title>
+    <meta charset="utf-8">
+</head>
+<body>
+    <h1>自動で診断を実行中...</h1>
+    <div id="status"></div>
+    
+    <script>
+        async function autoExecuteDiagnosis() {
+            const userId = 'U69bf66f589f5303a9615e94d7a7dc693';
+            const statusDiv = document.getElementById('status');
+            
+            // フォームデータを準備
+            const formData = {
+                name: 'テストユーザー',
+                year: 2000,
+                month: 3,
+                day: 15
+            };
+            
+            // 生年月日から月相パターンを計算
+            const birthDate = new Date(formData.year, formData.month - 1, formData.day);
+            const patternId = Math.floor(Math.random() * 64);
+            const moonPhaseIndex = Math.floor(patternId / 8);
+            const hiddenPhaseIndex = patternId % 8;
+            const moonPhaseNames = ['新月', '三日月', '上弦の月', '十三夜', '満月', '十六夜', '下弦の月', '暁'];
+            
+            statusDiv.innerHTML = '<p>プロフィールデータ取得中...</p>';
+            
+            // プロフィールから4つの軸データを取得
+            const profileResponse = await fetch(`/api/get-love-profile?userId=${userId}`);
+            const profileData = await profileResponse.json();
+            
+            let emotionalExpression = 'straight';
+            let distanceStyle = 'moderate';
+            let loveValues = 'romantic';
+            let loveEnergy = 'intense';
+            
+            if (profileData.success && profileData.profile) {
+                emotionalExpression = profileData.profile.emotionalExpression || 'straight';
+                distanceStyle = profileData.profile.distanceStyle || 'moderate';
+                loveValues = profileData.profile.loveValues || 'romantic';
+                loveEnergy = profileData.profile.loveEnergy || 'intense';
+            }
+            
+            statusDiv.innerHTML = '<p>診断を作成中...</p>';
+            
+            // 診断データを作成
+            const resultData = {
+                moon_pattern_id: patternId,
+                moon_phase: moonPhaseNames[moonPhaseIndex],
+                hidden_moon_phase: moonPhaseNames[hiddenPhaseIndex],
+                emotional_expression: emotionalExpression,
+                distance_style: distanceStyle,
+                love_values: loveValues,
+                love_energy: loveEnergy,
+                moon_power_1: '直感力',
+                moon_power_2: '創造力',
+                moon_power_3: '浄化力'
+            };
+            
+            const saveResponse = await fetch('/api/profile-form-v2', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    action: 'save-diagnosis',
+                    userId: userId,
+                    userName: formData.name,
+                    birthDate: `${formData.year}-${String(formData.month).padStart(2, '0')}-${String(formData.day).padStart(2, '0')}`,
+                    diagnosisType: 'otsukisama',
+                    resultData: resultData
+                })
+            });
+            
+            const result = await saveResponse.json();
+            
+            if (result.success && result.diagnosisId) {
+                statusDiv.innerHTML = '<p>診断作成成功！プレビューページへ遷移します...</p>';
+                // プレビューページへ自動遷移
+                setTimeout(() => {
+                    window.location.href = `/lp-otsukisama-unified.html?id=${result.diagnosisId}&userId=${userId}`;
+                }, 1000);
+            } else {
+                statusDiv.innerHTML = '<p style="color: red;">エラー: ' + JSON.stringify(result) + '</p>';
+            }
+        }
+        
+        // ページ読み込み後すぐに実行
+        window.onload = () => {
+            autoExecuteDiagnosis();
+        };
+    </script>
+</body>
+</html>
