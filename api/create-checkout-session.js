@@ -113,7 +113,7 @@ module.exports = async function handler(req, res) {
                 quantity: 1
             }],
             mode: 'payment',
-            success_url: successUrl || `${baseUrl}/lp-otsukisama-unified.html?id=${diagnosisId}&userId=${userId}&payment=success`,
+            success_url: successUrl || `${baseUrl}/payment-success.html?id=${diagnosisId}&userId=${userId}&payment=success`,
             cancel_url: cancelUrl || `${baseUrl}/lp-otsukisama-unified.html?id=${diagnosisId}&userId=${userId}&payment=cancelled`,
             metadata: {
                 diagnosis_id: diagnosisId,
