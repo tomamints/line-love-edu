@@ -1016,22 +1016,21 @@
                         
                         // 6つの要素を更新
                         if (typeof updateSixElements === 'function') {
-                            // プレビューモードでは4軸データがないため、nullを渡す
-                            const profileForSix = (data.accessLevel === 'preview' || data.accessLevel === 'none') ? null : loveProfile;
-                            updateSixElements(currentPatternId, moonPhase, hiddenMoonPhase, profileForSix);
+                            // 常に全データを渡す（アクセス制限を一旦無効化）
+                            updateSixElements(currentPatternId, moonPhase, hiddenMoonPhase, loveProfile);
                         }
                         
-                        // 4つの軸データを表示（完全版のみ）
-                        if (data.accessLevel === 'full' && typeof updatePersonalityDisplay === 'function') {
+                        // 4つの軸データを表示（常に表示）
+                        if (typeof updatePersonalityDisplay === 'function') {
                             console.log('Calling updatePersonalityDisplay with:', loveProfile);
                             await updatePersonalityDisplay(loveProfile);
                             console.log('updatePersonalityDisplay completed');
-                        } else if (data.accessLevel !== 'full') {
-                            console.log('Preview mode - skipping personality display update');
+                        } else {
+                            console.error('updatePersonalityDisplay is not defined');
                         }
                         
-                        // エネルギーコンテンツを更新（完全版のみ）
-                        if (data.accessLevel === 'full' && typeof updateLoveEnergyContent === 'function') {
+                        // エネルギーコンテンツを更新（常に表示）
+                        if (typeof updateLoveEnergyContent === 'function' && loveProfile.loveEnergy) {
                             await updateLoveEnergyContent(loveProfile.loveEnergy);
                         }
                         

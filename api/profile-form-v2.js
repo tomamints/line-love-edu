@@ -220,10 +220,10 @@ async function getDiagnosis(req, res) {
             }
         }
 
-        // 3. アクセスレベルに応じてデータを返す
+        // 3. アクセスレベルに応じてデータを返す（一旦全データを返す）
         const response = {
             success: true,
-            accessLevel: accessLevel,
+            accessLevel: 'full', // 一旦常にfullとして返す
             diagnosis: {
                 id: diagnosis.id,
                 user_id: diagnosis.user_id,
@@ -235,28 +235,19 @@ async function getDiagnosis(req, res) {
             }
         };
 
-        // プレビュー以上なら基本的な結果を含める
-        if (accessLevel === 'preview' || accessLevel === 'full') {
-            // 基本的な結果データ（プレビュー用）
-            const resultData = diagnosis.result_data || {};
-            response.diagnosis.moon_pattern_id = resultData.moon_pattern_id;
-            response.diagnosis.moon_phase = resultData.moon_phase;
-            response.diagnosis.hidden_moon_phase = resultData.hidden_moon_phase;
-        }
-
-        // フルアクセスなら全データを含める
-        if (accessLevel === 'full') {
-            // 完全な結果データ
-            const resultData = diagnosis.result_data || {};
-            response.diagnosis.emotional_expression = resultData.emotional_expression;
-            response.diagnosis.distance_style = resultData.distance_style;
-            response.diagnosis.love_values = resultData.love_values;
-            response.diagnosis.love_energy = resultData.love_energy;
-            response.diagnosis.moon_power_1 = resultData.moon_power_1;
-            response.diagnosis.moon_power_2 = resultData.moon_power_2;
-            response.diagnosis.moon_power_3 = resultData.moon_power_3;
-            response.diagnosis.metadata = diagnosis.metadata;
-        }
+        // 一旦全データを常に返す（アクセス制限を後で実装）
+        const resultData = diagnosis.result_data || {};
+        response.diagnosis.moon_pattern_id = resultData.moon_pattern_id;
+        response.diagnosis.moon_phase = resultData.moon_phase;
+        response.diagnosis.hidden_moon_phase = resultData.hidden_moon_phase;
+        response.diagnosis.emotional_expression = resultData.emotional_expression;
+        response.diagnosis.distance_style = resultData.distance_style;
+        response.diagnosis.love_values = resultData.love_values;
+        response.diagnosis.love_energy = resultData.love_energy;
+        response.diagnosis.moon_power_1 = resultData.moon_power_1;
+        response.diagnosis.moon_power_2 = resultData.moon_power_2;
+        response.diagnosis.moon_power_3 = resultData.moon_power_3;
+        response.diagnosis.metadata = diagnosis.metadata;
 
         // 価格情報を追加（未購入の場合）
         if (accessLevel !== 'full') {
