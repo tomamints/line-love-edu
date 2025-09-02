@@ -17,10 +17,11 @@
         
         /* ぼかし効果とロックオーバーレイ */
         .preview-mode .content-locked {
-            position: relative;
+            position: relative !important;
             filter: blur(8px);
             user-select: none;
             pointer-events: none;
+            min-height: 200px; /* 最小高さを確保 */
         }
         
         /* バナー画像はモザイクを解除 */
@@ -34,15 +35,17 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: rgba(255, 255, 255, 0.98);
-            padding: 40px 30px;
-            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 25px 20px;
+            border-radius: 15px;
             text-align: center;
-            box-shadow: 0 10px 40px rgba(138, 97, 250, 0.2);
-            border: 2px solid rgba(138, 97, 250, 0.1);
+            box-shadow: 0 5px 20px rgba(138, 97, 250, 0.3);
+            border: 2px solid rgba(138, 97, 250, 0.2);
             z-index: 100;
             filter: none;
             display: block;
+            max-width: 280px;
+            width: 80%;
         }
         
         .complete-mode .lock-overlay {
@@ -56,9 +59,9 @@
         }
         
         .lock-icon {
-            font-size: 48px;
+            font-size: 32px;
             display: block;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
         }
         
         .lock-overlay h3 {
@@ -70,9 +73,14 @@
         
         .lock-overlay p {
             color: #666;
-            font-size: 14px;
-            line-height: 1.6;
-            margin-bottom: 20px;
+            font-size: 13px;
+            line-height: 1.4;
+            margin-bottom: 10px;
+        }
+        
+        .lock-message {
+            font-size: 12px !important;
+            margin-bottom: 5px !important;
         }
         
         .unlock-button {
@@ -97,14 +105,15 @@
             background: linear-gradient(135deg, #8a61fa 0%, #c77dff 100%);
             color: white;
             border: none;
-            padding: 12px 24px;
-            border-radius: 20px;
-            font-size: 14px;
+            padding: 10px 20px;
+            border-radius: 15px;
+            font-size: 13px;
             font-weight: bold;
             cursor: pointer;
             transition: all 0.3s;
             display: inline-block;
             text-decoration: none;
+            margin-top: 10px;
         }
         
         .purchase-button-mini:hover {
