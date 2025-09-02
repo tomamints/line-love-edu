@@ -18,14 +18,20 @@
         /* ぼかし効果とロックオーバーレイ */
         .preview-mode .content-locked {
             position: relative !important;
-            filter: blur(8px);
-            user-select: none;
-            pointer-events: none;
             min-height: 200px; /* 最小高さを確保 */
         }
         
-        /* バナー画像はモザイクを解除 */
-        .preview-mode .content-locked img[src*="/images/banner/"] {
+        /* content-locked内の実際のコンテンツにのみblurを適用 */
+        .preview-mode .content-locked > *:not(.lock-overlay) {
+            filter: blur(8px);
+            user-select: none;
+            pointer-events: none;
+        }
+        
+        /* バナー画像とその親要素はモザイクを解除 */
+        .preview-mode .content-locked img[src*="/images/banner/"],
+        .preview-mode .content-locked .section-header-container,
+        .preview-mode .content-locked .fortune-banner-wrapper {
             filter: none !important;
             opacity: 1 !important;
         }
