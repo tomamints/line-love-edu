@@ -80,28 +80,67 @@ async function saveDiagnosis(req, res) {
     const diagnosisId = `diag_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
     try {
-        // 常に新しい診断を作成（既存の診断があっても更新しない）
-        const { data: diagnosis, error: createError } = await supabase
+        // 既存の診断があるか確認
+        const { data: existing } = await supabase
             .from('diagnoses')
-            .insert({
-                id: diagnosisId,
-                user_id: userId,
-                diagnosis_type_id: diagnosisType,
-                user_name: userName,
-                birth_date: birthDate,
-                result_data: resultData,
-                metadata: {
-                    source: 'line',
-                    version: '2.0',
-                    created_at: new Date().toISOString()
-                }
-            })
-            .select()
+            .select('id')
+            .eq('user_id', userId)
+            .eq('birth_date', birthDate)
+            .eq('diagnosis_type_id', diagnosisType)
             .single();
         
-        if (createError) {
-            console.error('[Save Diagnosis] Create error:', createError);
-            throw createError;
+        let diagnosis;
+        
+        if (existing) {
+            // 既存がある場合は更新して同じIDを使用
+            const { data: updated, error: updateError } = await supabase
+                .from('diagnoses')
+                .update({
+                    user_name: userName,
+                    result_data: resultData,
+                    metadata: {
+                        source: 'line',
+                        version: '2.0',
+                        updated_at: new Date().toISOString(),
+                        last_diagnosis_id: diagnosisId  // 生成されたIDを記録
+                    }
+                })
+                .eq('id', existing.id)
+                .select()
+                .single();
+            
+            if (updateError) {
+                console.error('[Save Diagnosis] Update error:', updateError);
+                throw updateError;
+            }
+            diagnosis = updated;
+            console.log('[Save Diagnosis] Updated existing record:', existing.id);
+        } else {
+            // 新規作成
+            const { data: created, error: createError } = await supabase
+                .from('diagnoses')
+                .insert({
+                    id: diagnosisId,
+                    user_id: userId,
+                    diagnosis_type_id: diagnosisType,
+                    user_name: userName,
+                    birth_date: birthDate,
+                    result_data: resultData,
+                    metadata: {
+                        source: 'line',
+                        version: '2.0',
+                        created_at: new Date().toISOString()
+                    }
+                })
+                .select()
+                .single();
+            
+            if (createError) {
+                console.error('[Save Diagnosis] Create error:', createError);
+                throw createError;
+            }
+            diagnosis = created;
+            console.log('[Save Diagnosis] Created new record:', diagnosisId);
         }
 
         // 2. プレビュー用のアクセス権限を付与（無料）
