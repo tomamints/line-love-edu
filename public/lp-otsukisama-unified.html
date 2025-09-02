@@ -18,7 +18,9 @@
         /* ぼかし効果とロックオーバーレイ */
         .preview-mode .content-locked {
             position: relative !important;
-            filter: blur(8px);
+            /* filter: blur(8px); 一時的にコメントアウト */
+            background: rgba(200, 200, 200, 0.1); /* デバッグ用：薄いグレーの背景 */
+            border: 2px solid red; /* デバッグ用：赤い枠線 */
             user-select: none;
             pointer-events: none;
             min-height: 200px; /* 最小高さを確保 */
