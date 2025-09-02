@@ -18,9 +18,7 @@
         /* ぼかし効果とロックオーバーレイ */
         .preview-mode .content-locked {
             position: relative !important;
-            /* filter: blur(8px); 一時的にコメントアウト */
-            background: rgba(200, 200, 200, 0.1); /* デバッグ用：薄いグレーの背景 */
-            border: 2px solid red; /* デバッグ用：赤い枠線 */
+            filter: blur(8px);
             user-select: none;
             pointer-events: none;
             min-height: 200px; /* 最小高さを確保 */
@@ -378,9 +376,10 @@
                     診断結果を購入する
                 </button>
             </div>
+        </div><!-- result-section終了 -->
             
-            <!-- 以降の内容（プレミアムコンテンツ） -->
-            <div class="premium-content-wrapper">
+        <!-- 以降の内容（プレミアムコンテンツ） -->
+        <div class="premium-content-wrapper">
                 <!-- 裏月相セクション -->
                 <div class="content-locked">
                     <div class="lock-overlay">
@@ -954,9 +953,9 @@
                         <a href="https://lin.ee/egmCXoG" class="cta-button">🌙 LINE友だち追加する</a>
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
+            </div><!-- content-locked終了 -->
+        </div><!-- premium-content-wrapper終了 -->
+    </div><!-- container終了 -->
     
     <!-- JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
