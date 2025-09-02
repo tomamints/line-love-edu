@@ -80,95 +80,28 @@ async function saveDiagnosis(req, res) {
     const diagnosisId = `diag_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
     try {
-        // 既存の診断があるか確認（エラーは無視）
-        const { data: existing, error: checkError } = await supabase
+        // 常に新しい診断を作成（既存の診断があっても更新しない）
+        const { data: diagnosis, error: createError } = await supabase
             .from('diagnoses')
-            .select('id')
-            .eq('user_id', userId)
-            .eq('birth_date', birthDate)
-            .eq('diagnosis_type_id', diagnosisType)
+            .insert({
+                id: diagnosisId,
+                user_id: userId,
+                diagnosis_type_id: diagnosisType,
+                user_name: userName,
+                birth_date: birthDate,
+                result_data: resultData,
+                metadata: {
+                    source: 'line',
+                    version: '2.0',
+                    created_at: new Date().toISOString()
+                }
+            })
+            .select()
             .single();
         
-        let diagnosis;
-        
-        // checkErrorがPGRST116（レコードなし）の場合は新規作成
-        if (existing && !checkError) {
-            // 既存の診断を更新
-            const { data: updated, error: updateError } = await supabase
-                .from('diagnoses')
-                .update({
-                    user_name: userName,
-                    result_data: resultData,
-                    metadata: {
-                        source: 'line',
-                        version: '2.0',
-                        updated_at: new Date().toISOString()
-                    }
-                })
-                .eq('id', existing.id)
-                .select()
-                .single();
-            
-            if (updateError) throw updateError;
-            diagnosis = updated;
-        } else {
-            // 新しい診断を作成
-            const { data: created, error: createError } = await supabase
-                .from('diagnoses')
-                .insert({
-                    id: diagnosisId,
-                    user_id: userId,
-                    diagnosis_type_id: diagnosisType,
-                    user_name: userName,
-                    birth_date: birthDate,
-                    result_data: resultData,
-                    metadata: {
-                        source: 'line',
-                        version: '2.0'
-                    }
-                })
-                .select()
-                .single();
-            
-            if (createError) {
-                // 重複エラーの場合は、既存のレコードを取得して更新
-                if (createError.code === '23505') {
-                    console.log('[Save Diagnosis] Duplicate found, updating existing record');
-                    const { data: existingDiag } = await supabase
-                        .from('diagnoses')
-                        .select('id')
-                        .eq('user_id', userId)
-                        .eq('birth_date', birthDate)
-                        .eq('diagnosis_type_id', diagnosisType)
-                        .single();
-                    
-                    if (existingDiag) {
-                        const { data: updated, error: updateError } = await supabase
-                            .from('diagnoses')
-                            .update({
-                                user_name: userName,
-                                result_data: resultData,
-                                metadata: {
-                                    source: 'line',
-                                    version: '2.0',
-                                    updated_at: new Date().toISOString()
-                                }
-                            })
-                            .eq('id', existingDiag.id)
-                            .select()
-                            .single();
-                        
-                        if (updateError) throw updateError;
-                        diagnosis = updated;
-                    } else {
-                        throw createError;
-                    }
-                } else {
-                    throw createError;
-                }
-            } else {
-                diagnosis = created;
-            }
+        if (createError) {
+            console.error('[Save Diagnosis] Create error:', createError);
+            throw createError;
         }
 
         // 2. プレビュー用のアクセス権限を付与（無料）
@@ -188,7 +121,7 @@ async function saveDiagnosis(req, res) {
         return res.json({
             success: true,
             diagnosisId: diagnosis.id,
-            isNew: !existing,
+            isNew: true,  // 常に新規
             diagnosis: diagnosis
         });
 
