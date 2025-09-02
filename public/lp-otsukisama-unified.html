@@ -21,19 +21,26 @@
             min-height: 200px; /* 最小高さを確保 */
         }
         
-        /* content-locked内の実際のコンテンツにのみblurを適用 */
-        .preview-mode .content-locked > *:not(.lock-overlay) {
+        /* テキストコンテンツのみにblurを適用 */
+        .preview-mode .text-blur {
             filter: blur(8px);
             user-select: none;
             pointer-events: none;
         }
         
-        /* バナー画像とその親要素はモザイクを解除 */
+        /* バナー画像とタイトルはモザイクを適用しない */
         .preview-mode .content-locked img[src*="/images/banner/"],
         .preview-mode .content-locked .section-header-container,
-        .preview-mode .content-locked .fortune-banner-wrapper {
+        .preview-mode .content-locked .fortune-banner-wrapper,
+        .preview-mode .content-locked h2,
+        .preview-mode .content-locked h3,
+        .preview-mode .content-locked h4,
+        .preview-mode .content-locked .moon-phase-header,
+        .preview-mode .content-locked .tsukuyomi-section {
             filter: none !important;
             opacity: 1 !important;
+            user-select: auto;
+            pointer-events: auto;
         }
         
         .preview-mode .lock-overlay {
@@ -393,6 +400,7 @@
                         <p class="lock-message">続きを読むには購入が必要です</p>
                         <button class="purchase-button-mini" onclick="scrollToPayment()">診断結果を購入する</button>
                     </div>
+                    
                     <!-- 裏月相説明 -->
                     <div class="section-header-container">
                         <img src="/images/banner/4-2-uranokao.png" alt="そして、あなたの裏の顔も見てみましょう" class="full-width-banner">
@@ -410,8 +418,10 @@
                                 <p class="moon-phase-subtitle">内なる繊細さと慎重さを秘めた策士</p>
                             </div>
                         </div>
-                        <div class="moon-phase-description" id="hidden-phase-description">
-                            表向きは勢いよく突き進むあなたですが、実は内面では細やかな配慮ができる繊細な人。新しいことを始める前に、実はしっかりと下調べをしていたり、リスクを計算していたりするでしょう。その慎重さと大胆さのバランスが、あなたの成功の秘訣。時々弱音を吐きたくなることもありますが、それは成長の証です。
+                        <div class="text-blur">
+                            <div class="moon-phase-description" id="hidden-phase-description">
+                                表向きは勢いよく突き進むあなたですが、実は内面では細やかな配慮ができる繊細な人。新しいことを始める前に、実はしっかりと下調べをしていたり、リスクを計算していたりするでしょう。その慎重さと大胆さのバランスが、あなたの成功の秘訣。時々弱音を吐きたくなることもありますが、それは成長の証です。
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -423,6 +433,7 @@
                         <p class="lock-message">続きを読むには購入が必要です</p>
                         <button class="purchase-button-mini" onclick="scrollToPayment()">診断結果を購入する</button>
                     </div>
+                    
                     <!-- 3つの月の力セクション -->
                     <div class="section-header-container">
                         <img src="/images/banner/5-1-3tsuno.png" alt="あなたが持っている3つの力は〇〇です" class="full-width-banner">
@@ -431,23 +442,25 @@
                         </p>
                     </div>
                     
-                    <div class="energy-types three-powers">
-                        <div class="energy-item">
-                            <div class="energy-title">直感力</div>
-                            <div class="energy-description">
-                                第六感が鋭く、見えない危険を察知する能力があります。迷った時は、理屈より直感を信じることで正しい道を選べるでしょう。
+                    <div class="text-blur">
+                        <div class="energy-types three-powers">
+                            <div class="energy-item">
+                                <div class="energy-title">直感力</div>
+                                <div class="energy-description">
+                                    第六感が鋭く、見えない危険を察知する能力があります。迷った時は、理屈より直感を信じることで正しい道を選べるでしょう。
+                                </div>
                             </div>
-                        </div>
-                        <div class="energy-item">
-                            <div class="energy-title">創造力</div>
-                            <div class="energy-description">
-                                無から有を生み出す力。アイデアが湧き出る泉のような存在で、周りの人に新しい視点を与えることができます。
+                            <div class="energy-item">
+                                <div class="energy-title">創造力</div>
+                                <div class="energy-description">
+                                    無から有を生み出す力。アイデアが湧き出る泉のような存在で、周りの人に新しい視点を与えることができます。
+                                </div>
                             </div>
-                        </div>
-                        <div class="energy-item">
-                            <div class="energy-title">浄化力</div>
-                            <div class="energy-description">
-                                ネガティブなエネルギーを跳ね返し、周りの空気を清める力。あなたがいるだけで、場の雰囲気が明るくなります。
+                            <div class="energy-item">
+                                <div class="energy-title">浄化力</div>
+                                <div class="energy-description">
+                                    ネガティブなエネルギーを跳ね返し、周りの空気を清める力。あなたがいるだけで、場の雰囲気が明るくなります。
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -460,6 +473,7 @@
                         <p class="lock-message">続きを読むには購入が必要です</p>
                         <button class="purchase-button-mini" onclick="scrollToPayment()">診断結果を購入する</button>
                     </div>
+                    
                     <!-- 4つの軸からあなたを紐解く -->
                     <div style="padding: 20px 0 10px; text-align: center;">
                         <img src="/images/banner/5-2-tikara.png" alt="4つの軸からあなたを紐解く" style="max-width: 100%; height: auto; margin-bottom: 5px;">
@@ -468,40 +482,42 @@
                         </p>
                     </div>
                     
-                    <div class="love-type-grid">
-                        <div class="love-type-card">
-                            <div class="love-type-title">
-                                <img src="/images/love-types/emotional/straight.png" alt="ストレート型">
-                                感情表現：<span id="emotionalExpressionType">ストレート型</span>
+                    <div class="text-blur">
+                        <div class="love-type-grid">
+                            <div class="love-type-card">
+                                <div class="love-type-title">
+                                    <img src="/images/love-types/emotional/straight.png" alt="ストレート型">
+                                    感情表現：<span id="emotionalExpressionType">ストレート型</span>
+                                </div>
+                                <div class="love-type-content" id="emotionalExpressionContent">
+                                    好きな人には素直に気持ちを伝えるタイプ。駆け引きは苦手で、思ったことがすぐ顔に出てしまいます。その純粋さが、相手の心を動かす最大の魅力。
+                                </div>
                             </div>
-                            <div class="love-type-content" id="emotionalExpressionContent">
-                                好きな人には素直に気持ちを伝えるタイプ。駆け引きは苦手で、思ったことがすぐ顔に出てしまいます。その純粋さが、相手の心を動かす最大の魅力。
+                            <div class="love-type-card">
+                                <div class="love-type-title">
+                                    <img src="/images/love-types/distance/independent.png" alt="自由マイペース型">
+                                    距離感：<span id="distanceStyleType">自由マイペース型</span>
+                                </div>
+                                <div class="love-type-content" id="distanceStyleContent">
+                                    束縛されることを嫌い、自分のペースを大切にします。相手にも自由を与え、お互いに成長できる関係を理想とします。
+                                </div>
                             </div>
-                        </div>
-                        <div class="love-type-card">
-                            <div class="love-type-title">
-                                <img src="/images/love-types/distance/independent.png" alt="自由マイペース型">
-                                距離感：<span id="distanceStyleType">自由マイペース型</span>
+                            <div class="love-type-card">
+                                <div class="love-type-title">
+                                    <img src="/images/love-types/values/romantic.png" alt="ロマンチスト型">
+                                    価値観：<span id="loveValuesType">ロマンチスト型</span>
+                                </div>
+                                <div class="love-type-content" id="loveValuesContent">
+                                </div>
                             </div>
-                            <div class="love-type-content" id="distanceStyleContent">
-                                束縛されることを嫌い、自分のペースを大切にします。相手にも自由を与え、お互いに成長できる関係を理想とします。
-                            </div>
-                        </div>
-                        <div class="love-type-card">
-                            <div class="love-type-title">
-                                <img src="/images/love-types/values/romantic.png" alt="ロマンチスト型">
-                                価値観：<span id="loveValuesType">ロマンチスト型</span>
-                            </div>
-                            <div class="love-type-content" id="loveValuesContent">
-                            </div>
-                        </div>
-                        <div class="love-type-card">
-                            <div class="love-type-title">
-                                <img src="/images/love-types/energy/intense.png" alt="燃え上がり型">
-                                エネルギー：<span id="loveEnergyType">燃え上がり型</span>
-                            </div>
-                            <div class="love-type-content" id="loveEnergyContent">
-                                あなたは恋愛において、一気に感情が燃え上がるタイプです。
+                            <div class="love-type-card">
+                                <div class="love-type-title">
+                                    <img src="/images/love-types/energy/intense.png" alt="燃え上がり型">
+                                    エネルギー：<span id="loveEnergyType">燃え上がり型</span>
+                                </div>
+                                <div class="love-type-content" id="loveEnergyContent">
+                                    あなたは恋愛において、一気に感情が燃え上がるタイプです。
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -540,11 +556,13 @@
                         </div>
                     </div>
                     
-                    <!-- 総合恋愛タイプ診断 -->
-                    <div id="combinedPersonality" style="margin: 40px 0;"></div>
-                    
-                    <!-- 相性の良いタイプ -->
-                    <div id="compatibleTypes" style="margin: 30px 0;"></div>
+                    <div class="text-blur">
+                        <!-- 総合恋愛タイプ診断 -->
+                        <div id="combinedPersonality" style="margin: 40px 0;"></div>
+                        
+                        <!-- 相性の良いタイプ -->
+                        <div id="compatibleTypes" style="margin: 30px 0;"></div>
+                    </div>
                     
                     <!-- スターセパレーター -->
                     <div class="star-separator"></div>
@@ -558,9 +576,11 @@
                             <h4 style="color: #ffd700; margin-bottom: 20px; text-align: center; font-size: 24px; font-weight: bold; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">
                                 3ヶ月の運勢推移グラフ
                             </h4>
-                            <div style="background: rgba(0, 0, 0, 0.2); border-radius: 10px; padding: 10px; position: relative;">
-                                <div style="height: 420px;">
-                                    <canvas id="fortuneChart"></canvas>
+                            <div class="text-blur">
+                                <div style="background: rgba(0, 0, 0, 0.2); border-radius: 10px; padding: 10px; position: relative;">
+                                    <div style="height: 420px;">
+                                        <canvas id="fortuneChart"></canvas>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -575,31 +595,33 @@
                         
                         <div class="fortune-content">
                             <img src="/images/banner/overall-1.png" alt="直近3ヶ月の全体的な流れ" class="section-banner">
-                            <div class="fortune-highlight">
-                                <p class="fortune-overall-text" id="fortune-overall-text"></p>
-                            </div>
-                            
-                            <div class="monthly-sections">
-                                <div class="month-box">
-                                    <img src="/images/banner/overall-1month.png" alt="1ヶ月目" class="month-banner-small">
-                                    <h3>未決定</h3>
-                                    <p>未決定</p>
+                            <div class="text-blur">
+                                <div class="fortune-highlight">
+                                    <p class="fortune-overall-text" id="fortune-overall-text"></p>
                                 </div>
-                                <div class="month-box">
-                                    <img src="/images/banner/overall-2month.png" alt="2ヶ月目" class="month-banner-small">
-                                    <h3>未決定</h3>
-                                    <p>未決定</p>
+                                
+                                <div class="monthly-sections">
+                                    <div class="month-box">
+                                        <img src="/images/banner/overall-1month.png" alt="1ヶ月目" class="month-banner-small">
+                                        <h3>未決定</h3>
+                                        <p>未決定</p>
+                                    </div>
+                                    <div class="month-box">
+                                        <img src="/images/banner/overall-2month.png" alt="2ヶ月目" class="month-banner-small">
+                                        <h3>未決定</h3>
+                                        <p>未決定</p>
+                                    </div>
+                                    <div class="month-box">
+                                        <img src="/images/banner/overall-3month.png" alt="3ヶ月目" class="month-banner-small">
+                                        <h3>未決定</h3>
+                                        <p>未決定</p>
+                                    </div>
                                 </div>
-                                <div class="month-box">
-                                    <img src="/images/banner/overall-3month.png" alt="3ヶ月目" class="month-banner-small">
-                                    <h3>未決定</h3>
-                                    <p>未決定</p>
+                                
+                                <div class="point-box">
+                                    <strong>⚠️ 注意ポイント</strong>
+                                    <p></p>
                                 </div>
-                            </div>
-                            
-                            <div class="point-box">
-                                <strong>⚠️ 注意ポイント</strong>
-                                <p></p>
                             </div>
                         </div>
                     </div>
@@ -622,28 +644,30 @@
                         <h4 style="color: #ffd700; font-size: 22px; text-align: center; margin-bottom: 20px; font-weight: bold; text-shadow: 1px 1px 3px rgba(0,0,0,0.5);">
                             あなただけの月齢カレンダー（<span id="calendarMonthYear"></span>）
                         </h4>
-                        <div class="calendar-wrapper">
-                            <div class="weekday-header">
-                                <div class="weekday">日</div>
-                                <div class="weekday">月</div>
-                                <div class="weekday">火</div>
-                                <div class="weekday">水</div>
-                                <div class="weekday">木</div>
-                                <div class="weekday">金</div>
-                                <div class="weekday">土</div>
+                        <div class="text-blur">
+                            <div class="calendar-wrapper">
+                                <div class="weekday-header">
+                                    <div class="weekday">日</div>
+                                    <div class="weekday">月</div>
+                                    <div class="weekday">火</div>
+                                    <div class="weekday">水</div>
+                                    <div class="weekday">木</div>
+                                    <div class="weekday">金</div>
+                                    <div class="weekday">土</div>
+                                </div>
+                                <div id="personalizedCalendar" class="calendar-grid">
+                                    <!-- JavaScriptで動的に生成 -->
+                                </div>
                             </div>
-                            <div id="personalizedCalendar" class="calendar-grid">
-                                <!-- JavaScriptで動的に生成 -->
+                            <div class="calendar-legend">
+                                <span class="legend-item"><span class="legend-dot lucky"></span>ラッキーデー</span>
+                                <span class="legend-item"><span class="legend-dot power"></span>パワーデー</span>
+                                <span class="legend-item"><span class="legend-dot caution"></span>注意日</span>
                             </div>
+                            <p id="calendarMessage" style="color: #ffffff; text-align: center; margin-top: 20px; font-size: 16px; font-weight: 600; text-shadow: 1px 1px 3px rgba(0,0,0,0.5);">
+                                <!-- パターンごとのメッセージが動的に表示 -->
+                            </p>
                         </div>
-                        <div class="calendar-legend">
-                            <span class="legend-item"><span class="legend-dot lucky"></span>ラッキーデー</span>
-                            <span class="legend-item"><span class="legend-dot power"></span>パワーデー</span>
-                            <span class="legend-item"><span class="legend-dot caution"></span>注意日</span>
-                        </div>
-                        <p id="calendarMessage" style="color: #ffffff; text-align: center; margin-top: 20px; font-size: 16px; font-weight: 600; text-shadow: 1px 1px 3px rgba(0,0,0,0.5);">
-                            <!-- パターンごとのメッセージが動的に表示 -->
-                        </p>
                     </div>
                 </div>
                 
@@ -674,31 +698,41 @@
                         <!-- 恋愛運 -->
                         <div class="fortune-section love">
                             <div class="fortune-content">
-                                <div class="fortune-highlight">
-                                    <p class="fortune-love-text" id="fortune-love-text"></p>
+                                <div class="text-blur">
+                                    <div class="fortune-highlight">
+                                        <p class="fortune-love-text" id="fortune-love-text"></p>
+                                    </div>
                                 </div>
                                 
                                 <!-- 新規セクション：運命的な出会い -->
                                 <img src="/images/banner/love-1.png" alt="あなたの心をときめかせる、運命的な出会いは訪れる？" class="section-banner">
-                                <div class="love-new-section hanging-text">
-                                    <p id="fortune-love-destiny-meeting" class="fortune-text"></p>
+                                <div class="text-blur">
+                                    <div class="love-new-section hanging-text">
+                                        <p id="fortune-love-destiny-meeting" class="fortune-text"></p>
+                                    </div>
                                 </div>
                                 
                                 <!-- 新規セクション：恋の矢を向けている相手 -->
                                 <img src="/images/banner/love-2.png" alt="今後3ヶ月、あなたに恋の矢を向けているお相手はこんな人" class="section-banner">
-                                <div class="love-new-section hanging-text">
-                                    <p id="fortune-love-admirer-type" class="fortune-text"></p>
+                                <div class="text-blur">
+                                    <div class="love-new-section hanging-text">
+                                        <p id="fortune-love-admirer-type" class="fortune-text"></p>
+                                    </div>
                                 </div>
                                 
                                 <!-- 新規セクション：危険な異性のタイプ -->
                                 <img src="/images/banner/love-3.png" alt="危険な恋の罠？この3ヶ月、あなたが出会うと危険な異性のタイプ" class="section-banner">
-                                <div class="love-new-section hanging-text">
-                                    <p id="fortune-love-dangerous-type" class="fortune-text"></p>
+                                <div class="text-blur">
+                                    <div class="love-new-section hanging-text">
+                                        <p id="fortune-love-dangerous-type" class="fortune-text"></p>
+                                    </div>
                                 </div>
                                 
-                                <div class="point-box">
-                                    <strong>⚠️ 恋愛の注意ポイント</strong>
-                                    <p></p>
+                                <div class="text-blur">
+                                    <div class="point-box">
+                                        <strong>⚠️ 恋愛の注意ポイント</strong>
+                                        <p></p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -731,25 +765,33 @@
                         
                         <div class="fortune-section relationship">
                             <div class="fortune-content">
-                                <div class="fortune-highlight">
-                                    <p class="fortune-relationship-text" id="fortune-relationship-text"></p>
+                                <div class="text-blur">
+                                    <div class="fortune-highlight">
+                                        <p class="fortune-relationship-text" id="fortune-relationship-text"></p>
+                                    </div>
                                 </div>
                                 
                                 <!-- 新規セクション：新しい人間関係 -->
                                 <img src="/images/banner/relation-1.png" alt="今後3ヶ月であなたが築くことになる、新しい人間関係とは" class="section-banner">
-                                <div class="relationship-new-section hanging-text">
-                                    <p id="fortune-relationship-new-connections" class="fortune-text"></p>
+                                <div class="text-blur">
+                                    <div class="relationship-new-section hanging-text">
+                                        <p id="fortune-relationship-new-connections" class="fortune-text"></p>
+                                    </div>
                                 </div>
                                 
                                 <!-- 新規セクション：人間関係の転機 -->
                                 <img src="/images/banner/relation-2.png" alt="人間関係の転機が訪れます。切るべき縁と繋ぐべき縁とは？" class="section-banner">
-                                <div class="relationship-new-section hanging-text">
-                                    <p id="fortune-relationship-challenges" class="fortune-text"></p>
+                                <div class="text-blur">
+                                    <div class="relationship-new-section hanging-text">
+                                        <p id="fortune-relationship-challenges" class="fortune-text"></p>
+                                    </div>
                                 </div>
                                 
-                                <div class="point-box">
-                                    <strong>⚠️ 人間関係の注意ポイント</strong>
-                                    <p></p>
+                                <div class="text-blur">
+                                    <div class="point-box">
+                                        <strong>⚠️ 人間関係の注意ポイント</strong>
+                                        <p></p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -782,25 +824,33 @@
                         
                         <div class="fortune-section work">
                             <div class="fortune-content">
-                                <div class="fortune-highlight">
-                                    <p class="fortune-work-text" id="fortune-work-text"></p>
+                                <div class="text-blur">
+                                    <div class="fortune-highlight">
+                                        <p class="fortune-work-text" id="fortune-work-text"></p>
+                                    </div>
                                 </div>
                                 
                                 <!-- 新規セクション：仕事での躍進チャンス -->
                                 <img src="/images/banner/work-1.png" alt="仕事での躍進チャンスは今にも手に届きそう" class="section-banner">
-                                <div class="work-new-section hanging-text">
-                                    <p id="fortune-work-new-talent" class="fortune-text"></p>
+                                <div class="text-blur">
+                                    <div class="work-new-section hanging-text">
+                                        <p id="fortune-work-new-talent" class="fortune-text"></p>
+                                    </div>
                                 </div>
                                 
                                 <!-- 新規セクション：避けるべき落とし穴 -->
                                 <img src="/images/banner/work-2.png" alt="仕事で陥りがちな落とし穴" class="section-banner">
-                                <div class="work-new-section hanging-text">
-                                    <p id="fortune-work-turning-point" class="fortune-text"></p>
+                                <div class="text-blur">
+                                    <div class="work-new-section hanging-text">
+                                        <p id="fortune-work-turning-point" class="fortune-text"></p>
+                                    </div>
                                 </div>
                                 
-                                <div class="point-box">
-                                    <strong>⚠️ 仕事の注意ポイント</strong>
-                                    <p></p>
+                                <div class="text-blur">
+                                    <div class="point-box">
+                                        <strong>⚠️ 仕事の注意ポイント</strong>
+                                        <p></p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -833,22 +883,28 @@
                         
                         <div class="fortune-section money">
                             <div class="fortune-content">
-                                <div class="fortune-highlight">
-                                    <p class="fortune-money-text" id="fortune-money-text"></p>
+                                <div class="text-blur">
+                                    <div class="fortune-highlight">
+                                        <p class="fortune-money-text" id="fortune-money-text"></p>
+                                    </div>
                                 </div>
                                 
                                 <!-- 新規セクション：ラッキーアクション -->
                                 <img src="/images/banner/money-1.png" alt="あなたの金運を底上げする、とっておきのラッキーアクション" class="section-banner">
-                                <div class="money-new-section hanging-text">
-                                    <p>
-                                        新月の日に財布を新調し、満月の夜に財布を月光浴させると金運UP。月が欠けていく時期は無駄遣いを控え、毎月の新月と満月に財布を整理することが大切。
-                                    </p>
+                                <div class="text-blur">
+                                    <div class="money-new-section hanging-text">
+                                        <p>
+                                            新月の日に財布を新調し、満月の夜に財布を月光浴させると金運UP。月が欠けていく時期は無駄遣いを控え、毎月の新月と満月に財布を整理することが大切。
+                                        </p>
+                                    </div>
                                 </div>
                                 
                                 <!-- 新規セクション：金銭トラブル回避 -->
                                 <img src="/images/banner/money-2.png" alt="お金の貸し借りは慎重に。人間関係にヒビを入れる金銭問題" class="section-banner">
-                                <div class="money-new-section hanging-text">
-                                    <p id="fortune-money-trouble" class="fortune-text"></p>
+                                <div class="text-blur">
+                                    <div class="money-new-section hanging-text">
+                                        <p id="fortune-money-trouble" class="fortune-text"></p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -865,24 +921,28 @@
                     <!-- 最終メッセージ -->
                     <div class="final-message">
                         <img src="/images/banner/12-saigo.png" alt="月が教えてくれる5つの教え" style="max-width: 100%; height: auto; margin-bottom: 5px;">
-                        <p>
-                            新月のあなたは、常に新しいことへチャレンジする勇気を持っています。その勇気は素晴らしいものですが、時には立ち止まることも大切。月のリズムに合わせて、緩急をつけることで、より大きな成果を得られるでしょう。
-                        </p>
+                        <div class="text-blur">
+                            <p>
+                                新月のあなたは、常に新しいことへチャレンジする勇気を持っています。その勇気は素晴らしいものですが、時には立ち止まることも大切。月のリズムに合わせて、緩急をつけることで、より大きな成果を得られるでしょう。
+                            </p>
+                        </div>
                         
                         <div style="margin-top: 30px;">
                             <img src="/images/banner/last.png" alt="月が教えてくれる最も重要なメッセージ" style="width: 100%; height: auto; margin-bottom: 20px;">
-                            <div>
-                                <p style="margin-bottom: 20px;">
-                                    月が教えてくれる最も重要なメッセージは、「すべては循環している」ということ。
-                                </p>
-                                
-                                <p style="margin-bottom: 20px;">
-                                    新月から満月へ、そしてまた新月へ。月が満ち欠けを繰り返すように、あなたの人生にも波があります。その波を受け入れ、流れに身を任せることで、本当の幸せを掴むことができるでしょう。
-                                </p>
-                                
-                                <p style="color: #ffd700; font-size: 18px; margin-top: 30px;">
-                                    <strong id="final-blessing-message">「新月の光があなたの道を照らしますように」</strong>
-                                </p>
+                            <div class="text-blur">
+                                <div>
+                                    <p style="margin-bottom: 20px;">
+                                        月が教えてくれる最も重要なメッセージは、「すべては循環している」ということ。
+                                    </p>
+                                    
+                                    <p style="margin-bottom: 20px;">
+                                        新月から満月へ、そしてまた新月へ。月が満ち欠けを繰り返すように、あなたの人生にも波があります。その波を受け入れ、流れに身を任せることで、本当の幸せを掴むことができるでしょう。
+                                    </p>
+                                    
+                                    <p style="color: #ffd700; font-size: 18px; margin-top: 30px;">
+                                        <strong id="final-blessing-message">「新月の光があなたの道を照らしますように」</strong>
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -901,40 +961,42 @@
                     </div>
                     
                     <!-- 最終メッセージ（続き） -->
-                    <div style="text-align: left; margin: 30px 0;">
-                        <div style="margin-bottom: 20px;">
-                            <strong style="color: #ffd700; font-size: 18px;">1. 新月の教え：「始める勇気を持ちなさい」</strong>
-                            失敗を恐れず、新しいことに挑戦する勇気。それがあなたの最大の武器です。
+                    <div class="text-blur">
+                        <div style="text-align: left; margin: 30px 0;">
+                            <div style="margin-bottom: 20px;">
+                                <strong style="color: #ffd700; font-size: 18px;">1. 新月の教え：「始める勇気を持ちなさい」</strong>
+                                失敗を恐れず、新しいことに挑戦する勇気。それがあなたの最大の武器です。
+                            </div>
+                            
+                            <div style="margin-bottom: 20px;">
+                                <strong style="color: #ffd700; font-size: 18px;">2. 上弦の月の教え：「成長を楽しみなさい」</strong>
+                                困難も成長の糧。すべての経験があなたを強くします。
+                            </div>
+                            
+                            <div style="margin-bottom: 20px;">
+                                <strong style="color: #ffd700; font-size: 18px;">3. 満月の教え：「感謝を忘れずに」</strong>
+                                成功した時こそ、周りへの感謝を。それが次の幸運を呼びます。
+                            </div>
+                            
+                            <div style="margin-bottom: 20px;">
+                                <strong style="color: #ffd700; font-size: 18px;">4. 下弦の月の教え：「手放す勇気を」</strong>
+                                不要なものを手放すことで、新しいものが入ってきます。
+                            </div>
+                            
+                            <div style="margin-bottom: 20px;">
+                                <strong style="color: #ffd700; font-size: 18px;">5. 闇月の教え：「休息も大切」</strong>
+                                時には立ち止まり、自分を見つめ直す時間も必要です。
+                            </div>
                         </div>
                         
-                        <div style="margin-bottom: 20px;">
-                            <strong style="color: #ffd700; font-size: 18px;">2. 上弦の月の教え：「成長を楽しみなさい」</strong>
-                            困難も成長の糧。すべての経験があなたを強くします。
-                        </div>
+                        <p style="margin-top: 30px;">
+                            <strong>最後に...</strong>直近3ヶ月、あなたは多くの「始まり」を経験します。その一つ一つが、あなたの人生を豊かにする種となるでしょう。
+                        </p>
                         
-                        <div style="margin-bottom: 20px;">
-                            <strong style="color: #ffd700; font-size: 18px;">3. 満月の教え：「感謝を忘れずに」</strong>
-                            成功した時こそ、周りへの感謝を。それが次の幸運を呼びます。
-                        </div>
-                        
-                        <div style="margin-bottom: 20px;">
-                            <strong style="color: #ffd700; font-size: 18px;">4. 下弦の月の教え：「手放す勇気を」</strong>
-                            不要なものを手放すことで、新しいものが入ってきます。
-                        </div>
-                        
-                        <div style="margin-bottom: 20px;">
-                            <strong style="color: #ffd700; font-size: 18px;">5. 闇月の教え：「休息も大切」</strong>
-                            時には立ち止まり、自分を見つめ直す時間も必要です。
-                        </div>
+                        <p>
+                            恐れずに一歩を踏み出してください。月はいつもあなたを見守り、導いています。
+                        </p>
                     </div>
-                    
-                    <p style="margin-top: 30px;">
-                        <strong>最後に...</strong>直近3ヶ月、あなたは多くの「始まり」を経験します。その一つ一つが、あなたの人生を豊かにする種となるでしょう。
-                    </p>
-                    
-                    <p>
-                        恐れずに一歩を踏み出してください。月はいつもあなたを見守り、導いています。
-                    </p>
                     
                     <!-- 月詠の最終メッセージ -->
                     <div class="tsukuyomi-section">
@@ -1253,11 +1315,35 @@
             }
         }
         
-        // メイン購入ボタンまでスクロールする関数
-        function scrollToPayment() {
-            const purchaseButton = document.getElementById('purchaseButton');
-            if (purchaseButton) {
-                purchaseButton.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        // 購入処理を実行する関数
+        async function scrollToPayment() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const diagnosisId = urlParams.get('id');
+            const userId = window.currentUserId || 'anonymous';
+            
+            try {
+                const response = await fetch('/api/create-checkout-session', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        diagnosisId: diagnosisId,
+                        userId: userId
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success && data.checkoutUrl) {
+                    // Stripe決済ページへリダイレクト
+                    window.location.href = data.checkoutUrl;
+                } else {
+                    throw new Error(data.error || '決済セッションの作成に失敗しました');
+                }
+            } catch (error) {
+                console.error('決済エラー:', error);
+                alert('決済処理中にエラーが発生しました。もう一度お試しください。');
             }
         }
         
