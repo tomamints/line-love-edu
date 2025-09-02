@@ -92,6 +92,26 @@
             box-shadow: 0 5px 20px rgba(138, 97, 250, 0.4);
         }
         
+        /* 小さめのCTAボタンスタイル */
+        .purchase-button-mini {
+            background: linear-gradient(135deg, #8a61fa 0%, #c77dff 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-block;
+            text-decoration: none;
+        }
+        
+        .purchase-button-mini:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(138, 97, 250, 0.4);
+        }
+        
         /* 有料コンテンツのラッパー */
         .premium-content-wrapper {
             position: relative;
@@ -350,7 +370,13 @@
             
             <!-- 以降の内容（プレミアムコンテンツ） -->
             <div class="premium-content-wrapper">
+                <!-- 裏月相セクション -->
                 <div class="content-locked">
+                    <div class="lock-overlay">
+                        <div class="lock-icon">🔒</div>
+                        <p class="lock-message">続きを読むには購入が必要です</p>
+                        <button class="purchase-button-mini" onclick="scrollToPayment()">診断結果を購入する</button>
+                    </div>
                     <!-- 裏月相説明 -->
                     <div class="section-header-container">
                         <img src="/images/banner/4-2-uranokao.png" alt="そして、あなたの裏の顔も見てみましょう" class="full-width-banner">
@@ -372,7 +398,15 @@
                             表向きは勢いよく突き進むあなたですが、実は内面では細やかな配慮ができる繊細な人。新しいことを始める前に、実はしっかりと下調べをしていたり、リスクを計算していたりするでしょう。その慎重さと大胆さのバランスが、あなたの成功の秘訣。時々弱音を吐きたくなることもありますが、それは成長の証です。
                         </div>
                     </div>
-                    
+                </div>
+                
+                <!-- 3つの月の力セクション -->
+                <div class="content-locked">
+                    <div class="lock-overlay">
+                        <div class="lock-icon">🔒</div>
+                        <p class="lock-message">続きを読むには購入が必要です</p>
+                        <button class="purchase-button-mini" onclick="scrollToPayment()">診断結果を購入する</button>
+                    </div>
                     <!-- 3つの月の力セクション -->
                     <div class="section-header-container">
                         <img src="/images/banner/5-1-3tsuno.png" alt="あなたが持っている3つの力は〇〇です" class="full-width-banner">
@@ -401,7 +435,15 @@
                             </div>
                         </div>
                     </div>
-                    
+                </div>
+                
+                <!-- 4つの軸セクション -->
+                <div class="content-locked">
+                    <div class="lock-overlay">
+                        <div class="lock-icon">🔒</div>
+                        <p class="lock-message">続きを読むには購入が必要です</p>
+                        <button class="purchase-button-mini" onclick="scrollToPayment()">診断結果を購入する</button>
+                    </div>
                     <!-- 4つの軸からあなたを紐解く -->
                     <div style="padding: 20px 0 10px; text-align: center;">
                         <img src="/images/banner/5-2-tikara.png" alt="4つの軸からあなたを紐解く" style="max-width: 100%; height: auto; margin-bottom: 5px;">
@@ -460,7 +502,15 @@
                             </p>
                         </div>
                     </div>
-                    
+                </div>
+                
+                <!-- 運命のカレンダーセクション -->
+                <div class="content-locked">
+                    <div class="lock-overlay">
+                        <div class="lock-icon">🔒</div>
+                        <p class="lock-message">続きを読むには購入が必要です</p>
+                        <button class="purchase-button-mini" onclick="scrollToPayment()">診断結果を購入する</button>
+                    </div>
                     <!-- 月詠による直近3ヶ月導入 -->
                     <div class="tsukuyomi-section right">
                         <div class="tsukuyomi-character">
@@ -538,6 +588,56 @@
                         </div>
                     </div>
                     
+                    <!-- 月詠による月齢カレンダーへの移行 -->
+                    <div class="tsukuyomi-section">
+                        <div class="tsukuyomi-character">
+                            <img src="/images/tsukuyomi/5.png" alt="月詠">
+                        </div>
+                        <div class="tsukuyomi-bubble">
+                            <div class="tsukuyomi-name">月詠</div>
+                            <p>
+                                ここで特別なプレゼントがあります！恋愛運をさらに活かすために、あなただけの特別な月齢カレンダーをお伝えしますね。
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <!-- 月齢カレンダー -->
+                    <div class="monthly-fortune">
+                        <h4 style="color: #ffd700; font-size: 22px; text-align: center; margin-bottom: 20px; font-weight: bold; text-shadow: 1px 1px 3px rgba(0,0,0,0.5);">
+                            あなただけの月齢カレンダー（<span id="calendarMonthYear"></span>）
+                        </h4>
+                        <div class="calendar-wrapper">
+                            <div class="weekday-header">
+                                <div class="weekday">日</div>
+                                <div class="weekday">月</div>
+                                <div class="weekday">火</div>
+                                <div class="weekday">水</div>
+                                <div class="weekday">木</div>
+                                <div class="weekday">金</div>
+                                <div class="weekday">土</div>
+                            </div>
+                            <div id="personalizedCalendar" class="calendar-grid">
+                                <!-- JavaScriptで動的に生成 -->
+                            </div>
+                        </div>
+                        <div class="calendar-legend">
+                            <span class="legend-item"><span class="legend-dot lucky"></span>ラッキーデー</span>
+                            <span class="legend-item"><span class="legend-dot power"></span>パワーデー</span>
+                            <span class="legend-item"><span class="legend-dot caution"></span>注意日</span>
+                        </div>
+                        <p id="calendarMessage" style="color: #ffffff; text-align: center; margin-top: 20px; font-size: 16px; font-weight: 600; text-shadow: 1px 1px 3px rgba(0,0,0,0.5);">
+                            <!-- パターンごとのメッセージが動的に表示 -->
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- 恋愛運セクション -->
+                <div class="content-locked">
+                    <div class="lock-overlay">
+                        <div class="lock-icon">🔒</div>
+                        <p class="lock-message">続きを読むには購入が必要です</p>
+                        <button class="purchase-button-mini" onclick="scrollToPayment()">診断結果を購入する</button>
+                    </div>
                     <!-- 月詠による恋愛運への移行 -->
                     <div class="tsukuyomi-section">
                         <div class="tsukuyomi-character">
@@ -587,49 +687,15 @@
                             </div>
                         </div>
                     </div>
-                    
-                    <!-- 月詠による月齢カレンダーへの移行 -->
-                    <div class="tsukuyomi-section">
-                        <div class="tsukuyomi-character">
-                            <img src="/images/tsukuyomi/5.png" alt="月詠">
-                        </div>
-                        <div class="tsukuyomi-bubble">
-                            <div class="tsukuyomi-name">月詠</div>
-                            <p>
-                                ここで特別なプレゼントがあります！恋愛運をさらに活かすために、あなただけの特別な月齢カレンダーをお伝えしますね。
-                            </p>
-                        </div>
+                </div>
+                
+                <!-- 人間関係運セクション -->
+                <div class="content-locked">
+                    <div class="lock-overlay">
+                        <div class="lock-icon">🔒</div>
+                        <p class="lock-message">続きを読むには購入が必要です</p>
+                        <button class="purchase-button-mini" onclick="scrollToPayment()">診断結果を購入する</button>
                     </div>
-                    
-                    <!-- 月齢カレンダー -->
-                    <div class="monthly-fortune">
-                        <h4 style="color: #ffd700; font-size: 22px; text-align: center; margin-bottom: 20px; font-weight: bold; text-shadow: 1px 1px 3px rgba(0,0,0,0.5);">
-                            あなただけの月齢カレンダー（<span id="calendarMonthYear"></span>）
-                        </h4>
-                        <div class="calendar-wrapper">
-                            <div class="weekday-header">
-                                <div class="weekday">日</div>
-                                <div class="weekday">月</div>
-                                <div class="weekday">火</div>
-                                <div class="weekday">水</div>
-                                <div class="weekday">木</div>
-                                <div class="weekday">金</div>
-                                <div class="weekday">土</div>
-                            </div>
-                            <div id="personalizedCalendar" class="calendar-grid">
-                                <!-- JavaScriptで動的に生成 -->
-                            </div>
-                        </div>
-                        <div class="calendar-legend">
-                            <span class="legend-item"><span class="legend-dot lucky"></span>ラッキーデー</span>
-                            <span class="legend-item"><span class="legend-dot power"></span>パワーデー</span>
-                            <span class="legend-item"><span class="legend-dot caution"></span>注意日</span>
-                        </div>
-                        <p id="calendarMessage" style="color: #ffffff; text-align: center; margin-top: 20px; font-size: 16px; font-weight: 600; text-shadow: 1px 1px 3px rgba(0,0,0,0.5);">
-                            <!-- パターンごとのメッセージが動的に表示 -->
-                        </p>
-                    </div>
-                    
                     <!-- 月詠による人間関係運への移行 -->
                     <div class="tsukuyomi-section right">
                         <div class="tsukuyomi-character">
@@ -672,7 +738,15 @@
                             </div>
                         </div>
                     </div>
-                    
+                </div>
+                
+                <!-- 仕事運セクション -->
+                <div class="content-locked">
+                    <div class="lock-overlay">
+                        <div class="lock-icon">🔒</div>
+                        <p class="lock-message">続きを読むには購入が必要です</p>
+                        <button class="purchase-button-mini" onclick="scrollToPayment()">診断結果を購入する</button>
+                    </div>
                     <!-- 月詠による仕事運への移行 -->
                     <div class="tsukuyomi-section">
                         <div class="tsukuyomi-character">
@@ -715,7 +789,15 @@
                             </div>
                         </div>
                     </div>
-                    
+                </div>
+                
+                <!-- 金運セクション -->
+                <div class="content-locked">
+                    <div class="lock-overlay">
+                        <div class="lock-icon">🔒</div>
+                        <p class="lock-message">続きを読むには購入が必要です</p>
+                        <button class="purchase-button-mini" onclick="scrollToPayment()">診断結果を購入する</button>
+                    </div>
                     <!-- 月詠による金運への移行 -->
                     <div class="tsukuyomi-section right">
                         <div class="tsukuyomi-character">
@@ -755,7 +837,15 @@
                             </div>
                         </div>
                     </div>
-                    
+                </div>
+                
+                <!-- 最後のメッセージセクション -->
+                <div class="content-locked">
+                    <div class="lock-overlay">
+                        <div class="lock-icon">🔒</div>
+                        <p class="lock-message">続きを読むには購入が必要です</p>
+                        <button class="purchase-button-mini" onclick="scrollToPayment()">診断結果を購入する</button>
+                    </div>
                     <!-- 最終メッセージ -->
                     <div class="final-message">
                         <img src="/images/banner/12-saigo.png" alt="月が教えてくれる5つの教え" style="max-width: 100%; height: auto; margin-bottom: 5px;">
@@ -852,15 +942,6 @@
                         </p>
                         <a href="https://lin.ee/egmCXoG" class="cta-button">🌙 LINE友だち追加する</a>
                     </div>
-                </div>
-                
-                <div class="lock-overlay">
-                    <span class="lock-icon">🔒</span>
-                    <h3>プレミアムコンテンツ</h3>
-                    <p>この先の詳細な診断結果を<br>ご覧いただくには購入が必要です</p>
-                    <button class="unlock-button" onclick="document.getElementById('purchaseButton').click()">
-                        完全版を見る
-                    </button>
                 </div>
             </div>
         </div>
@@ -1153,6 +1234,14 @@
                     });
                 }
                 
+            }
+        }
+        
+        // メイン購入ボタンまでスクロールする関数
+        function scrollToPayment() {
+            const purchaseButton = document.getElementById('purchaseButton');
+            if (purchaseButton) {
+                purchaseButton.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
         }
         
