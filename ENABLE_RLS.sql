@@ -10,6 +10,17 @@ ALTER TABLE public.orders ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.user_messages ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.diagnosis_types ENABLE ROW LEVEL SECURITY;
 
+-- 既存のポリシーを削除（存在する場合）
+DROP POLICY IF EXISTS "Enable read for authenticated" ON public.access_rights;
+DROP POLICY IF EXISTS "Enable insert for authenticated" ON public.access_rights;
+DROP POLICY IF EXISTS "Enable update for authenticated" ON public.access_rights;
+DROP POLICY IF EXISTS "Enable all for authenticated" ON public.diagnoses;
+DROP POLICY IF EXISTS "Enable all for authenticated" ON public.purchases;
+DROP POLICY IF EXISTS "Enable all for authenticated" ON public.profiles;
+DROP POLICY IF EXISTS "Enable all for authenticated" ON public.orders;
+DROP POLICY IF EXISTS "Enable all for authenticated" ON public.user_messages;
+DROP POLICY IF EXISTS "Enable read for all" ON public.diagnosis_types;
+
 -- ポリシーの作成
 -- 重要：現在のシステムはAPIキー（ANON_KEY）を使用してバックエンドから
 -- アクセスしているため、以下のポリシーを設定
