@@ -1,17 +1,14 @@
 -- Row Level Security (RLS) を有効化するSQL
 -- Supabaseダッシュボードで実行してください
 
--- 1. access_rightsテーブルのRLSを有効化
+-- 全てのpublicテーブルのRLSを有効化
 ALTER TABLE public.access_rights ENABLE ROW LEVEL SECURITY;
-
--- 2. diagnosesテーブルのRLSも有効化
 ALTER TABLE public.diagnoses ENABLE ROW LEVEL SECURITY;
-
--- 3. purchasesテーブルのRLSも有効化  
 ALTER TABLE public.purchases ENABLE ROW LEVEL SECURITY;
-
--- 4. profilesテーブルのRLSも有効化
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.orders ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.user_messages ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.diagnosis_types ENABLE ROW LEVEL SECURITY;
 
 -- ポリシーの作成
 -- 重要：現在のシステムはAPIキー（ANON_KEY）を使用してバックエンドから
@@ -44,6 +41,21 @@ CREATE POLICY "Enable all for authenticated" ON public.purchases
 CREATE POLICY "Enable all for authenticated" ON public.profiles
     FOR ALL
     USING (true);  -- ANONキーでの全操作を許可
+
+-- ordersテーブル：バックエンドAPIのみアクセス可能
+CREATE POLICY "Enable all for authenticated" ON public.orders
+    FOR ALL
+    USING (true);  -- ANONキーでの全操作を許可
+
+-- user_messagesテーブル：バックエンドAPIのみアクセス可能
+CREATE POLICY "Enable all for authenticated" ON public.user_messages
+    FOR ALL
+    USING (true);  -- ANONキーでの全操作を許可
+
+-- diagnosis_typesテーブル：読み取り専用（マスターデータ）
+CREATE POLICY "Enable read for all" ON public.diagnosis_types
+    FOR SELECT
+    USING (true);  -- 全員が読み取り可能
 
 -- 注意：
 -- 現在のアーキテクチャではVercel APIがゲートキーパーとして機能し、
