@@ -61,6 +61,6 @@ CREATE POLICY "Enable read for all" ON public.diagnosis_types
 -- 現在のアーキテクチャではVercel APIがゲートキーパーとして機能し、
 -- LINEユーザーの認証を行っているため、データベースレベルでは
 -- APIキーによるアクセスを許可しています。
--- 
+--
 -- より厳密なセキュリティが必要な場合は、SERVICE_ROLE_KEYを使用し、
 -- RLSポリシーを無視する設定にすることも可能です。
