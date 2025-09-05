@@ -33,6 +33,40 @@ module.exports = async function handler(req, res) {
     }
 
     const action = req.query.action || req.body?.action;
+    
+    // actionがない場合、かつGETリクエストの場合はHTMLフォームを返す
+    if (!action && req.method === 'GET') {
+        const fs = require('fs');
+        const path = require('path');
+        const userId = req.query.userId;
+        
+        // moon-fortune.htmlを読み込んで返す
+        const htmlPath = path.join(__dirname, '..', 'public', 'moon-fortune.html');
+        
+        try {
+            let html = fs.readFileSync(htmlPath, 'utf8');
+            
+            // userIdをJavaScriptで使えるようにする
+            if (userId) {
+                const userIdScript = `
+                <script>
+                    // LINEから渡されたユーザーID
+                    window.lineUserId = '${userId}';
+                    sessionStorage.setItem('moon_tarot_line_user_id', '${userId}');
+                    localStorage.setItem('moon_tarot_line_user_id', '${userId}');
+                </script>
+                `;
+                html = html.replace('</head>', userIdScript + '</head>');
+            }
+            
+            res.setHeader('Content-Type', 'text/html; charset=utf-8');
+            return res.status(200).send(html);
+        } catch (error) {
+            console.error('Error reading HTML file:', error);
+            return res.status(500).json({ error: 'Failed to load form' });
+        }
+    }
+    
     console.log(`[Profile Form V2] Action: ${action}`, req.method);
 
     try {

@@ -16,24 +16,24 @@ ALTER TABLE public.tarot_permissions ENABLE ROW LEVEL SECURITY;
 
 -- 3. 新しいポリシーを作成（より緩い条件）
 -- tarot_usage: 全員が読み書き可能（LINEユーザー用）
-CREATE POLICY "Allow all for tarot usage" 
-ON public.tarot_usage 
-FOR ALL 
+CREATE POLICY "Allow all for tarot usage"
+ON public.tarot_usage
+FOR ALL
 USING (true)
 WITH CHECK (true);
 
 -- tarot_permissions: 全員が読み書き可能（LINEユーザー用）
-CREATE POLICY "Allow all for tarot permissions" 
-ON public.tarot_permissions 
-FOR ALL 
+CREATE POLICY "Allow all for tarot permissions"
+ON public.tarot_permissions
+FOR ALL
 USING (true)
 WITH CHECK (true);
 
 -- 4. テーブルの存在と設定を確認
-SELECT 
+SELECT
     tablename,
     rowsecurity,
-    CASE 
+    CASE
         WHEN rowsecurity THEN '✅ RLS有効'
         ELSE '❌ RLS無効'
     END as rls_status
@@ -42,7 +42,7 @@ WHERE schemaname = 'public'
 AND tablename IN ('tarot_usage', 'tarot_permissions');
 
 -- 5. ポリシーの確認
-SELECT 
+SELECT
     schemaname,
     tablename,
     policyname,
