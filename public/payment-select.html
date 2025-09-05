@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>お支払い方法を選択 | おつきさま診断</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #1a0033 0%, #2d1b69 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding-top: 40px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .header h1 {
+            font-size: 24px;
+            color: #ffd700;
+            margin-bottom: 10px;
+        }
+        
+        .price-info {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+        }
+        
+        .price {
+            font-size: 32px;
+            font-weight: bold;
+            color: #ffd700;
+            margin-bottom: 10px;
+        }
+        
+        .price-note {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+        
+        .payment-options {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .payment-option {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        
+        .payment-option:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border-color: #ffd700;
+        }
+        
+        .payment-option.recommended {
+            position: relative;
+            border-color: #ffd700;
+        }
+        
+        .recommended-badge {
+            position: absolute;
+            top: -12px;
+            right: 20px;
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            color: #1a0033;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+        
+        .payment-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .payment-logo {
+            width: 80px;
+            height: 40px;
+            margin-right: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        .paypay-logo {
+            background: #FF0033;
+            color: white;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        
+        .credit-logo {
+            background: linear-gradient(135deg, #1e88e5, #1565c0);
+            color: white;
+            border-radius: 8px;
+            font-size: 12px;
+        }
+        
+        .payment-title {
+            flex-grow: 1;
+        }
+        
+        .payment-name {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .payment-desc {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .payment-features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+        
+        .feature-tag {
+            background: #f0f0f0;
+            color: #666;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+        }
+        
+        .payment-methods {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .method-icon {
+            width: 40px;
+            height: 25px;
+            background: #f5f5f5;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: #999;
+            border: 1px solid #ddd;
+        }
+        
+        .security-note {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+        
+        .security-note p {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.6;
+        }
+        
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #ffd700;
+            text-decoration: none;
+            font-size: 14px;
+            transition: opacity 0.3s;
+        }
+        
+        .back-link:hover {
+            opacity: 0.7;
+        }
+        
+        /* ローディング表示 */
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .loading-content {
+            text-align: center;
+        }
+        
+        .spinner {
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top: 3px solid #ffd700;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .loading-text {
+            color: #ffd700;
+            font-size: 16px;
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                padding-top: 20px;
+            }
+            
+            .header h1 {
+                font-size: 20px;
+            }
+            
+            .price {
+                font-size: 28px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>お支払い方法を選択</h1>
+        </div>
+        
+        <div class="price-info">
+            <div class="price">¥2,980</div>
+            <div class="price-note">おつきさま診断 完全版</div>
+        </div>
+        
+        <div class="payment-options">
+            <!-- PayPay -->
+            <div class="payment-option recommended" onclick="selectPayment('paypay')">
+                <div class="recommended-badge">おすすめ</div>
+                <div class="payment-header">
+                    <div class="payment-logo paypay-logo">PayPay</div>
+                    <div class="payment-title">
+                        <div class="payment-name">PayPay</div>
+                        <div class="payment-desc">残高からすぐに支払い</div>
+                    </div>
+                </div>
+                <div class="payment-features">
+                    <span class="feature-tag">🚀 最速決済</span>
+                    <span class="feature-tag">📱 アプリで簡単</span>
+                    <span class="feature-tag">🎁 ポイント還元</span>
+                </div>
+            </div>
+            
+            <!-- クレジットカード・その他 -->
+            <div class="payment-option" onclick="selectPayment('square')">
+                <div class="payment-header">
+                    <div class="payment-logo credit-logo">カード決済</div>
+                    <div class="payment-title">
+                        <div class="payment-name">クレジットカード・その他</div>
+                        <div class="payment-desc">各種カード・デジタルウォレット対応</div>
+                    </div>
+                </div>
+                <div class="payment-features">
+                    <span class="feature-tag">💳 全カード対応</span>
+                    <span class="feature-tag">🍎 Apple Pay</span>
+                    <span class="feature-tag">🤖 Google Pay</span>
+                </div>
+                <div class="payment-methods">
+                    <div class="method-icon">VISA</div>
+                    <div class="method-icon">Master</div>
+                    <div class="method-icon">JCB</div>
+                    <div class="method-icon">AMEX</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="security-note">
+            <p>
+                🔒 全ての決済は暗号化され安全に処理されます<br>
+                決済情報は当社では保持しません
+            </p>
+            <a href="javascript:history.back()" class="back-link">← 前のページへ戻る</a>
+        </div>
+    </div>
+    
+    <!-- ローディング表示 -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-content">
+            <div class="spinner"></div>
+            <div class="loading-text">決済ページへ移動中...</div>
+        </div>
+    </div>
+    
+    <script>
+        // URLパラメータを取得
+        const urlParams = new URLSearchParams(window.location.search);
+        const diagnosisId = urlParams.get('id');
+        const userId = urlParams.get('userId');
+        
+        async function selectPayment(method) {
+            if (!diagnosisId) {
+                alert('診断IDが見つかりません');
+                return;
+            }
+            
+            // ローディング表示
+            document.getElementById('loadingOverlay').style.display = 'flex';
+            
+            try {
+                if (method === 'paypay') {
+                    // PayPay決済APIを呼び出し
+                    const response = await fetch('/api/create-paypay-session', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            diagnosisId: diagnosisId,
+                            userId: userId || ''
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (data.success && data.redirectUrl) {
+                        // PayPay決済ページへリダイレクト
+                        window.location.href = data.redirectUrl;
+                    } else {
+                        throw new Error(data.error || 'PayPay決済の開始に失敗しました');
+                    }
+                    
+                } else if (method === 'square') {
+                    // 既存のStripe決済を呼び出し（後でSquareに変更）
+                    const response = await fetch('/api/create-checkout-session', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            diagnosisId: diagnosisId,
+                            userId: userId || ''
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        // Stripe Checkoutへリダイレクト
+                        if (data.checkoutUrl) {
+                            window.location.href = data.checkoutUrl;
+                        } else {
+                            throw new Error('決済URLの取得に失敗しました');
+                        }
+                    } else {
+                        throw new Error(data.error || '決済の開始に失敗しました');
+                    }
+                }
+                
+            } catch (error) {
+                console.error('決済エラー:', error);
+                alert(error.message || '決済の開始に失敗しました。もう一度お試しください。');
+                document.getElementById('loadingOverlay').style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>

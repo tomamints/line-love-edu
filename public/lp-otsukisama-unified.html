@@ -1309,35 +1309,10 @@
                 const purchaseButton = document.getElementById('purchaseButton');
                 if (purchaseButton) {
                     purchaseButton.addEventListener('click', async () => {
-                        purchaseButton.disabled = true;
-                        purchaseButton.textContent = '処理中...';
-                        
-                        try {
-                            const response = await fetch('/api/create-checkout-session', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json'
-                                },
-                                body: JSON.stringify({
-                                    diagnosisId: diagnosisId,
-                                    userId: window.currentUserId || 'anonymous'
-                                })
-                            });
-                            
-                            const data = await response.json();
-                            
-                            if (data.success && data.checkoutUrl) {
-                                // Stripe決済ページへリダイレクト
-                                window.location.href = data.checkoutUrl;
-                            } else {
-                                throw new Error(data.error || '決済セッションの作成に失敗しました');
-                            }
-                        } catch (error) {
-                            console.error('決済エラー:', error);
-                            alert('決済処理中にエラーが発生しました。もう一度お試しください。');
-                            purchaseButton.disabled = false;
-                            purchaseButton.textContent = '診断結果を購入する';
-                        }
+                        // 決済選択画面へリダイレクト
+                        const diagnosisId = urlParams.get('id');
+                        const userId = urlParams.get('userId');
+                        window.location.href = `/payment-select.html?id=${diagnosisId}&userId=${userId || ''}`;
                     });
                 }
                 
