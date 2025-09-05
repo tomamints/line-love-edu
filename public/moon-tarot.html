@@ -638,84 +638,63 @@
         </div>
     </div>
 
-    <!-- LIFF SDK -->
-    <script src="https://static.line-scdn.net/liff/edge/versions/2.22.0/sdk.js"></script>
-    
+    <!-- moon-tarot.js -->
     <script src="moon-tarot.js"></script>
     <script>
         // ユーザーIDを保持
         window.currentUserId = null;
         window.isLiffUser = false;
         
-        // LIFF初期化とユーザー認証
+        // LINE内ブラウザチェックとユーザー認証（LIFF不要版）
         async function initializeLiff() {
-            try {
-                console.log('LIFF初期化開始...');
-                
-                // デバッグモード: LIFF認証をスキップ
-                const urlParams = new URLSearchParams(window.location.search);
-                const debugMode = urlParams.get('debug') === 'true';
-                
-                if (debugMode) {
-                    console.log('デバッグモード: LIFF認証をスキップ');
-                    window.currentUserId = `debug_user_${Date.now()}`;
-                    window.isLiffUser = true;
-                    return true;
-                }
-                
-                // LINEアプリ内だがLIFFじゃない場合、LIFF URLにリダイレクト
-                const userAgent = navigator.userAgent;
-                if (userAgent.includes('Line') && typeof liff !== 'undefined' && !liff.isInClient()) {
-                    console.log('LINEアプリ内からLIFF URLへリダイレクト');
-                    window.location.href = 'https://liff.line.me/2004862789-oR44Q1nq?path=moon-tarot.html';
-                    return false;
-                }
-                
-                // LIFFが存在しない場合のチェック
-                if (typeof liff === 'undefined') {
-                    console.error('LIFF SDKが読み込まれていません');
-                    // LINE外からのアクセス
-                    showAuthRequired();
-                    return false;
-                }
-                
-                // LIFF初期化
-                await liff.init({ 
-                    liffId: '2004862789-oR44Q1nq'
-                });
-                
-                console.log('LIFF初期化完了、ログイン状態:', liff.isLoggedIn());
-                
-                if (!liff.isLoggedIn() && !liff.isInClient()) {
-                    // LINEからアクセスしていない場合
-                    console.log('LINE認証が必要です');
-                    showAuthRequired();
-                    return false;
-                }
-                
-                // プロフィール取得
-                const profile = await liff.getProfile();
-                window.currentUserId = `line_${profile.userId}`;
+            console.log('認証チェック開始...');
+            
+            // デバッグモード: 認証をスキップ
+            const urlParams = new URLSearchParams(window.location.search);
+            const debugMode = urlParams.get('debug') === 'true';
+            
+            if (debugMode) {
+                console.log('デバッグモード: 認証をスキップ');
+                window.currentUserId = `debug_user_${Date.now()}`;
                 window.isLiffUser = true;
-                console.log('LINE認証成功:', window.currentUserId);
                 return true;
-                
-            } catch (error) {
-                console.error('LIFF初期化エラー:', error);
-                // LINEアプリ内かチェック
-                const userAgent = navigator.userAgent.toLowerCase();
-                if (userAgent.includes('line')) {
-                    // LINE内だがLIFF初期化失敗 -> 仮IDで続行
-                    console.log('LINE内ブラウザ: 仮IDで続行');
-                    window.currentUserId = `line_temp_${Date.now()}`;
-                    window.isLiffUser = true;
-                    return true;
-                } else {
-                    // LINE外からのアクセス
-                    showAuthRequired();
-                    return false;
-                }
             }
+            
+            // LINE内ブラウザかチェック（User-Agentで判定）
+            const userAgent = navigator.userAgent.toLowerCase();
+            const isLineApp = userAgent.includes('line');
+            
+            if (!isLineApp) {
+                // LINE外からのアクセス -> LINE登録画面へ誘導
+                console.log('LINE外からのアクセスを検出');
+                showAuthRequired();
+                return false;
+            }
+            
+            // LINE内ブラウザからのアクセス
+            console.log('LINE内ブラウザからのアクセス確認');
+            
+            // URLパラメータからユーザーIDを取得（可能な場合）
+            const userId = urlParams.get('userId');
+            if (userId) {
+                window.currentUserId = `line_${userId}`;
+            } else {
+                // ユーザーIDが取得できない場合は、タイムスタンプベースの一意IDを生成
+                // LocalStorageに保存して同じユーザーには同じIDを使用
+                const storageKey = 'moon_tarot_user_id';
+                let storedId = localStorage.getItem(storageKey);
+                
+                if (!storedId) {
+                    storedId = `line_user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+                    localStorage.setItem(storageKey, storedId);
+                }
+                
+                window.currentUserId = storedId;
+            }
+            
+            window.isLiffUser = true;
+            console.log('LINE認証成功（簡易版）:', window.currentUserId);
+            return true;
         }
         
         // 認証必要画面を表示
