@@ -200,8 +200,9 @@ const moonPhaseCards = ['newMoon', 'crescentMoon', 'firstQuarter', 'waxingGibbou
 const moonMysteryCards = ['moonlight', 'moonShadow', 'moonTears', 'moonSmile', 'eclipse', 'superMoon', 'blueMoon', 'moonMirror', 'bloodMoon'];
 
 // グローバル変数
-let currentSpread = null;
-let selectedCards = [];
+window.window.currentSpread = null;
+window.window.selectedCards = [];
+window.drawnCards = [];
 let isDrawing = false;
 let imagesPreloaded = false;
 
@@ -268,7 +269,7 @@ function preloadImages() {
 
 // 占い方法を選択
 async function selectSpread(type) {
-    currentSpread = type;
+    window.currentSpread = type;
     
     // 月詠風のローディング表示（プログレスバー付き）
     document.getElementById('spreadSelection').innerHTML = `
@@ -372,23 +373,26 @@ async function drawCards() {
     if (isDrawing) return;
     isDrawing = true;
     
-    selectedCards = [];
+    window.selectedCards = [];
     
     // カードをランダムに選択
     const allCards = Object.values(moonTarotCards);
     const usedIndices = new Set();
-    const cardCount = currentSpread === 'daily' ? 1 : 3;
+    const cardCount = window.currentSpread === 'daily' ? 1 : 3;
     
-    while (selectedCards.length < cardCount) {
+    while (window.selectedCards.length < cardCount) {
         const randomIndex = Math.floor(Math.random() * allCards.length);
         if (!usedIndices.has(randomIndex)) {
             usedIndices.add(randomIndex);
-            selectedCards.push(allCards[randomIndex]);
+            window.selectedCards.push(allCards[randomIndex]);
         }
     }
     
+    // drawnCardsにもコピー（API用）
+    window.drawnCards = [...window.selectedCards];
+    
     // 選択されたカードの画像を事前に読み込む
-    const preloadPromises = selectedCards.map(card => {
+    const preloadPromises = window.selectedCards.map(card => {
         if (card.image) {
             return new Promise(resolve => {
                 const img = new Image();
@@ -413,12 +417,12 @@ async function drawCards() {
             const name = frontFace.querySelector('.card-name');
             
             // 画像を背景として設定（WebP対応）
-            if (selectedCards[index].image) {
-                frontFace.style.backgroundImage = `url('${getImagePath(selectedCards[index].image)}')`;
+            if (window.selectedCards[index].image) {
+                frontFace.style.backgroundImage = `url('${getImagePath(window.selectedCards[index].image)}')`;
             }
             
-            emoji.textContent = selectedCards[index].emoji;
-            name.textContent = selectedCards[index].name;
+            emoji.textContent = window.selectedCards[index].emoji;
+            name.textContent = window.selectedCards[index].name;
             
             // 最後のカードがめくられたら結果を表示
             if (index === cards.length - 1) {
@@ -439,9 +443,9 @@ function showResult() {
     const resultCards = document.getElementById('resultCards');
     
     // タイトルを設定
-    if (currentSpread === 'daily') {
+    if (window.currentSpread === 'daily') {
         resultTitle.textContent = '今日のあなたへのメッセージ';
-    } else if (currentSpread === 'three') {
+    } else if (window.currentSpread === 'three') {
         resultTitle.textContent = '過去・現在・未来の物語';
     } else {
         resultTitle.textContent = '満月が照らす恋愛の全貌';
@@ -450,11 +454,11 @@ function showResult() {
     // 結果カードを表示
     resultCards.innerHTML = '';
     
-    selectedCards.forEach((card, index) => {
+    window.selectedCards.forEach((card, index) => {
         let positionLabel = '';
-        if (currentSpread === 'three') {
+        if (window.currentSpread === 'three') {
             positionLabel = ['過去', '現在', '未来'][index] + '：';
-        } else if (currentSpread === 'full') {
+        } else if (window.currentSpread === 'full') {
             positionLabel = ['現在の状況', '相手の気持ち', 'これからの展開'][index] + '：';
         }
         
@@ -484,7 +488,7 @@ function showResult() {
     });
     
     // 総合メッセージを追加（複数枚の場合）
-    if (selectedCards.length > 1) {
+    if (window.selectedCards.length > 1) {
         const overallMessage = createOverallMessage();
         const overallDiv = document.createElement('div');
         overallDiv.className = 'result-card';
@@ -506,15 +510,15 @@ function showResult() {
 
 // 総合メッセージを作成
 function createOverallMessage() {
-    if (currentSpread === 'three') {
-        return `過去の${selectedCards[0].name}が教えてくれるのは、${selectedCards[0].keywords[0]}の大切さ。
-                現在の${selectedCards[1].name}は、今まさに${selectedCards[1].keywords[0]}の時期であることを示しています。
-                そして未来の${selectedCards[2].name}は、${selectedCards[2].keywords[0]}への道筋を照らしています。
+    if (window.currentSpread === 'three') {
+        return `過去の${window.selectedCards[0].name}が教えてくれるのは、${window.selectedCards[0].keywords[0]}の大切さ。
+                現在の${window.selectedCards[1].name}は、今まさに${window.selectedCards[1].keywords[0]}の時期であることを示しています。
+                そして未来の${window.selectedCards[2].name}は、${window.selectedCards[2].keywords[0]}への道筋を照らしています。
                 月の導きに従い、自然な流れに身を任せましょう。`;
-    } else if (currentSpread === 'full') {
-        return `現在の状況を表す${selectedCards[0].name}は、${selectedCards[0].keywords[0]}のエネルギーに満ちています。
-                相手の気持ちを示す${selectedCards[1].name}からは、${selectedCards[1].keywords[0]}の想いが読み取れます。
-                そしてこれからの展開を示す${selectedCards[2].name}は、${selectedCards[2].keywords[0]}へと向かうことを暗示しています。
+    } else if (window.currentSpread === 'full') {
+        return `現在の状況を表す${window.selectedCards[0].name}は、${window.selectedCards[0].keywords[0]}のエネルギーに満ちています。
+                相手の気持ちを示す${window.selectedCards[1].name}からは、${window.selectedCards[1].keywords[0]}の想いが読み取れます。
+                そしてこれからの展開を示す${window.selectedCards[2].name}は、${window.selectedCards[2].keywords[0]}へと向かうことを暗示しています。
                 月はあなたの恋を優しく照らし、導いてくれるでしょう。`;
     }
     return '';
@@ -522,8 +526,8 @@ function createOverallMessage() {
 
 // リセット
 function reset() {
-    currentSpread = null;
-    selectedCards = [];
+    window.currentSpread = null;
+    window.selectedCards = [];
     isDrawing = false;
     
     // 選択画面のHTMLを復元
@@ -555,23 +559,23 @@ function reset() {
 
 // 結果をシェア
 function shareResult() {
-    if (selectedCards.length === 0) return;
+    if (window.selectedCards.length === 0) return;
     
     let shareText = '🌙 月タロット占いの結果 🌙\n\n';
     
-    if (currentSpread === 'daily') {
-        shareText += `今日の月カード: ${selectedCards[0].name}\n`;
-        shareText += `${selectedCards[0].meaning}\n\n`;
-    } else if (currentSpread === 'three') {
+    if (window.currentSpread === 'daily') {
+        shareText += `今日の月カード: ${window.selectedCards[0].name}\n`;
+        shareText += `${window.selectedCards[0].meaning}\n\n`;
+    } else if (window.currentSpread === 'three') {
         shareText += '月の三相占い\n';
-        shareText += `過去: ${selectedCards[0].name}\n`;
-        shareText += `現在: ${selectedCards[1].name}\n`;
-        shareText += `未来: ${selectedCards[2].name}\n\n`;
-    } else if (currentSpread === 'full') {
+        shareText += `過去: ${window.selectedCards[0].name}\n`;
+        shareText += `現在: ${window.selectedCards[1].name}\n`;
+        shareText += `未来: ${window.selectedCards[2].name}\n\n`;
+    } else if (window.currentSpread === 'full') {
         shareText += '満月の恋愛占い\n';
-        shareText += `現在の状況: ${selectedCards[0].name}\n`;
-        shareText += `相手の気持ち: ${selectedCards[1].name}\n`;
-        shareText += `これからの展開: ${selectedCards[2].name}\n\n`;
+        shareText += `現在の状況: ${window.selectedCards[0].name}\n`;
+        shareText += `相手の気持ち: ${window.selectedCards[1].name}\n`;
+        shareText += `これからの展開: ${window.selectedCards[2].name}\n\n`;
     }
     
     shareText += '月が導くあなたの恋愛運を占ってみませんか？\n';
