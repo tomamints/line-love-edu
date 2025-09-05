@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>月タロット占い - 月が導く恋愛の行方</title>
+    <title>月タロット占い【管理者用】 - 無制限版</title>
     <meta name="description" content="月の満ち欠けとタロットカードを組み合わせた神秘的な恋愛占い。今日のあなたの恋愛運を月のカードが教えます。">
     
     <!-- OGP設定 -->
     <meta property="og:title" content="月タロット占い 🌙 月が導く恋愛の行方">
     <meta property="og:description" content="月の満ち欠けとタロットカードを組み合わせた神秘的な恋愛占い。今日のあなたの恋愛運を月のカードが教えます。">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://line-love-edu.vercel.app/moon-tarot.html">
+    <meta property="og:url" content="https://line-love-edu.vercel.app/moon-tarot-admin.html">
     <meta property="og:image" content="https://line-love-edu.vercel.app/images/moon-tarot-ogp.png">
     <meta property="og:image:secure_url" content="https://line-love-edu.vercel.app/images/moon-tarot-ogp.png">
     <meta property="og:image:type" content="image/png">
@@ -638,136 +638,8 @@
         </div>
     </div>
 
-    <!-- LIFF SDK -->
-    <script src="https://static.line-scdn.net/liff/edge/versions/2.22.0/sdk.js"></script>
-    
     <script src="moon-tarot.js"></script>
     <script>
-        // ユーザーIDを保持
-        let currentUserId = null;
-        let isLiffUser = false;
-        
-        // LIFF初期化とユーザー認証
-        async function initializeLiff() {
-            try {
-                // LIFF初期化
-                await liff.init({ 
-                    liffId: '2004862789-oR44Q1nq'
-                });
-                
-                if (!liff.isLoggedIn()) {
-                    // LINEからアクセスしていない場合
-                    showAuthRequired();
-                    return false;
-                }
-                
-                // プロフィール取得
-                const profile = await liff.getProfile();
-                currentUserId = `line_${profile.userId}`;
-                isLiffUser = true;
-                console.log('LINE認証成功:', currentUserId);
-                return true;
-                
-            } catch (error) {
-                console.error('LIFF初期化エラー:', error);
-                showAuthRequired();
-                return false;
-            }
-        }
-        
-        // 認証必要画面を表示
-        function showAuthRequired() {
-            document.getElementById('spreadSelection').innerHTML = `
-                <div style="text-align: center; padding: 40px;">
-                    <div style="font-size: 48px; margin-bottom: 20px;">🔒</div>
-                    <h2 style="color: #ffd700; margin-bottom: 15px;">LINEからアクセスしてください</h2>
-                    <p style="color: rgba(255,255,255,0.8); margin-bottom: 30px;">
-                        この占いは1日1回限定の特別な占いです。<br>
-                        LINE公式アカウントからアクセスしてご利用ください。
-                    </p>
-                    <a href="https://lin.ee/egmCXoG" 
-                       target="_blank"
-                       style="display: inline-block; background: linear-gradient(135deg, #00b900 0%, #00a000 100%); 
-                              color: white; padding: 15px 40px; border-radius: 25px; text-decoration: none; 
-                              font-weight: bold; font-size: 16px; box-shadow: 0 4px 15px rgba(0,185,0,0.3);">
-                        LINE友だち追加して占う
-                    </a>
-                </div>
-            `;
-            document.getElementById('cardArea').style.display = 'none';
-            document.getElementById('resultArea').style.display = 'none';
-        }
-        
-        // 占い選択時の権限チェック
-        const originalSelectSpread = window.selectSpread;
-        window.selectSpread = async function(type) {
-            if (!isLiffUser) {
-                showAuthRequired();
-                return;
-            }
-            
-            // 使用権限をチェック
-            try {
-                const response = await fetch('/api/tarot-permission', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        action: 'check',
-                        userId: currentUserId,
-                        tarotType: type
-                    })
-                });
-                
-                const result = await response.json();
-                
-                if (!result.available) {
-                    // 使用済みの場合
-                    alert(result.message || '本日分の占いは既に使用済みです。明日またお試しください！');
-                    return;
-                }
-                
-                // 権限がある場合は通常の処理を実行
-                originalSelectSpread(type);
-                
-            } catch (error) {
-                console.error('権限チェックエラー:', error);
-                // エラーの場合も続行（サーバーエラー時は制限なしで使えるように）
-                originalSelectSpread(type);
-            }
-        };
-        
-        // カード引いた後の処理を拡張
-        const originalDrawCards = window.drawCards;
-        window.drawCards = async function() {
-            // 元の処理を実行
-            originalDrawCards();
-            
-            // 結果を取得して権限を消費
-            if (isLiffUser && window.currentSpread) {
-                setTimeout(async () => {
-                    try {
-                        await fetch('/api/tarot-permission', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                                action: 'use',
-                                userId: currentUserId,
-                                tarotType: window.currentSpread,
-                                cardData: {
-                                    name: window.drawnCards ? window.drawnCards[0]?.name : 'unknown',
-                                    position: 'upright',
-                                    result: {}
-                                }
-                            })
-                        });
-                        console.log('占い使用記録を保存しました');
-                    } catch (error) {
-                        console.error('使用記録エラー:', error);
-                    }
-                }, 1000);
-            }
-        };
-        
         // 星空の生成
         function createStars() {
             const starsContainer = document.getElementById('stars');
@@ -784,12 +656,8 @@
         }
         createStars();
         
-        // ページ読み込み時の処理
-        window.addEventListener('load', async () => {
-            // LIFF初期化
-            await initializeLiff();
-            
-            // 画像プリロード
+        // ページ読み込み時に画像をプリロード
+        window.addEventListener('load', () => {
             preloadImages().then(() => {
                 console.log('初期画像プリロード完了');
             });
