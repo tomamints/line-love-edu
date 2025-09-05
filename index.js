@@ -2089,6 +2089,37 @@ async function handlePostbackEvent(event) {
   
   const userId = event.source.userId;
   
+  // タロット占いへのアクセス
+  if (event.postback.data === 'action=tarot') {
+    logger.log('🔮 タロット占いへのアクセス要求:', userId);
+    
+    // ユーザーIDを含むURLを生成
+    const tarotUrl = `${process.env.BASE_URL || 'https://line-love-edu.vercel.app'}/moon-tarot.html?userId=${userId}`;
+    
+    return client.replyMessage(event.replyToken, [
+      {
+        type: 'text',
+        text: '✨ 月タロット占いへようこそ！\n\n月の満ち欠けとタロットカードがあなたの恋愛運を導きます。'
+      },
+      {
+        type: 'text',
+        text: `下のボタンから占いを始めてください：\n${tarotUrl}`,
+        quickReply: {
+          items: [
+            {
+              type: 'action',
+              action: {
+                type: 'uri',
+                label: '🔮 タロット占いを始める',
+                uri: tarotUrl
+              }
+            }
+          ]
+        }
+      }
+    ]);
+  }
+  
   // postback処理（日付選択と性別選択）
   if (event.postback.data.startsWith('action=')) {
     const params = new URLSearchParams(event.postback.data);
