@@ -124,6 +124,12 @@ app.get('/api/get-love-profile', async (req, res) => {
   await getLoveProfile(req, res);
 });
 
+// タロット権限管理API
+app.post('/api/tarot-permission', async (req, res) => {
+  const tarotPermission = require('./api/tarot-permission');
+  await tarotPermission(req, res);
+});
+
 // ── ③ 重複防止
 const recentMessageIds = new Set();
 const recentPostbackIds = new Set();
