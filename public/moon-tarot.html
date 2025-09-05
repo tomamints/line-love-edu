@@ -660,22 +660,22 @@
                 return true;
             }
             
+            // URLパラメータからユーザーIDを取得
+            const userId = urlParams.get('userId');
+            
             // LINE内ブラウザかチェック（User-Agentで判定）
             const userAgent = navigator.userAgent.toLowerCase();
             const isLineApp = userAgent.includes('line');
             
-            if (!isLineApp) {
-                // LINE外からのアクセス -> LINE登録画面へ誘導
-                console.log('LINE外からのアクセスを検出');
+            // URLにuserIdがある場合、またはLINE内ブラウザの場合は認証OK
+            if (!isLineApp && !userId) {
+                // LINE外からのアクセスかつuserIdもない -> LINE登録画面へ誘導
+                console.log('LINE外からのアクセスを検出（userIdなし）');
                 showAuthRequired();
                 return false;
             }
             
-            // LINE内ブラウザからのアクセス
-            console.log('LINE内ブラウザからのアクセス確認');
-            
-            // URLパラメータからユーザーIDを取得（可能な場合）
-            const userId = urlParams.get('userId');
+            // LINE内ブラウザからのアクセス、またはuserIdがある場合
             if (userId) {
                 // URLにuserIdがある場合は、それをそのまま使用（profilesテーブルと一致させるため）
                 window.currentUserId = userId;
@@ -728,7 +728,10 @@
             document.getElementById('resultArea').style.display = 'none';
         }
         
-        // 占い選択時の権限チェック
+        // 権限チェックのキャッシュ
+        window.permissionCache = {};
+        
+        // 占い選択時の権限チェック（高速化版）
         const originalSelectSpread = window.selectSpread;
         window.selectSpread = async function(type) {
             if (!window.isLiffUser) {
@@ -736,35 +739,45 @@
                 return;
             }
             
-            // 使用権限をチェック
-            try {
-                const response = await fetch('/api/tarot-permission', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        action: 'check',
-                        userId: window.currentUserId,
-                        tarotType: type
-                    })
-                });
-                
-                const result = await response.json();
+            // まず即座に画面遷移を実行（UXの改善）
+            originalSelectSpread(type);
+            
+            // バックグラウンドで権限チェック（非同期）
+            const cacheKey = `${window.currentUserId}_${type}`;
+            
+            // キャッシュがある場合はAPIコールをスキップ
+            if (window.permissionCache[cacheKey]) {
+                console.log('権限チェック済み（キャッシュ使用）');
+                return;
+            }
+            
+            // バックグラウンドで権限チェック
+            fetch('/api/tarot-permission', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    action: 'check',
+                    userId: window.currentUserId,
+                    tarotType: type
+                })
+            }).then(response => response.json())
+              .then(result => {
+                // キャッシュに保存
+                window.permissionCache[cacheKey] = result.available;
                 
                 if (!result.available) {
-                    // 使用済みの場合
-                    alert(result.message || '本日分の占いは既に使用済みです。明日またお試しください！');
-                    return;
+                    // 使用済みの場合は次回から警告を表示
+                    setTimeout(() => {
+                        alert(result.message || '本日分の占いは既に使用済みです。明日またお試しください！');
+                        // 選択画面に戻す
+                        location.reload();
+                    }, 100);
                 }
-                
-                // 権限がある場合は通常の処理を実行
-                originalSelectSpread(type);
-                
-            } catch (error) {
+            }).catch(error => {
                 console.error('権限チェックエラー:', error);
-                // データベース未設定の場合は制限なしで使えるように
-                console.log('権限チェックをスキップ（データベースエラーのため）');
-                originalSelectSpread(type);
-            }
+                // エラーの場合は制限なしで使える
+                window.permissionCache[cacheKey] = true;
+            });
         };
         
         // カード引いた後の処理を拡張
