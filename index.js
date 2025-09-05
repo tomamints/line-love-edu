@@ -88,7 +88,7 @@ app.use('/api', express.urlencoded({ extended: true }));
 
 // 古いエンドポイントは削除（新しいフローを使用）
 
-// プロフィールフォーム（旧バージョン - 互換性のため残す）
+// プロフィールフォーム（旧バージョン - V2にリダイレクト）
 app.all('/api/profile-form', async (req, res) => {
   const profileForm = require('./api/profile-form');
   await profileForm(req, res);
@@ -112,10 +112,23 @@ app.post('/api/payment-webhook-v2', express.raw({ type: 'application/json' }), a
   await paymentWebhook(req, res);
 });
 
-// プロフィール保存成功ページ
+// プロフィール保存成功ページ（廃止 - 直接HTMLを返す）
 app.get('/api/profile-form-success', async (req, res) => {
-  const successPage = require('./api/profile-form-success');
-  await successPage(req, res);
+  res.send(`
+    <!DOCTYPE html>
+    <html lang="ja">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>保存完了</title>
+    </head>
+    <body>
+      <h1>プロフィール保存完了</h1>
+      <p>プロフィールが正常に保存されました。</p>
+      <p>LINEアプリに戻ってご利用ください。</p>
+    </body>
+    </html>
+  `);
 });
 
 // プロファイル取得API
