@@ -580,32 +580,32 @@
                 <!-- 直近3ヶ月全体運バナー -->
                 <img src="/images/banner/7-unmei.png" alt="直近3ヶ月の運命" style="max-width: 100%; height: auto; margin: 15px 0 5px;">
                 
-                <!-- 運勢グラフセクション -->
-                <div class="fortune-graph-section" style="margin: 40px 0;">
-                    <div style="background: linear-gradient(135deg, rgba(20, 10, 50, 0.95), rgba(40, 20, 70, 0.95)); padding: 20px 15px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.3);">
-                        <h4 style="color: #ffd700; margin-bottom: 20px; text-align: center; font-size: 24px; font-weight: bold; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">
-                            3ヶ月の運勢推移グラフ
-                        </h4>
-                        <div class="content-locked-mini">
-                            <div class="text-blur">
-                                <div style="background: rgba(0, 0, 0, 0.2); border-radius: 10px; padding: 10px; position: relative;">
-                                    <div style="height: 420px;">
-                                        <canvas id="fortuneChart"></canvas>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="lock-overlay-mini">
-                                <button class="purchase-button-mini" onclick="scrollToPayment()">🔒 購入する</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
                 <!-- 直近3ヶ月全体運 -->
                 <div class="fortune-section destiny">
                     <div class="section-header">
                         <h2 class="rhythm-heading" id="fortune-overall-title">未決定</h2>
                         <p id="fortune-overall-intro"></p>
+                    </div>
+                    
+                    <!-- 運勢グラフセクション（overall内に移動） -->
+                    <div class="fortune-graph-section" style="margin: 30px 0;">
+                        <div style="background: linear-gradient(135deg, rgba(20, 10, 50, 0.95), rgba(40, 20, 70, 0.95)); padding: 20px 15px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.3);">
+                            <h4 style="color: #ffd700; margin-bottom: 20px; text-align: center; font-size: 24px; font-weight: bold; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">
+                                3ヶ月の運勢推移グラフ
+                            </h4>
+                            <div class="content-locked-mini">
+                                <div class="text-blur">
+                                    <div style="background: rgba(0, 0, 0, 0.2); border-radius: 10px; padding: 10px; position: relative;">
+                                        <div style="height: 420px;">
+                                            <canvas id="fortuneChart"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="lock-overlay-mini">
+                                    <button class="purchase-button-mini" onclick="scrollToPayment()">🔒 購入する</button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     
                     <div class="fortune-content">
@@ -622,42 +622,7 @@
                             </div>
                         </div>
                         
-                        <div class="content-locked-mini">
-                            <div class="text-blur">
-                                <div class="monthly-sections">
-                                    <div class="month-box">
-                                        <img src="/images/banner/overall-1month.png" alt="1ヶ月目" class="month-banner-small">
-                                        <h3>未決定</h3>
-                                        <p>未決定</p>
-                                    </div>
-                                    <div class="month-box">
-                                        <img src="/images/banner/overall-2month.png" alt="2ヶ月目" class="month-banner-small">
-                                        <h3>未決定</h3>
-                                        <p>未決定</p>
-                                    </div>
-                                    <div class="month-box">
-                                        <img src="/images/banner/overall-3month.png" alt="3ヶ月目" class="month-banner-small">
-                                        <h3>未決定</h3>
-                                        <p>未決定</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="lock-overlay-mini">
-                                <button class="purchase-button-mini" onclick="scrollToPayment()">🔒 購入する</button>
-                            </div>
-                        </div>
-                        
-                        <div class="content-locked-mini">
-                            <div class="text-blur">
-                                <div class="point-box">
-                                    <strong>⚠️ 注意ポイント</strong>
-                                    <p></p>
-                                </div>
-                            </div>
-                            <div class="lock-overlay-mini">
-                                <button class="purchase-button-mini" onclick="scrollToPayment()">🔒 購入する</button>
-                            </div>
-                        </div>
+                        <!-- 1ヶ月目・2ヶ月目の展開と注意ポイントを削除 -->
                     </div>
                 </div>
                 
@@ -781,17 +746,7 @@
                                 </div>
                             </div>
                             
-                            <div class="content-locked-mini">
-                                <div class="text-blur">
-                                    <div class="point-box">
-                                        <strong>⚠️ 恋愛の注意ポイント</strong>
-                                        <p></p>
-                                    </div>
-                                </div>
-                                <div class="lock-overlay-mini">
-                                    <button class="purchase-button-mini" onclick="scrollToPayment()">🔒 購入する</button>
-                                </div>
-                            </div>
+                            <!-- 恋愛の注意ポイントを削除 -->
                         </div>
                     </div>
                 </div>
@@ -853,17 +808,7 @@
                                 </div>
                             </div>
                             
-                            <div class="content-locked-mini">
-                                <div class="text-blur">
-                                    <div class="point-box">
-                                        <strong>⚠️ 人間関係の注意ポイント</strong>
-                                        <p></p>
-                                    </div>
-                                </div>
-                                <div class="lock-overlay-mini">
-                                    <button class="purchase-button-mini" onclick="scrollToPayment()">🔒 購入する</button>
-                                </div>
-                            </div>
+                            <!-- 人間関係の注意ポイントを削除 -->
                         </div>
                     </div>
                 </div>
@@ -925,17 +870,7 @@
                                 </div>
                             </div>
                             
-                            <div class="content-locked-mini">
-                                <div class="text-blur">
-                                    <div class="point-box">
-                                        <strong>⚠️ 仕事の注意ポイント</strong>
-                                        <p></p>
-                                    </div>
-                                </div>
-                                <div class="lock-overlay-mini">
-                                    <button class="purchase-button-mini" onclick="scrollToPayment()">🔒 購入する</button>
-                                </div>
-                            </div>
+                            <!-- 仕事の注意ポイントを削除 -->
                         </div>
                     </div>
                 </div>
