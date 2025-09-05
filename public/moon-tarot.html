@@ -664,8 +664,11 @@
             const userId = urlParams.get('userId');
             
             // LINE内ブラウザかチェック（User-Agentで判定）
-            const userAgent = navigator.userAgent.toLowerCase();
-            const isLineApp = userAgent.includes('line');
+            const userAgent = navigator.userAgent || '';
+            const isLineApp = /Line\/\d+/i.test(userAgent) || userAgent.toLowerCase().includes('line');
+            
+            console.log('User-Agent:', userAgent);
+            console.log('LINE判定:', isLineApp, 'userId:', userId);
             
             // URLにuserIdがある場合、またはLINE内ブラウザの場合は認証OK
             if (!isLineApp && !userId) {

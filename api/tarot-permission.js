@@ -20,6 +20,14 @@ function getTodayJST() {
     return jstTime.toISOString().split('T')[0]; // YYYY-MM-DD形式
 }
 
+// 日本時間でのタイムスタンプを取得
+function getJSTTimestamp() {
+    const now = new Date();
+    const jstOffset = 9 * 60; // JST is UTC+9
+    const jstTime = new Date(now.getTime() + (jstOffset - now.getTimezoneOffset()) * 60000);
+    return jstTime.toISOString();
+}
+
 module.exports = async function handler(req, res) {
     // CORSヘッダー設定
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -106,8 +114,8 @@ module.exports = async function handler(req, res) {
                         tarot_type: tarotType,
                         granted_date: today,
                         used: true,
-                        used_at: new Date().toISOString(),
-                        updated_at: new Date().toISOString()
+                        used_at: getJSTTimestamp(),
+                        updated_at: getJSTTimestamp()
                     }, {
                         onConflict: 'user_id,tarot_type,granted_date'
                     });
