@@ -696,8 +696,8 @@
                 // プロフィール取得
                 const profile = await liff.getProfile();
                 window.currentUserId = `line_${profile.userId}`;
-                isLiffUser = true;
-                console.log('LINE認証成功:', currentUserId);
+                window.isLiffUser = true;
+                console.log('LINE認証成功:', window.currentUserId);
                 return true;
                 
             } catch (error) {
@@ -744,7 +744,7 @@
         // 占い選択時の権限チェック
         const originalSelectSpread = window.selectSpread;
         window.selectSpread = async function(type) {
-            if (!isLiffUser) {
+            if (!window.isLiffUser) {
                 showAuthRequired();
                 return;
             }
