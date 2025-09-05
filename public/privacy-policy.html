@@ -83,13 +83,11 @@
             box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
         }
         
-        .footer {
-            margin-top: 50px;
-            padding-top: 30px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        footer {
+            background: linear-gradient(135deg, #0a001a 0%, #1a0033 100%);
+            padding: 40px 20px 20px;
+            margin: 60px -40px -40px;
             text-align: center;
-            font-size: 12px;
-            opacity: 0.7;
         }
         
         @media (max-width: 600px) {
@@ -217,11 +215,71 @@
             </div>
         </div>
         
-        <div class="footer">
-            <a href="javascript:history.back()" class="back-link">前のページへ戻る</a>
-            <p style="margin-top: 20px;">© 2025 おつきさま診断. All rights reserved.</p>
-            <p style="margin-top: 10px;">制定日：2025年1月5日</p>
+    </div>
+    
+    <!-- フッターセクション -->
+    <footer>
+        <div style="max-width: 600px; margin: 0 auto;">
+            <!-- 注意事項 -->
+            <div style="
+                margin-bottom: 30px;
+                padding: 20px;
+                background: rgba(255, 255, 255, 0.05);
+                border-radius: 10px;
+                border: 1px solid rgba(255, 215, 0, 0.1);
+            ">
+                <p style="
+                    color: rgba(255, 255, 255, 0.8);
+                    font-size: 11px;
+                    line-height: 1.6;
+                    text-align: left;
+                ">
+                    ※ 本サービスは占い・エンターテインメントを目的としたものです<br>
+                    ※ 診断結果は参考程度にお楽しみください<br>
+                    ※ 個人情報は適切に管理し、第三者に提供することはありません
+                </p>
+            </div>
+            
+            <!-- リンク集 -->
+            <div style="
+                margin-bottom: 20px;
+                display: flex;
+                justify-content: center;
+                gap: 20px;
+                flex-wrap: wrap;
+            ">
+                <a href="javascript:history.back()" style="
+                    color: #ffd700;
+                    text-decoration: none;
+                    font-size: 12px;
+                    opacity: 0.8;
+                    transition: opacity 0.3s;
+                " onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.8'">
+                    前のページへ戻る
+                </a>
+                <a href="/tokusho.html" style="
+                    color: #ffd700;
+                    text-decoration: none;
+                    font-size: 12px;
+                    opacity: 0.8;
+                    transition: opacity 0.3s;
+                " onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.8'">
+                    特定商取引法に基づく表記
+                </a>
+            </div>
+            
+            <!-- コピーライト -->
+            <div style="
+                padding-top: 15px;
+                border-top: 1px solid rgba(255, 255, 255, 0.1);
+                color: rgba(255, 255, 255, 0.4);
+                font-size: 10px;
+            ">
+                <p>© 2025 おつきさま診断 | MiNTs株式会社</p>
+                <p style="margin-top: 5px;">制定日：2025年1月5日</p>
+            </div>
         </div>
+    </footer>
     </div>
 </body>
 </html>
