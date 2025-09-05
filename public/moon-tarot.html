@@ -650,12 +650,19 @@
         // LIFF初期化とユーザー認証
         async function initializeLiff() {
             try {
+                // LINEアプリ内だがLIFFじゃない場合、LIFF URLにリダイレクト
+                const userAgent = navigator.userAgent;
+                if (userAgent.includes('Line') && !liff.isInClient()) {
+                    window.location.href = 'https://liff.line.me/2004862789-oR44Q1nq?path=moon-tarot.html';
+                    return false;
+                }
+                
                 // LIFF初期化
                 await liff.init({ 
                     liffId: '2004862789-oR44Q1nq'
                 });
                 
-                if (!liff.isLoggedIn()) {
+                if (!liff.isLoggedIn() && !liff.isInClient()) {
                     // LINEからアクセスしていない場合
                     showAuthRequired();
                     return false;
