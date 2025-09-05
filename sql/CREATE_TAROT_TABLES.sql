@@ -7,10 +7,11 @@ CREATE TABLE IF NOT EXISTS public.tarot_usage (
     card_drawn VARCHAR(100), -- 引いたカードの名前
     card_position VARCHAR(50), -- 'upright', 'reversed'
     result_data JSONB, -- 占い結果の詳細データ
+    used_date DATE DEFAULT (CURRENT_DATE AT TIME ZONE 'Asia/Tokyo'), -- 使用日（日本時間）
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     
-    -- インデックス
-    CONSTRAINT idx_unique_daily_usage UNIQUE (user_id, tarot_type, DATE(used_at AT TIME ZONE 'Asia/Tokyo'))
+    -- 1日1回の制限
+    CONSTRAINT idx_unique_daily_usage UNIQUE (user_id, tarot_type, used_date)
 );
 
 -- タロット使用権限テーブル（1日1回の制限管理）
@@ -30,7 +31,7 @@ CREATE TABLE IF NOT EXISTS public.tarot_permissions (
 
 -- インデックスを追加（検索パフォーマンス向上）
 CREATE INDEX IF NOT EXISTS idx_tarot_usage_user_date 
-ON public.tarot_usage(user_id, DATE(used_at AT TIME ZONE 'Asia/Tokyo'));
+ON public.tarot_usage(user_id, used_date);
 
 CREATE INDEX IF NOT EXISTS idx_tarot_permissions_user_date 
 ON public.tarot_permissions(user_id, granted_date);
