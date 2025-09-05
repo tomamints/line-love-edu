@@ -760,7 +760,7 @@
         // 権限チェックのキャッシュ
         window.permissionCache = {};
         
-        // 占い選択時の権限チェック（高速化版）
+        // 占い選択時の権限チェック
         const originalSelectSpread = window.selectSpread;
         window.selectSpread = async function(type) {
             if (!window.isLiffUser) {
@@ -768,45 +768,60 @@
                 return;
             }
             
-            // まず即座に画面遷移を実行（UXの改善）
-            originalSelectSpread(type);
+            // ローディング表示
+            const spreadSelection = document.getElementById('spreadSelection');
+            const originalContent = spreadSelection.innerHTML;
+            spreadSelection.innerHTML = `
+                <div style="text-align: center; padding: 40px;">
+                    <div style="font-size: 48px; animation: pulse 1s infinite;">🌙</div>
+                    <p style="margin-top: 20px; color: rgba(255,255,255,0.8);">使用権限を確認中...</p>
+                </div>
+            `;
             
-            // バックグラウンドで権限チェック（非同期）
-            const cacheKey = `${window.currentUserId}_${type}`;
-            
-            // キャッシュがある場合はAPIコールをスキップ
-            if (window.permissionCache[cacheKey]) {
-                console.log('権限チェック済み（キャッシュ使用）');
-                return;
-            }
-            
-            // バックグラウンドで権限チェック
-            fetch('/api/tarot-permission', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    action: 'check',
-                    userId: window.currentUserId,
-                    tarotType: type
-                })
-            }).then(response => response.json())
-              .then(result => {
-                // キャッシュに保存
-                window.permissionCache[cacheKey] = result.available;
+            try {
+                // 権限チェック（必ず先に実行）
+                const response = await fetch('/api/tarot-permission', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'check',
+                        userId: window.currentUserId,
+                        tarotType: type
+                    })
+                });
+                
+                const result = await response.json();
+                console.log('権限チェック結果:', result);
                 
                 if (!result.available) {
-                    // 使用済みの場合は次回から警告を表示
-                    setTimeout(() => {
-                        alert(result.message || '本日分の占いは既に使用済みです。明日またお試しください！');
-                        // 選択画面に戻す
-                        location.reload();
-                    }, 100);
+                    // 使用済みの場合
+                    spreadSelection.innerHTML = `
+                        <div style="text-align: center; padding: 40px;">
+                            <div style="font-size: 48px;">🌑</div>
+                            <h3 style="color: #ffd700; margin: 20px 0;">本日分は使用済みです</h3>
+                            <p style="color: rgba(255,255,255,0.8); margin-bottom: 30px;">
+                                ${result.message || '本日分のタロット占いは既に使用済みです。<br>明日また挑戦してください！'}
+                            </p>
+                            <button onclick="location.reload()" 
+                                    style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                                           color: white; border: none; padding: 12px 30px; 
+                                           border-radius: 25px; font-size: 16px; cursor: pointer;">
+                                戻る
+                            </button>
+                        </div>
+                    `;
+                    return;
                 }
-            }).catch(error => {
+                
+                // 権限がある場合のみ画面遷移
+                originalSelectSpread(type);
+                
+            } catch (error) {
                 console.error('権限チェックエラー:', error);
-                // エラーの場合は制限なしで使える
-                window.permissionCache[cacheKey] = true;
-            });
+                // エラーの場合は制限なしで進める
+                console.log('権限チェックエラーのため、制限なしで進めます');
+                originalSelectSpread(type);
+            }
         };
         
         // カード引いた後の処理を拡張
