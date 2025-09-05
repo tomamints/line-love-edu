@@ -130,6 +130,22 @@ app.post('/api/tarot-permission', async (req, res) => {
   await tarotPermission(req, res);
 });
 
+// リッチメニューからのタロットページアクセス
+// LINEリッチメニューには固定URLしか設定できないため、
+// このエンドポイントでユーザーIDを取得してリダイレクト
+app.get('/tarot', (req, res) => {
+  // LINEからのアクセスでユーザーIDが渡される場合
+  const userId = req.query.userId || req.headers['x-line-userid'];
+  
+  if (userId) {
+    // ユーザーIDがある場合はパラメータ付きでリダイレクト
+    res.redirect(`/moon-tarot.html?userId=${userId}`);
+  } else {
+    // ユーザーIDがない場合は、LINE内ブラウザから直接アクセスさせる
+    res.redirect('/moon-tarot.html');
+  }
+});
+
 // ── ③ 重複防止
 const recentMessageIds = new Set();
 const recentPostbackIds = new Set();

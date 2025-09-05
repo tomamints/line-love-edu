@@ -645,6 +645,37 @@
         window.currentUserId = null;
         window.isLiffUser = false;
         
+        // ユーザーIDを取得する関数
+        function getUserId() {
+            // 1. URLパラメータから取得
+            const urlParams = new URLSearchParams(window.location.search);
+            const urlUserId = urlParams.get('userId');
+            if (urlUserId) {
+                console.log('URLパラメータからユーザーID取得:', urlUserId);
+                // LocalStorageに保存
+                localStorage.setItem('moon_tarot_line_user_id', urlUserId);
+                sessionStorage.setItem('moon_tarot_line_user_id', urlUserId);
+                return urlUserId;
+            }
+            
+            // 2. SessionStorageから取得（同じセッション内）
+            const sessionUserId = sessionStorage.getItem('moon_tarot_line_user_id');
+            if (sessionUserId) {
+                console.log('SessionStorageからユーザーID取得:', sessionUserId);
+                return sessionUserId;
+            }
+            
+            // 3. LocalStorageから取得（以前のアクセス）
+            const localUserId = localStorage.getItem('moon_tarot_line_user_id');
+            if (localUserId) {
+                console.log('LocalStorageからユーザーID取得:', localUserId);
+                sessionStorage.setItem('moon_tarot_line_user_id', localUserId);
+                return localUserId;
+            }
+            
+            return null;
+        }
+        
         // LINE内ブラウザチェックとユーザー認証（LIFF不要版）
         async function initializeLiff() {
             console.log('認証チェック開始...');
@@ -656,14 +687,14 @@
             if (debugMode) {
                 console.log('デバッグモード: 認証をスキップ');
                 // デバッグモードでもuserIdがあればそれを使用
-                const userId = urlParams.get('userId');
+                const userId = getUserId();
                 window.currentUserId = userId || 'debug_user';
                 window.isLiffUser = true;
                 return true;
             }
             
-            // URLパラメータからユーザーIDを取得
-            const userId = urlParams.get('userId');
+            // ユーザーIDを取得
+            const userId = getUserId();
             
             // LINE内ブラウザかチェック（User-Agentで判定）
             const userAgent = navigator.userAgent || '';
@@ -680,29 +711,21 @@
                 return false;
             }
             
-            // userIdは必須 - URLパラメータから取得
+            // ユーザーIDの処理
             if (userId) {
-                // URLにuserIdがある場合は、それをそのまま使用
+                // ユーザーIDが取得できた場合
                 window.currentUserId = userId;
-                console.log('URLパラメータからLINE User ID取得:', userId);
-                // LocalStorageにも保存（次回アクセス時のため）
-                localStorage.setItem('moon_tarot_line_user_id', userId);
+                console.log('ユーザーID使用:', userId);
             } else if (isLineApp) {
-                // LINE内ブラウザだがuserIdがない場合、LocalStorageを確認
-                const storedId = localStorage.getItem('moon_tarot_line_user_id');
-                if (storedId) {
-                    window.currentUserId = storedId;
-                    console.log('LocalStorageからLINE User ID取得:', storedId);
-                } else {
-                    // LINE内だがIDがない場合はエラー
-                    console.error('LINE内ブラウザですがユーザーIDが取得できません');
-                    alert('エラー: ユーザーIDが取得できません。トップページから再度アクセスしてください。');
-                    window.location.href = '/';
-                    return false;
-                }
+                // LINE内ブラウザだがユーザーIDが取得できない場合
+                console.error('LINE内ブラウザですがユーザーIDが取得できません');
+                alert('エラー: ユーザー情報が取得できません。\n一度トップページに戻ってから再度アクセスしてください。');
+                // トップページへリダイレクト
+                window.location.href = '/';
+                return false;
             } else {
-                // ここには来ないはず（上でチェック済み）
-                console.error('予期しないエラー: ユーザーID取得失敗');
+                // LINE外からのアクセスでユーザーIDもない場合は既に処理済み
+                console.error('予期しないエラー');
                 return false;
             }
             
