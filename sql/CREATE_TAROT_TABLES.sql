@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS public.tarot_usage (
     card_drawn VARCHAR(100), -- 引いたカードの名前
     card_position VARCHAR(50), -- 'upright', 'reversed'
     result_data JSONB, -- 占い結果の詳細データ
-    used_date DATE DEFAULT (CURRENT_DATE AT TIME ZONE 'Asia/Tokyo'), -- 使用日（日本時間）
+    used_date DATE DEFAULT CURRENT_DATE, -- 使用日
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     
     -- 1日1回の制限
