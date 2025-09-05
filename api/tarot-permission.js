@@ -31,10 +31,14 @@ module.exports = async function handler(req, res) {
     }
 
     if (!supabase) {
-        console.error('Supabase is not configured');
+        console.error('Supabase is not configured:', {
+            url: !!supabaseUrl,
+            key: !!supabaseServiceKey
+        });
         return res.status(500).json({ 
             error: 'Server configuration error',
-            available: false 
+            details: 'Supabase connection not available',
+            available: true // エラー時は制限なしで使えるように
         });
     }
 
@@ -53,13 +57,26 @@ module.exports = async function handler(req, res) {
         switch (action) {
             case 'check':
                 // 使用可能かチェック
-                const { data: permission } = await supabase
+                console.log('[Tarot Check] Checking permission for:', { userId, tarotType, today });
+                
+                const { data: permission, error: checkError } = await supabase
                     .from('tarot_permissions')
                     .select('*')
                     .eq('user_id', userId)
                     .eq('tarot_type', tarotType)
                     .eq('granted_date', today)
                     .single();
+
+                if (checkError && checkError.code !== 'PGRST116') {
+                    // PGRST116 = no rows returned (正常)
+                    console.error('[Tarot Check] Database error:', checkError);
+                    // エラー時は使用可能として返す
+                    return res.json({ 
+                        available: true,
+                        message: '本日分のタロット占いが利用可能です',
+                        debug: 'Database check error, allowing access'
+                    });
+                }
 
                 if (!permission) {
                     // 今日の権限がまだない = 使用可能
@@ -157,9 +174,12 @@ module.exports = async function handler(req, res) {
 
     } catch (error) {
         console.error('[Tarot Permission API] Error:', error);
-        return res.status(500).json({ 
-            error: 'Internal server error',
-            details: error.message 
+        // エラーでも占いは使えるようにする
+        return res.json({ 
+            available: true,
+            message: 'タロット占いが利用可能です',
+            debug: 'System error, allowing access',
+            error: error.message 
         });
     }
 }
