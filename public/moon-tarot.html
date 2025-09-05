@@ -655,7 +655,9 @@
             
             if (debugMode) {
                 console.log('デバッグモード: 認証をスキップ');
-                window.currentUserId = `debug_user_${Date.now()}`;
+                // デバッグモードでもuserIdがあればそれを使用
+                const userId = urlParams.get('userId');
+                window.currentUserId = userId || 'debug_user';
                 window.isLiffUser = true;
                 return true;
             }
@@ -678,29 +680,30 @@
                 return false;
             }
             
-            // LINE内ブラウザからのアクセス、またはuserIdがある場合
+            // userIdは必須 - URLパラメータから取得
             if (userId) {
-                // URLにuserIdがある場合は、それをそのまま使用（profilesテーブルと一致させるため）
+                // URLにuserIdがある場合は、それをそのまま使用
                 window.currentUserId = userId;
                 console.log('URLパラメータからLINE User ID取得:', userId);
                 // LocalStorageにも保存（次回アクセス時のため）
                 localStorage.setItem('moon_tarot_line_user_id', userId);
-            } else {
-                // ユーザーIDが取得できない場合は、LocalStorageを確認
-                const storageKey = 'moon_tarot_line_user_id';
-                let storedId = localStorage.getItem(storageKey);
-                
-                if (!storedId) {
-                    // 新規ユーザーの場合、一時的なIDを生成（互換性のため）
-                    // 注意: この場合、profilesテーブルとは異なるIDになる
-                    storedId = `line_user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-                    localStorage.setItem(storageKey, storedId);
-                    console.log('一時ID生成（URL paramsなし）:', storedId);
+            } else if (isLineApp) {
+                // LINE内ブラウザだがuserIdがない場合、LocalStorageを確認
+                const storedId = localStorage.getItem('moon_tarot_line_user_id');
+                if (storedId) {
+                    window.currentUserId = storedId;
+                    console.log('LocalStorageからLINE User ID取得:', storedId);
                 } else {
-                    console.log('LocalStorageからID取得:', storedId);
+                    // LINE内だがIDがない場合はエラー
+                    console.error('LINE内ブラウザですがユーザーIDが取得できません');
+                    alert('エラー: ユーザーIDが取得できません。トップページから再度アクセスしてください。');
+                    window.location.href = '/';
+                    return false;
                 }
-                
-                window.currentUserId = storedId;
+            } else {
+                // ここには来ないはず（上でチェック済み）
+                console.error('予期しないエラー: ユーザーID取得失敗');
+                return false;
             }
             
             window.isLiffUser = true;
