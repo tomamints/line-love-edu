@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>月タロット占い - 読み込み中</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Kiwi Maru', 'Hiragino Sans', sans-serif;
+            color: white;
+        }
+        .container {
+            text-align: center;
+            padding: 20px;
+        }
+        .moon-icon {
+            font-size: 80px;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.1); opacity: 1; }
+        }
+        .message {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+        .error {
+            background: rgba(255, 0, 0, 0.2);
+            border: 1px solid rgba(255, 0, 0, 0.5);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+        .button {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="moon-icon">🌙</div>
+        <div class="message">月タロット占いを準備しています...</div>
+        
+        <div id="errorMessage" style="display: none;" class="error">
+            <p>⚠️ ユーザー情報を取得できませんでした</p>
+            <p>LINE内ブラウザからアクセスしてください</p>
+            <a href="https://lin.ee/egmCXoG" class="button">LINE友だち追加</a>
+        </div>
+    </div>
+
+    <script>
+        // ユーザーIDを取得する試み
+        function redirectToTarot() {
+            // 1. LocalStorageから以前のユーザーIDを確認
+            const storedUserId = localStorage.getItem('moon_tarot_line_user_id');
+            
+            // 2. SessionStorageも確認
+            const sessionUserId = sessionStorage.getItem('moon_tarot_line_user_id');
+            
+            // 3. LINE内ブラウザかチェック
+            const userAgent = navigator.userAgent || '';
+            const isLineApp = /Line\/\d+/i.test(userAgent) || userAgent.toLowerCase().includes('line');
+            
+            console.log('デバッグ情報:', {
+                storedUserId,
+                sessionUserId,
+                isLineApp,
+                userAgent
+            });
+            
+            // 使用するユーザーIDを決定
+            const userId = storedUserId || sessionUserId;
+            
+            if (userId) {
+                // ユーザーIDがある場合はそれを使用してリダイレクト
+                console.log('ユーザーID検出:', userId);
+                window.location.href = `/moon-tarot.html?userId=${userId}`;
+            } else if (isLineApp) {
+                // LINE内だがIDがない場合、説明メッセージを表示
+                document.querySelector('.message').innerHTML = `
+                    <p>初めてのご利用ですね！</p>
+                    <p>まず他のメニューから占いをお試しください。</p>
+                    <p>2回目以降はこちらから直接アクセスできます。</p>
+                `;
+                document.getElementById('errorMessage').style.display = 'block';
+                document.getElementById('errorMessage').innerHTML = `
+                    <p>📱 初回利用の設定</p>
+                    <p>1. トップページから「おつきさま診断」を選択</p>
+                    <p>2. 診断を完了すると設定が保存されます</p>
+                    <p>3. 次回からこのメニューが使えるようになります</p>
+                    <a href="/" class="button">トップページへ</a>
+                `;
+            } else {
+                // LINE外からのアクセス
+                document.querySelector('.message').textContent = 'LINEアプリからアクセスしてください';
+                document.getElementById('errorMessage').style.display = 'block';
+            }
+        }
+        
+        // ページ読み込み時に実行
+        window.addEventListener('load', () => {
+            setTimeout(redirectToTarot, 1000); // 1秒待ってからリダイレクト
+        });
+    </script>
+</body>
+</html>
