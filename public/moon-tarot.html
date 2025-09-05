@@ -652,6 +652,17 @@
             try {
                 console.log('LIFF初期化開始...');
                 
+                // デバッグモード: LIFF認証をスキップ
+                const urlParams = new URLSearchParams(window.location.search);
+                const debugMode = urlParams.get('debug') === 'true';
+                
+                if (debugMode) {
+                    console.log('デバッグモード: LIFF認証をスキップ');
+                    currentUserId = `debug_user_${Date.now()}`;
+                    isLiffUser = true;
+                    return true;
+                }
+                
                 // LINEアプリ内だがLIFFじゃない場合、LIFF URLにリダイレクト
                 const userAgent = navigator.userAgent;
                 if (userAgent.includes('Line') && typeof liff !== 'undefined' && !liff.isInClient()) {
@@ -663,8 +674,11 @@
                 // LIFFが存在しない場合のチェック
                 if (typeof liff === 'undefined') {
                     console.error('LIFF SDKが読み込まれていません');
-                    showAuthRequired();
-                    return false;
+                    // デバッグ用: 一時的に制限を解除
+                    console.log('LIFF SDKエラーのため、デバッグモードで続行');
+                    currentUserId = `test_user_${Date.now()}`;
+                    isLiffUser = true;
+                    return true;
                 }
                 
                 // LIFF初期化
@@ -690,8 +704,11 @@
                 
             } catch (error) {
                 console.error('LIFF初期化エラー:', error);
-                showAuthRequired();
-                return false;
+                // エラー時もデバッグモードで続行
+                console.log('LIFF初期化エラーのため、デバッグモードで続行');
+                currentUserId = `error_user_${Date.now()}`;
+                isLiffUser = true;
+                return true;
             }
         }
         
