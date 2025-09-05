@@ -315,5 +315,76 @@
             document.getElementById('moonForm').addEventListener('submit', handleFormSubmit);
         });
     </script>
+    
+    <!-- フッターセクション -->
+    <footer style="
+        background: linear-gradient(135deg, #0a001a 0%, #1a0033 100%);
+        padding: 40px 20px 20px;
+        margin-top: 60px;
+    ">
+        <div style="
+            max-width: 600px;
+            margin: 0 auto;
+            text-align: center;
+        ">
+            <!-- 注意事項 -->
+            <div style="
+                margin-bottom: 30px;
+                padding: 20px;
+                background: rgba(255, 255, 255, 0.05);
+                border-radius: 10px;
+                border: 1px solid rgba(255, 215, 0, 0.1);
+            ">
+                <p style="
+                    color: rgba(255, 255, 255, 0.8);
+                    font-size: 11px;
+                    line-height: 1.6;
+                    text-align: left;
+                ">
+                    ※ 本サービスは占い・エンターテインメントを目的としたものです<br>
+                    ※ 診断結果は参考程度にお楽しみください<br>
+                    ※ 個人情報は適切に管理し、第三者に提供することはありません
+                </p>
+            </div>
+            
+            <!-- リンク集 -->
+            <div style="
+                margin-bottom: 20px;
+                display: flex;
+                justify-content: center;
+                gap: 20px;
+                flex-wrap: wrap;
+            ">
+                <a href="/tokusho.html" style="
+                    color: #ffd700;
+                    text-decoration: none;
+                    font-size: 12px;
+                    opacity: 0.8;
+                    transition: opacity 0.3s;
+                " onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.8'">
+                    特定商取引法に基づく表記
+                </a>
+                <a href="/privacy-policy.html" style="
+                    color: #ffd700;
+                    text-decoration: none;
+                    font-size: 12px;
+                    opacity: 0.8;
+                    transition: opacity 0.3s;
+                " onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.8'">
+                    プライバシーポリシー
+                </a>
+            </div>
+            
+            <!-- コピーライト -->
+            <div style="
+                padding-top: 15px;
+                border-top: 1px solid rgba(255, 255, 255, 0.1);
+                color: rgba(255, 255, 255, 0.4);
+                font-size: 10px;
+            ">
+                <p>© 2025 おつきさま診断 | MiNTs株式会社</p>
+            </div>
+        </div>
+    </footer>
 </body>
 </html>
