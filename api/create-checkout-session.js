@@ -96,7 +96,7 @@ module.exports = async function handler(req, res) {
 
         // 4. Stripe Checkout Sessionを作成
         const session = await stripe.checkout.sessions.create({
-            payment_method_types: ['card'],
+            payment_method_types: ['card', 'paypay'],
             line_items: [{
                 price_data: {
                     currency: 'jpy',
