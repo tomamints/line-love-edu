@@ -650,10 +650,20 @@
         // LIFF初期化とユーザー認証
         async function initializeLiff() {
             try {
+                console.log('LIFF初期化開始...');
+                
                 // LINEアプリ内だがLIFFじゃない場合、LIFF URLにリダイレクト
                 const userAgent = navigator.userAgent;
-                if (userAgent.includes('Line') && !liff.isInClient()) {
+                if (userAgent.includes('Line') && typeof liff !== 'undefined' && !liff.isInClient()) {
+                    console.log('LINEアプリ内からLIFF URLへリダイレクト');
                     window.location.href = 'https://liff.line.me/2004862789-oR44Q1nq?path=moon-tarot.html';
+                    return false;
+                }
+                
+                // LIFFが存在しない場合のチェック
+                if (typeof liff === 'undefined') {
+                    console.error('LIFF SDKが読み込まれていません');
+                    showAuthRequired();
                     return false;
                 }
                 
@@ -662,8 +672,11 @@
                     liffId: '2004862789-oR44Q1nq'
                 });
                 
+                console.log('LIFF初期化完了、ログイン状態:', liff.isLoggedIn());
+                
                 if (!liff.isLoggedIn() && !liff.isInClient()) {
                     // LINEからアクセスしていない場合
+                    console.log('LINE認証が必要です');
                     showAuthRequired();
                     return false;
                 }
@@ -738,7 +751,8 @@
                 
             } catch (error) {
                 console.error('権限チェックエラー:', error);
-                // エラーの場合も続行（サーバーエラー時は制限なしで使えるように）
+                // データベース未設定の場合は制限なしで使えるように
+                console.log('権限チェックをスキップ（データベースエラーのため）');
                 originalSelectSpread(type);
             }
         };
