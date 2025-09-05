@@ -677,16 +677,24 @@
             // URLパラメータからユーザーIDを取得（可能な場合）
             const userId = urlParams.get('userId');
             if (userId) {
-                window.currentUserId = `line_${userId}`;
+                // URLにuserIdがある場合は、それをそのまま使用（profilesテーブルと一致させるため）
+                window.currentUserId = userId;
+                console.log('URLパラメータからLINE User ID取得:', userId);
+                // LocalStorageにも保存（次回アクセス時のため）
+                localStorage.setItem('moon_tarot_line_user_id', userId);
             } else {
-                // ユーザーIDが取得できない場合は、タイムスタンプベースの一意IDを生成
-                // LocalStorageに保存して同じユーザーには同じIDを使用
-                const storageKey = 'moon_tarot_user_id';
+                // ユーザーIDが取得できない場合は、LocalStorageを確認
+                const storageKey = 'moon_tarot_line_user_id';
                 let storedId = localStorage.getItem(storageKey);
                 
                 if (!storedId) {
+                    // 新規ユーザーの場合、一時的なIDを生成（互換性のため）
+                    // 注意: この場合、profilesテーブルとは異なるIDになる
                     storedId = `line_user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
                     localStorage.setItem(storageKey, storedId);
+                    console.log('一時ID生成（URL paramsなし）:', storedId);
+                } else {
+                    console.log('LocalStorageからID取得:', storedId);
                 }
                 
                 window.currentUserId = storedId;

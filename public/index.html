@@ -380,6 +380,30 @@
     </footer>
 
     <script>
+        // URLパラメータからuserIdを取得してリンクに追加
+        function updateLinksWithUserId() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const userId = urlParams.get('userId');
+            
+            if (userId) {
+                // moon-tarot.htmlのリンクを更新
+                const tarotLink = document.querySelector('a[href="moon-tarot.html"]');
+                if (tarotLink) {
+                    tarotLink.href = `moon-tarot.html?userId=${userId}`;
+                    console.log('月タロット占いリンクにuserId追加:', userId);
+                }
+                
+                // moon-fortune.htmlのリンクも更新（必要に応じて）
+                const fortuneLink = document.querySelector('a[href="moon-fortune.html"]');
+                if (fortuneLink) {
+                    fortuneLink.href = `moon-fortune.html?userId=${userId}`;
+                }
+            }
+        }
+        
+        // ページ読み込み時にリンクを更新
+        window.addEventListener('DOMContentLoaded', updateLinksWithUserId);
+        
         // 星空の生成
         function createStars() {
             const starsContainer = document.getElementById('stars');
