@@ -240,6 +240,24 @@
                 </p>
             </div>
             
+            <!-- 戻るボタン -->
+            <div style="margin-bottom: 30px;">
+                <a href="javascript:history.back()" style="
+                    display: inline-block;
+                    padding: 12px 30px;
+                    background: linear-gradient(135deg, #ffd700, #ffed4e);
+                    color: #1a0033;
+                    text-decoration: none;
+                    border-radius: 25px;
+                    font-weight: bold;
+                    font-size: 14px;
+                    transition: all 0.3s ease;
+                    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+                " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(255, 215, 0, 0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(255, 215, 0, 0.3)'">
+                    ← 前のページへ戻る
+                </a>
+            </div>
+            
             <!-- リンク集 -->
             <div style="
                 margin-bottom: 20px;
@@ -248,15 +266,6 @@
                 gap: 20px;
                 flex-wrap: wrap;
             ">
-                <a href="javascript:history.back()" style="
-                    color: #ffd700;
-                    text-decoration: none;
-                    font-size: 12px;
-                    opacity: 0.8;
-                    transition: opacity 0.3s;
-                " onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.8'">
-                    前のページへ戻る
-                </a>
                 <a href="/tokusho.html" style="
                     color: #ffd700;
                     text-decoration: none;
