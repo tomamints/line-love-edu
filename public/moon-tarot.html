@@ -4,21 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>月タロット占い - 月が導く恋愛の行方</title>
-    <meta name="description" content="月の満ち欠けとタロットカードを組み合わせた神秘的な恋愛占い。今日のあなたの恋愛運を月のカードが教えます。">
     
-    <!-- OGP設定 -->
-    <meta property="og:title" content="月タロット占い 🌙 月が導く恋愛の行方">
-    <meta property="og:description" content="月の満ち欠けとタロットカードを組み合わせた神秘的な恋愛占い。今日のあなたの恋愛運を月のカードが教えます。">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://line-love-edu.vercel.app/moon-tarot.html">
-    <meta property="og:image" content="https://line-love-edu.vercel.app/images/moon-tarot-ogp.png">
-    <meta property="og:image:secure_url" content="https://line-love-edu.vercel.app/images/moon-tarot-ogp.png">
-    <meta property="og:image:type" content="image/png">
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="630">
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Kiwi+Maru:wght@300;400;500&display=swap" rel="stylesheet">
     
     <style>
@@ -30,9 +16,14 @@
 
         body {
             font-family: 'Kiwi Maru', serif;
-            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            background: linear-gradient(135deg, #141e30, #243b55);
             min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
             color: #fff;
+            position: relative;
             overflow-x: hidden;
         }
 
@@ -44,6 +35,7 @@
             width: 100%;
             height: 100%;
             pointer-events: none;
+            z-index: 0;
         }
 
         .star {
@@ -58,164 +50,132 @@
             50% { opacity: 1; }
         }
 
-        @keyframes pulse {
-            0%, 100% { 
-                opacity: 0.4;
-                transform: scale(1);
-            }
-            50% { 
-                opacity: 1;
-                transform: scale(1.2);
-            }
-        }
-
+        /* メインコンテンツ */
         .container {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 20px;
             position: relative;
             z-index: 1;
+            width: 100%;
+            max-width: 800px;
         }
 
-        /* ヘッダー */
-        .header {
+        header {
             text-align: center;
-            padding: 40px 20px;
-            animation: fadeIn 1s ease-out;
+            margin-bottom: 40px;
+            animation: fadeInDown 1s ease;
         }
 
-        .title {
-            font-size: 42px;
-            font-weight: 500;
+        h1 {
+            font-size: 2.5rem;
             margin-bottom: 10px;
-            background: linear-gradient(45deg, #ffd700, #fff);
+            background: linear-gradient(45deg, #ffd700, #ffed4e);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            background-clip: text;
-            text-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+            filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.5));
         }
 
         .subtitle {
-            font-size: 16px;
-            color: rgba(255, 255, 255, 0.8);
-            letter-spacing: 1px;
+            font-size: 1.1rem;
+            color: #b8c6db;
         }
 
-        /* 占い選択セクション */
-        .spread-selection {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 20px;
-            padding: 30px;
-            margin: 30px 0;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+        /* カード選択画面 */
+        .selection-container {
+            animation: fadeInUp 1s ease;
         }
 
-        .spread-title {
-            font-size: 24px;
+        .selection-title {
             text-align: center;
+            font-size: 1.5rem;
             margin-bottom: 30px;
             color: #ffd700;
         }
 
         .spread-options {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 20px;
+            margin-bottom: 30px;
         }
 
         .spread-option {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 215, 0, 0.3);
             border-radius: 15px;
-            padding: 25px;
+            padding: 20px;
+            text-align: center;
             cursor: pointer;
             transition: all 0.3s ease;
-            text-align: center;
+            backdrop-filter: blur(5px);
         }
 
         .spread-option:hover {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.2);
+            border-color: #ffd700;
             transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.3);
         }
 
         .spread-icon {
-            font-size: 48px;
-            margin-bottom: 15px;
-        }
-
-        .spread-name {
-            font-size: 20px;
-            font-weight: 500;
+            font-size: 2.5rem;
             margin-bottom: 10px;
         }
 
+        .spread-name {
+            font-size: 1.2rem;
+            color: #ffd700;
+            margin-bottom: 5px;
+        }
+
         .spread-description {
-            font-size: 14px;
-            color: rgba(255, 255, 255, 0.7);
-            line-height: 1.6;
+            font-size: 0.9rem;
+            color: #b8c6db;
         }
 
         /* カード表示エリア */
-        .card-area {
+        .cards-container {
             display: none;
-            margin: 40px 0;
+            animation: fadeIn 1s ease;
         }
 
-        .card-container {
+        .card-area {
             display: flex;
             justify-content: center;
-            align-items: center;
             gap: 20px;
+            margin: 40px 0;
             flex-wrap: wrap;
-            margin: 30px auto;
-            perspective: 1000px;
-            -webkit-perspective: 1000px;
-            width: 100%;
+        }
+
+        .card-slot {
+            width: 150px;
+            height: 220px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px dashed rgba(255, 215, 0, 0.3);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .card-slot:hover {
+            border-color: #ffd700;
+            background: rgba(255, 255, 255, 0.1);
         }
 
         .card {
-            width: 150px;
-            height: 225px;  /* 2:3の比率 (150:225 = 1:1.5) */
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 15px;
-            position: relative;
-            cursor: pointer;
-            transition: transform 0.6s;
+            width: 100%;
+            height: 100%;
+            position: absolute;
             transform-style: preserve-3d;
-            -webkit-transform-style: preserve-3d;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-        }
-
-        /* 1枚引きの時は大きく表示 */
-        .single-card {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        .single-card .card {
-            width: 200px;
-            height: 300px;  /* 2:3の比率を維持 */
-        }
-
-        /* 3枚引きの時は標準サイズ */
-        .three-cards {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 20px;  /* PCでは隙間を確保 */
-        }
-        
-        .three-cards .card {
-            width: 150px;
-            height: 225px;
+            transition: transform 0.8s;
+            border-radius: 10px;
+            cursor: pointer;
         }
 
         .card.flipped {
             transform: rotateY(180deg);
-            -webkit-transform: rotateY(180deg);
         }
 
         .card-face {
@@ -223,191 +183,285 @@
             width: 100%;
             height: 100%;
             backface-visibility: hidden;
-            -webkit-backface-visibility: hidden;
-            border-radius: 15px;
+            border-radius: 10px;
             display: flex;
-            flex-direction: column;
-            justify-content: center;
             align-items: center;
-            padding: 20px;
+            justify-content: center;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
         }
 
         .card-back {
-            background-color: #1a1a2e;
-            background-size: cover;  /* カバーで表示 */
-            background-position: center center;
-            background-repeat: no-repeat;
-            border: 2px solid rgba(255, 215, 0, 0.3);
-            transform: rotateY(0deg);
-            -webkit-transform: rotateY(0deg);
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border: 2px solid #ffd700;
         }
 
-        .card-back-text {
-            display: none; /* テキストも非表示（画像があるため） */
+        .card-back::before {
+            content: "🌙";
+            font-size: 3rem;
         }
 
         .card-front {
-            background: #1a1a2e;
             transform: rotateY(180deg);
-            -webkit-transform: rotateY(180deg);
-            border: 2px solid rgba(255, 215, 0, 0.5);
-            background-size: cover;  /* 余白がトリミングされたのでcoverで十分 */
-            background-position: center center;
-            background-repeat: no-repeat;
-            overflow: hidden;
+            background: white;
+            color: #333;
+            flex-direction: column;
+            padding: 10px;
+            text-align: center;
         }
 
-        .card-emoji {
-            font-size: 60px;
-            margin-bottom: 15px;
-            display: none; /* 画像を使うので絵文字は非表示 */
+        .card-front img {
+            width: 100%;
+            height: 70%;
+            object-fit: cover;
+            border-radius: 5px;
+            margin-bottom: 5px;
         }
 
         .card-name {
-            display: none; /* カード名を非表示 */
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: #667eea;
         }
 
-        /* 結果表示エリア */
-        .result-area {
+        /* ボタン */
+        .action-button {
+            display: block;
+            margin: 30px auto;
+            padding: 15px 40px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            font-family: 'Kiwi Maru', serif;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .action-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(102, 126, 234, 0.6);
+        }
+
+        .action-button:active {
+            transform: translateY(0);
+        }
+
+        /* 結果表示 */
+        .result-container {
             display: none;
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(255, 255, 255, 0.1);
             border-radius: 20px;
             padding: 30px;
-            margin: 30px 0;
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            animation: fadeIn 0.5s ease-out;
+            animation: fadeIn 1s ease;
         }
 
         .result-title {
-            font-size: 28px;
             text-align: center;
-            margin-bottom: 30px;
+            font-size: 1.8rem;
             color: #ffd700;
+            margin-bottom: 30px;
         }
 
-        .result-cards {
+        .cards-result {
             display: grid;
-            gap: 30px;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
             margin-bottom: 30px;
         }
 
         .result-card {
-            background: rgba(255, 255, 255, 0.03);
+            background: rgba(255, 255, 255, 0.9);
             border-radius: 15px;
-            padding: 25px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            color: #333;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
         }
 
         .result-card-header {
             display: flex;
-            align-items: flex-start;  /* 上揃えに変更 */
-            gap: 20px;  /* 間隔を広げる */
-            margin-bottom: 25px;
-            position: relative;
+            align-items: center;
+            margin-bottom: 15px;
         }
 
-        .result-card-emoji {
-            font-size: 48px;
-            display: none; /* 画像を使うので絵文字は非表示 */
-        }
-        
-        .result-card-image-container {
-            width: 120px;
-            height: 176px;  /* 実際の画像比率1:1.47に合わせる */
-            position: relative;
-            flex-shrink: 0;  /* 画像サイズを固定 */
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 10px;
-            overflow: hidden;
-        }
-        
-        .result-card-image {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;  /* 画像全体を表示 */
-            object-position: center;
-            filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.3));  /* 画像に直接影を付ける */
+        .result-card img {
+            width: 60px;
+            height: 90px;
+            object-fit: cover;
+            border-radius: 5px;
+            margin-right: 15px;
         }
 
-        .result-card-info {
-            flex: 1;
-            padding-top: 10px;  /* カード名の位置調整 */
+        .result-card-info h3 {
+            color: #667eea;
+            margin-bottom: 5px;
         }
 
-        .result-card-name {
-            font-size: 24px;  /* 少し大きく */
-            font-weight: 500;
-            color: #ffd700;
-            margin-bottom: 8px;
+        .result-card-info .card-subtitle {
+            font-size: 0.9rem;
+            color: #999;
         }
 
         .result-card-meaning {
-            font-size: 16px;  /* 少し大きく */
-            color: rgba(255, 255, 255, 0.8);
-            margin-top: 5px;
-            line-height: 1.5;
-        }
-
-        .result-card-message {
-            font-size: 16px;
-            line-height: 1.8;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: #555;
             margin-bottom: 15px;
         }
 
         .result-card-advice {
-            background: rgba(255, 215, 0, 0.1);
-            border-left: 3px solid #ffd700;
-            padding: 15px;
-            border-radius: 5px;
-            font-size: 15px;
-            line-height: 1.6;
+            background: #f0f4ff;
+            border-left: 3px solid #667eea;
+            padding: 10px 15px;
+            font-size: 0.9rem;
+            color: #666;
+            line-height: 1.5;
         }
 
-        .result-keywords {
+        .result-card-keywords {
             display: flex;
-            gap: 10px;
+            flex-wrap: wrap;
+            gap: 8px;
             margin-top: 15px;
+        }
+
+        .keyword-tag {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+        }
+
+        /* 総合メッセージ */
+        .overall-message {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 30px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.5);
+        }
+
+        .overall-message h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+
+        .overall-message p {
+            line-height: 1.8;
+            font-size: 1.05rem;
+        }
+
+        /* アクションボタン群 */
+        .result-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
             flex-wrap: wrap;
         }
 
-        .keyword {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 13px;
-        }
-
-        /* ボタン */
-        .btn {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
+        .result-actions button,
+        .result-actions a {
+            padding: 12px 25px;
             border: none;
-            padding: 15px 40px;
-            border-radius: 30px;
-            font-size: 18px;
-            font-weight: 500;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-family: 'Kiwi Maru', serif;
             cursor: pointer;
             transition: all 0.3s ease;
-            margin: 20px auto;
-            display: block;
-            font-family: 'Kiwi Maru', serif;
+            text-decoration: none;
+            display: inline-block;
         }
 
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        .retry-button {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid white;
         }
 
-        .btn-draw {
-            margin-top: 30px;
+        .retry-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* LINE CTA */
+        .line-cta {
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            border-radius: 20px;
+            padding: 25px;
+            margin: 30px 0;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.3);
+        }
+
+        .line-cta-title {
+            color: #333;
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+        }
+
+        .line-cta-description {
+            color: #666;
+            font-size: 0.95rem;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .line-button {
+            display: inline-block;
+            background: #06c755;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-size: 1.1rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 20px rgba(6, 199, 85, 0.4);
+        }
+
+        .line-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(6, 199, 85, 0.6);
+        }
+
+        .share-button {
+            background: #1da1f2;
+            color: white;
+        }
+
+        .share-button:hover {
+            background: #0d8bd9;
+        }
+
+        .home-link {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid white;
+        }
+
+        .home-link:hover {
+            background: rgba(255, 255, 255, 0.3);
         }
 
         /* アニメーション */
         @keyframes fadeIn {
             from {
                 opacity: 0;
-                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
             }
             to {
                 opacity: 1;
@@ -415,164 +469,75 @@
             }
         }
 
-        @keyframes slideIn {
+        @keyframes fadeInUp {
             from {
                 opacity: 0;
-                transform: translateX(-50px);
+                transform: translateY(30px);
             }
             to {
                 opacity: 1;
-                transform: translateX(0);
+                transform: translateY(0);
             }
         }
 
-        /* レスポンシブ */
-        @media (max-width: 768px) {
-            .title {
-                font-size: 32px;
+        /* モバイル対応 */
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 2rem;
             }
             
-            .card {
-                width: 140px;
-                height: 210px;  /* 2:3の比率 (140:210 = 1:1.5) */
+            .card-area {
+                gap: 10px;
             }
             
-            /* 1枚引きの時はスマホでも大きく - より具体的なセレクタ */
-            .card-container.single-card .card {
-                width: 200px !important;
-                height: 300px !important;  /* 2:3の比率を維持 */
-            }
-            
-            /* 3枚引きの時は2段組で見やすく - より具体的なセレクタ */
-            .card-container.three-cards {
-                max-width: 350px;
-                margin: 0 auto;
-                gap: 15px !important;
-            }
-            
-            .card-container.three-cards .card {
-                width: 150px !important;
-                height: 225px !important;  /* 2:3の比率を維持 */
-            }
-            
-            .card-emoji {
-                font-size: 48px;
-            }
-            
-            /* スマホでも画像設定を維持 */
-            .card-front {
-                background-size: cover;
-            }
-            
-            .card-back {
-                background-size: cover;
-            }
-            
-            /* 結果表示の画像サイズ調整 - タブレットでも大きめに */
-            .result-card-image-container {
+            .card-slot {
                 width: 100px;
-                height: 147px;  /* 実際の画像比率1:1.47に合わせる */
+                height: 150px;
             }
             
-            .result-card-image {
-                width: 100%;
-                height: 100%;
-            }
-            
-            .result-card-name {
-                font-size: 20px;
-            }
-            
-            .result-card-meaning {
-                font-size: 14px;
+            .result-actions {
+                flex-direction: column;
             }
         }
-        
-        @media (max-width: 480px) {
-            /* より小さい画面用の調整 */
-            .card {
-                width: 120px;
-                height: 180px;  /* 2:3の比率を維持 */
-            }
-            
-            /* コンテナの中央揃えを確実に */
-            .card-container {
-                display: flex !important;
-                justify-content: center !important;
-                align-items: center !important;
-                width: 100% !important;
-                padding: 0 10px;
-            }
-            
-            /* 1枚引きの時は画面幅いっぱいに大きく - 最優先 */
-            .card-container.single-card {
-                justify-content: center !important;
-            }
-            
-            .card-container.single-card .card {
-                width: 200px !important;
-                height: 300px !important;  /* 2:3の比率を維持 */
-                margin: 0 auto !important;
-            }
-            
-            /* 3枚引きの時は2-1の配置で見やすく - 最優先 */
-            .card-container.three-cards {
-                justify-content: center !important;
-                max-width: 280px !important;
-                margin: 0 auto !important;
-                gap: 12px !important;  /* 適度な隙間 */
-            }
-            
-            .card-container.three-cards .card {
-                width: 130px !important;
-                height: 195px !important;  /* 2:3の比率を維持 */
-            }
-            
-            .cards-container {
-                gap: 15px;  /* カード間の隙間を調整 */
-            }
-            
-            /* スマホの結果表示 - レイアウトを縦並びに */
-            .result-card-header {
-                flex-direction: column;
-                align-items: center;
-                text-align: center;
-            }
-            
-            .result-card-image-container {
-                width: 140px;
-                height: 206px;  /* 実際の画像比率1:1.47に合わせる */
-                margin-bottom: 15px;
-            }
-            
-            .result-card-info {
-                padding-top: 0;
-            }
-            
-            .result-card-name {
-                font-size: 20px;
-            }
-            
-            .result-card-meaning {
-                font-size: 14px;
-            }
+
+        /* フッター */
+        footer {
+            width: 100%;
+            text-align: center;
+            padding: 20px;
+            margin-top: 50px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: #b8c6db;
+            font-size: 0.9rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        footer a {
+            color: #ffd700;
+            text-decoration: none;
+            transition: opacity 0.3s ease;
+        }
+
+        footer a:hover {
+            opacity: 0.8;
         }
     </style>
 </head>
 <body>
     <!-- 星空の背景 -->
     <div class="stars" id="stars"></div>
-
+    
+    <!-- メインコンテナ -->
     <div class="container">
-        <!-- ヘッダー -->
-        <div class="header">
-            <h1 class="title">月タロット占い</h1>
+        <header>
+            <h1>月タロット占い</h1>
             <p class="subtitle">月の満ち欠けが導く、あなたの恋愛の行方</p>
-        </div>
-
-        <!-- 占い選択 -->
-        <div class="spread-selection" id="spreadSelection">
-            <h2 class="spread-title">占い方を選んでください</h2>
+        </header>
+        
+        <!-- 占い方法選択 -->
+        <div class="selection-container" id="selectionContainer">
+            <h2 class="selection-title">占い方を選んでください</h2>
             <div class="spread-options">
                 <div class="spread-option" onclick="selectSpread('daily')">
                     <div class="spread-icon">🌙</div>
@@ -591,53 +556,42 @@
                 </div>
             </div>
         </div>
-
+        
         <!-- カード表示エリア -->
-        <div class="card-area" id="cardArea">
-            <div class="card-container" id="cardContainer"></div>
-            <button class="btn btn-draw" id="drawButton" onclick="drawCards()">カードを引く</button>
+        <div class="cards-container" id="cardsContainer">
+            <div class="card-area" id="cardArea"></div>
+            <button class="action-button" id="drawButton" onclick="drawCards()">カードを引く</button>
         </div>
-
+        
         <!-- 結果表示エリア -->
-        <div class="result-area" id="resultArea">
-            <h2 class="result-title" id="resultTitle"></h2>
-            <div class="result-cards" id="resultCards"></div>
-            
-            <!-- ボタンエリア -->
-            <div style="display: flex; flex-direction: column; gap: 15px; margin-top: 30px;">
-                <button class="btn" onclick="reset()">もう一度占う</button>
-                
-                <!-- LINE公式アカウントへの誘導 -->
-                <div style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); border-radius: 20px; padding: 25px; margin: 15px 0; text-align: center; border: 1px solid rgba(255, 255, 255, 0.1);">
-                    <div style="color: rgba(255, 255, 255, 0.9); margin-bottom: 15px;">
-                        <div style="font-size: 18px; margin-bottom: 10px; font-weight: normal; letter-spacing: 1px;">
-                            月詠からの特別なメッセージをお届け
-                        </div>
-                        <div style="font-size: 14px; line-height: 1.6; opacity: 0.85;">
-                            あなたの恋愛運を毎日占い<br>
-                            月の導きで最高の恋を叶えましょう
-                        </div>
+        <div class="result-container" id="resultContainer">
+            <h2 class="result-title" id="resultTitle">占い結果</h2>
+            <div class="cards-result" id="cardsResult"></div>
+            <div class="overall-message" id="overallMessage"></div>
+            <div class="result-actions">
+                <button class="retry-button" onclick="reset()">もう一度占う</button>
+                <div class="line-cta">
+                    <div class="line-cta-title">月詠からの特別なメッセージをお届け</div>
+                    <div class="line-cta-description">
+                        あなたの恋愛運を毎日占い<br>
+                        月の導きで最高の恋を叶えましょう
                     </div>
-                    
-                    <a href="https://lin.ee/egmCXoG" 
-                       target="_blank"
-                       style="display: inline-block; background: linear-gradient(135deg, #00b900 0%, #00a000 100%); color: white; padding: 12px 30px; border-radius: 25px; text-decoration: none; font-weight: normal; font-size: 15px; box-shadow: 0 4px 15px rgba(0,185,0,0.3); letter-spacing: 0.5px;">
+                    <a href="https://lin.ee/egmCXoG" class="line-button">
                         🌙 LINE友だち追加
                     </a>
                 </div>
-                
-                <!-- シェアボタン -->
-                <button class="btn" style="background: linear-gradient(135deg, #1da1f2, #1a91da);" onclick="shareResult()">
-                    結果をシェア 📱
-                </button>
-                
-                <a href="index.html" class="btn" style="background: linear-gradient(135deg, #4a4a6a, #3a3a5a); text-decoration: none; display: inline-block; text-align: center;">
-                    トップに戻る
-                </a>
+                <button class="share-button" onclick="shareResult()">結果をシェア 📱</button>
+                <a href="index.html" class="home-link">トップに戻る</a>
             </div>
         </div>
     </div>
 
+    <!-- フッター -->
+    <footer>
+        <p>© 2024 月詠（つくよみ）- Moon Tarot</p>
+        <p><a href="/tokusho.html" target="_blank">特定商取引法に基づく表記</a></p>
+    </footer>
+    
     <!-- LIFF SDK -->
     <script src="https://static.line-scdn.net/liff/edge/versions/2.22.0/sdk.js"></script>
     
@@ -647,36 +601,54 @@
         window.currentUserId = null;
         window.isLiffUser = false;
         
+        // LINE内ブラウザかどうかを判定
+        function isLineInAppBrowser() {
+            const ua = navigator.userAgent.toLowerCase();
+            return ua.indexOf('line') !== -1;
+        }
+
+        // LINE登録への誘導画面を表示
+        function showLineRegistrationPrompt() {
+            const selectionContainer = document.getElementById('selectionContainer');
+            if (selectionContainer) {
+                selectionContainer.innerHTML = `
+                    <div style="text-align: center; padding: 40px 20px;">
+                        <h2 style="color: #ff6b6b; margin-bottom: 20px;">⚠️ LINEからアクセスしてください</h2>
+                        <p style="margin-bottom: 30px; line-height: 1.8;">
+                            月のタロット占いをご利用いただくには<br>
+                            LINE公式アカウントへの登録が必要です
+                        </p>
+                        <a href="https://lin.ee/egmCXoG" 
+                           style="display: inline-block; background: #06c755; color: white; padding: 15px 30px; 
+                                  border-radius: 25px; text-decoration: none; font-weight: bold; font-size: 1.1rem;">
+                            🌙 LINE友だち追加して占いを始める
+                        </a>
+                        <p style="margin-top: 20px; font-size: 14px; color: #999;">
+                            友だち追加後、メニューから<br>
+                            「月のタロット占い」をお選びください
+                        </p>
+                    </div>
+                `;
+            }
+        }
+
         // LIFF初期化とユーザー認証
         async function initializeLiff() {
             try {
-                console.log('LIFF初期化開始...');
+                console.log('認証チェック開始...');
                 
-                // デバッグモード: LIFF認証をスキップ
-                const urlParams = new URLSearchParams(window.location.search);
-                const debugMode = urlParams.get('debug') === 'true';
-                
-                if (debugMode) {
-                    console.log('デバッグモード: LIFF認証をスキップ');
-                    window.currentUserId = `debug_user_${Date.now()}`;
-                    window.isLiffUser = true;
-                    return true;
-                }
-                
-                // LINEアプリ内だがLIFFじゃない場合、LIFF URLにリダイレクト
-                const userAgent = navigator.userAgent;
-                if (userAgent.includes('Line') && typeof liff !== 'undefined' && !liff.isInClient()) {
-                    console.log('LINEアプリ内からLIFF URLへリダイレクト');
-                    window.location.href = 'https://liff.line.me/2004862789-oR44Q1nq?path=moon-tarot.html';
+                // LINE内ブラウザでない場合は、LINE登録に誘導
+                if (!isLineInAppBrowser()) {
+                    console.log('LINE外からのアクセスを検出');
+                    showLineRegistrationPrompt();
                     return false;
                 }
                 
-                // LIFFが存在しない場合のチェック
+                // LIFF SDKが読み込めない場合もLINE登録に誘導
                 if (typeof liff === 'undefined') {
-                    console.error('LIFF SDKが読み込まれていません');
-                    // デバッグ用: 一時的に制限を解除
-                    console.log('LIFF SDKエラーのため、デバッグモードで続行');
-                    window.currentUserId = `test_user_${Date.now()}`;
+                    console.log('LIFF SDKが読み込めません');
+                    // LINE内ブラウザだがLIFFが使えない場合は、ユーザーIDを仮生成
+                    window.currentUserId = `line_temp_${Date.now()}`;
                     window.isLiffUser = true;
                     return true;
                 }
@@ -688,58 +660,40 @@
                 
                 console.log('LIFF初期化完了、ログイン状態:', liff.isLoggedIn());
                 
-                if (!liff.isLoggedIn() && !liff.isInClient()) {
-                    // LINEからアクセスしていない場合
-                    console.log('LINE認証が必要です');
-                    showAuthRequired();
+                // ログインしていない場合は自動ログイン
+                if (!liff.isLoggedIn()) {
+                    liff.login();
                     return false;
                 }
                 
-                // プロフィール取得
+                // プロファイル情報を取得
                 const profile = await liff.getProfile();
                 window.currentUserId = `line_${profile.userId}`;
-                isLiffUser = true;
-                console.log('LINE認証成功:', currentUserId);
+                window.isLiffUser = true;
+                console.log('LINE認証成功:', window.currentUserId);
                 return true;
                 
             } catch (error) {
                 console.error('LIFF初期化エラー:', error);
-                // エラー時もデバッグモードで続行
-                console.log('LIFF初期化エラーのため、デバッグモードで続行');
-                window.currentUserId = `error_user_${Date.now()}`;
-                isLiffUser = true;
-                return true;
+                // LINE内ブラウザだがエラーの場合は、仮IDで続行
+                if (isLineInAppBrowser()) {
+                    window.currentUserId = `line_temp_${Date.now()}`;
+                    window.isLiffUser = true;
+                    return true;
+                } else {
+                    showLineRegistrationPrompt();
+                    return false;
+                }
             }
         }
         
-        // 認証必要画面を表示
-        function showAuthRequired() {
-            document.getElementById('spreadSelection').innerHTML = `
-                <div style="text-align: center; padding: 40px;">
-                    <div style="font-size: 48px; margin-bottom: 20px;">🔒</div>
-                    <h2 style="color: #ffd700; margin-bottom: 15px;">LINEからアクセスしてください</h2>
-                    <p style="color: rgba(255,255,255,0.8); margin-bottom: 30px;">
-                        この占いは1日1回限定の特別な占いです。<br>
-                        LINE公式アカウントからアクセスしてご利用ください。
-                    </p>
-                    <a href="https://lin.ee/egmCXoG" 
-                       target="_blank"
-                       style="display: inline-block; background: linear-gradient(135deg, #00b900 0%, #00a000 100%); 
-                              color: white; padding: 15px 40px; border-radius: 25px; text-decoration: none; 
-                              font-weight: bold; font-size: 16px; box-shadow: 0 4px 15px rgba(0,185,0,0.3);">
-                        LINE友だち追加して占う
-                    </a>
-                </div>
-            `;
-            document.getElementById('cardArea').style.display = 'none';
-            document.getElementById('resultArea').style.display = 'none';
-        }
-        
-        // 占い選択時の権限チェック
+        // selectSpreadを修正: 権限チェックを追加
         const originalSelectSpread = window.selectSpread;
         window.selectSpread = async function(type) {
-            if (!isLiffUser) {
-                showAuthRequired();
+            // LINE認証チェック
+            if (!window.isLiffUser) {
+                console.log('LINE認証が必要です');
+                showLineRegistrationPrompt();
                 return;
             }
             
@@ -757,26 +711,24 @@
                 
                 const result = await response.json();
                 
-                if (!result.available) {
-                    // 使用済みの場合
-                    alert(result.message || '本日分の占いは既に使用済みです。明日またお試しください！');
+                if (result.available === false) {
+                    alert(result.message || '本日分のタロット占いは既に使用済みです。明日また挑戦してください！');
                     return;
                 }
                 
-                // 権限がある場合は通常の処理を実行
+                // 権限がある場合のみ元の処理を実行
                 originalSelectSpread(type);
-                
             } catch (error) {
                 console.error('権限チェックエラー:', error);
-                // データベース未設定の場合は制限なしで使えるように
+                // エラー時は権限チェックをスキップ
                 console.log('権限チェックをスキップ（データベースエラーのため）');
                 originalSelectSpread(type);
             }
         };
         
-        // カード引いた後の処理を拡張
+        // drawCardsを修正: 使用記録を保存
         const originalDrawCards = window.drawCards;
-        window.drawCards = async function() {
+        window.drawCards = function() {
             // 元の処理を実行
             originalDrawCards();
             
@@ -809,28 +761,31 @@
         // 星空の生成
         function createStars() {
             const starsContainer = document.getElementById('stars');
-            for (let i = 0; i < 100; i++) {
+            const starCount = 100;
+            
+            for (let i = 0; i < starCount; i++) {
                 const star = document.createElement('div');
                 star.className = 'star';
-                star.style.left = Math.random() * 100 + '%';
-                star.style.top = Math.random() * 100 + '%';
                 star.style.width = Math.random() * 3 + 'px';
                 star.style.height = star.style.width;
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
                 star.style.animationDelay = Math.random() * 3 + 's';
+                star.style.animationDuration = (Math.random() * 3 + 2) + 's';
                 starsContainer.appendChild(star);
             }
         }
-        createStars();
         
         // ページ読み込み時の処理
-        window.addEventListener('load', async () => {
-            // LIFF初期化
-            await initializeLiff();
+        window.addEventListener('DOMContentLoaded', async function() {
+            createStars();
             
-            // 画像プリロード
-            preloadImages().then(() => {
+            // LIFF初期化
+            const isAuthenticated = await initializeLiff();
+            
+            if (isAuthenticated) {
                 console.log('初期画像プリロード完了');
-            });
+            }
         });
     </script>
 </body>
