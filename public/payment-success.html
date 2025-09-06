@@ -276,6 +276,7 @@
         const diagnosisId = urlParams.get('id');
         const userId = urlParams.get('userId');
         const paymentStatus = urlParams.get('payment');
+        const merchantPaymentId = urlParams.get('merchantPaymentId');
         
         // 日付を設定
         document.getElementById('purchaseDate').textContent = 
@@ -306,8 +307,17 @@
             document.getElementById('loading').style.display = 'block';
         });
         
-        // payment=successでない場合はエラー表示
-        if (paymentStatus !== 'success') {
+        // PayPayからのリダイレクトの場合、またはpayment=successの場合は成功と判定
+        // PayPayはカスタムパラメータを保持しない可能性があるため、diagnosisIdがあれば成功とみなす
+        const isPayPayRedirect = document.referrer.includes('paypay') || window.location.href.includes('paypay');
+        
+        // エラー表示の条件を明確化
+        // - payment=error または payment=cancel の場合はエラー
+        // - それ以外で diagnosisId がある場合は成功とみなす
+        const showError = paymentStatus === 'error' || paymentStatus === 'cancel';
+        const showSuccess = !showError && diagnosisId;
+        
+        if (showError) {
             document.querySelector('.header').style.background = 'linear-gradient(135deg, #f56565 0%, #c53030 100%)';
             document.querySelector('h1').textContent = 'エラーが発生しました';
             document.querySelector('.subtitle').textContent = '決済処理中に問題が発生しました';
@@ -319,6 +329,32 @@
                 </p>
             `;
             viewResultBtn.style.display = 'none';
+        } else if (!diagnosisId) {
+            // diagnosisId がない場合もエラー
+            document.querySelector('.header').style.background = 'linear-gradient(135deg, #f56565 0%, #c53030 100%)';
+            document.querySelector('h1').textContent = 'エラーが発生しました';
+            document.querySelector('.subtitle').textContent = 'パラメータが不足しています';
+            document.querySelector('.message').innerHTML = `
+                <p style="color: #e53e3e;">
+                    診断IDが見つかりません。<br><br>
+                    LINEから「履歴」と送信して<br>
+                    診断結果をご確認ください。
+                </p>
+            `;
+            viewResultBtn.style.display = 'none';
+        }
+        
+        // PayPay決済の場合、支払い方法を更新
+        if (isPayPayRedirect || merchantPaymentId) {
+            const paymentMethodElement = document.querySelector('.info-row:nth-child(2) .info-value');
+            if (paymentMethodElement) {
+                paymentMethodElement.textContent = 'PayPay';
+            }
+            // 金額も正しく更新
+            const amountElement = document.querySelector('.info-row:last-child .info-value');
+            if (amountElement) {
+                amountElement.textContent = '¥2,980';
+            }
         }
     </script>
 </body>

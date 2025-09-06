@@ -162,7 +162,7 @@ module.exports = async function handler(req, res) {
         const paymentData = {
             merchantPaymentId: merchantPaymentId,
             codeType: "ORDER_QR",
-            redirectUrl: `https://line-love-edu.vercel.app/payment-success.html?id=${diagnosisId}&userId=${userId || ''}&payment=success`,
+            redirectUrl: `https://line-love-edu.vercel.app/payment-success.html?id=${diagnosisId}&userId=${userId || ''}&merchantPaymentId=${merchantPaymentId}`,
             redirectType: "WEB_LINK",
             orderDescription: `おつきさま診断 - ${diagnosis.user_name || 'お客様'}`,
             orderItems: [{
