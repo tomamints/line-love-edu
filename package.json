@@ -15,6 +15,7 @@
   "license": "ISC",
   "dependencies": {
     "@line/bot-sdk": "^9.9.0",
+    "@paypayopa/paypayopa-sdk-node": "^2.1.0",
     "@supabase/supabase-js": "^2.53.0",
     "axios": "^1.11.0",
     "canvas": "^3.2.0",

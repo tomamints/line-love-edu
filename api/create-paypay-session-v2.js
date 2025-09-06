@@ -1,11 +1,9 @@
 /**
- * PayPay決済セッション作成API
- * PayPay Web Paymentを使用した決済処理
+ * PayPay決済セッション作成API（公式SDK使用版）
  */
 
+const PAYPAY = require('@paypayopa/paypayopa-sdk-node');
 const { createClient } = require('@supabase/supabase-js');
-const crypto = require('crypto');
-const { v4: uuidv4 } = require('uuid');
 
 // Supabase設定
 const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -16,62 +14,16 @@ const supabase = supabaseUrl && supabaseServiceKey ? createClient(supabaseUrl, s
 const PAYPAY_API_KEY = process.env.PAYPAY_API_KEY;
 const PAYPAY_API_SECRET = process.env.PAYPAY_API_SECRET;
 const PAYPAY_MERCHANT_ID = process.env.PAYPAY_MERCHANT_ID;
-const PAYPAY_ENV = process.env.PAYPAY_ENV || 'sandbox'; // 'sandbox' or 'production'
+const PAYPAY_ENV = 'STAGING'; // STAGING, PROD, PERF_MODE
 
-// PayPay APIのベースURL
-const PAYPAY_BASE_URL = PAYPAY_ENV === 'production' 
-    ? 'https://api.paypay.ne.jp/v2'
-    : 'https://stg-api.paypay.ne.jp/v2'; // Staging環境
-
-// HMAC-SHA256署名を生成
-function generateAuthHeader(method, path, contentType, body = '') {
-    if (!PAYPAY_API_SECRET || !PAYPAY_API_KEY) {
-        console.error('PayPay credentials missing');
-        return '';
-    }
-    
-    const nonce = uuidv4().substring(0, 8);
-    const epoch = Math.floor(Date.now() / 1000);
-    
-    // ペイロードハッシュ（MD5）
-    let payloadDigest = 'empty';
-    let actualContentType = 'empty';
-    
-    if (body) {
-        actualContentType = 'application/json';
-        const md5 = crypto.createHash('md5');
-        md5.update(actualContentType);
-        md5.update(body);
-        payloadDigest = md5.digest('base64');
-    }
-    
-    // 署名対象文字列（順序が重要）
-    const signatureData = [
-        path,
-        method,
-        nonce,
-        epoch,
-        actualContentType,
-        payloadDigest
-    ].join('\n');
-    
-    console.log('Auth details:', {
-        path,
-        method,
-        nonce,
-        epoch,
-        contentType: actualContentType,
-        digest: payloadDigest.substring(0, 10) + '...'
+// PayPay SDKの設定
+if (PAYPAY_API_KEY && PAYPAY_API_SECRET) {
+    PAYPAY.Configure({
+        clientId: PAYPAY_API_KEY,
+        clientSecret: PAYPAY_API_SECRET,
+        merchantId: PAYPAY_MERCHANT_ID,
+        env: PAYPAY_ENV
     });
-    
-    // HMAC-SHA256署名
-    const signature = crypto
-        .createHmac('sha256', PAYPAY_API_SECRET)
-        .update(signatureData)
-        .digest('base64');
-    
-    // 認証ヘッダーのフォーマット
-    return `hmac OPA-Auth:${PAYPAY_API_KEY}:${signature}:${nonce}:${epoch}:${payloadDigest}`;
 }
 
 module.exports = async function handler(req, res) {
@@ -91,16 +43,12 @@ module.exports = async function handler(req, res) {
             hasMerchantId: !!PAYPAY_MERCHANT_ID,
             env: PAYPAY_ENV
         });
+        
         // 開発環境では警告のみ
         if (process.env.NODE_ENV === 'production') {
             return res.status(500).json({ 
                 error: 'PayPay configuration error',
-                message: 'PayPay決済は現在利用できません',
-                debug: {
-                    hasApiKey: !!PAYPAY_API_KEY,
-                    hasApiSecret: !!PAYPAY_API_SECRET,
-                    hasMerchantId: !!PAYPAY_MERCHANT_ID
-                }
+                message: 'PayPay決済は現在利用できません'
             });
         }
     }
@@ -151,7 +99,7 @@ module.exports = async function handler(req, res) {
             };
         }
 
-        // 2. 既に購入済みかチェック（Supabaseがある場合のみ）
+        // 既に購入済みかチェック（Supabaseがある場合のみ）
         if (hasSupabase) {
             const { data: existingAccess } = await supabase
                 .from('access_rights')
@@ -169,16 +117,16 @@ module.exports = async function handler(req, res) {
             }
         }
 
-        // 3. PayPay決済セッション作成
+        // PayPay決済セッション作成（公式SDK使用）
         const merchantPaymentId = `diag_${diagnosisId}_${Date.now()}`;
         const amount = diagnosis.diagnosis_types?.price || 2980;
         
-        const paymentData = {
+        const payload = {
             merchantPaymentId: merchantPaymentId,
             codeType: "ORDER_QR",
             redirectUrl: `https://line-love-edu.vercel.app/payment-success.html?id=${diagnosisId}&userId=${userId || ''}&payment=success`,
             redirectType: "WEB_LINK",
-            orderDescription: `おつきさま診断 - ${diagnosis.user_name}様`,
+            orderDescription: `おつきさま診断 - ${diagnosis.user_name || 'お客様'}`,
             orderItems: [{
                 name: "おつきさま診断 完全版",
                 category: "DIGITAL_CONTENT",
@@ -193,7 +141,7 @@ module.exports = async function handler(req, res) {
                 amount: amount,
                 currency: "JPY"
             },
-            userAgent: req.headers['user-agent'] || 'Mozilla/5.0',
+            requestedAt: Date.now(),
             metadata: {
                 diagnosisId: diagnosisId,
                 userId: userId || '',
@@ -201,26 +149,22 @@ module.exports = async function handler(req, res) {
             }
         };
 
-        const bodyJson = JSON.stringify(paymentData);
-        const path = '/codes';
-        
-        // PayPay APIを呼び出し（実際の実装）
-        if (PAYPAY_API_KEY && PAYPAY_API_SECRET) {
-            const authHeader = generateAuthHeader('POST', path, 'application/json', bodyJson);
-            
-            const response = await fetch(`${PAYPAY_BASE_URL}${path}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': authHeader,
-                    'X-ASSUME-MERCHANT': PAYPAY_MERCHANT_ID
-                },
-                body: bodyJson
-            });
+        console.log('Creating PayPay session with SDK:', {
+            merchantPaymentId,
+            amount
+        });
 
-            const result = await response.json();
+        // PayPay APIを呼び出し（SDK使用）
+        if (PAYPAY_API_KEY && PAYPAY_API_SECRET) {
+            const response = await PAYPAY.QRCodeCreate(payload);
             
-            if (result.resultInfo?.code === 'SUCCESS' && result.data) {
+            console.log('PayPay SDK Response:', {
+                status: response.STATUS,
+                hasBody: !!response.BODY,
+                hasData: !!response.BODY?.data
+            });
+            
+            if (response.STATUS === 201 && response.BODY?.data) {
                 // 決済情報をデータベースに保存（Supabaseがある場合のみ）
                 if (hasSupabase) {
                     try {
@@ -233,7 +177,7 @@ module.exports = async function handler(req, res) {
                                 amount: amount,
                                 status: 'pending',
                                 payment_method: 'paypay',
-                                payment_data: result.data
+                                payment_data: response.BODY.data
                             });
                     } catch (dbError) {
                         console.error('Database save error:', dbError);
@@ -243,17 +187,17 @@ module.exports = async function handler(req, res) {
 
                 return res.json({
                     success: true,
-                    redirectUrl: result.data.url,
+                    redirectUrl: response.BODY.data.url,
                     paymentId: merchantPaymentId,
-                    expiresAt: result.data.expiryDate
+                    expiresAt: response.BODY.data.expiryDate
                 });
             } else {
-                console.error('PayPay API Error:', result);
-                throw new Error(result.resultInfo?.message || 'PayPay payment creation failed');
+                console.error('PayPay SDK Error:', response);
+                throw new Error(response.BODY?.resultInfo?.message || 'PayPay payment creation failed');
             }
         } else {
             // 開発環境用のモック
-            console.log('[Dev Mode] PayPay Mock Payment:', paymentData);
+            console.log('[Dev Mode] PayPay Mock Payment:', payload);
             
             return res.json({
                 success: true,
@@ -264,7 +208,7 @@ module.exports = async function handler(req, res) {
         }
 
     } catch (error) {
-        console.error('[PayPay Session] Error:', error);
+        console.error('[PayPay Session V2] Error:', error);
         return res.status(500).json({ 
             error: 'Failed to create PayPay session',
             details: error.message 
