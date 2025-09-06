@@ -40,8 +40,8 @@ module.exports = async function handler(req, res) {
         const path = require('path');
         const userId = req.query.userId;
         
-        // moon-fortune.htmlを読み込んで返す
-        const htmlPath = path.join(__dirname, '..', 'public', 'moon-fortune.html');
+        // lp-otsukisama-input.htmlを読み込んで返す（プロフィール入力フォーム）
+        const htmlPath = path.join(__dirname, '..', 'public', 'lp-otsukisama-input.html');
         
         try {
             let html = fs.readFileSync(htmlPath, 'utf8');
@@ -59,9 +59,11 @@ module.exports = async function handler(req, res) {
                 html = html.replace('</head>', userIdScript + '</head>');
             }
             
+            
             // パスを修正（/api/から提供されるため、相対パスを調整）
-            html = html.replace('src="compatibility-data-web.js"', 'src="/compatibility-data-web.js"');
-            html = html.replace('src="moon-fortune-web.js"', 'src="/moon-fortune-web.js"');
+            html = html.replace(/href="css\//g, 'href="/css/');
+            html = html.replace(/src="js\//g, 'src="/js/');
+            html = html.replace(/src="\/images\//g, 'src="/images/');
             
             res.setHeader('Content-Type', 'text/html; charset=utf-8');
             return res.status(200).send(html);
