@@ -131,7 +131,7 @@ module.exports = async function handler(req, res) {
         };
 
         const bodyJson = JSON.stringify(paymentData);
-        const path = '/codes';
+        const path = '/v2/codes';
         const authHeader = generateAuthHeader('POST', path, paymentData);
         
         console.log('Making PayPay API request to:', PAYPAY_CONFIG.baseUrl + path);

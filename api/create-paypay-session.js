@@ -224,7 +224,7 @@ module.exports = async function handler(req, res) {
         };
 
         const bodyJson = JSON.stringify(paymentData);
-        const path = '/codes';
+        const path = '/v2/codes';
         
         // PayPay APIを呼び出し（実際の実装）
         if (PAYPAY_API_KEY && PAYPAY_API_SECRET) {
