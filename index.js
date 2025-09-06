@@ -1377,30 +1377,28 @@ async function handleTextMessage(event) {
       return;
     }
     
-    // 「本格」キーワードでも同じ処理（互換性のため）
+    // 「本格」キーワードでLPへ誘導（テスト用）
     if (text === '本格') {
-      const webUrl = `${process.env.BASE_URL || 'https://line-love-edu.vercel.app'}/moon-fortune.html?userId=${userId}`;
+      const lpUrl = `${process.env.BASE_URL || 'https://line-love-edu.vercel.app'}/lp-otsukisama-input.html?userId=${userId}`;
       
-      await client.replyMessage(event.replyToken, [
-        {
-          type: 'text',
-          text: '🌙 本格おつきさま診断は現在準備中です\n\nサービス開始までもうしばらくお待ちください。'
-        },
-        {
-          type: 'flex',
-          altText: '月の運勢占い（簡易版）のご案内',
-          contents: {
-            type: 'bubble',
-            header: {
-              type: 'box',
-              layout: 'vertical',
-              contents: [
-                {
-                  type: 'text',
-                  text: '✨ 今すぐ占える！',
-                  size: 'sm',
-                  color: '#ffffff'
-                },
+      await client.replyMessage(event.replyToken, {
+        type: 'flex',
+        altText: '🌙 本格おつきさま診断',
+        contents: {
+          type: 'bubble',
+          size: 'mega',
+          header: {
+            type: 'box',
+            layout: 'vertical',
+            contents: [
+              {
+                type: 'text',
+                text: '🌙 本格おつきさま診断 🌙',
+                size: 'xl',
+                color: '#ffffff',
+                align: 'center',
+                weight: 'bold'
+              },
                 {
                   type: 'text',
                   text: '月の運勢占い（簡易版）',
