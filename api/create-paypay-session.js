@@ -54,11 +54,9 @@ module.exports = async function handler(req, res) {
         return res.status(405).json({ error: 'Method not allowed' });
     }
 
-    // 必要な設定確認
-    if (!supabase) {
-        console.error('Supabase configuration missing');
-        return res.status(500).json({ error: 'Server configuration error' });
-    }
+    // Supabase設定確認（オプショナル）
+    const hasSupabase = !!supabase;
+    console.log('Supabase configured:', hasSupabase);
 
     // PayPay設定確認
     if (!PAYPAY_API_KEY || !PAYPAY_API_SECRET || !PAYPAY_MERCHANT_ID) {
@@ -89,39 +87,61 @@ module.exports = async function handler(req, res) {
     }
 
     try {
-        // 1. 診断情報を取得
-        const { data: diagnosis, error: diagnosisError } = await supabase
-            .from('diagnoses')
-            .select(`
-                *,
-                diagnosis_types (
-                    id,
-                    name,
-                    description,
-                    price
-                )
-            `)
-            .eq('id', diagnosisId)
-            .single();
-
-        if (diagnosisError || !diagnosis) {
-            return res.status(404).json({ error: 'Diagnosis not found' });
+        let diagnosis = null;
+        let price = 2980; // デフォルト価格
+        
+        // Supabaseが設定されている場合は診断情報を取得
+        if (hasSupabase) {
+            const { data, error: diagnosisError } = await supabase
+                .from('diagnoses')
+                .select(`
+                    *,
+                    diagnosis_types (
+                        id,
+                        name,
+                        description,
+                        price
+                    )
+                `)
+                .eq('id', diagnosisId)
+                .single();
+            
+            if (diagnosisError || !data) {
+                console.log('Diagnosis not found in database, using default');
+            } else {
+                diagnosis = data;
+                price = diagnosis.diagnosis_types?.price || 2980;
+            }
+        }
+        
+        // Supabaseがない場合、またはデータが見つからない場合はデフォルト値を使用
+        if (!diagnosis) {
+            diagnosis = {
+                id: diagnosisId,
+                user_id: userId,
+                diagnosis_types: {
+                    name: 'おつきさま診断',
+                    price: price
+                }
+            };
         }
 
-        // 2. 既に購入済みかチェック
-        const { data: existingAccess } = await supabase
-            .from('access_rights')
-            .select('access_level')
-            .eq('user_id', userId || diagnosis.user_id)
-            .eq('resource_type', 'diagnosis')
-            .eq('resource_id', diagnosisId)
-            .single();
+        // 2. 既に購入済みかチェック（Supabaseがある場合のみ）
+        if (hasSupabase) {
+            const { data: existingAccess } = await supabase
+                .from('access_rights')
+                .select('access_level')
+                .eq('user_id', userId || diagnosis.user_id)
+                .eq('resource_type', 'diagnosis')
+                .eq('resource_id', diagnosisId)
+                .single();
 
-        if (existingAccess?.access_level === 'full') {
-            return res.status(400).json({ 
-                error: 'Already purchased',
-                message: 'この診断は既に購入済みです'
-            });
+            if (existingAccess?.access_level === 'full') {
+                return res.status(400).json({ 
+                    error: 'Already purchased',
+                    message: 'この診断は既に購入済みです'
+                });
+            }
         }
 
         // 3. PayPay決済セッション作成
