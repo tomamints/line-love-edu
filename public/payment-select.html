@@ -341,8 +341,8 @@
             
             try {
                 if (method === 'paypay') {
-                    // PayPay決済APIを呼び出し（直接実装版）
-                    const response = await fetch('/api/create-paypay-session-direct', {
+                    // PayPay決済APIを呼び出し（SDK版）
+                    const response = await fetch('/api/create-paypay-session-sdk', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
