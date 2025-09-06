@@ -1,10 +1,14 @@
 /**
- * PayPay決済セッション作成API（NTP時刻同期版）
+ * PayPay決済セッション作成API（最終版 - crypto-js使用）
  */
 
 const { createClient } = require('@supabase/supabase-js');
-const crypto = require('crypto');
-const https = require('https');
+const { HmacSHA256, enc, algo } = require("crypto-js");
+const crypto = require("crypto");
+const https = require("https");
+
+// UUID生成
+const uuidv4 = () => crypto.randomUUID();
 
 // Supabase設定
 const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -12,83 +16,60 @@ const supabaseServiceKey = process.env.SUPABASE_ANON_KEY || process.env.SUPABASE
 const supabase = supabaseUrl && supabaseServiceKey ? createClient(supabaseUrl, supabaseServiceKey) : null;
 
 // PayPay設定 - ハードコード
-const PAYPAY_CONFIG = {
-    apiKey: 'a_7Nh7OQU4LD_sgIG',
-    apiSecret: 'WAMx1E1jkd+cEVBFVfdMgJXhlZCSxITSn3YrqGZTz9o=',
-    merchantId: '958667152543465472',
-    hostname: 'stg-api.paypay.ne.jp'
+const auth = {
+    clientId: 'a_7Nh7OQU4LD_sgIG',
+    clientSecret: 'WAMx1E1jkd+cEVBFVfdMgJXhlZCSxITSn3YrqGZTz9o=',
+    merchantId: '958667152543465472'
 };
 
-// 2024年12月の固定時刻を使用（システムが2025年になっているため）
-async function getAccurateTime() {
-    // PayPayサーバーは2024年12月で動作していると想定
-    // 現在時刻を2024年12月7日の適切な時刻に設定
-    const baseTime = new Date('2024-12-07T03:00:00Z'); // 日本時間12:00
-    // 現在の分秒を取得して追加（リアルタイム性を保つ）
-    const now = new Date();
-    const minutes = now.getMinutes();
-    const seconds = now.getSeconds();
-    baseTime.setMinutes(minutes);
-    baseTime.setSeconds(seconds);
-    
-    const epochTime = Math.floor(baseTime.getTime() / 1000);
-    console.log('Using fixed 2024 time:', new Date(epochTime * 1000).toISOString());
-    return epochTime;
-}
+// PayPay公式SDKと同じ認証ヘッダー生成
+function createAuthHeader(method, resourceUrl, body) {
+    const epoch = Math.floor(Date.now() / 1000);
+    const nonce = uuidv4();
 
-// HMAC-SHA256署名を生成（HTTPSモジュール使用）
-function generateAuthHeader(method, path, body, epochOverride = null) {
-    const { v4: uuidv4 } = require('uuid');
-    const nonce = uuidv4().substring(0, 8);
-    const epoch = epochOverride || Math.floor(Date.now() / 1000);
-    
-    let contentType = 'empty';
-    let payloadDigest = 'empty';
-    
-    if (body) {
-        contentType = 'application/json';
-        const bodyStr = typeof body === 'string' ? body : JSON.stringify(body);
-        const md5 = crypto.createHash('md5');
-        md5.update(contentType);
-        md5.update(bodyStr);
-        payloadDigest = md5.digest('base64');
+    const jsonified = JSON.stringify(body);
+    const isempty = [undefined, null, "", "undefined", "null"];
+
+    let contentType;
+    let payloadDigest;
+    if (isempty.includes(jsonified)) {
+        contentType = "empty";
+        payloadDigest = "empty";
+    } else {
+        contentType = "application/json";
+        payloadDigest = algo.MD5.create()
+            .update(contentType)
+            .update(jsonified)
+            .finalize()
+            .toString(enc.Base64);
     }
     
-    const signatureData = [
-        path,
-        method,
-        nonce,
-        epoch,
-        contentType,
-        payloadDigest
-    ].join('\n');
+    const signatureRawList = [resourceUrl, method, nonce, epoch, contentType, payloadDigest];
+    const signatureRawData = signatureRawList.join("\n");
+    const hashed = HmacSHA256(signatureRawData, auth.clientSecret);
+    const hashed64 = enc.Base64.stringify(hashed);
+    const headList = [auth.clientId, hashed64, nonce, epoch, payloadDigest];
+    const header = headList.join(":");
     
-    const hmac = crypto.createHmac('sha256', PAYPAY_CONFIG.apiSecret);
-    hmac.update(signatureData);
-    const signature = hmac.digest('base64');
-    
-    return {
-        header: `hmac OPA-Auth:${PAYPAY_CONFIG.apiKey}:${signature}:${nonce}:${epoch}:${payloadDigest}`,
-        epoch: epoch
-    };
+    return `hmac OPA-Auth:${header}`;
 }
 
-// PayPay APIを直接呼び出す（HTTPSモジュール使用）
-async function callPayPayAPI(path, method, body, epochOverride = null) {
+// PayPay API呼び出し
+async function callPayPayAPI(path, method, body) {
     return new Promise((resolve, reject) => {
         const bodyStr = body ? JSON.stringify(body) : '';
-        const { header } = generateAuthHeader(method, path, body, epochOverride);
+        const authHeader = createAuthHeader(method, path, body);
         
         const options = {
-            hostname: PAYPAY_CONFIG.hostname,
+            hostname: 'stg-api.paypay.ne.jp',
             port: 443,
             path: path,
             method: method,
             headers: {
-                'Authorization': header,
+                'Authorization': authHeader,
                 'Content-Type': 'application/json',
                 'Content-Length': Buffer.byteLength(bodyStr),
-                'X-ASSUME-MERCHANT': PAYPAY_CONFIG.merchantId
+                'X-ASSUME-MERCHANT': auth.merchantId
             }
         };
         
@@ -130,7 +111,7 @@ module.exports = async function handler(req, res) {
     }
 
     const hasSupabase = !!supabase;
-    console.log('PayPay NTP API - Supabase:', hasSupabase);
+    console.log('PayPay Final API - Supabase:', hasSupabase);
 
     const { diagnosisId, userId } = req.body;
 
@@ -139,9 +120,6 @@ module.exports = async function handler(req, res) {
     }
 
     try {
-        // 正確な時刻を取得
-        const accurateEpoch = await getAccurateTime();
-        
         let diagnosis = null;
         let price = 2980;
         
@@ -203,9 +181,9 @@ module.exports = async function handler(req, res) {
             }
         };
 
-        console.log('Making PayPay API request with NTP time...');
+        console.log('Making PayPay API request with crypto-js...');
         
-        const response = await callPayPayAPI('/v2/codes', 'POST', paymentData, accurateEpoch);
+        const response = await callPayPayAPI('/v2/codes', 'POST', paymentData);
         
         console.log('PayPay API Response:', response.success ? 'SUCCESS' : 'FAILED');
         
@@ -241,7 +219,7 @@ module.exports = async function handler(req, res) {
         }
 
     } catch (error) {
-        console.error('[PayPay NTP] Error:', error);
+        console.error('[PayPay Final] Error:', error);
         return res.status(500).json({ 
             error: 'Failed to create PayPay session',
             details: error.message 

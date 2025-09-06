@@ -341,8 +341,8 @@
             
             try {
                 if (method === 'paypay') {
-                    // PayPay決済APIを呼び出し（NTP時刻同期版）
-                    const response = await fetch('/api/create-paypay-session-ntp', {
+                    // PayPay決済APIを呼び出し（最終版）
+                    const response = await fetch('/api/create-paypay-session-final', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
