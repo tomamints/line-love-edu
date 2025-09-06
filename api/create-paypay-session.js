@@ -62,12 +62,22 @@ module.exports = async function handler(req, res) {
 
     // PayPay設定確認
     if (!PAYPAY_API_KEY || !PAYPAY_API_SECRET || !PAYPAY_MERCHANT_ID) {
-        console.error('PayPay configuration missing');
+        console.error('PayPay configuration missing:', {
+            hasApiKey: !!PAYPAY_API_KEY,
+            hasApiSecret: !!PAYPAY_API_SECRET,
+            hasMerchantId: !!PAYPAY_MERCHANT_ID,
+            env: PAYPAY_ENV
+        });
         // 開発環境では警告のみ
         if (process.env.NODE_ENV === 'production') {
             return res.status(500).json({ 
                 error: 'PayPay configuration error',
-                message: 'PayPay決済は現在利用できません' 
+                message: 'PayPay決済は現在利用できません',
+                debug: {
+                    hasApiKey: !!PAYPAY_API_KEY,
+                    hasApiSecret: !!PAYPAY_API_SECRET,
+                    hasMerchantId: !!PAYPAY_MERCHANT_ID
+                }
             });
         }
     }
