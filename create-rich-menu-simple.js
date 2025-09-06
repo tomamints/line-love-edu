@@ -181,7 +181,7 @@ async function createRichMenu() {
     console.log('  [🔮 月タロット占い] [🌙 おつきさま診断]');
     console.log('\n💡 動作:');
     console.log('  - 月タロット占い: Postbackで1日1回制限付き');
-    console.log('  - おつきさま診断: 「本格」メッセージを送信');
+    console.log('  - おつきさま診断: 「おつきさま診断」メッセージを送信');
     
   } catch (error) {
     console.error('❌ エラーが発生しました:', error.response?.data || error.message);
