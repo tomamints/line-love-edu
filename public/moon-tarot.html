@@ -696,6 +696,28 @@
             // ユーザーIDを取得
             const userId = getUserId();
             
+            // ユーザーIDが取得できた場合、データベースに存在するかチェック
+            if (userId) {
+                try {
+                    console.log('ユーザーID存在チェック中:', userId);
+                    const checkResponse = await fetch(`/api/check-user-exists?userId=${userId}`);
+                    const checkResult = await checkResponse.json();
+                    
+                    console.log('ユーザー存在チェック結果:', checkResult);
+                    
+                    if (!checkResult.exists) {
+                        // ユーザーIDが存在しない場合、LINE登録画面へ誘導
+                        console.log('無効なユーザーIDを検出:', userId);
+                        showAuthRequired();
+                        return false;
+                    }
+                } catch (error) {
+                    console.error('ユーザー確認エラー:', error);
+                    showAuthRequired();
+                    return false;
+                }
+            }
+            
             // LINE内ブラウザかチェック（User-Agentで判定）
             const userAgent = navigator.userAgent || '';
             const isLineApp = /Line\/\d+/i.test(userAgent) || userAgent.toLowerCase().includes('line');
