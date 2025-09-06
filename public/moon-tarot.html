@@ -696,64 +696,41 @@
             // ユーザーIDを取得
             const userId = getUserId();
             
-            // ユーザーIDが取得できた場合、データベースに存在するかチェック
-            if (userId) {
-                try {
-                    console.log('ユーザーID存在チェック中:', userId);
-                    const checkResponse = await fetch(`/api/get-love-profile?userId=${userId}&checkOnly=true`);
-                    const checkResult = await checkResponse.json();
-                    
-                    console.log('ユーザー存在チェック結果:', checkResult);
-                    
-                    if (!checkResult.exists) {
-                        // ユーザーIDが存在しない場合、LINE登録画面へ誘導
-                        console.log('無効なユーザーIDを検出:', userId);
-                        showAuthRequired();
-                        return false;
-                    }
-                } catch (error) {
-                    console.error('ユーザー確認エラー:', error);
-                    showAuthRequired();
-                    return false;
-                }
-            }
-            
-            // LINE内ブラウザかチェック（User-Agentで判定）
-            const userAgent = navigator.userAgent || '';
-            const isLineApp = /Line\/\d+/i.test(userAgent) || userAgent.toLowerCase().includes('line');
-            
-            console.log('User-Agent:', userAgent);
-            console.log('LINE判定:', isLineApp, 'userId:', userId);
-            
-            // URLにuserIdがある場合、またはLINE内ブラウザの場合は認証OK
-            if (!isLineApp && !userId) {
-                // LINE外からのアクセスかつuserIdもない -> LINE登録画面へ誘導
-                console.log('LINE外からのアクセスを検出（userIdなし）');
+            // ユーザーIDがない場合はLINE登録画面へ誘導
+            if (!userId) {
+                console.log('ユーザーIDが取得できません');
                 showAuthRequired();
                 return false;
             }
             
-            // ユーザーIDの処理
-            if (userId) {
-                // ユーザーIDが取得できた場合
+            // ユーザーIDが取得できた場合、データベースに存在するかチェック
+            try {
+                console.log('ユーザーID存在チェック中:', userId);
+                const checkResponse = await fetch(`/api/get-love-profile?userId=${userId}&checkOnly=true`);
+                const checkResult = await checkResponse.json();
+                
+                console.log('ユーザー存在チェック結果:', checkResult);
+                
+                if (!checkResult.exists) {
+                    // ユーザーIDが存在しない場合、LINE登録画面へ誘導
+                    console.log('無効なユーザーIDを検出:', userId);
+                    showAuthRequired();
+                    return false;
+                }
+                
+                // ユーザーが存在する場合、続行
                 window.currentUserId = userId;
-                console.log('ユーザーID使用:', userId);
-            } else if (isLineApp) {
-                // LINE内ブラウザだがユーザーIDが取得できない場合
-                console.error('LINE内ブラウザですがユーザーIDが取得できません');
-                alert('エラー: ユーザー情報が取得できません。\n一度トップページに戻ってから再度アクセスしてください。');
-                // トップページへリダイレクト
-                window.location.href = '/';
-                return false;
-            } else {
-                // LINE外からのアクセスでユーザーIDもない場合は既に処理済み
-                console.error('予期しないエラー');
-                return false;
+                window.isLiffUser = true;
+                console.log('認証成功:', userId);
+                return true;
+                
+            } catch (error) {
+                console.error('ユーザー確認エラー:', error);
+                // エラーの場合でも続行させる（サーバーエラーでブロックしない）
+                window.currentUserId = userId;
+                window.isLiffUser = true;
+                return true;
             }
-            
-            window.isLiffUser = true;
-            console.log('LINE認証成功（簡易版）:', window.currentUserId);
-            return true;
         }
         
         // 認証必要画面を表示

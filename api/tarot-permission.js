@@ -15,16 +15,16 @@ const supabase = supabaseUrl && supabaseServiceKey ? createClient(supabaseUrl, s
 // 日本時間での今日の日付を取得
 function getTodayJST() {
     const now = new Date();
-    const jstOffset = 9 * 60; // JST is UTC+9
-    const jstTime = new Date(now.getTime() + (jstOffset - now.getTimezoneOffset()) * 60000);
+    // UTC時間に9時間を加算してJSTに変換
+    const jstTime = new Date(now.getTime() + (9 * 60 * 60 * 1000));
     return jstTime.toISOString().split('T')[0]; // YYYY-MM-DD形式
 }
 
 // 日本時間でのタイムスタンプを取得
 function getJSTTimestamp() {
     const now = new Date();
-    const jstOffset = 9 * 60; // JST is UTC+9
-    const jstTime = new Date(now.getTime() + (jstOffset - now.getTimezoneOffset()) * 60000);
+    // UTC時間に9時間を加算してJSTに変換
+    const jstTime = new Date(now.getTime() + (9 * 60 * 60 * 1000));
     return jstTime.toISOString();
 }
 
@@ -60,6 +60,7 @@ module.exports = async function handler(req, res) {
     }
 
     const today = getTodayJST();
+    console.log('[Tarot Permission] Current JST date:', today, 'UTC:', new Date().toISOString());
 
     try {
         switch (action) {
