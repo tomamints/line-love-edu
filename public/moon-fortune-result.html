@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>恋愛診断結果</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+        
+        h1 {
+            color: #333;
+            font-size: 28px;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #666;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        
+        .result-section {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .result-title {
+            color: #667eea;
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        
+        .result-content {
+            color: #333;
+            line-height: 1.8;
+            font-size: 14px;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 50px;
+            color: #666;
+        }
+        
+        .error {
+            background: #ffebee;
+            color: #c62828;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .back-button {
+            display: inline-block;
+            margin-top: 30px;
+            padding: 12px 24px;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            font-size: 14px;
+            text-align: center;
+        }
+        
+        .back-button:hover {
+            background: #5a67d8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>💝 恋愛診断結果</h1>
+        <p class="subtitle">あなたと相手の関係性を分析しました</p>
+        
+        <div id="resultContainer">
+            <div class="loading">診断結果を読み込んでいます...</div>
+        </div>
+        
+        <div style="text-align: center;">
+            <a href="/api/profile-form" class="back-button">もう一度診断する</a>
+        </div>
+    </div>
+    
+    <script>
+        // URLパラメータからprofileIdを取得
+        const urlParams = new URLSearchParams(window.location.search);
+        const profileId = urlParams.get('profileId');
+        
+        // 診断結果を表示
+        function displayResult() {
+            const container = document.getElementById('resultContainer');
+            
+            if (!profileId) {
+                container.innerHTML = '<div class="error">診断結果が見つかりません</div>';
+                return;
+            }
+            
+            // 仮の診断結果を表示（実際にはAPIから取得する想定）
+            const sampleResults = {
+                compatibility: {
+                    title: '相性度',
+                    content: '二人の相性は非常に良好です。お互いの長所を引き出し合える理想的な関係性です。'
+                },
+                feeling: {
+                    title: '相手の気持ち',
+                    content: '相手はあなたに対して好意を持っています。もう少し積極的にアプローチしても良いでしょう。'
+                },
+                advice: {
+                    title: 'アドバイス',
+                    content: 'コミュニケーションを大切にし、お互いの価値観を尊重することで、より深い関係を築けるでしょう。'
+                },
+                future: {
+                    title: '今後の展開',
+                    content: '3ヶ月以内に関係性に大きな進展がありそうです。自然体で接することが成功の鍵となります。'
+                }
+            };
+            
+            let html = '';
+            for (const key in sampleResults) {
+                const result = sampleResults[key];
+                html += `
+                    <div class="result-section">
+                        <h2 class="result-title">${result.title}</h2>
+                        <div class="result-content">${result.content}</div>
+                    </div>
+                `;
+            }
+            
+            container.innerHTML = html;
+        }
+        
+        // ページ読み込み時に実行
+        document.addEventListener('DOMContentLoaded', function() {
+            // 1秒後に結果を表示（APIレスポンスを待つ演出）
+            setTimeout(displayResult, 1000);
+        });
+    </script>
+</body>
+</html>
