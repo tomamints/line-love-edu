@@ -59,6 +59,10 @@ module.exports = async function handler(req, res) {
                 html = html.replace('</head>', userIdScript + '</head>');
             }
             
+            // パスを修正（/api/から提供されるため、相対パスを調整）
+            html = html.replace('src="compatibility-data-web.js"', 'src="/compatibility-data-web.js"');
+            html = html.replace('src="moon-fortune-web.js"', 'src="/moon-fortune-web.js"');
+            
             res.setHeader('Content-Type', 'text/html; charset=utf-8');
             return res.status(200).send(html);
         } catch (error) {
