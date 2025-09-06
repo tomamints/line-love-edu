@@ -17,13 +17,36 @@ module.exports = async (req, res) => {
     return res.status(405).json({ error: 'Method not allowed' });
   }
   
-  const { userId } = req.query;
+  const { userId, checkOnly } = req.query;
   
   if (!userId) {
     return res.status(400).json({ error: 'User ID is required' });
   }
   
   try {
+    // checkOnlyパラメータがある場合は存在チェックのみ行う
+    if (checkOnly === 'true') {
+      const profilesDB = require('../core/database/profiles-db');
+      const profile = await profilesDB.getProfile(userId);
+      
+      // ordersDBもチェック（タロット占い用）
+      const ordersDB = require('../core/ordersDB');
+      let orderProfile = null;
+      try {
+        orderProfile = await ordersDB.getProfile(userId);
+      } catch (e) {
+        // エラーは無視
+      }
+      
+      const exists = (profile !== null && profile !== undefined) || 
+                    (orderProfile !== null && orderProfile !== undefined);
+      
+      return res.status(200).json({
+        success: true,
+        exists: exists,
+        hasProfile: exists
+      });
+    }
     // まずおつきさま診断のデータをチェック
     const profilesDB = require('../core/database/profiles-db');
     const profile = await profilesDB.getProfile(userId);

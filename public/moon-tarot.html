@@ -700,7 +700,7 @@
             if (userId) {
                 try {
                     console.log('ユーザーID存在チェック中:', userId);
-                    const checkResponse = await fetch(`/api/check-user-exists?userId=${userId}`);
+                    const checkResponse = await fetch(`/api/get-love-profile?userId=${userId}&checkOnly=true`);
                     const checkResult = await checkResponse.json();
                     
                     console.log('ユーザー存在チェック結果:', checkResult);
