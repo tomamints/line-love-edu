@@ -1367,6 +1367,85 @@
                 console.log('データローダー読み込み完了');
             }
             
+            // URLパラメータから診断IDとユーザーIDを取得
+            const urlParams = new URLSearchParams(window.location.search);
+            const diagnosisId = urlParams.get('id');
+            const userId = urlParams.get('userId');
+            
+            // 診断データを取得して表示
+            if (diagnosisId) {
+                try {
+                    const response = await fetch(`/api/profile-form-v2?action=get-diagnosis&id=${diagnosisId}`);
+                    const data = await response.json();
+                    
+                    if (data.success && data.diagnosis) {
+                        console.log('診断データ取得成功:', data.diagnosis);
+                        
+                        // 月相パターンIDを設定
+                        if (typeof currentPatternId !== 'undefined') {
+                            currentPatternId = data.diagnosis.moon_pattern_id || data.diagnosis.pattern_id;
+                            
+                            // 月相コンテンツを更新
+                            if (typeof updateMoonPhaseContent === 'function') {
+                                updateMoonPhaseContent(currentPatternId);
+                            }
+                            
+                            // パターンIDから月相を計算
+                            const moonPhaseIndex = Math.floor(currentPatternId / 8);
+                            const hiddenPhaseIndex = currentPatternId % 8;
+                            const moonPhaseNames = ['新月', '三日月', '上弦の月', '十三夜', '満月', '十六夜', '下弦の月', '暁'];
+                            const moonPhase = moonPhaseNames[moonPhaseIndex];
+                            const hiddenMoonPhase = moonPhaseNames[hiddenPhaseIndex];
+                            
+                            // 6つの要素を更新（4つの軸データを含む）
+                            if (typeof updateSixElements === 'function') {
+                                const profile = {
+                                    emotionalExpression: data.diagnosis.emotional_expression,
+                                    distanceStyle: data.diagnosis.distance_style,
+                                    loveValues: data.diagnosis.love_values,
+                                    loveEnergy: data.diagnosis.love_energy
+                                };
+                                updateSixElements(currentPatternId, moonPhase, hiddenMoonPhase, profile);
+                            }
+                            
+                            // グラフデータも更新
+                            if (typeof updateFortuneGraph === 'function') {
+                                updateFortuneGraph(currentPatternId);
+                            }
+                            
+                            // 4つの軸の結果を更新
+                            if (typeof updatePersonalityDisplay === 'function') {
+                                const profile = {
+                                    emotionalExpression: data.diagnosis.emotional_expression,
+                                    distanceStyle: data.diagnosis.distance_style,
+                                    loveValues: data.diagnosis.love_values,
+                                    loveEnergy: data.diagnosis.love_energy
+                                };
+                                updatePersonalityDisplay(profile);
+                            }
+                            
+                            // 組み合わせ診断文を生成して表示
+                            if (typeof displayCombinedPersonality === 'function') {
+                                const profile = {
+                                    emotionalExpression: data.diagnosis.emotional_expression,
+                                    distanceStyle: data.diagnosis.distance_style,
+                                    loveValues: data.diagnosis.love_values,
+                                    loveEnergy: data.diagnosis.love_energy
+                                };
+                                displayCombinedPersonality(profile);
+                            }
+                        }
+                    }
+                } catch (error) {
+                    console.error('診断データ取得エラー:', error);
+                }
+            }
+            
+            // ユーザープロファイルも読み込む（互換性のため）
+            if (userId && typeof loadUserProfile === 'function') {
+                await loadUserProfile();
+            }
+            
             // 星空背景を生成
             const starsContainer = document.getElementById('starsContainer');
             if (starsContainer && !starsContainer.children.length) {

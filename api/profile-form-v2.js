@@ -279,7 +279,38 @@ module.exports = async (req, res) => {
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
     
     try {
-      const { userId, name, birthDate, patternId, diagnosisType } = req.body;
+      const { action, userId, userName, name, birthDate, patternId, diagnosisType, resultData } = req.body;
+      
+      // save-diagnosisアクションの処理
+      if (action === 'save-diagnosis') {
+        const diagnosisId = `diag_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        
+        // 診断データの保存
+        const diagnosisData = {
+          diagnosisId: diagnosisId,
+          userName: userName || name,
+          birthDate: birthDate,
+          moonPatternId: resultData?.moon_pattern_id || patternId,
+          diagnosisDate: new Date().toISOString(),
+          diagnosisType: diagnosisType || 'otsukisama',
+          // 4つの軸データを保存
+          emotionalExpression: resultData?.emotional_expression || 'straight',
+          distanceStyle: resultData?.distance_style || 'moderate',
+          loveValues: resultData?.love_values || 'romantic',
+          loveEnergy: resultData?.love_energy || 'intense',
+          isPaid: false
+        };
+        
+        if (userId) {
+          await profilesDB.saveProfile(userId, diagnosisData);
+        }
+        
+        return res.status(200).json({
+          success: true,
+          diagnosisId: diagnosisId,
+          message: '診断データを保存しました'
+        });
+      }
       
       // おつきさま診断データの保存
       if (diagnosisType === 'otsukisama' || patternId !== undefined) {
