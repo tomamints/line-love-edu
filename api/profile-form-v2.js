@@ -5,22 +5,17 @@
 
 const { createClient } = require('@supabase/supabase-js');
 
-// Supabase設定 - 環境変数の確認とエラーハンドリング
-// Vercel環境変数に合わせて修正
+// Supabase設定
 const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://sxqxuebvhdpqyktxvofe.supabase.co';
 const supabaseServiceKey = process.env.SUPABASE_ANON_KEY || process.env.SUPABASE_SERVICE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-// 環境変数が設定されていない場合のエラーメッセージ
 if (!supabaseServiceKey) {
     console.error('Missing SUPABASE_ANON_KEY environment variable');
-    console.error('Available env vars:', Object.keys(process.env).filter(k => k.includes('SUPABASE')));
 }
 
-// Supabaseクライアントの作成（環境変数がある場合のみ）
 const supabase = supabaseUrl && supabaseServiceKey ? createClient(supabaseUrl, supabaseServiceKey) : null;
 
 module.exports = async function handler(req, res) {
-    // Supabaseクライアントが初期化されていない場合はエラー
     if (!supabase) {
         return res.status(500).json({ 
             error: 'Database configuration error',
@@ -36,425 +31,28 @@ module.exports = async function handler(req, res) {
     
     // actionがない場合、かつGETリクエストの場合はHTMLフォームを返す
     if (!action && req.method === 'GET') {
+        const fs = require('fs');
+        const path = require('path');
         const userId = req.query.userId;
         
-        // 元のプロフィールフォーム（パートナーの誕生日と関係性の質問付き）を返す
-        const html = `
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>恋愛診断プロフィール入力</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        // オリジナルのプロフィールフォームHTMLを読み込む
+        const htmlPath = path.join(__dirname, '..', 'public', 'profile-form-original.html');
         
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
-        
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-        }
-        
-        h1 {
-            color: #333;
-            font-size: 28px;
-            text-align: center;
-            margin-bottom: 10px;
-        }
-        
-        .subtitle {
-            color: #666;
-            text-align: center;
-            margin-bottom: 30px;
-            font-size: 14px;
-        }
-        
-        .form-group {
-            margin-bottom: 25px;
-        }
-        
-        label {
-            display: block;
-            color: #333;
-            font-weight: 600;
-            margin-bottom: 8px;
-            font-size: 14px;
-        }
-        
-        input[type="text"],
-        select {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            font-size: 14px;
-            transition: border-color 0.3s;
-        }
-        
-        input[type="text"]:focus,
-        select:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-        
-        .date-inputs {
-            display: flex;
-            gap: 10px;
-        }
-        
-        .radio-group {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-top: 10px;
-        }
-        
-        .radio-option {
-            display: flex;
-            align-items: flex-start;
-            padding: 15px;
-            background: #f8f9fa;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s;
-            border: 2px solid transparent;
-        }
-        
-        .radio-option:hover {
-            background: #e8e9ff;
-        }
-        
-        .radio-option input[type="radio"] {
-            margin-right: 12px;
-            margin-top: 3px;
-        }
-        
-        .radio-option input[type="radio"]:checked + .radio-content {
-            font-weight: 600;
-        }
-        
-        .radio-option:has(input:checked) {
-            background: #e8e9ff;
-            border-color: #667eea;
-        }
-        
-        .radio-content {
-            flex: 1;
-        }
-        
-        .radio-title {
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 4px;
-        }
-        
-        .radio-description {
-            font-size: 12px;
-            color: #666;
-            line-height: 1.4;
-        }
-        
-        .submit-button {
-            width: 100%;
-            padding: 15px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-            margin-top: 30px;
-        }
-        
-        .submit-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
-        }
-        
-        .submit-button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-        
-        .error {
-            color: #d32f2f;
-            font-size: 12px;
-            margin-top: 5px;
-        }
-
-        .required {
-            color: #d32f2f;
-            font-size: 12px;
-            margin-left: 4px;
-        }
-    </style>
-    ${userId ? `
-    <script>
-        // LINEから渡されたユーザーID
-        window.lineUserId = '${userId}';
-        sessionStorage.setItem('moon_tarot_line_user_id', '${userId}');
-        localStorage.setItem('moon_tarot_line_user_id', '${userId}');
-    </script>
-    ` : ''}
-</head>
-<body>
-    <div class="container">
-        <h1>💝 恋愛診断プロフィール</h1>
-        <p class="subtitle">あなたと相手の情報を入力してください</p>
-        
-        <form id="profileForm">
-            <!-- 名前 -->
-            <div class="form-group">
-                <label>あなたのお名前（ニックネーム可）<span class="required">*</span></label>
-                <input type="text" id="userName" placeholder="例：ゆき" required>
-            </div>
+        try {
+            let html = fs.readFileSync(htmlPath, 'utf8');
             
-            <!-- 自分の誕生日 -->
-            <div class="form-group">
-                <label>あなたの生年月日<span class="required">*</span></label>
-                <div class="date-inputs">
-                    <select id="userYear" style="flex: 1;" required>
-                        <option value="">年</option>
-                    </select>
-                    <select id="userMonth" style="flex: 1;" required>
-                        <option value="">月</option>
-                    </select>
-                    <select id="userDay" style="flex: 1;" required>
-                        <option value="">日</option>
-                    </select>
-                </div>
-            </div>
-            
-            <!-- 相手の誕生日 -->
-            <div class="form-group">
-                <label>お相手の生年月日<span class="required">*</span></label>
-                <div class="date-inputs">
-                    <select id="partnerYear" style="flex: 1;" required>
-                        <option value="">年</option>
-                    </select>
-                    <select id="partnerMonth" style="flex: 1;" required>
-                        <option value="">月</option>
-                    </select>
-                    <select id="partnerDay" style="flex: 1;" required>
-                        <option value="">日</option>
-                    </select>
-                </div>
-            </div>
-            
-            <!-- Q1: 恋の状況 -->
-            <div class="form-group">
-                <label><strong>Q1：あなたの恋の状況は、どれに近いですか？</strong><span class="required">*</span></label>
-                <div class="radio-group">
-                    <label class="radio-option">
-                        <input type="radio" name="loveSituation" value="beginning" required>
-                        <div class="radio-content">
-                            <div class="radio-title">恋の始まり・相手との距離感</div>
-                            <div class="radio-description">これから関係を深めたい、相手の気持ちを知りたい</div>
-                        </div>
-                    </label>
-                    
-                    <label class="radio-option">
-                        <input type="radio" name="loveSituation" value="dating" required>
-                        <div class="radio-content">
-                            <div class="radio-title">交際中・結婚前の相性</div>
-                            <div class="radio-description">今の関係をより良くしたい、将来について考えたい</div>
-                        </div>
-                    </label>
-                    
-                    <label class="radio-option">
-                        <input type="radio" name="loveSituation" value="marriage" required>
-                        <div class="radio-content">
-                            <div class="radio-title">夫婦関係・長期的な絆</div>
-                            <div class="radio-description">パートナーシップを深めたい、お互いの理解を深めたい</div>
-                        </div>
-                    </label>
-                    
-                    <label class="radio-option">
-                        <input type="radio" name="loveSituation" value="reunion" required>
-                        <div class="radio-content">
-                            <div class="radio-title">復縁・再会の可能性</div>
-                            <div class="radio-description">もう一度やり直したい、関係修復の可能性を知りたい</div>
-                        </div>
-                    </label>
-                </div>
-            </div>
-            
-            <!-- Q2: 何を知りたいか -->
-            <div class="form-group">
-                <label><strong>Q2：何を知りたいですか？</strong><span class="required">*</span></label>
-                <div class="radio-group">
-                    <label class="radio-option">
-                        <input type="radio" name="whatToKnow" value="feelings" required>
-                        <div class="radio-content">
-                            <div class="radio-title">相手の本音・気持ち</div>
-                            <div class="radio-description">相手があなたをどう思っているか知りたい</div>
-                        </div>
-                    </label>
-                    
-                    <label class="radio-option">
-                        <input type="radio" name="whatToKnow" value="compatibility" required>
-                        <div class="radio-content">
-                            <div class="radio-title">二人の相性・運命</div>
-                            <div class="radio-description">価値観や性格の相性を詳しく知りたい</div>
-                        </div>
-                    </label>
-                    
-                    <label class="radio-option">
-                        <input type="radio" name="whatToKnow" value="future" required>
-                        <div class="radio-content">
-                            <div class="radio-title">未来の展開・可能性</div>
-                            <div class="radio-description">これからの関係がどうなるか知りたい</div>
-                        </div>
-                    </label>
-                    
-                    <label class="radio-option">
-                        <input type="radio" name="whatToKnow" value="advice" required>
-                        <div class="radio-content">
-                            <div class="radio-title">関係改善のアドバイス</div>
-                            <div class="radio-description">どうすれば良い関係になれるか知りたい</div>
-                        </div>
-                    </label>
-                </div>
-            </div>
-            
-            <button type="submit" class="submit-button" id="submitButton">
-                診断を開始する
-            </button>
-        </form>
-    </div>
-    
-    <script>
-        // 年月日の選択肢を生成
-        function populateDateSelects() {
-            const currentYear = new Date().getFullYear();
-            
-            // 年の選択肢（自分用）
-            const userYearSelect = document.getElementById('userYear');
-            for (let year = currentYear; year >= 1920; year--) {
-                const option = document.createElement('option');
-                option.value = year;
-                option.textContent = year + '年';
-                userYearSelect.appendChild(option);
-            }
-            
-            // 年の選択肢（相手用）
-            const partnerYearSelect = document.getElementById('partnerYear');
-            for (let year = currentYear; year >= 1920; year--) {
-                const option = document.createElement('option');
-                option.value = year;
-                option.textContent = year + '年';
-                partnerYearSelect.appendChild(option);
-            }
-            
-            // 月の選択肢
-            const monthSelects = ['userMonth', 'partnerMonth'];
-            monthSelects.forEach(id => {
-                const select = document.getElementById(id);
-                for (let month = 1; month <= 12; month++) {
-                    const option = document.createElement('option');
-                    option.value = month;
-                    option.textContent = month + '月';
-                    select.appendChild(option);
-                }
-            });
-            
-            // 日の選択肢
-            const daySelects = ['userDay', 'partnerDay'];
-            daySelects.forEach(id => {
-                const select = document.getElementById(id);
-                for (let day = 1; day <= 31; day++) {
-                    const option = document.createElement('option');
-                    option.value = day;
-                    option.textContent = day + '日';
-                    select.appendChild(option);
-                }
-            });
-        }
-        
-        // フォーム送信処理
-        document.getElementById('profileForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const submitButton = document.getElementById('submitButton');
-            submitButton.disabled = true;
-            submitButton.textContent = '処理中...';
-            
-            const formData = {
-                userName: document.getElementById('userName').value,
-                userBirthDate: document.getElementById('userYear').value + '-' + 
-                               String(document.getElementById('userMonth').value).padStart(2, '0') + '-' + 
-                               String(document.getElementById('userDay').value).padStart(2, '0'),
-                partnerBirthDate: document.getElementById('partnerYear').value + '-' + 
-                                  String(document.getElementById('partnerMonth').value).padStart(2, '0') + '-' + 
-                                  String(document.getElementById('partnerDay').value).padStart(2, '0'),
-                loveSituation: document.querySelector('input[name="loveSituation"]:checked').value,
-                whatToKnow: document.querySelector('input[name="whatToKnow"]:checked').value
-            };
-            
-            // userIdがあれば追加
-            const userId = window.lineUserId || new URLSearchParams(window.location.search).get('userId');
+            // userIdが渡された場合、HTMLに埋め込む
             if (userId) {
-                formData.userId = userId;
+                html = html.replace('<input type="hidden" name="userId" id="userId" value="">', 
+                                  `<input type="hidden" name="userId" id="userId" value="${userId}">`);
             }
             
-            try {
-                // プロフィールデータを保存
-                const response = await fetch('/api/profile-form-v2', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        action: 'save-profile',
-                        ...formData
-                    })
-                });
-                
-                const result = await response.json();
-                
-                if (result.success) {
-                    // 診断結果ページへ遷移
-                    window.location.href = '/moon-fortune-result.html?profileId=' + result.profileId;
-                } else {
-                    alert('エラーが発生しました: ' + (result.error || 'Unknown error'));
-                    submitButton.disabled = false;
-                    submitButton.textContent = '診断を開始する';
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                alert('エラーが発生しました。もう一度お試しください。');
-                submitButton.disabled = false;
-                submitButton.textContent = '診断を開始する';
-            }
-        });
-        
-        // ページ読み込み時に実行
-        document.addEventListener('DOMContentLoaded', function() {
-            populateDateSelects();
-        });
-    </script>
-</body>
-</html>
-        `;
-        
-        res.setHeader('Content-Type', 'text/html; charset=utf-8');
-        return res.status(200).send(html);
+            res.setHeader('Content-Type', 'text/html; charset=utf-8');
+            return res.status(200).send(html);
+        } catch (error) {
+            console.error('Error reading HTML file:', error);
+            return res.status(500).json({ error: 'Failed to load form' });
+        }
     }
     
     console.log(`[Profile Form V2] Action: ${action}`, req.method);
