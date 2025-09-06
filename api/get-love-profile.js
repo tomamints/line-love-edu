@@ -26,6 +26,40 @@ module.exports = async (req, res) => {
   try {
     // checkOnlyパラメータがある場合は存在チェックのみ行う
     if (checkOnly === 'true') {
+      // LINE User IDのパターンをチェック（Uで始まる33文字のID）
+      const isValidLineUserId = /^U[0-9a-f]{32}$/i.test(userId);
+      
+      if (isValidLineUserId) {
+        // 有効なLINE User IDの場合は、自動的に簡易プロファイルを作成
+        console.log('Valid LINE User ID detected:', userId);
+        
+        try {
+          const profilesDB = require('../core/database/profiles-db');
+          let profile = await profilesDB.getProfile(userId);
+          
+          if (!profile) {
+            // プロファイルが存在しない場合、最小限のプロファイルを作成
+            console.log('Creating minimal profile for LINE user:', userId);
+            await profilesDB.saveProfile(userId, {
+              userId: userId,
+              createdAt: new Date().toISOString(),
+              source: 'line_tarot',
+              isMinimalProfile: true
+            });
+          }
+        } catch (e) {
+          console.log('Profile creation error (non-critical):', e.message);
+        }
+        
+        // 有効なLINE User IDは常に存在するとみなす
+        return res.status(200).json({
+          success: true,
+          exists: true,
+          hasProfile: true
+        });
+      }
+      
+      // LINE User IDではない場合は、既存のプロファイルをチェック
       let profile = null;
       try {
         const profilesDB = require('../core/database/profiles-db');
@@ -34,20 +68,7 @@ module.exports = async (req, res) => {
         console.log('profilesDB check error:', e.message);
       }
       
-      // ordersDBもチェック（タロット占い用）
-      let orderProfile = null;
-      try {
-        const ordersDB = require('../core/ordersDB');
-        if (ordersDB && ordersDB.getProfile) {
-          orderProfile = await ordersDB.getProfile(userId);
-        }
-      } catch (e) {
-        // ordersDBが使用できない場合はスキップ
-        console.log('ordersDB check skipped:', e.message);
-      }
-      
-      const exists = (profile !== null && profile !== undefined) || 
-                    (orderProfile !== null && orderProfile !== undefined);
+      const exists = profile !== null && profile !== undefined;
       
       return res.status(200).json({
         success: true,
