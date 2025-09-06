@@ -1258,122 +1258,238 @@ async function handleTextMessage(event) {
       return;
     }
     
-    // 「本格」キーワードでLPへ誘導
-    if (text === '本格') {
-      const lpUrl = `${process.env.BASE_URL || 'https://line-love-edu.vercel.app'}/lp-otsukisama-input.html?userId=${userId}`;
+    // 「おつきさま診断」メッセージのハンドリング
+    if (text === 'おつきさま診断') {
+      const webUrl = `${process.env.BASE_URL || 'https://line-love-edu.vercel.app'}/moon-fortune.html?userId=${userId}`;
       
-      await client.replyMessage(event.replyToken, {
-        type: 'flex',
-        altText: '🌙 本格おつきさま診断 - 直近3ヶ月の運勢',
-        contents: {
-          type: 'bubble',
-          size: 'mega',
-          header: {
-            type: 'box',
-            layout: 'vertical',
-            contents: [
-              {
-                type: 'text',
-                text: '🌙 本格おつきさま診断 🌙',
-                size: 'xl',
-                color: '#ffffff',
-                align: 'center',
-                weight: 'bold'
-              },
-              {
-                type: 'text',
-                text: '直近3ヶ月の詳細運勢',
-                size: 'md',
-                color: '#ffffff',
-                align: 'center',
-                margin: 'md'
-              }
-            ],
-            backgroundColor: '#764ba2',
-            paddingAll: '20px'
-          },
-          body: {
-            type: 'box',
-            layout: 'vertical',
-            contents: [
-              {
-                type: 'text',
-                text: '🌙 あなたの生まれた瞬間の月の形から',
-                size: 'md',
-                weight: 'bold',
-                color: '#764ba2',
-                wrap: true,
-                align: 'center'
-              },
-              {
-                type: 'text',
-                text: '導き出される',
-                size: 'sm',
-                align: 'center',
-                margin: 'sm'
-              },
-              {
-                type: 'text',
-                text: 'あなただけの詳細な運勢',
-                size: 'lg',
-                weight: 'bold',
-                align: 'center',
-                margin: 'lg',
-                wrap: true
-              },
-              {
-                type: 'separator',
-                margin: 'xl'
-              },
-              {
-                type: 'box',
-                layout: 'vertical',
-                margin: 'xl',
-                spacing: 'sm',
-                contents: [
-                  {
-                    type: 'text',
-                    text: '• 直近3ヶ月の運勢グラフ',
-                    size: 'sm'
-                  },
-                  {
-                    type: 'text',
-                    text: '• 恋愛・仕事・金運の詳細予測',
-                    size: 'sm'
-                  },
-                  {
-                    type: 'text',
-                    text: '• 月相別の開運アドバイス',
-                    size: 'sm'
-                  },
-                  {
-                    type: 'text',
-                    text: '• あなただけの月齢カレンダー',
-                    size: 'sm'
-                  }
-                ]
-              }
-            ],
-            paddingAll: '20px'
-          },
-          footer: {
-            type: 'box',
-            layout: 'vertical',
-            contents: [
-              {
-                type: 'button',
-                style: 'primary',
-                height: 'md',
-                action: {
-                  type: 'uri',
-                  label: '診断結果を見る',
-                  uri: lpUrl
+      await client.replyMessage(event.replyToken, [
+        {
+          type: 'text',
+          text: '🌙 本格おつきさま診断は現在準備中です\n\nサービス開始までもうしばらくお待ちください。'
+        },
+        {
+          type: 'flex',
+          altText: '月の運勢占い（簡易版）のご案内',
+          contents: {
+            type: 'bubble',
+            header: {
+              type: 'box',
+              layout: 'vertical',
+              contents: [
+                {
+                  type: 'text',
+                  text: '✨ 今すぐ占える！',
+                  size: 'sm',
+                  color: '#ffffff'
                 },
-                color: '#764ba2'
-              }
-            ],
-            paddingAll: '10px'
+                {
+                  type: 'text',
+                  text: '月の運勢占い（簡易版）',
+                  size: 'lg',
+                  color: '#ffffff',
+                  weight: 'bold'
+                }
+              ],
+              backgroundColor: '#667eea',
+              paddingTop: '15px',
+              paddingBottom: '15px'
+            },
+            body: {
+              type: 'box',
+              layout: 'vertical',
+              contents: [
+                {
+                  type: 'text',
+                  text: 'お名前を入力するだけで、今日の月相から運勢を占います',
+                  wrap: true,
+                  size: 'sm',
+                  margin: 'md'
+                },
+                {
+                  type: 'separator',
+                  margin: 'lg'
+                },
+                {
+                  type: 'box',
+                  layout: 'vertical',
+                  margin: 'lg',
+                  spacing: 'sm',
+                  contents: [
+                    {
+                      type: 'text',
+                      text: '📋 簡易版の内容',
+                      weight: 'bold',
+                      size: 'sm',
+                      color: '#667eea'
+                    },
+                    {
+                      type: 'text',
+                      text: '• 今日の月相診断',
+                      size: 'xs',
+                      margin: 'sm'
+                    },
+                    {
+                      type: 'text',
+                      text: '• 総合運勢',
+                      size: 'xs'
+                    },
+                    {
+                      type: 'text',
+                      text: '• ラッキーアイテム',
+                      size: 'xs'
+                    },
+                    {
+                      type: 'text',
+                      text: '• 開運アドバイス',
+                      size: 'xs'
+                    }
+                  ]
+                }
+              ]
+            },
+            footer: {
+              type: 'box',
+              layout: 'vertical',
+              contents: [
+                {
+                  type: 'button',
+                  style: 'primary',
+                  action: {
+                    type: 'uri',
+                    label: '🌙 簡易版を試す（無料）',
+                    uri: webUrl
+                  },
+                  color: '#667eea'
+                },
+                {
+                  type: 'text',
+                  text: '※Webサイトへ移動します',
+                  size: 'xxs',
+                  color: '#aaaaaa',
+                  align: 'center',
+                  margin: 'sm'
+                }
+              ]
+            }
           }
+        }
+      ]);
+      return;
+    }
+    
+    // 「本格」キーワードでも同じ処理（互換性のため）
+    if (text === '本格') {
+      const webUrl = `${process.env.BASE_URL || 'https://line-love-edu.vercel.app'}/moon-fortune.html?userId=${userId}`;
+      
+      await client.replyMessage(event.replyToken, [
+        {
+          type: 'text',
+          text: '🌙 本格おつきさま診断は現在準備中です\n\nサービス開始までもうしばらくお待ちください。'
+        },
+        {
+          type: 'flex',
+          altText: '月の運勢占い（簡易版）のご案内',
+          contents: {
+            type: 'bubble',
+            header: {
+              type: 'box',
+              layout: 'vertical',
+              contents: [
+                {
+                  type: 'text',
+                  text: '✨ 今すぐ占える！',
+                  size: 'sm',
+                  color: '#ffffff'
+                },
+                {
+                  type: 'text',
+                  text: '月の運勢占い（簡易版）',
+                  size: 'lg',
+                  color: '#ffffff',
+                  weight: 'bold'
+                }
+              ],
+              backgroundColor: '#667eea',
+              paddingTop: '15px',
+              paddingBottom: '15px'
+            },
+            body: {
+              type: 'box',
+              layout: 'vertical',
+              contents: [
+                {
+                  type: 'text',
+                  text: 'お名前を入力するだけで、今日の月相から運勢を占います',
+                  wrap: true,
+                  size: 'sm',
+                  margin: 'md'
+                },
+                {
+                  type: 'separator',
+                  margin: 'lg'
+                },
+                {
+                  type: 'box',
+                  layout: 'vertical',
+                  margin: 'lg',
+                  spacing: 'sm',
+                  contents: [
+                    {
+                      type: 'text',
+                      text: '📋 簡易版の内容',
+                      weight: 'bold',
+                      size: 'sm',
+                      color: '#667eea'
+                    },
+                    {
+                      type: 'text',
+                      text: '• 今日の月相診断',
+                      size: 'xs',
+                      margin: 'sm'
+                    },
+                    {
+                      type: 'text',
+                      text: '• 総合運勢',
+                      size: 'xs'
+                    },
+                    {
+                      type: 'text',
+                      text: '• ラッキーアイテム',
+                      size: 'xs'
+                    },
+                    {
+                      type: 'text',
+                      text: '• 開運アドバイス',
+                      size: 'xs'
+                    }
+                  ]
+                }
+              ]
+            },
+            footer: {
+              type: 'box',
+              layout: 'vertical',
+              contents: [
+                {
+                  type: 'button',
+                  style: 'primary',
+                  action: {
+                    type: 'uri',
+                    label: '🌙 簡易版を試す（無料）',
+                    uri: webUrl
+                  },
+                  color: '#667eea'
+                },
+                {
+                  type: 'text',
+                  text: '※Webサイトへ移動します',
+                  size: 'xxs',
+                  color: '#aaaaaa',
+                  align: 'center',
+                  margin: 'sm'
+                }
+              ]
+            }
         }
       });
       return;

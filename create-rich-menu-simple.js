@@ -54,7 +54,7 @@ const richMenuObject = {
       },
       action: {
         type: 'message',
-        text: '本格'
+        text: 'おつきさま診断'
       }
     }
   ]
