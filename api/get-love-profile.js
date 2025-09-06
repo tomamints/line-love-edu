@@ -26,16 +26,24 @@ module.exports = async (req, res) => {
   try {
     // checkOnlyパラメータがある場合は存在チェックのみ行う
     if (checkOnly === 'true') {
-      const profilesDB = require('../core/database/profiles-db');
-      const profile = await profilesDB.getProfile(userId);
+      let profile = null;
+      try {
+        const profilesDB = require('../core/database/profiles-db');
+        profile = await profilesDB.getProfile(userId);
+      } catch (e) {
+        console.log('profilesDB check error:', e.message);
+      }
       
       // ordersDBもチェック（タロット占い用）
-      const ordersDB = require('../core/ordersDB');
       let orderProfile = null;
       try {
-        orderProfile = await ordersDB.getProfile(userId);
+        const ordersDB = require('../core/ordersDB');
+        if (ordersDB && ordersDB.getProfile) {
+          orderProfile = await ordersDB.getProfile(userId);
+        }
       } catch (e) {
-        // エラーは無視
+        // ordersDBが使用できない場合はスキップ
+        console.log('ordersDB check skipped:', e.message);
       }
       
       const exists = (profile !== null && profile !== undefined) || 
