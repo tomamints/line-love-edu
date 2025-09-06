@@ -24,13 +24,18 @@ const PAYPAY_BASE_URL = PAYPAY_ENV === 'production'
 
 // HMAC-SHA256署名を生成
 function generateAuthHeader(method, path, contentType, body = '') {
+    if (!PAYPAY_API_SECRET || !PAYPAY_API_KEY) {
+        console.error('PayPay credentials missing');
+        return '';
+    }
+    
     const nonce = crypto.randomBytes(8).toString('hex');
-    const epoch = Math.floor(Date.now() / 1000);
+    const epoch = Math.floor(Date.now() / 1000).toString();
     
-    // ペイロードハッシュ
-    const bodyHash = body ? crypto.createHash('md5').update(body).digest('base64') : 'empty';
+    // ペイロードハッシュ（MD5）
+    const bodyHash = body ? crypto.createHash('md5').update(body, 'utf8').digest('base64') : 'empty';
     
-    // 署名対象文字列
+    // 署名対象文字列（順序が重要）
     const signatureData = [
         path,
         method,
@@ -40,12 +45,22 @@ function generateAuthHeader(method, path, contentType, body = '') {
         bodyHash
     ].join('\n');
     
+    console.log('Signature data:', {
+        path,
+        method,
+        nonce,
+        epoch,
+        contentType,
+        bodyHashLength: bodyHash.length
+    });
+    
     // HMAC-SHA256署名
     const signature = crypto
         .createHmac('sha256', PAYPAY_API_SECRET)
-        .update(signatureData)
+        .update(signatureData, 'utf8')
         .digest('base64');
     
+    // 認証ヘッダーのフォーマット
     return `hmac OPA-Auth:${PAYPAY_API_KEY}:${signature}:${nonce}:${epoch}:${bodyHash}`;
 }
 
@@ -197,18 +212,25 @@ module.exports = async function handler(req, res) {
             const result = await response.json();
             
             if (result.resultInfo?.code === 'SUCCESS' && result.data) {
-                // 決済情報をデータベースに保存
-                await supabase
-                    .from('payment_intents')
-                    .insert({
-                        id: merchantPaymentId,
-                        diagnosis_id: diagnosisId,
-                        user_id: userId || diagnosis.user_id,
-                        amount: amount,
-                        status: 'pending',
-                        payment_method: 'paypay',
-                        payment_data: result.data
-                    });
+                // 決済情報をデータベースに保存（Supabaseがある場合のみ）
+                if (hasSupabase) {
+                    try {
+                        await supabase
+                            .from('payment_intents')
+                            .insert({
+                                id: merchantPaymentId,
+                                diagnosis_id: diagnosisId,
+                                user_id: userId || diagnosis.user_id,
+                                amount: amount,
+                                status: 'pending',
+                                payment_method: 'paypay',
+                                payment_data: result.data
+                            });
+                    } catch (dbError) {
+                        console.error('Database save error:', dbError);
+                        // エラーがあっても続行
+                    }
+                }
 
                 return res.json({
                     success: true,
