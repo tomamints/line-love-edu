@@ -6,10 +6,6 @@
       "destination": "/api/main"
     },
     {
-      "source": "/api/stripe/webhook",
-      "destination": "/api/payment-webhook-v2"
-    },
-    {
       "source": "/api/download-report",
       "destination": "/api/download-report"
     },
@@ -24,10 +20,6 @@
   ],
   "functions": {
     "api/main.js": {
-      "maxDuration": 60,
-      "memory": 1024
-    },
-    "api/payment-webhook-v2.js": {
       "maxDuration": 60,
       "memory": 1024
     },
