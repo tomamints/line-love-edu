@@ -1324,23 +1324,23 @@ async function handleTextMessage(event) {
                     },
                     {
                       type: 'text',
-                      text: '• 今日の月相診断',
+                      text: '• 月タイプ診断（8タイプ）',
                       size: 'xs',
                       margin: 'sm'
                     },
                     {
                       type: 'text',
-                      text: '• 総合運勢',
+                      text: '• 性格と恋愛スタイル',
                       size: 'xs'
                     },
                     {
                       type: 'text',
-                      text: '• ラッキーアイテム',
+                      text: '• 月の満ち欠けの影響',
                       size: 'xs'
                     },
                     {
                       type: 'text',
-                      text: '• 開運アドバイス',
+                      text: '• 月の神様からのメッセージ',
                       size: 'xs'
                     }
                   ]
@@ -2241,28 +2241,133 @@ async function handlePostbackEvent(event) {
     // ユーザーIDを含むURLを生成
     const tarotUrl = `${process.env.BASE_URL || 'https://line-love-edu.vercel.app'}/moon-tarot.html?userId=${userId}`;
     
-    return client.replyMessage(event.replyToken, [
-      {
-        type: 'text',
-        text: '✨ 月タロット占いへようこそ！\n\n月の満ち欠けとタロットカードがあなたの恋愛運を導きます。'
-      },
-      {
-        type: 'text',
-        text: `下のボタンから占いを始めてください：\n${tarotUrl}`,
-        quickReply: {
-          items: [
+    return client.replyMessage(event.replyToken, {
+      type: 'flex',
+      altText: '🔮 月タロット占い',
+      contents: {
+        type: 'bubble',
+        size: 'mega',
+        header: {
+          type: 'box',
+          layout: 'vertical',
+          contents: [
             {
-              type: 'action',
+              type: 'text',
+              text: '🔮 月タロット占い 🔮',
+              size: 'xl',
+              color: '#ffffff',
+              align: 'center',
+              weight: 'bold'
+            },
+            {
+              type: 'text',
+              text: '1日1回の運命カード',
+              size: 'md',
+              color: '#ffffff',
+              align: 'center',
+              margin: 'md'
+            }
+          ],
+          backgroundColor: '#667eea',
+          paddingAll: '20px'
+        },
+        body: {
+          type: 'box',
+          layout: 'vertical',
+          contents: [
+            {
+              type: 'text',
+              text: '✨ 月の満ち欠けとタロットカードが',
+              size: 'md',
+              weight: 'bold',
+              color: '#667eea',
+              wrap: true,
+              align: 'center'
+            },
+            {
+              type: 'text',
+              text: 'あなたの恋愛運を導きます',
+              size: 'sm',
+              color: '#666666',
+              wrap: true,
+              align: 'center',
+              margin: 'md'
+            },
+            {
+              type: 'separator',
+              margin: 'xl'
+            },
+            {
+              type: 'box',
+              layout: 'vertical',
+              margin: 'xl',
+              spacing: 'sm',
+              contents: [
+                {
+                  type: 'text',
+                  text: '🌙 占い内容',
+                  weight: 'bold',
+                  size: 'md',
+                  color: '#667eea'
+                },
+                {
+                  type: 'text',
+                  text: '• 今日の恋愛運',
+                  size: 'sm',
+                  color: '#666666',
+                  margin: 'sm'
+                },
+                {
+                  type: 'text',
+                  text: '• 運命のタロットカード',
+                  size: 'sm',
+                  color: '#666666'
+                },
+                {
+                  type: 'text',
+                  text: '• 月からのメッセージ',
+                  size: 'sm',
+                  color: '#666666'
+                },
+                {
+                  type: 'text',
+                  text: '• 恋愛アドバイス',
+                  size: 'sm',
+                  color: '#666666'
+                }
+              ]
+            }
+          ],
+          paddingAll: '20px'
+        },
+        footer: {
+          type: 'box',
+          layout: 'vertical',
+          spacing: 'sm',
+          contents: [
+            {
+              type: 'button',
+              style: 'primary',
+              height: 'sm',
               action: {
                 type: 'uri',
-                label: '🔮 タロット占いを始める',
+                label: '🔮 占いを始める',
                 uri: tarotUrl
-              }
+              },
+              color: '#667eea'
+            },
+            {
+              type: 'text',
+              text: '※1日1回まで占えます',
+              size: 'xs',
+              color: '#aaaaaa',
+              align: 'center',
+              margin: 'sm'
             }
           ]
         }
       }
-    ]);
+    });
   }
   
   // postback処理（日付選択と性別選択）
