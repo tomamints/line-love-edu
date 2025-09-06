@@ -32,8 +32,14 @@ function generateAuthHeader(method, path, contentType, body = '') {
     const nonce = crypto.randomBytes(8).toString('hex');
     const epoch = Math.floor(Date.now() / 1000).toString();
     
-    // ペイロードハッシュ（MD5）
-    const bodyHash = body ? crypto.createHash('md5').update(body, 'utf8').digest('base64') : 'empty';
+    // ペイロードハッシュ（MD5）- Content-TypeとBodyを連結してハッシュ化
+    let bodyHash = 'empty';
+    if (body) {
+        const md5 = crypto.createHash('md5');
+        md5.update(contentType, 'utf8');
+        md5.update(body, 'utf8');
+        bodyHash = md5.digest('base64');
+    }
     
     // 署名対象文字列（順序が重要）
     const signatureData = [
@@ -51,7 +57,8 @@ function generateAuthHeader(method, path, contentType, body = '') {
         nonce,
         epoch,
         contentType,
-        bodyHashLength: bodyHash.length
+        bodyHash: bodyHash.substring(0, 10) + '...',
+        signatureData: signatureData.substring(0, 100) + '...'
     });
     
     // HMAC-SHA256署名
