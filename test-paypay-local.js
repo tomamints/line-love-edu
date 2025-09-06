@@ -15,7 +15,7 @@ const PAYPAY_ENV = process.env.PAYPAY_ENV || 'sandbox';
 // PayPay APIのベースURL
 const PAYPAY_BASE_URL = PAYPAY_ENV === 'production' 
     ? 'https://api.paypay.ne.jp/v2'
-    : 'https://stg-api.sandbox.paypay.ne.jp/v2';
+    : 'https://stg-api.paypay.ne.jp/v2';
 
 console.log('🔧 PayPay API設定:');
 console.log('- Environment:', PAYPAY_ENV);
