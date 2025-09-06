@@ -1399,95 +1399,113 @@ async function handleTextMessage(event) {
                 align: 'center',
                 weight: 'bold'
               },
-                {
-                  type: 'text',
-                  text: '月の運勢占い（簡易版）',
-                  size: 'lg',
-                  color: '#ffffff',
-                  weight: 'bold'
-                }
-              ],
-              backgroundColor: '#667eea',
-              paddingTop: '15px',
-              paddingBottom: '15px'
-            },
-            body: {
-              type: 'box',
-              layout: 'vertical',
-              contents: [
-                {
-                  type: 'text',
-                  text: 'お名前を入力するだけで、今日の月相から運勢を占います',
-                  wrap: true,
-                  size: 'sm',
-                  margin: 'md'
-                },
-                {
-                  type: 'separator',
-                  margin: 'lg'
-                },
-                {
-                  type: 'box',
-                  layout: 'vertical',
-                  margin: 'lg',
-                  spacing: 'sm',
-                  contents: [
-                    {
-                      type: 'text',
-                      text: '📋 簡易版の内容',
-                      weight: 'bold',
-                      size: 'sm',
-                      color: '#667eea'
-                    },
-                    {
-                      type: 'text',
-                      text: '• 今日の月相診断',
-                      size: 'xs',
-                      margin: 'sm'
-                    },
-                    {
-                      type: 'text',
-                      text: '• 総合運勢',
-                      size: 'xs'
-                    },
-                    {
-                      type: 'text',
-                      text: '• ラッキーアイテム',
-                      size: 'xs'
-                    },
-                    {
-                      type: 'text',
-                      text: '• 開運アドバイス',
-                      size: 'xs'
-                    }
-                  ]
-                }
-              ]
-            },
-            footer: {
-              type: 'box',
-              layout: 'vertical',
-              contents: [
-                {
-                  type: 'button',
-                  style: 'primary',
-                  action: {
-                    type: 'uri',
-                    label: '🌙 簡易版を試す（無料）',
-                    uri: webUrl
+              {
+                type: 'text',
+                text: '直近3ヶ月の詳細運勢',
+                size: 'md',
+                color: '#ffffff',
+                align: 'center',
+                margin: 'md'
+              }
+            ],
+            backgroundColor: '#764ba2',
+            paddingAll: '20px'
+          },
+          body: {
+            type: 'box',
+            layout: 'vertical',
+            contents: [
+              {
+                type: 'text',
+                text: '🌙 あなたの生まれた瞬間の月の形から',
+                size: 'md',
+                weight: 'bold',
+                color: '#764ba2',
+                wrap: true,
+                align: 'center'
+              },
+              {
+                type: 'text',
+                text: '直近3ヶ月の詳細な運勢を診断します',
+                size: 'sm',
+                color: '#666666',
+                wrap: true,
+                align: 'center',
+                margin: 'md'
+              },
+              {
+                type: 'separator',
+                margin: 'xl'
+              },
+              {
+                type: 'box',
+                layout: 'vertical',
+                margin: 'xl',
+                spacing: 'sm',
+                contents: [
+                  {
+                    type: 'text',
+                    text: '💫 占い内容',
+                    weight: 'bold',
+                    size: 'md',
+                    color: '#764ba2'
                   },
-                  color: '#667eea'
+                  {
+                    type: 'text',
+                    text: '• 3ヶ月の全体運',
+                    size: 'sm',
+                    color: '#666666',
+                    margin: 'sm'
+                  },
+                  {
+                    type: 'text',
+                    text: '• 恋愛運の詳細',
+                    size: 'sm',
+                    color: '#666666'
+                  },
+                  {
+                    type: 'text',
+                    text: '• 人間関係運',
+                    size: 'sm',
+                    color: '#666666'
+                  },
+                  {
+                    type: 'text',
+                    text: '• 金運・仕事運',
+                    size: 'sm',
+                    color: '#666666'
+                  }
+                ]
+              }
+            ],
+            paddingAll: '20px'
+          },
+          footer: {
+            type: 'box',
+            layout: 'vertical',
+            spacing: 'sm',
+            contents: [
+              {
+                type: 'button',
+                style: 'primary',
+                height: 'sm',
+                action: {
+                  type: 'uri',
+                  label: '🌙 診断を始める',
+                  uri: lpUrl
                 },
-                {
-                  type: 'text',
-                  text: '※Webサイトへ移動します',
-                  size: 'xxs',
-                  color: '#aaaaaa',
-                  align: 'center',
-                  margin: 'sm'
-                }
-              ]
-            }
+                color: '#764ba2'
+              },
+              {
+                type: 'text',
+                text: '※外部サイトへ移動します',
+                size: 'xs',
+                color: '#aaaaaa',
+                align: 'center',
+                margin: 'sm'
+              }
+            ]
+          }
         }
       });
       return;
