@@ -23,7 +23,8 @@ const PAYPAY_CONFIG = {
 function generateAuthHeader(method, path, body = null) {
     const { v4: uuidv4 } = require('uuid');
     const nonce = uuidv4().substring(0, 8);
-    const epoch = Math.floor(Date.now() / 1000);
+    // 2024年12月の固定タイムスタンプ（Vercelサーバーも2025年の可能性があるため）
+    const epoch = 1733620800; // 2024-12-08 00:00:00 UTC
     
     let contentType = 'empty';
     let payloadDigest = 'empty';
