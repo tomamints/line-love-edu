@@ -88,10 +88,10 @@ app.use('/api', express.urlencoded({ extended: true }));
 
 // 古いエンドポイントは削除（新しいフローを使用）
 
-// プロフィールフォーム（旧バージョン - V2にリダイレクト）
+// プロフィールフォーム（V2に統合）
 app.all('/api/profile-form', async (req, res) => {
-  const profileForm = require('./api/profile-form');
-  await profileForm(req, res);
+  const profileFormV2 = require('./api/profile-form-v2');
+  await profileFormV2(req, res);
 });
 
 // 新しいAPIエンドポイント（V2）
