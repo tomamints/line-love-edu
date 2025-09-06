@@ -26,7 +26,12 @@ const PAYPAY_BASE_URL = PAYPAY_ENV === 'production'
 // HMAC-SHA256署名を生成
 function generateAuthHeader(method, path, contentType, body = '') {
     if (!PAYPAY_API_SECRET || !PAYPAY_API_KEY) {
-        console.error('PayPay credentials missing');
+        console.error('PayPay credentials missing', {
+            hasKey: !!PAYPAY_API_KEY,
+            hasSecret: !!PAYPAY_API_SECRET,
+            keyLength: PAYPAY_API_KEY?.length,
+            secretLength: PAYPAY_API_SECRET?.length
+        });
         return '';
     }
     
@@ -55,13 +60,20 @@ function generateAuthHeader(method, path, contentType, body = '') {
         payloadDigest
     ].join('\n');
     
-    console.log('Auth details:', {
+    console.log('PayPay Auth Debug:', {
+        apiKey: PAYPAY_API_KEY,
+        secretLength: PAYPAY_API_SECRET.length,
+        secretFirst10: PAYPAY_API_SECRET.substring(0, 10),
+        secretLast5: PAYPAY_API_SECRET.substring(PAYPAY_API_SECRET.length - 5),
+        merchantId: PAYPAY_MERCHANT_ID,
         path,
         method,
         nonce,
         epoch,
+        epochDate: new Date(epoch * 1000).toISOString(),
         contentType: actualContentType,
-        digest: payloadDigest.substring(0, 10) + '...'
+        digest: payloadDigest,
+        signatureData: signatureData.replace(/\n/g, '\\n')
     });
     
     // HMAC-SHA256署名
@@ -70,8 +82,11 @@ function generateAuthHeader(method, path, contentType, body = '') {
         .update(signatureData)
         .digest('base64');
     
+    const authHeader = `hmac OPA-Auth:${PAYPAY_API_KEY}:${signature}:${nonce}:${epoch}:${payloadDigest}`;
+    console.log('Auth header generated:', authHeader.substring(0, 100) + '...');
+    
     // 認証ヘッダーのフォーマット
-    return `hmac OPA-Auth:${PAYPAY_API_KEY}:${signature}:${nonce}:${epoch}:${payloadDigest}`;
+    return authHeader;
 }
 
 module.exports = async function handler(req, res) {
@@ -83,14 +98,21 @@ module.exports = async function handler(req, res) {
     const hasSupabase = !!supabase;
     console.log('Supabase configured:', hasSupabase);
 
-    // PayPay設定確認
+    // PayPay設定確認とデバッグ
+    console.log('PayPay Environment Check:', {
+        NODE_ENV: process.env.NODE_ENV,
+        hasApiKey: !!PAYPAY_API_KEY,
+        apiKey: PAYPAY_API_KEY,
+        hasApiSecret: !!PAYPAY_API_SECRET,
+        secretLength: PAYPAY_API_SECRET?.length,
+        hasMerchantId: !!PAYPAY_MERCHANT_ID,
+        merchantId: PAYPAY_MERCHANT_ID,
+        baseUrl: PAYPAY_BASE_URL,
+        env: PAYPAY_ENV
+    });
+    
     if (!PAYPAY_API_KEY || !PAYPAY_API_SECRET || !PAYPAY_MERCHANT_ID) {
-        console.error('PayPay configuration missing:', {
-            hasApiKey: !!PAYPAY_API_KEY,
-            hasApiSecret: !!PAYPAY_API_SECRET,
-            hasMerchantId: !!PAYPAY_MERCHANT_ID,
-            env: PAYPAY_ENV
-        });
+        console.error('PayPay configuration missing');
         // 開発環境では警告のみ
         if (process.env.NODE_ENV === 'production') {
             return res.status(500).json({ 
