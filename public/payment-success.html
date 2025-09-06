@@ -344,8 +344,8 @@
             viewResultBtn.style.display = 'none';
         }
         
-        // PayPay決済の場合、支払い方法を更新
-        if (isPayPayRedirect || merchantPaymentId) {
+        // PayPay決済の場合、支払い方法を更新とデータベース記録
+        if ((isPayPayRedirect || merchantPaymentId) && diagnosisId && userId) {
             const paymentMethodElement = document.querySelector('.info-row:nth-child(2) .info-value');
             if (paymentMethodElement) {
                 paymentMethodElement.textContent = 'PayPay';
@@ -354,6 +354,30 @@
             const amountElement = document.querySelector('.info-row:last-child .info-value');
             if (amountElement) {
                 amountElement.textContent = '¥2,980';
+            }
+            
+            // PayPay決済完了をデータベースに記録（purchasesテーブル）
+            if (merchantPaymentId) {
+                fetch('/api/paypay-webhook', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        merchantPaymentId: merchantPaymentId,
+                        diagnosisId: diagnosisId,
+                        userId: userId
+                    })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        console.log('PayPay payment recorded:', data.purchaseId);
+                    } else {
+                        console.error('Failed to record payment:', data);
+                    }
+                })
+                .catch(err => {
+                    console.error('Error recording payment:', err);
+                });
             }
         }
     </script>
