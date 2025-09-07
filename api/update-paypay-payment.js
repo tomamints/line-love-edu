@@ -210,25 +210,38 @@ module.exports = async function handler(req, res) {
             console.error('Failed to update purchase:', updateError);
         }
 
-        // アクセス権限を付与（Stripeと同じ）
+        // アクセス権限を更新（preview → full）
         const purchaseId = updatedPurchase?.purchase_id || existingPurchase?.purchase_id;
         if (purchaseId) {
-            const { error: accessError } = await supabase
+            // まず既存のpreviewレコードを更新
+            const { error: updateAccessError } = await supabase
                 .from('access_rights')
-                .upsert({
-                    user_id: userId,
-                    resource_type: 'diagnosis',
-                    resource_id: diagnosisId,
+                .update({
                     access_level: 'full',
                     purchase_id: purchaseId,
-                    valid_from: getJSTDateTime(),
-                    valid_until: null // 永久アクセス
-                }, {
-                    onConflict: 'user_id,resource_type,resource_id'
-                });
+                    valid_from: getJSTDateTime()
+                })
+                .eq('resource_id', diagnosisId)
+                .eq('user_id', userId);
 
-            if (accessError) {
-                console.error('Failed to grant access rights:', accessError);
+            if (updateAccessError) {
+                // 更新に失敗した場合は新規作成を試みる
+                console.log('Updating access rights failed, trying to insert:', updateAccessError);
+                const { error: insertAccessError } = await supabase
+                    .from('access_rights')
+                    .insert({
+                        user_id: userId,
+                        resource_type: 'diagnosis',
+                        resource_id: diagnosisId,
+                        access_level: 'full',
+                        purchase_id: purchaseId,
+                        valid_from: getJSTDateTime(),
+                        valid_until: null // 永久アクセス
+                    });
+                
+                if (insertAccessError) {
+                    console.error('Failed to grant access rights:', insertAccessError);
+                }
             }
         }
 

@@ -380,7 +380,24 @@ module.exports = async (req, res) => {
           });
         }
         
-        // 2. profilesテーブルの基本情報も更新（最新の名前・誕生日・恋愛4軸）
+        // 2. access_rightsテーブルにプレビュー権限を作成
+        const { error: accessError } = await supabase
+          .from('access_rights')
+          .insert({
+            user_id: userId || 'anonymous',
+            resource_type: 'diagnosis',
+            resource_id: diagnosisId,
+            access_level: 'preview',
+            valid_from: getJSTDateTime(),
+            valid_until: null, // 永久プレビューアクセス
+            created_at: getJSTDateTime()
+          });
+        
+        if (accessError) {
+          console.error('アクセス権限作成エラー:', accessError);
+        }
+        
+        // 3. profilesテーブルの基本情報も更新（最新の名前・誕生日・恋愛4軸）
         if (userId) {
           const profileData = {
             userName: userName || name,
