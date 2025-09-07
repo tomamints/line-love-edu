@@ -1108,28 +1108,10 @@
             font-weight: 500;
             text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
             text-align: left;
-            max-height: 300px;
-            overflow-y: auto;
+            /* max-heightとoverflowを削除して全文表示 */
             padding-right: 10px;
         }
-        
-        .love-type-content::-webkit-scrollbar {
-            width: 6px;
-        }
-        
-        .love-type-content::-webkit-scrollbar-track {
-            background: rgba(255,255,255,0.1);
-            border-radius: 3px;
-        }
-        
-        .love-type-content::-webkit-scrollbar-thumb {
-            background: rgba(255,255,255,0.3);
-            border-radius: 3px;
-        }
-        
-        .love-type-content::-webkit-scrollbar-thumb:hover {
-            background: rgba(255,255,255,0.5);
-        }
+        /* スクロールバー関連のスタイルは削除（全文表示のため不要） */
         
         /* 運勢セクション */
         .fortune-section {
