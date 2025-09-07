@@ -166,11 +166,11 @@ async function generatePersonalizedCalendar(providedPatternId) {
             }
             
             monthHTML += `
-                <div class="${dayClass}" data-day="${day}" data-month="${targetMonth}" data-year="${targetYear}" style="aspect-ratio: 1; min-height: 60px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 5px;">
-                    <div class="day-content" style="text-align: center;">
-                        <span class="day-number" style="display: block; font-size: 14px; margin-bottom: 2px;">${day}</span>
-                        <span class="moon-emoji" style="display: block; font-size: 16px;">${moonEmoji}</span>
-                        ${specialMark ? `<span class="special-mark" style="display: block; font-size: 12px; margin-top: 2px;">${specialMark}</span>` : ''}
+                <div class="${dayClass}" data-day="${day}" data-month="${targetMonth}" data-year="${targetYear}">
+                    <div class="day-content">
+                        <span class="day-number">${day}</span>
+                        <span class="moon-emoji">${moonEmoji}</span>
+                        ${specialMark ? `<span class="special-mark">${specialMark}</span>` : ''}
                     </div>
                     ${specialMessage}
                 </div>
@@ -182,7 +182,7 @@ async function generatePersonalizedCalendar(providedPatternId) {
         const remainingCells = 7 - (totalCells % 7);
         if (remainingCells < 7) {
             for (let i = 0; i < remainingCells; i++) {
-                monthHTML += '<div class="calendar-day empty" style="aspect-ratio: 1; min-height: 60px;"></div>';
+                monthHTML += '<div class="calendar-day empty"></div>';
             }
         }
         

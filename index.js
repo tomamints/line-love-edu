@@ -192,11 +192,60 @@ app.post('/webhook', middleware(config), async (req, res) => {
         loadHeavyModules();
         
         // 本格テストコマンド - 完全版表示（テスト用）
-        if (messageText === '本格テスト') {
+        if (messageText === '本格テスト' || messageText === '本格テスト6') {
           logger.log('🧪 本格テストコマンド受信:', userId);
           
           try {
-            // 最新の診断IDを取得
+            // パターン6を直接テストする場合
+            if (messageText === '本格テスト6') {
+              const testUrl = `${process.env.BASE_URL || 'https://line-love-edu.vercel.app'}/lp-otsukisama-unified.html?id=6&test=true`;
+              
+              return client.replyMessage(event.replyToken, {
+                type: 'flex',
+                altText: '🧪 パターン6テスト（新フォーマット）',
+                contents: {
+                  type: 'bubble',
+                  size: 'mega',
+                  header: {
+                    type: 'box',
+                    layout: 'vertical',
+                    contents: [{
+                      type: 'text',
+                      text: '🧪 パターン6テスト',
+                      weight: 'bold',
+                      size: 'xl',
+                      color: '#ffffff'
+                    }, {
+                      type: 'text',
+                      text: '新月×下弦の月（新フォーマット）',
+                      size: 'sm',
+                      color: '#cccccc',
+                      margin: 'sm'
+                    }],
+                    backgroundColor: '#764ba2',
+                    paddingAll: '20px'
+                  },
+                  body: {
+                    type: 'box',
+                    layout: 'vertical',
+                    contents: [{
+                      type: 'button',
+                      style: 'primary',
+                      height: 'md',
+                      action: {
+                        type: 'uri',
+                        label: '📖 新フォーマットを見る',
+                        uri: testUrl
+                      },
+                      color: '#764ba2'
+                    }],
+                    paddingAll: '20px'
+                  }
+                }
+              });
+            }
+            
+            // 通常の本格テスト（最新の診断IDを取得）
             const { createClient } = require('@supabase/supabase-js');
             const supabase = createClient(
               process.env.SUPABASE_URL,

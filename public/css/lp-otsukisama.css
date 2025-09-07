@@ -1228,6 +1228,15 @@
             margin-top: 20px;
         }
         
+        .month-header {
+            text-align: center;
+            color: #ffd700;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+        
         .weekday-header {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
