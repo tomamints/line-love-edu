@@ -191,19 +191,14 @@ module.exports = async function handler(req, res) {
         // 1. about:blank - 何も開かずに元のアプリに戻る可能性
         // 2. LINE Universal Link - LINEアプリを直接開く
         
-        // LINEアプリのチャット画面を開くUniversal Link
-        // line://nv/chat - チャット一覧を開く
-        // https://line.me/R/nv/chat - Universal Link版
+        // 決済完了後のリダイレクト先
+        // モバイルの場合：決済完了ページ → 自動でLINEに戻る
+        // デスクトップの場合：決済完了ページのみ
         
-        // 複数の戻り方を試す（優先順位順）
-        // 1. LINE Universal Link（チャット画面を開く）
-        const lineUniversalUrl = `https://line.me/R/nv/chat`;
-        
-        // 2. 通常のWebページ（フォールバック）
         const webSuccessUrl = `${baseUrl}/payment-success.html?id=${diagnosisId}&userId=${userId || ''}&merchantPaymentId=${merchantPaymentId}`;
         
-        // モバイルの場合はLINE Universal Linkを使用
-        const successUrl = isMobile ? lineUniversalUrl : webSuccessUrl;
+        // モバイルでも一旦決済完了ページを表示（その後自動でLINEに戻る）
+        const successUrl = webSuccessUrl;
         
         console.log('[PayPay] Redirect URL:', successUrl);
         console.log('[PayPay] Is Mobile:', isMobile);

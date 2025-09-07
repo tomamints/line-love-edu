@@ -285,32 +285,52 @@
         
         // LINEアプリに戻る機能
         function returnToLINE() {
-            // LINEのURLスキームを使用
-            const lineScheme = 'line://';
+            // LINE公式アカウントにメッセージを送信するURL
+            // これにより決済完了が伝わり、次のアクションが促される
+            const lineAccountId = '@CZRKwBv';
+            const message = encodeURIComponent('決済完了');
             
-            // LINEアプリを開こうとする
-            const startTime = Date.now();
-            window.location.href = lineScheme;
+            // LINEアプリを開いてメッセージを送信
+            const lineMessageUrl = `https://line.me/R/oaMessage/${lineAccountId}?${message}`;
             
-            // 500ms後にチェック - アプリが開いたかどうか
+            // LINEアプリを開く
+            window.location.href = lineMessageUrl;
+            
+            // もしLINEアプリが開かない場合のフォールバック
             setTimeout(() => {
-                // ページがまだアクティブな場合（LINEアプリが開かなかった）
-                if (Date.now() - startTime < 1500) {
-                    console.log('LINEアプリへの自動遷移を試みましたが、ブラウザに留まっています');
-                }
-            }, 500);
+                // チャット画面を開く
+                window.location.href = 'https://line.me/R/nv/chat';
+            }, 3000);
         }
         
-        // PayPayから戻ってきた場合、自動的にLINEアプリに戻る
+        // PayPayから戻ってきた場合の処理
         if (merchantPaymentId && !sessionStorage.getItem('lineReturnAttempted')) {
             // 二重実行を防ぐ
             sessionStorage.setItem('lineReturnAttempted', 'true');
             
-            // 成功メッセージを表示してからLINEに戻る
+            // 決済完了メッセージを表示
+            const messageDiv = document.createElement('div');
+            messageDiv.style.cssText = `
+                position: fixed;
+                top: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: #00B900;
+                color: white;
+                padding: 15px 30px;
+                border-radius: 25px;
+                font-weight: bold;
+                z-index: 10000;
+                animation: slideDown 0.5s ease;
+            `;
+            messageDiv.textContent = '✅ 決済完了！3秒後にLINEに戻ります...';
+            document.body.appendChild(messageDiv);
+            
+            // 3秒後にLINEに戻る（メッセージ送信付き）
             setTimeout(() => {
                 console.log('PayPay決済完了 - LINEアプリに戻ります');
                 returnToLINE();
-            }, 3000); // 3秒後にLINEに戻る
+            }, 3000);
         }
         
         // 日付を設定
