@@ -164,6 +164,9 @@ async function updateMoonPhaseContent(patternId) {
     // プロフィールはLINE APIから取得される場合のみ存在
     const profile = window.userProfile || null;
     if (profile) {
+        // PersonalityTypeMapperを使用して値を変換
+        const mapper = window.PersonalityTypeMapper;
+        
         // 感情表現を更新
         if (profile.emotionalExpression) {
         const emotionalItem = document.querySelector('.type-item[data-type="emotional"]');
@@ -172,20 +175,17 @@ async function updateMoonPhaseContent(patternId) {
             const spans = emotionalItem.querySelectorAll('span');
             const label = spans[spans.length - 1]; // 最後のspan = bottom label
             
-            // 実際のファイル名に合わせたマッピング
-            const typeMapping = {
-                'ストレート告白型': 'straight',
-                'スキンシップ型': 'physical',
-                'さりげない気遣い型': 'subtle',  // care.pngがないのでsubtleを使用
-                '奥手シャイ型': 'shy'
-            };
-            const imageName = typeMapping[profile.emotionalExpression] || 'straight';
+            // 日本語名を取得
+            const japaneseName = mapper ? mapper.getJapaneseName('emotionalExpression', profile.emotionalExpression) : profile.emotionalExpression;
+            // 英語キーを取得（画像パス用）
+            const englishKey = mapper ? mapper.getEnglishKey('emotionalExpression', profile.emotionalExpression) : profile.emotionalExpression;
+            
             if (img) {
-                img.src = `/images/love-types/emotional/${imageName}.png`;
-                img.alt = profile.emotionalExpression;
+                img.src = `/images/love-types/emotional/${englishKey}.png`;
+                img.alt = japaneseName;
             }
             if (label) {
-                label.textContent = profile.emotionalExpression;
+                label.textContent = japaneseName;
             }
         }
     }
@@ -198,25 +198,17 @@ async function updateMoonPhaseContent(patternId) {
             const spans = distanceItem.querySelectorAll('span');
             const label = spans[spans.length - 1]; // 最後のspan = bottom label
             
-            // 実際のファイル名に合わせたマッピング
-            const typeMapping = {
-                'ベッタリ依存型': 'close',
-                'ベッタリ型': 'close',
-                '安心セーフ型': 'moderate',
-                'ちょうどいい距離型': 'moderate',
-                'じっくり型': 'cautious',
-                '自由マイペース型': 'independent',
-                'マイペース型': 'independent',
-                '壁あり慎重型': 'cautious',
-                '超慎重型': 'cautious'
-            };
-            const imageName = typeMapping[profile.distanceStyle] || 'safe';
+            // 日本語名を取得
+            const japaneseName = mapper ? mapper.getJapaneseName('distanceStyle', profile.distanceStyle) : profile.distanceStyle;
+            // 英語キーを取得（画像パス用）
+            const englishKey = mapper ? mapper.getEnglishKey('distanceStyle', profile.distanceStyle) : profile.distanceStyle;
+            
             if (img) {
-                img.src = `/images/love-types/distance/${imageName}.png`;
-                img.alt = profile.distanceStyle;
+                img.src = `/images/love-types/distance/${englishKey}.png`;
+                img.alt = japaneseName;
             }
             if (label) {
-                label.textContent = profile.distanceStyle;
+                label.textContent = japaneseName;
             }
         }
     }
@@ -229,24 +221,17 @@ async function updateMoonPhaseContent(patternId) {
             const spans = valuesItem.querySelectorAll('span');
             const label = spans[spans.length - 1]; // 最後のspan = bottom label
             
-            // 実際のファイル名に合わせたマッピング
-            const typeMapping = {
-                'ロマンチスト型': 'romantic',
-                'ロマンス重視': 'romantic',
-                'リアリスト型': 'realistic',
-                '安心感重視': 'realistic',
-                '刺激ハンター型': 'excitement',
-                '刺激重視': 'excitement',
-                '成長パートナー型': 'growth',
-                '成長重視': 'growth'
-            };
-            const imageName = typeMapping[profile.loveValues] || 'romantic';
+            // 日本語名を取得
+            const japaneseName = mapper ? mapper.getJapaneseName('loveValues', profile.loveValues) : profile.loveValues;
+            // 英語キーを取得（画像パス用）
+            const englishKey = mapper ? mapper.getEnglishKey('loveValues', profile.loveValues) : profile.loveValues;
+            
             if (img) {
-                img.src = `/images/love-types/values/${imageName}.png`;
-                img.alt = profile.loveValues;
+                img.src = `/images/love-types/values/${englishKey}.png`;
+                img.alt = japaneseName;
             }
             if (label) {
-                label.textContent = profile.loveValues;
+                label.textContent = japaneseName;
             }
         }
     }
@@ -259,24 +244,17 @@ async function updateMoonPhaseContent(patternId) {
             const spans = energyItem.querySelectorAll('span');
             const label = spans[spans.length - 1]; // 最後のspan = bottom label
             
-            // 実際のファイル名に合わせたマッピング
-            const typeMapping = {
-                '燃え上がり型': 'intense',
-                '情熱的': 'intense',
-                '持続型': 'stable',
-                '安定的': 'stable',
-                '波あり型': 'fluctuating',
-                '変動的': 'fluctuating',
-                'クール型': 'cool',
-                '冷静': 'cool'
-            };
-            const imageName = typeMapping[profile.loveEnergy] || 'burning';
+            // 日本語名を取得
+            const japaneseName = mapper ? mapper.getJapaneseName('energyType', profile.loveEnergy) : profile.loveEnergy;
+            // 英語キーを取得（画像パス用）
+            const englishKey = mapper ? mapper.getEnglishKey('energyType', profile.loveEnergy) : profile.loveEnergy;
+            
             if (img) {
-                img.src = `/images/love-types/energy/${imageName}.png`;
-                img.alt = profile.loveEnergy;
+                img.src = `/images/love-types/energy/${englishKey}.png`;
+                img.alt = japaneseName;
             }
             if (label) {
-                label.textContent = profile.loveEnergy;
+                label.textContent = japaneseName;
             }
         }
     }
