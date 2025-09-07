@@ -28,9 +28,9 @@ try {
 }
 
 // PayPay APIハンドラーをインポート（手動HMAC実装版）
-const createPayPaySession = require('./api/create-paypay-session.js');
+const createPayPaySession = require('./api/create-paypay-session-final.js');
 
-const PORT = 3001;
+const PORT = process.env.PORT || 3000;
 
 const server = http.createServer(async (req, res) => {
     const parsedUrl = url.parse(req.url, true);
@@ -113,6 +113,47 @@ const server = http.createServer(async (req, res) => {
             }
         });
         
+        return;
+    }
+    
+    // profile-form-v2エンドポイント
+    if (pathname === '/api/profile-form-v2') {
+        let body = '';
+        req.on('data', chunk => {
+            body += chunk.toString();
+        });
+        req.on('end', async () => {
+            try {
+                const data = JSON.parse(body);
+                console.log('📝 profile-form-v2 request:', data.action);
+                
+                // save-diagnosisアクションの処理
+                if (data.action === 'save-diagnosis') {
+                    console.log('💾 診断データ保存:', {
+                        diagnosisId: data.diagnosisId,
+                        birthDate: data.birthDate,
+                        moonType: data.moonType
+                    });
+                    
+                    res.writeHead(200, { 'Content-Type': 'application/json' });
+                    res.write(JSON.stringify({ 
+                        success: true,
+                        diagnosisId: data.diagnosisId,
+                        message: '診断データが保存されました'
+                    }));
+                    res.end();
+                } else {
+                    res.writeHead(200, { 'Content-Type': 'application/json' });
+                    res.write(JSON.stringify({ success: true }));
+                    res.end();
+                }
+            } catch (error) {
+                console.error('❌ profile-form-v2 エラー:', error);
+                res.writeHead(400, { 'Content-Type': 'application/json' });
+                res.write(JSON.stringify({ error: error.message }));
+                res.end();
+            }
+        });
         return;
     }
     

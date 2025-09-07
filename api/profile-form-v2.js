@@ -34,17 +34,38 @@ module.exports = async (req, res) => {
       }
       
       try {
-        // Supabaseから直接診断データを取得
-        const { supabase } = require('../core/database/supabase');
+        // まずdiagnosesテーブルから診断データを取得
+        let diagnosisData = null;
+        let isPaid = false;
         
-        if (supabase) {
-          const { data, error } = await supabase
+        const { data: diagnosis, error: diagError } = await supabase
+          .from('diagnoses')
+          .select('*')
+          .eq('id', id)
+          .single();
+        
+        if (!diagError && diagnosis) {
+          // diagnosesテーブルから取得成功
+          diagnosisData = diagnosis;
+          
+          // purchasesテーブルで支払い状態をチェック
+          const { data: purchase } = await supabase
+            .from('purchases')
+            .select('*')
+            .eq('diagnosis_id', id)
+            .eq('status', 'completed')
+            .single();
+          
+          isPaid = !!purchase;
+        } else {
+          // 後方互換性: profilesテーブルから取得を試みる
+          const { data: profileDiagnosis, error: profileError } = await supabase
             .from('profiles')
             .select('*')
             .eq('diagnosis_id', id)
             .single();
-            
-          if (error || !data) {
+          
+          if (profileError || !profileDiagnosis) {
             console.log('診断データが見つかりません:', id);
             return res.status(404).json({ 
               success: false,
@@ -52,24 +73,45 @@ module.exports = async (req, res) => {
             });
           }
           
-          // 支払い状態をチェック
-          const isPaid = data.is_paid || false;
+          // profilesテーブルのデータをdiagnoses形式に変換
+          diagnosisData = {
+            id: profileDiagnosis.diagnosis_id,
+            user_id: profileDiagnosis.user_id,
+            user_name: profileDiagnosis.user_name,
+            birth_date: profileDiagnosis.birth_date,
+            diagnosis_type_id: profileDiagnosis.diagnosis_type || 'otsukisama',
+            result_data: {
+              moon_pattern_id: profileDiagnosis.moon_pattern_id,
+              emotional_expression: profileDiagnosis.emotional_expression,
+              distance_style: profileDiagnosis.distance_style,
+              love_values: profileDiagnosis.love_values,
+              love_energy: profileDiagnosis.love_energy
+            },
+            created_at: profileDiagnosis.diagnosis_date || profileDiagnosis.created_at
+          };
+          
+          isPaid = profileDiagnosis.is_paid || false;
+        }
+        
+        const data = diagnosisData;
           
           // 基本データ（プレビュー版でも表示）
           const basicDiagnosis = {
-            id: data.diagnosis_id,
+            id: data.id,
             user_id: data.user_id,
             user_name: data.user_name,
             birth_date: data.birth_date,
-            moon_pattern_id: data.moon_pattern_id,
-            pattern_id: data.moon_pattern_id,  // 互換性のため両方提供
-            diagnosis_type: data.diagnosis_type || 'otsukisama',
-            emotional_expression: data.emotional_expression,
-            distance_style: data.distance_style,
-            love_values: data.love_values,
-            love_energy: data.love_energy,
+            moon_pattern_id: data.result_data?.moon_pattern_id,
+            pattern_id: data.result_data?.moon_pattern_id,  // 互換性のため両方提供
+            diagnosis_type: data.diagnosis_type_id || 'otsukisama',
+            emotional_expression: data.result_data?.emotional_expression,
+            distance_style: data.result_data?.distance_style,
+            love_values: data.result_data?.love_values,
+            love_energy: data.result_data?.love_energy,
+            moon_phase: data.result_data?.moon_phase,
+            hidden_moon_phase: data.result_data?.hidden_moon_phase,
             is_paid: isPaid,
-            created_at: data.diagnosis_date || data.created_at
+            created_at: data.created_at
           };
           
           // 支払い済みの場合は完全データを返す
@@ -89,13 +131,6 @@ module.exports = async (req, res) => {
             isPaid: false,
             accessLevel: 'preview'
           });
-        } else {
-          // ファイルベースのフォールバック
-          return res.status(500).json({ 
-            success: false,
-            error: 'データベース接続エラー' 
-          });
-        }
       } catch (error) {
         console.error('診断データ取得エラー:', error);
         return res.status(500).json({ 
@@ -285,24 +320,54 @@ module.exports = async (req, res) => {
       if (action === 'save-diagnosis') {
         const diagnosisId = `diag_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
         
-        // 診断データの保存
-        const diagnosisData = {
-          diagnosisId: diagnosisId,
-          userName: userName || name,
-          birthDate: birthDate,
-          moonPatternId: resultData?.moon_pattern_id || patternId,
-          diagnosisDate: new Date().toISOString(),
-          diagnosisType: diagnosisType || 'otsukisama',
-          // 4つの軸データを保存
-          emotionalExpression: resultData?.emotional_expression || 'straight',
-          distanceStyle: resultData?.distance_style || 'moderate',
-          loveValues: resultData?.love_values || 'romantic',
-          loveEnergy: resultData?.love_energy || 'intense',
-          isPaid: false
-        };
+        // 1. diagnosesテーブルに新規診断を保存（毎回新規）
+        const { data: diagnosis, error: diagError } = await supabase
+          .from('diagnoses')
+          .insert({
+            id: diagnosisId,
+            user_id: userId || 'anonymous',
+            user_name: userName || name,
+            birth_date: birthDate,
+            diagnosis_type_id: diagnosisType || 'otsukisama',
+            result_data: {
+              moon_pattern_id: resultData?.moon_pattern_id || patternId,
+              moon_phase: resultData?.moon_phase,
+              hidden_moon_phase: resultData?.hidden_moon_phase,
+              emotional_expression: resultData?.emotional_expression || 'straight',
+              distance_style: resultData?.distance_style || 'moderate',
+              love_values: resultData?.love_values || 'romantic',
+              love_energy: resultData?.love_energy || 'intense',
+              moon_power_1: resultData?.moon_power_1,
+              moon_power_2: resultData?.moon_power_2,
+              moon_power_3: resultData?.moon_power_3
+            },
+            metadata: {},
+            created_at: new Date().toISOString()
+          })
+          .select()
+          .single();
         
+        if (diagError) {
+          console.error('診断データ保存エラー:', diagError);
+          // エラーでもローカルストレージで続行
+          return res.status(200).json({
+            success: true,
+            diagnosisId: diagnosisId,
+            message: '診断データを保存しました（ローカル）'
+          });
+        }
+        
+        // 2. profilesテーブルの基本情報も更新（最新の名前・誕生日・恋愛4軸）
         if (userId) {
-          await profilesDB.saveProfile(userId, diagnosisData);
+          const profileData = {
+            userName: userName || name,
+            birthDate: birthDate,
+            emotionalExpression: resultData?.emotional_expression || 'straight',
+            distanceStyle: resultData?.distance_style || 'moderate',
+            loveValues: resultData?.love_values || 'romantic',
+            loveEnergy: resultData?.love_energy || 'intense'
+          };
+          await profilesDB.saveProfile(userId, profileData);
         }
         
         return res.status(200).json({

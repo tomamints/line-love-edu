@@ -325,7 +325,68 @@ function diagnose() {
     const moonType = getMoonTypeFromAge(moonAge);
     const moonData = moonTypes[moonType];
     
+    // 診断IDを生成して保存
+    const diagnosisId = generateDiagnosisId();
+    localStorage.setItem('currentDiagnosisId', diagnosisId);
+    console.log('診断ID生成:', diagnosisId);
+    
+    // 診断データをAPIに送信して保存
+    saveDiagnosisToDatabase(diagnosisId, birthdate, moonType, moonData);
+    
     displayResult(moonType, moonData, birthdate);
+}
+
+// 診断IDを生成する関数
+function generateDiagnosisId() {
+    const timestamp = Date.now();
+    const random = Math.random().toString(36).substring(2, 15);
+    return `diag_${timestamp}_${random}`;
+}
+
+// 診断データをデータベースに保存する関数
+async function saveDiagnosisToDatabase(diagnosisId, birthdate, moonType, moonData) {
+    try {
+        const response = await fetch('/api/profile-form-v2', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                action: 'save-diagnosis',
+                userId: localStorage.getItem('userId') || null,
+                userName: null,
+                name: null,
+                birthDate: birthdate,
+                patternId: moonType,
+                diagnosisType: 'otsukisama',
+                resultData: {
+                    moon_pattern_id: moonType,
+                    moon_phase: moonType,
+                    hidden_moon_phase: null,
+                    emotional_expression: 'straight',
+                    distance_style: 'moderate',
+                    love_values: 'romantic',
+                    love_energy: 'intense',
+                    moon_power_1: moonData.traits?.[0],
+                    moon_power_2: moonData.traits?.[1],
+                    moon_power_3: moonData.traits?.[2]
+                }
+            })
+        });
+        
+        if (response.ok) {
+            const result = await response.json();
+            console.log('診断データが保存されました:', result.diagnosisId);
+            // 返されたdiagnosisIdをlocalStorageに保存
+            if (result.diagnosisId) {
+                localStorage.setItem('currentDiagnosisId', result.diagnosisId);
+            }
+        } else {
+            console.error('診断データの保存に失敗しました');
+        }
+    } catch (error) {
+        console.error('診断データ保存エラー:', error);
+    }
 }
 
 // 各月タイプとの相性を計算
