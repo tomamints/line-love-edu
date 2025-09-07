@@ -181,14 +181,17 @@ module.exports = async function handler(req, res) {
         const userAgent = req.headers['user-agent'] || '';
         const isMobile = /iPhone|iPad|iPod|Android/i.test(userAgent);
         
-        // サンドボックス環境では、APP_DEEP_LINKが正しく動作しない場合がある
-        // 全デバイスでWEB_LINKを使用（PayPayアプリがある場合は自動的にアプリが開く）
-        const redirectType = "WEB_LINK";
+        // App Invoke専用設定 - 常にAPP_DEEP_LINKを使用
+        const redirectType = "APP_DEEP_LINK";
+        
+        // App Invoke用のリダイレクトURL（シンプルに）
+        const baseUrl = 'https://line-love-edu.vercel.app';
+        const successUrl = `${baseUrl}/payment-success.html?id=${diagnosisId}&userId=${userId || ''}&merchantPaymentId=${merchantPaymentId}`;
         
         const paymentData = {
             merchantPaymentId: merchantPaymentId,
             codeType: "ORDER_QR",
-            redirectUrl: `https://line-love-edu.vercel.app/payment-success.html?id=${diagnosisId}&userId=${userId || ''}&merchantPaymentId=${merchantPaymentId}`,
+            redirectUrl: successUrl,
             redirectType: redirectType,
             orderDescription: `おつきさま診断 - ${diagnosis.user_name || 'お客様'}`,
             userAgent: userAgent, // PayPayにユーザーエージェントを送信
@@ -208,10 +211,13 @@ module.exports = async function handler(req, res) {
             }
         };
 
-        console.log('Making PayPay API request with crypto-js...');
-        console.log('Mobile detected:', isMobile);
-        console.log('RedirectType:', redirectType);
-        console.log('PaymentData:', JSON.stringify(paymentData, null, 2));
+        console.log('[PayPay App Invoke] Request Details:');
+        console.log('- Mobile detected:', isMobile);
+        console.log('- RedirectType:', redirectType);
+        console.log('- MerchantPaymentId:', merchantPaymentId);
+        console.log('- RedirectUrl:', successUrl);
+        console.log('- Amount:', amount);
+        console.log('- Full PaymentData:', JSON.stringify(paymentData, null, 2));
         
         const response = await callPayPayAPI('/v2/codes', 'POST', paymentData);
         
@@ -223,8 +229,13 @@ module.exports = async function handler(req, res) {
         }
         
         if (response.success && response.data.data) {
-            // WEB_LINKの場合は常にURLを使用（PayPayアプリがある場合は自動的に開く）
-            const redirectUrl = response.data.data.url;
+            // App Invokeの場合はdeeplinkを優先使用
+            const redirectUrl = response.data.data.deeplink || response.data.data.url;
+            
+            console.log('App Invoke Response Details:');
+            console.log('- deeplink:', response.data.data.deeplink);
+            console.log('- url:', response.data.data.url);
+            console.log('- Using:', redirectUrl);
             
             // 成功時の処理 - 共通ハンドラーを使用
             if (hasSupabase) {
