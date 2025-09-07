@@ -181,11 +181,15 @@ module.exports = async function handler(req, res) {
         const userAgent = req.headers['user-agent'] || '';
         const isMobile = /iPhone|iPad|iPod|Android/i.test(userAgent);
         
+        // サンドボックス環境では実際のPayPayアプリが使えないため、Webリンクを使用
+        const isSandbox = process.env.PAYPAY_ENV === 'sandbox';
+        const redirectType = isMobile && !isSandbox ? "APP_DEEP_LINK" : "WEB_LINK";
+        
         const paymentData = {
             merchantPaymentId: merchantPaymentId,
             codeType: "ORDER_QR",
             redirectUrl: `https://line-love-edu.vercel.app/payment-success.html?id=${diagnosisId}&userId=${userId || ''}&merchantPaymentId=${merchantPaymentId}`,
-            redirectType: isMobile ? "APP_DEEP_LINK" : "WEB_LINK", // モバイルの場合はAPP_DEEP_LINK
+            redirectType: redirectType, // サンドボックスではWebリンクを使用
             orderDescription: `おつきさま診断 - ${diagnosis.user_name || 'お客様'}`,
             userAgent: userAgent, // PayPayにユーザーエージェントを送信
             orderItems: [{
@@ -206,7 +210,8 @@ module.exports = async function handler(req, res) {
 
         console.log('Making PayPay API request with crypto-js...');
         console.log('Mobile detected:', isMobile);
-        console.log('RedirectType:', paymentData.redirectType);
+        console.log('Sandbox mode:', isSandbox);
+        console.log('RedirectType:', redirectType);
         
         const response = await callPayPayAPI('/v2/codes', 'POST', paymentData);
         
@@ -217,8 +222,8 @@ module.exports = async function handler(req, res) {
         }
         
         if (response.success && response.data.data) {
-            // モバイルの場合、deeplinkを優先的に使用
-            const redirectUrl = isMobile && response.data.data.deeplink 
+            // サンドボックス環境ではWebリンクのみ使用、本番環境でのみdeeplinkを使用
+            const redirectUrl = isMobile && !isSandbox && response.data.data.deeplink 
                 ? response.data.data.deeplink 
                 : response.data.data.url;
             
