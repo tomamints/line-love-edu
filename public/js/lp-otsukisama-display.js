@@ -538,7 +538,7 @@ async function updatePersonalityDisplay(profile) {
         } else {
             console.error('Element emotionalExpressionType not found');
         }
-        await updateEmotionalExpressionContent(profile.emotionalExpression);
+        await updateEmotionalExpressionContent(profile.emotionalExpression, profile);
         
         // 画像を更新（英語キーをそのまま使用）
         const emotionalImg = document.querySelector('.love-type-card:nth-child(1) img');
@@ -561,7 +561,7 @@ async function updatePersonalityDisplay(profile) {
         // 英語キーの場合は日本語に変換、既に日本語の場合はそのまま使用
         const displayName = distanceMapping[profile.distanceStyle] || profile.distanceStyle;
         document.getElementById('distanceStyleType').textContent = displayName;
-        await updateDistanceStyleContent(profile.distanceStyle);
+        await updateDistanceStyleContent(profile.distanceStyle, profile);
         
         // 画像を更新（英語キーをそのまま使用）
         const distanceImg = document.querySelector('.love-type-card:nth-child(2) img');
@@ -584,7 +584,7 @@ async function updatePersonalityDisplay(profile) {
         // 英語キーの場合は日本語に変換、既に日本語の場合はそのまま使用
         const displayName = valuesMapping[profile.loveValues] || profile.loveValues;
         document.getElementById('loveValuesType').textContent = displayName;
-        await updateLoveValuesContent(profile.loveValues);
+        await updateLoveValuesContent(profile.loveValues, profile);
         
         // 画像を更新（英語キーをそのまま使用）
         const valuesImg = document.querySelector('.love-type-card:nth-child(3) img');
@@ -607,7 +607,7 @@ async function updatePersonalityDisplay(profile) {
         // 英語キーの場合は日本語に変換、既に日本語の場合はそのまま使用
         const displayName = energyMapping[profile.loveEnergy] || profile.loveEnergy;
         document.getElementById('loveEnergyType').textContent = displayName;
-        await updateLoveEnergyContent(profile.loveEnergy);
+        await updateLoveEnergyContent(profile.loveEnergy, profile);
         
         // 画像を更新（英語キーをそのまま使用）
         const energyImg = document.querySelector('.love-type-card:nth-child(4) img');
