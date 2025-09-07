@@ -85,7 +85,13 @@ async function updateMoonPhaseContent(patternId) {
             // JSONデータから説明文を取得
             const moonDescription = window.OtsukisamaDataLoader.getMoonPhaseDescription(pattern.moonPhase);
             if (moonDescription) {
-                moonPhaseDesc.textContent = moonDescription.description;
+                // テキストフォーマッターを使用してユーザー名を置換
+                const userName = profile?.userName || profile?.user_name || 'あなた';
+                if (window.TextFormatter) {
+                    moonPhaseDesc.innerHTML = window.TextFormatter.formatDescription(moonDescription.description, userName);
+                } else {
+                    moonPhaseDesc.textContent = moonDescription.description;
+                }
             }
         }
     }
@@ -1197,7 +1203,15 @@ async function updateMoonPhaseExplanations(moonPhase, hiddenMoonPhase) {
             
             if (titleElement) titleElement.textContent = moonPhaseDesc.title;
             if (subtitleElement) subtitleElement.textContent = moonPhaseDesc.subtitle;
-            if (descElement) descElement.textContent = moonPhaseDesc.description;
+            if (descElement) {
+                // テキストフォーマッターを使用してユーザー名を置換
+                const userName = profile?.userName || profile?.user_name || 'あなた';
+                if (window.TextFormatter) {
+                    descElement.innerHTML = window.TextFormatter.formatDescription(moonPhaseDesc.description, userName);
+                } else {
+                    descElement.textContent = moonPhaseDesc.description;
+                }
+            }
             if (imgElement && moonPhaseDesc.image) {
                 imgElement.src = moonPhaseDesc.image;
                 imgElement.alt = moonPhase;
