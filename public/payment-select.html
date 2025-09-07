@@ -365,7 +365,7 @@
         // 決済ステータスをポーリングして確認
         let pollingInterval = null;
         let pollingCount = 0;
-        const maxPollingCount = 60; // 最大60回（2分間）
+        const maxPollingCount = 240; // 最大240回（0.5秒×240=2分間）
         
         // 決済完了をチェックして、完了していれば決済完了ページへ遷移
         async function checkPaymentStatus() {
@@ -418,8 +418,8 @@
             // 即座に1回チェック
             checkPaymentStatus();
             
-            // 2秒ごとにチェック
-            pollingInterval = setInterval(checkPaymentStatus, 2000);
+            // 0.5秒ごとにチェック（高速ポーリング）
+            pollingInterval = setInterval(checkPaymentStatus, 500);
         }
         
         async function selectPayment(method) {
