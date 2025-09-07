@@ -110,6 +110,9 @@ async function generatePersonalizedCalendar(providedPatternId) {
         monthYearElement.textContent = `${currentYear}年 ${monthNames[currentMonth]} - ${nextYear}年 ${monthNames[nextMonth]}`;
     }
     
+    // カレンダー全体のラッパーを開始
+    fullCalendarHTML = '<div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; width: 100%;">';
+    
     // 2ヶ月分のカレンダーを作成
     for (let monthOffset = 0; monthOffset < 2; monthOffset++) {
         const targetMonth = (currentMonth + monthOffset) % 12;
@@ -119,26 +122,28 @@ async function generatePersonalizedCalendar(providedPatternId) {
         
         // 月のラベルを追加（2ヶ月目の場合）
         if (monthOffset > 0) {
-            // 2ヶ月目のヘッダーと曜日を追加
+            // グリッドを一旦閉じて、ヘッダーを追加し、新しいグリッドを開始
+            fullCalendarHTML += '</div>';  // 前月のグリッドを閉じる
             fullCalendarHTML += `
-                <div style="margin-top: 40px; margin-bottom: 20px; text-align: center; color: #ffd700; font-size: 18px; font-weight: bold;">
+                <div style="margin-top: 40px; margin-bottom: 20px; text-align: center; color: #ffd700; font-size: 18px; font-weight: bold; grid-column: 1 / -1;">
                     ${targetYear}年 ${monthNames[targetMonth]}
                 </div>
-                <div class="weekday-header" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; margin-bottom: 10px;">
-                    <div class="weekday" style="text-align: center; color: #ffd700; font-size: 12px; opacity: 0.8;">日</div>
-                    <div class="weekday" style="text-align: center; color: #ffd700; font-size: 12px; opacity: 0.8;">月</div>
-                    <div class="weekday" style="text-align: center; color: #ffd700; font-size: 12px; opacity: 0.8;">火</div>
-                    <div class="weekday" style="text-align: center; color: #ffd700; font-size: 12px; opacity: 0.8;">水</div>
-                    <div class="weekday" style="text-align: center; color: #ffd700; font-size: 12px; opacity: 0.8;">木</div>
-                    <div class="weekday" style="text-align: center; color: #ffd700; font-size: 12px; opacity: 0.8;">金</div>
-                    <div class="weekday" style="text-align: center; color: #ffd700; font-size: 12px; opacity: 0.8;">土</div>
+                <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; margin-bottom: 10px;">
+                    <div style="text-align: center; color: #ffd700; font-size: 12px; opacity: 0.8;">日</div>
+                    <div style="text-align: center; color: #ffd700; font-size: 12px; opacity: 0.8;">月</div>
+                    <div style="text-align: center; color: #ffd700; font-size: 12px; opacity: 0.8;">火</div>
+                    <div style="text-align: center; color: #ffd700; font-size: 12px; opacity: 0.8;">水</div>
+                    <div style="text-align: center; color: #ffd700; font-size: 12px; opacity: 0.8;">木</div>
+                    <div style="text-align: center; color: #ffd700; font-size: 12px; opacity: 0.8;">金</div>
+                    <div style="text-align: center; color: #ffd700; font-size: 12px; opacity: 0.8;">土</div>
                 </div>
+                <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; width: 100%;">
             `;
         }
         
         // 月初めまでの空白
         for (let i = 0; i < firstDayOfMonth; i++) {
-            fullCalendarHTML += '<div class="calendar-day empty"></div>';
+            fullCalendarHTML += '<div class="calendar-day empty" style="aspect-ratio: 1; min-height: 60px;"></div>';
         }
         
         // 各日付
@@ -180,11 +185,11 @@ async function generatePersonalizedCalendar(providedPatternId) {
             }
             
             fullCalendarHTML += `
-                <div class="${dayClass}" data-day="${day}" data-month="${targetMonth}" data-year="${targetYear}">
-                    <div class="day-content">
-                        <span class="day-number">${day}</span>
-                        <span class="moon-emoji">${moonEmoji}</span>
-                        ${specialMark ? `<span class="special-mark">${specialMark}</span>` : ''}
+                <div class="${dayClass}" data-day="${day}" data-month="${targetMonth}" data-year="${targetYear}" style="aspect-ratio: 1; min-height: 60px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 5px;">
+                    <div class="day-content" style="text-align: center;">
+                        <span class="day-number" style="display: block; font-size: 14px; margin-bottom: 2px;">${day}</span>
+                        <span class="moon-emoji" style="display: block; font-size: 16px;">${moonEmoji}</span>
+                        ${specialMark ? `<span class="special-mark" style="display: block; font-size: 12px; margin-top: 2px;">${specialMark}</span>` : ''}
                     </div>
                     ${specialMessage}
                 </div>
@@ -196,10 +201,13 @@ async function generatePersonalizedCalendar(providedPatternId) {
         const remainingCells = 7 - (totalCells % 7);
         if (remainingCells < 7) {
             for (let i = 0; i < remainingCells; i++) {
-                fullCalendarHTML += '<div class="calendar-day empty"></div>';
+                fullCalendarHTML += '<div class="calendar-day empty" style="aspect-ratio: 1; min-height: 60px;"></div>';
             }
         }
     }
+    
+    // 最後のグリッドを閉じる
+    fullCalendarHTML += '</div>';
     
     // カレンダーのセルのみを更新
     container.innerHTML = fullCalendarHTML;
