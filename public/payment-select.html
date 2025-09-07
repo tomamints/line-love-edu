@@ -332,6 +332,28 @@
         const diagnosisId = urlParams.get('id');
         const userId = urlParams.get('userId');
         
+        // ページが表示された時（PayPayから戻ってきた時も含む）
+        window.addEventListener('pageshow', function(event) {
+            // キャッシュから復元された場合（PayPayから戻ってきた場合）
+            if (event.persisted) {
+                // ローディングを非表示にする
+                document.getElementById('loadingOverlay').style.display = 'none';
+                console.log('PayPayから戻ってきました - ローディングを非表示');
+            }
+        });
+        
+        // visibilitychangeイベントでも対応（念のため）
+        document.addEventListener('visibilitychange', function() {
+            if (document.visibilityState === 'visible') {
+                // ページが表示された時、ローディングを非表示
+                const loadingOverlay = document.getElementById('loadingOverlay');
+                if (loadingOverlay && loadingOverlay.style.display === 'flex') {
+                    console.log('ページが表示されました - ローディングを非表示');
+                    loadingOverlay.style.display = 'none';
+                }
+            }
+        });
+        
         async function selectPayment(method) {
             if (!diagnosisId) {
                 alert('診断IDが見つかりません');
