@@ -13,12 +13,25 @@ const supabase = createClient(
 
 // 日本標準時（JST）のISO文字列を取得する関数
 function getJSTDateTime() {
+  // 現在時刻を取得
   const now = new Date();
-  // UTCからJSTへ変換（+9時間）
-  const jstOffset = 9 * 60 * 60 * 1000;
-  const jstTime = new Date(now.getTime() + jstOffset);
-  // ISO形式で返す（末尾を+09:00に変更）
-  return jstTime.toISOString().replace('Z', '+09:00');
+  
+  // JSTのオフセット（9時間 = 540分）
+  const jstOffset = 9 * 60; // 分単位
+  
+  // 現在のUTC時刻にオフセットを追加
+  const jstTime = new Date(now.getTime() + jstOffset * 60 * 1000);
+  
+  // YYYY-MM-DDTHH:mm:ss.sss+09:00 形式で返す
+  const year = jstTime.getUTCFullYear();
+  const month = String(jstTime.getUTCMonth() + 1).padStart(2, '0');
+  const day = String(jstTime.getUTCDate()).padStart(2, '0');
+  const hours = String(jstTime.getUTCHours()).padStart(2, '0');
+  const minutes = String(jstTime.getUTCMinutes()).padStart(2, '0');
+  const seconds = String(jstTime.getUTCSeconds()).padStart(2, '0');
+  const milliseconds = String(jstTime.getUTCMilliseconds()).padStart(3, '0');
+  
+  return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${milliseconds}+09:00`;
 }
 
 module.exports = async (req, res) => {
