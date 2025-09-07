@@ -7,6 +7,7 @@ const { createClient } = require('@supabase/supabase-js');
 const { HmacSHA256, enc, algo } = require("crypto-js");
 const crypto = require("crypto");
 const https = require("https");
+const PaymentHandler = require('./common/payment-handler');
 
 // UUID生成
 const uuidv4 = () => crypto.randomUUID();
@@ -172,76 +173,51 @@ module.exports = async function handler(req, res) {
             });
         }
 
-        // purchasesテーブルを更新 (metadataからpaypay_merchant_payment_idを検索)
-        const { data: existingPurchase } = await supabase
-            .from('purchases')
-            .select('purchase_id, status')
-            .contains('metadata', { paypay_merchant_payment_id: merchantPaymentId })
-            .single();
+        // 共通ハンドラーを使用
+        const paymentHandler = new PaymentHandler();
 
-        if (existingPurchase && existingPurchase.status === 'completed') {
+        // 既存の購入レコードを確認
+        const findResult = await paymentHandler.findPurchaseByMetadata(
+            'paypay_merchant_payment_id', 
+            merchantPaymentId
+        );
+
+        if (findResult.success && findResult.purchase?.status === 'completed') {
             console.log('Purchase already completed:', merchantPaymentId);
             return res.json({ 
                 success: true, 
                 message: 'Already processed',
-                purchaseId: existingPurchase.purchase_id 
+                purchaseId: findResult.purchase.purchase_id 
             });
         }
 
-        // purchasesテーブルを完了状態に更新
-        const { data: updatedPurchase, error: updateError } = await supabase
-            .from('purchases')
-            .update({
-                status: 'completed',
-                completed_at: getJSTDateTime(),
-                metadata: {
-                    payment_status: paymentData.status,
-                    transaction_id: paymentData.transactionId,
-                    paypay_transaction_id: paymentData.transactionId,
-                    accepted_at: paymentData.acceptedAt,
-                    paypay_merchant_payment_id: merchantPaymentId
-                }
-            })
-            .contains('metadata', { paypay_merchant_payment_id: merchantPaymentId })
-            .select()
-            .single();
+        // purchasesテーブルを完了状態に更新（共通ハンドラーを使用）
+        const completeResult = await paymentHandler.completePurchase({
+            merchantPaymentId: merchantPaymentId,
+            transactionData: {
+                payment_status: paymentData.status,
+                transaction_id: paymentData.transactionId,
+                paypay_transaction_id: paymentData.transactionId,
+                accepted_at: paymentData.acceptedAt,
+                paypay_merchant_payment_id: merchantPaymentId
+            }
+        });
 
-        if (updateError) {
-            console.error('Failed to update purchase:', updateError);
+        if (!completeResult.success) {
+            console.error('Failed to complete purchase:', completeResult.error);
         }
 
-        // アクセス権限を更新（preview → full）
-        const purchaseId = updatedPurchase?.purchase_id || existingPurchase?.purchase_id;
+        // アクセス権限を更新（共通ハンドラーを使用）
+        const purchaseId = completeResult.purchase?.purchase_id || findResult.purchase?.purchase_id;
         if (purchaseId) {
-            // まず既存のpreviewレコードを更新
-            const { error: updateAccessError } = await supabase
-                .from('access_rights')
-                .update({
-                    access_level: 'full',
-                    purchase_id: purchaseId,
-                    valid_from: getJSTDateTime()
-                })
-                .eq('resource_id', diagnosisId)
-                .eq('user_id', userId);
+            const accessResult = await paymentHandler.grantFullAccess({
+                diagnosisId: diagnosisId,
+                userId: userId,
+                purchaseId: purchaseId
+            });
 
-            if (updateAccessError) {
-                // 更新に失敗した場合は新規作成を試みる
-                console.log('Updating access rights failed, trying to insert:', updateAccessError);
-                const { error: insertAccessError } = await supabase
-                    .from('access_rights')
-                    .insert({
-                        user_id: userId,
-                        resource_type: 'diagnosis',
-                        resource_id: diagnosisId,
-                        access_level: 'full',
-                        purchase_id: purchaseId,
-                        valid_from: getJSTDateTime(),
-                        valid_until: null // 永久アクセス
-                    });
-                
-                if (insertAccessError) {
-                    console.error('Failed to grant access rights:', insertAccessError);
-                }
+            if (!accessResult.success) {
+                console.error('Failed to grant access rights:', accessResult.error);
             }
         }
 

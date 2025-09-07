@@ -6,6 +6,7 @@ const { createClient } = require('@supabase/supabase-js');
 const { HmacSHA256, enc, algo } = require("crypto-js");
 const crypto = require("crypto");
 const https = require("https");
+const PaymentHandler = require('./common/payment-handler');
 
 // UUID生成
 const uuidv4 = () => crypto.randomUUID();
@@ -221,34 +222,29 @@ module.exports = async function handler(req, res) {
                 ? response.data.data.deeplink 
                 : response.data.data.url;
             
-            // 成功時の処理
+            // 成功時の処理 - 共通ハンドラーを使用
             if (hasSupabase) {
                 try {
-                    // purchasesテーブルに記録（Stripeと同じ構造）
-                    const purchaseId = `pur_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-                    const productName = diagnosis?.diagnosis_types?.name || 'おつきさま診断';
-                    const productId = diagnosis?.diagnosis_types?.id || 'otsukisama';
+                    const paymentHandler = new PaymentHandler();
                     
-                    await supabase
-                        .from('purchases')
-                        .insert({
-                            purchase_id: purchaseId,
-                            user_id: userId || diagnosis.user_id,
-                            diagnosis_id: diagnosisId,
-                            product_type: 'diagnosis',
-                            product_id: productId,
-                            product_name: productName,
-                            amount: amount,
-                            currency: 'JPY',
-                            payment_method: 'paypay',
-                            status: 'pending', // 初期はpending、決済完了後にcompletedに更新
-                            created_at: getJSTDateTime(),
-                            metadata: {
-                                order_description: `おつきさま診断 - ${diagnosis.user_name || 'お客様'}`,
-                                code_url: response.data.data.url,
-                                paypay_merchant_payment_id: merchantPaymentId
-                            }
-                        });
+                    // 共通ハンドラーで購入レコードを作成
+                    const result = await paymentHandler.createPurchaseRecord({
+                        diagnosisId: diagnosisId,
+                        userId: userId || diagnosis?.user_id,
+                        amount: amount,
+                        paymentMethod: 'paypay',
+                        metadata: {
+                            order_description: `おつきさま診断 - ${diagnosis?.user_name || 'お客様'}`,
+                            code_url: response.data.data.url,
+                            paypay_merchant_payment_id: merchantPaymentId
+                        }
+                    });
+                    
+                    if (!result.success) {
+                        console.error('Failed to create purchase record:', result.error);
+                    } else {
+                        console.log('Purchase record created:', result.purchaseId);
+                    }
                 } catch (dbError) {
                     console.error('Database save error:', dbError);
                 }
