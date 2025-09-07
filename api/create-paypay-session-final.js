@@ -210,7 +210,11 @@ module.exports = async function handler(req, res) {
             isAuthorization: false,
             redirectUrl: successUrl,
             redirectType: "APP_DEEP_LINK",
-            userAgent: userAgent
+            userAgent: userAgent,
+            // Webhook URL設定（決済完了を即座に通知）
+            requestedAt: Math.floor(Date.now() / 1000),
+            storeId: "1", // 必須フィールド
+            terminalId: "1" // 必須フィールド
         };
 
         console.log('[PayPay App Invoke] Request Details:');
