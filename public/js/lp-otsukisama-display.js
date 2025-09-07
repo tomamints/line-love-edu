@@ -147,18 +147,51 @@ async function updateMoonPhaseContent(patternId) {
     // 実際の月相名を取得（patternデータまたは引数から）
     const actualMoonPhase = pattern.moonPhase;
     
-    // 3つの月の力を更新（実際の月相名を使用）
-    const threePowers = window.OtsukisamaDataLoader.getThreePowers(actualMoonPhase);
-    if (threePowers && threePowers.length === 3) {
-        const powerItems = document.querySelectorAll('.three-powers .energy-item');
-        powerItems.forEach((item, index) => {
-            if (threePowers[index]) {
-                const titleEl = item.querySelector('.energy-title');
-                const descEl = item.querySelector('.energy-description');
-                if (titleEl) titleEl.textContent = threePowers[index].title;
-                if (descEl) descEl.textContent = threePowers[index].desc;
+    // 誕生日を取得（window.currentUserBirthdateまたはpatternIdから生成）
+    let birthdate = window.currentUserBirthdate;
+    if (!birthdate) {
+        // patternIdから仮の誕生日を生成（テスト用）
+        // patternId 0-63に基づいて異なる日付を生成
+        const baseYear = 1990 + Math.floor(patternId / 4);
+        const month = (patternId % 12) + 1;
+        const day = (patternId % 28) + 1;
+        birthdate = `${baseYear}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    }
+    
+    // 3つの月の力を更新（誕生日ベースの計算）
+    if (window.ThreePowersCalculator && birthdate) {
+        // 誕生日から3つの力を計算
+        window.ThreePowersCalculator.calculate(birthdate, actualMoonPhase).then(powers => {
+            if (powers) {
+                const userName = window.currentUserName || 'あなた';
+                const formattedPowers = window.ThreePowersCalculator.format(powers, userName);
+                
+                // 表示を更新
+                const powerItems = document.querySelectorAll('.three-powers .energy-item');
+                powerItems.forEach((item, index) => {
+                    if (formattedPowers[index]) {
+                        const titleEl = item.querySelector('.energy-title');
+                        const descEl = item.querySelector('.energy-description');
+                        if (titleEl) titleEl.textContent = formattedPowers[index].title;
+                        if (descEl) descEl.textContent = formattedPowers[index].desc;
+                    }
+                });
             }
         });
+    } else {
+        // フォールバック: 旧方式（月相ベース）
+        const threePowers = window.OtsukisamaDataLoader.getThreePowers(actualMoonPhase);
+        if (threePowers && threePowers.length === 3) {
+            const powerItems = document.querySelectorAll('.three-powers .energy-item');
+            powerItems.forEach((item, index) => {
+                if (threePowers[index]) {
+                    const titleEl = item.querySelector('.energy-title');
+                    const descEl = item.querySelector('.energy-description');
+                    if (titleEl) titleEl.textContent = threePowers[index].title;
+                    if (descEl) descEl.textContent = threePowers[index].desc;
+                }
+            });
+        }
     }
     
     // 4つの恋愛軸要素も更新（6つの円形要素の中の4つ）

@@ -1062,6 +1062,7 @@
     <script src="js/otsukisama-data-loader.js?v=20250901001"></script>
     <script src="js/text-formatter.js?v=20250107001"></script>
     <script src="js/personality-type-mapper.js?v=20250107001"></script>
+    <script src="js/three-powers-calculator.js?v=20250107002"></script>
     <script src="js/lp-otsukisama-moon.js?v=20250901001"></script>
     <script src="js/lp-otsukisama-api.js?v=20250901001"></script>
     <script src="js/lp-otsukisama-display.js?v=20250107001"></script>
@@ -1090,6 +1091,11 @@
                 window.moonPhaseData = moonPhases;
                 window.hiddenPhaseData = hiddenPhases;
                 window.uiTexts = texts;
+                
+                // 3つの力計算機を初期化
+                if (window.ThreePowersCalculator) {
+                    await window.ThreePowersCalculator.load();
+                }
                 
                 console.log('Data files loaded successfully');
                 return true;
