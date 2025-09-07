@@ -363,28 +363,9 @@
                     }
                     
                 } else if (method === 'square') {
-                    // 既存のStripe決済を呼び出し（後でSquareに変更）
-                    const response = await fetch('/api/create-checkout-session', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            diagnosisId: diagnosisId,
-                            userId: userId || ''
-                        })
-                    });
-                    
-                    const data = await response.json();
-                    
-                    if (data.success) {
-                        // Stripe Checkoutへリダイレクト
-                        if (data.checkoutUrl) {
-                            window.location.href = data.checkoutUrl;
-                        } else {
-                            throw new Error('決済URLの取得に失敗しました');
-                        }
-                    } else {
-                        throw new Error(data.error || '決済の開始に失敗しました');
-                    }
+                    // Square決済は現在準備中
+                    alert('クレジットカード決済は現在準備中です。PayPayをご利用ください。');
+                    return;
                 }
                 
             } catch (error) {

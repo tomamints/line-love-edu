@@ -1325,30 +1325,8 @@
             const diagnosisId = urlParams.get('id');
             const userId = window.currentUserId || 'anonymous';
             
-            try {
-                const response = await fetch('/api/create-checkout-session', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        diagnosisId: diagnosisId,
-                        userId: userId
-                    })
-                });
-                
-                const data = await response.json();
-                
-                if (data.success && data.checkoutUrl) {
-                    // Stripe決済ページへリダイレクト
-                    window.location.href = data.checkoutUrl;
-                } else {
-                    throw new Error(data.error || '決済セッションの作成に失敗しました');
-                }
-            } catch (error) {
-                console.error('決済エラー:', error);
-                alert('決済処理中にエラーが発生しました。もう一度お試しください。');
-            }
+            // PayPay決済画面へリダイレクト
+            window.location.href = `/payment-select.html?id=${diagnosisId}&userId=${userId}`;
         }
         
         // DOMロード後に初期化
