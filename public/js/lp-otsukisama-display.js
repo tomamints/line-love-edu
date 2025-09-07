@@ -1171,7 +1171,7 @@ async function updateLoveEnergyContent(type, profile) {
     // 英語キーの場合は日本語に変換
     const japaneseKey = keyMapping[type] || type;
     
-    const typeData = personalityAxesData.loveEnergy[japaneseKey];
+    const typeData = personalityAxesData.energyType[japaneseKey];
     if (typeData) {
         // profileから直接ユーザー名を取得
         const userName = profile?.userName || window.currentUserName || 'あなた';

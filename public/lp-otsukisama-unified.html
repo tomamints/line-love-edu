@@ -908,18 +908,21 @@
                     </h4>
                     <div class="content-locked-mini">
                         <div class="text-blur">
-                            <div class="calendar-wrapper">
-                                <div class="weekday-header">
-                                    <div class="weekday">日</div>
-                                    <div class="weekday">月</div>
-                                    <div class="weekday">火</div>
-                                    <div class="weekday">水</div>
-                                    <div class="weekday">木</div>
-                                    <div class="weekday">金</div>
-                                    <div class="weekday">土</div>
-                                </div>
-                                <div id="personalizedCalendar" class="calendar-grid">
-                                    <!-- JavaScriptで動的に生成 -->
+                            <div class="calendar-wrapper" style="overflow-x: auto;">
+                                <!-- 1ヶ月目 -->
+                                <div style="margin-bottom: 30px;">
+                                    <div class="weekday-header">
+                                        <div class="weekday">日</div>
+                                        <div class="weekday">月</div>
+                                        <div class="weekday">火</div>
+                                        <div class="weekday">水</div>
+                                        <div class="weekday">木</div>
+                                        <div class="weekday">金</div>
+                                        <div class="weekday">土</div>
+                                    </div>
+                                    <div id="personalizedCalendar" class="calendar-grid">
+                                        <!-- JavaScriptで動的に生成（2ヶ月分） -->
+                                    </div>
                                 </div>
                             </div>
                             <div class="calendar-legend">

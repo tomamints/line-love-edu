@@ -34,7 +34,7 @@ function getCalendarPattern(patternId) {
     return pattern;
 }
 
-// カレンダー生成関数
+// カレンダー生成関数（2ヶ月分）
 async function generatePersonalizedCalendar(providedPatternId) {
     const container = document.getElementById('personalizedCalendar');
     const messageElement = document.getElementById('calendarMessage');
@@ -88,75 +88,112 @@ async function generatePersonalizedCalendar(providedPatternId) {
     const currentDate = new Date();
     const currentYear = currentDate.getFullYear();
     const currentMonth = currentDate.getMonth();
-    const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-    const firstDayOfMonth = new Date(currentYear, currentMonth, 1).getDay(); // 1日の曜日（0=日曜）
     
-    // 月と年を表示
+    // 2ヶ月分のカレンダーを生成
+    let fullCalendarHTML = '';
+    const monthNames = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'];
+    
+    // 月の範囲を表示
+    const nextMonth = (currentMonth + 1) % 12;
+    const nextYear = currentMonth === 11 ? currentYear + 1 : currentYear;
+    
     if (monthYearElement) {
-        const monthNames = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'];
-        monthYearElement.textContent = `${currentYear}年 ${monthNames[currentMonth]}`;
+        monthYearElement.textContent = `${currentYear}年 ${monthNames[currentMonth]} - ${nextYear}年 ${monthNames[nextMonth]}`;
     }
     
-    // カレンダーのHTMLを生成（日付のみ）
-    let calendarHTML = '';
-    
-    // 月初めまでの空白
-    for (let i = 0; i < firstDayOfMonth; i++) {
-        calendarHTML += '<div class="calendar-day empty"></div>';
-    }
-    
-    // 各日付
-    for (let day = 1; day <= daysInMonth; day++) {
-        const date = new Date(currentYear, currentMonth, day);
-        const moonAge = calculateMoonAge(date);
-        const moonEmoji = getMoonEmoji(moonAge);
+    // 2ヶ月分のカレンダーを作成
+    for (let monthOffset = 0; monthOffset < 2; monthOffset++) {
+        const targetMonth = (currentMonth + monthOffset) % 12;
+        const targetYear = currentMonth + monthOffset >= 12 ? currentYear + 1 : currentYear;
+        const daysInMonth = new Date(targetYear, targetMonth + 1, 0).getDate();
+        const firstDayOfMonth = new Date(targetYear, targetMonth, 1).getDay();
         
-        let dayClass = 'calendar-day';
-        let specialMark = '';
-        let specialMessage = '';
-        
-        // ラッキーデーをチェック
-        if (patternData.lucky_days && patternData.lucky_days.includes(day)) {
-            dayClass += ' lucky-day';
-        }
-        
-        // パワーデーをチェック
-        if (patternData.power_days && patternData.power_days.includes(day)) {
-            dayClass += ' power-day';
-        }
-        
-        // 注意日をチェック
-        if (patternData.caution_days && patternData.caution_days.includes(day)) {
-            dayClass += ' caution-day';
-        }
-        
-        // 特別な日のマークとメッセージ
-        if (patternData.special_marks && patternData.special_marks[String(day)]) {
-            const special = patternData.special_marks[String(day)];
-            specialMark = special.mark;
-            specialMessage = `<div class="special-message">${special.message}</div>`;
-            dayClass += ' special-day';
-        }
-        
-        // 今日の日付をハイライト
-        if (day === currentDate.getDate() && currentMonth === currentDate.getMonth()) {
-            dayClass += ' today';
-        }
-        
-        calendarHTML += `
-            <div class="${dayClass}" data-day="${day}">
-                <div class="day-content">
-                    <span class="day-number">${day}</span>
-                    <span class="moon-emoji">${moonEmoji}</span>
-                    ${specialMark ? `<span class="special-mark">${specialMark}</span>` : ''}
+        // 月のラベルを追加（2ヶ月目の場合）
+        if (monthOffset > 0) {
+            // 2ヶ月目のヘッダーと曜日を追加
+            fullCalendarHTML += `
+                <div style="margin-top: 40px; margin-bottom: 20px; text-align: center; color: #ffd700; font-size: 18px; font-weight: bold;">
+                    ${targetYear}年 ${monthNames[targetMonth]}
                 </div>
-                ${specialMessage}
-            </div>
-        `;
+                <div class="weekday-header" style="margin-bottom: 10px;">
+                    <div class="weekday">日</div>
+                    <div class="weekday">月</div>
+                    <div class="weekday">火</div>
+                    <div class="weekday">水</div>
+                    <div class="weekday">木</div>
+                    <div class="weekday">金</div>
+                    <div class="weekday">土</div>
+                </div>
+            `;
+        }
+        
+        // 月初めまでの空白
+        for (let i = 0; i < firstDayOfMonth; i++) {
+            fullCalendarHTML += '<div class="calendar-day empty"></div>';
+        }
+        
+        // 各日付
+        for (let day = 1; day <= daysInMonth; day++) {
+            const date = new Date(targetYear, targetMonth, day);
+            const moonAge = calculateMoonAge(date);
+            const moonEmoji = getMoonEmoji(moonAge);
+            
+            let dayClass = 'calendar-day';
+            let specialMark = '';
+            let specialMessage = '';
+            
+            // ラッキーデーをチェック
+            if (patternData.lucky_days && patternData.lucky_days.includes(day)) {
+                dayClass += ' lucky-day';
+            }
+            
+            // パワーデーをチェック
+            if (patternData.power_days && patternData.power_days.includes(day)) {
+                dayClass += ' power-day';
+            }
+            
+            // 注意日をチェック
+            if (patternData.caution_days && patternData.caution_days.includes(day)) {
+                dayClass += ' caution-day';
+            }
+            
+            // 特別な日のマークとメッセージ
+            if (patternData.special_marks && patternData.special_marks[String(day)]) {
+                const special = patternData.special_marks[String(day)];
+                specialMark = special.mark;
+                specialMessage = `<div class="special-message">${special.message}</div>`;
+                dayClass += ' special-day';
+            }
+            
+            // 今日の日付をハイライト
+            if (day === currentDate.getDate() && targetMonth === currentDate.getMonth() && targetYear === currentDate.getFullYear()) {
+                dayClass += ' today';
+            }
+            
+            fullCalendarHTML += `
+                <div class="${dayClass}" data-day="${day}" data-month="${targetMonth}" data-year="${targetYear}">
+                    <div class="day-content">
+                        <span class="day-number">${day}</span>
+                        <span class="moon-emoji">${moonEmoji}</span>
+                        ${specialMark ? `<span class="special-mark">${specialMark}</span>` : ''}
+                    </div>
+                    ${specialMessage}
+                </div>
+            `;
+        }
+        
+        // 月末以降の空白を追加（次の月の区切りまで）
+        const totalCells = firstDayOfMonth + daysInMonth;
+        const remainingCells = 7 - (totalCells % 7);
+        if (remainingCells < 7 && monthOffset === 1) { // 最後の月のみ
+            for (let i = 0; i < remainingCells; i++) {
+                fullCalendarHTML += '<div class="calendar-day empty"></div>';
+            }
+        }
     }
     
-    // カレンダーのセルのみを更新（既存のHTMLに上書きしない）
-    container.innerHTML = calendarHTML;
+    // カレンダーのセルのみを更新
+    container.innerHTML = fullCalendarHTML;
 }
 
 // 月齢から月の絵文字を取得
