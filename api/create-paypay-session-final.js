@@ -181,9 +181,9 @@ module.exports = async function handler(req, res) {
         const userAgent = req.headers['user-agent'] || '';
         const isMobile = /iPhone|iPad|iPod|Android/i.test(userAgent);
         
-        // サンドボックス環境でもAPP_DEEP_LINKは動作する（PayPayアプリのDeveloper Mode使用）
-        // モバイルの場合はAPP_DEEP_LINK、デスクトップの場合はWEB_LINKを使用
-        const redirectType = isMobile ? "APP_DEEP_LINK" : "WEB_LINK";
+        // サンドボックス環境では、APP_DEEP_LINKが正しく動作しない場合がある
+        // 全デバイスでWEB_LINKを使用（PayPayアプリがある場合は自動的にアプリが開く）
+        const redirectType = "WEB_LINK";
         
         const paymentData = {
             merchantPaymentId: merchantPaymentId,
@@ -223,10 +223,8 @@ module.exports = async function handler(req, res) {
         }
         
         if (response.success && response.data.data) {
-            // モバイルの場合はdeeplinkを優先、デスクトップの場合はurlを使用
-            const redirectUrl = isMobile && response.data.data.deeplink 
-                ? response.data.data.deeplink 
-                : response.data.data.url;
+            // WEB_LINKの場合は常にURLを使用（PayPayアプリがある場合は自動的に開く）
+            const redirectUrl = response.data.data.url;
             
             // 成功時の処理 - 共通ハンドラーを使用
             if (hasSupabase) {
