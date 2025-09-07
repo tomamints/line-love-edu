@@ -110,9 +110,7 @@ async function generatePersonalizedCalendar(providedPatternId) {
         monthYearElement.textContent = `${currentYear}年 ${monthNames[currentMonth]} - ${nextYear}年 ${monthNames[nextMonth]}`;
     }
     
-    // 2ヶ月分のカレンダーHTML生成
-    fullCalendarHTML = '';
-    
+    // 2ヶ月分のカレンダーを生成
     for (let monthOffset = 0; monthOffset < 2; monthOffset++) {
         const targetMonth = (currentMonth + monthOffset) % 12;
         const targetYear = currentMonth + monthOffset >= 12 ? currentYear + 1 : currentYear;
@@ -121,6 +119,7 @@ async function generatePersonalizedCalendar(providedPatternId) {
         
         // 2ヶ月目の場合、月名ヘッダーと曜日ヘッダーを追加
         if (monthOffset === 1) {
+            // 2ヶ月目のヘッダー
             fullCalendarHTML += `
                 <div style="clear: both; width: 100%; margin-top: 40px; margin-bottom: 20px; text-align: center; color: #ffd700; font-size: 18px; font-weight: bold;">
                     ${targetYear}年 ${monthNames[targetMonth]}
@@ -200,9 +199,6 @@ async function generatePersonalizedCalendar(providedPatternId) {
                 fullCalendarHTML += '<div class="calendar-day empty" style="aspect-ratio: 1; min-height: 60px;"></div>';
             }
         }
-        
-        // 各月のグリッドを閉じる
-        fullCalendarHTML += '</div>';
     }
     
     // カレンダーのセルのみを更新

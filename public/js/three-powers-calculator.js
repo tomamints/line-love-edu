@@ -101,7 +101,7 @@ function formatThreePowers(powers, userName = 'あなた') {
     if (powers.action) {
         result.push({
             title: powers.action.title,
-            desc: powers.action.desc.replace(/〇〇さん/g, userName + 'さん')
+            desc: powers.action.desc.replace(/〇〇さん/g, userName === 'あなた' ? 'あなた' : userName + 'さん')
         });
     }
     
@@ -109,7 +109,7 @@ function formatThreePowers(powers, userName = 'あなた') {
     if (powers.emotion) {
         result.push({
             title: powers.emotion.title,
-            desc: powers.emotion.desc.replace(/〇〇さん/g, userName + 'さん')
+            desc: powers.emotion.desc.replace(/〇〇さん/g, userName === 'あなた' ? 'あなた' : userName + 'さん')
         });
     }
     
@@ -117,7 +117,7 @@ function formatThreePowers(powers, userName = 'あなた') {
     if (powers.thinking) {
         result.push({
             title: powers.thinking.title,
-            desc: powers.thinking.desc.replace(/〇〇さん/g, userName + 'さん')
+            desc: powers.thinking.desc.replace(/〇〇さん/g, userName === 'あなた' ? 'あなた' : userName + 'さん')
         });
     }
     

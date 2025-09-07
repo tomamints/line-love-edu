@@ -11,7 +11,8 @@ function getUserIdFromUrl() {
 // URLからパターンIDを取得（デバッグ用）
 function getPatternIdFromUrl() {
     const params = new URLSearchParams(window.location.search);
-    const patternId = params.get('patternId');
+    // 'pattern' または 'patternId' パラメータを取得
+    const patternId = params.get('pattern') || params.get('patternId');
     return patternId ? parseInt(patternId) : null;
 }
 

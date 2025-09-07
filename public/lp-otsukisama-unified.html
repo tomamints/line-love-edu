@@ -1437,7 +1437,9 @@
             }
             
             // ユーザープロファイルも読み込む（互換性のため）
-            if (userId && typeof loadUserProfile === 'function') {
+            // userIdがある場合、またはpatternパラメータがある場合
+            const patternParam = urlParams.get('pattern');
+            if ((userId || patternParam !== null) && typeof loadUserProfile === 'function') {
                 await loadUserProfile();
             }
             
