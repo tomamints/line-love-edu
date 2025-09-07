@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LINEに戻っています...</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+        .container {
+            text-align: center;
+            padding: 20px;
+        }
+        .icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        .spinner {
+            margin: 30px auto;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top: 3px solid white;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="icon">✅</div>
+        <h1>決済が完了しました</h1>
+        <p>LINEアプリに戻っています...</p>
+        <div class="spinner"></div>
+    </div>
+
+    <script>
+        // URLパラメータを取得
+        const urlParams = new URLSearchParams(window.location.search);
+        const diagnosisId = urlParams.get('id');
+        const userId = urlParams.get('userId');
+        const merchantPaymentId = urlParams.get('merchantPaymentId');
+        
+        console.log('LINE Return - Params:', { diagnosisId, userId, merchantPaymentId });
+        
+        // 即座にLINEアプリを開く
+        function openLINE() {
+            // 方法1: LINE URLスキーム（iOS/Android両対応）
+            const lineScheme = 'line://';
+            
+            // 方法2: LINE Universal Link
+            const lineUniversalUrl = 'https://line.me/R/nv/chat';
+            
+            // 方法3: LINE公式アカウントにメッセージ送信
+            const lineAccountId = '@CZRKwBv';
+            const message = encodeURIComponent(`決済完了 ID:${diagnosisId || 'unknown'}`);
+            const lineMessageUrl = `https://line.me/R/oaMessage/${lineAccountId}?${message}`;
+            
+            // まずURLスキームを試す
+            window.location.href = lineScheme;
+            
+            // 1秒後にUniversal Linkを試す（URLスキームが失敗した場合のフォールバック）
+            setTimeout(() => {
+                // ページがまだアクティブな場合（LINEが開かなかった）
+                if (document.hasFocus()) {
+                    window.location.href = lineUniversalUrl;
+                }
+            }, 1000);
+            
+            // さらに2秒後にメッセージ送信URLを試す（最終手段）
+            setTimeout(() => {
+                if (document.hasFocus()) {
+                    window.location.href = lineMessageUrl;
+                }
+            }, 3000);
+        }
+        
+        // ページ読み込み完了後、即座にLINEを開く
+        if (document.readyState === 'complete') {
+            openLINE();
+        } else {
+            window.addEventListener('load', openLINE);
+        }
+        
+        // 念のため、500ms後にも実行
+        setTimeout(openLINE, 500);
+    </script>
+</body>
+</html>

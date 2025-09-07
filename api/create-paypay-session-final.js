@@ -192,13 +192,14 @@ module.exports = async function handler(req, res) {
         // 2. LINE Universal Link - LINEアプリを直接開く
         
         // 決済完了後のリダイレクト先
-        // モバイルの場合：決済完了ページ → 自動でLINEに戻る
-        // デスクトップの場合：決済完了ページのみ
+        // モバイルの場合：LINE返却専用ページ（即座にLINEアプリを開く）
+        // デスクトップの場合：通常の決済完了ページ
         
         const webSuccessUrl = `${baseUrl}/payment-success.html?id=${diagnosisId}&userId=${userId || ''}&merchantPaymentId=${merchantPaymentId}`;
+        const lineReturnUrl = `${baseUrl}/line-return.html?id=${diagnosisId}&userId=${userId || ''}&merchantPaymentId=${merchantPaymentId}`;
         
-        // モバイルでも一旦決済完了ページを表示（その後自動でLINEに戻る）
-        const successUrl = webSuccessUrl;
+        // モバイルの場合はLINE返却専用ページを使用
+        const successUrl = isMobile ? lineReturnUrl : webSuccessUrl;
         
         console.log('[PayPay] Redirect URL:', successUrl);
         console.log('[PayPay] Is Mobile:', isMobile);
