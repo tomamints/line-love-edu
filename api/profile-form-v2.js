@@ -11,6 +11,16 @@ const supabase = createClient(
   process.env.SUPABASE_ANON_KEY || process.env.SUPABASE_SERVICE_KEY
 );
 
+// 日本標準時（JST）のISO文字列を取得する関数
+function getJSTDateTime() {
+  const now = new Date();
+  // UTCからJSTへ変換（+9時間）
+  const jstOffset = 9 * 60 * 60 * 1000;
+  const jstTime = new Date(now.getTime() + jstOffset);
+  // ISO形式で返す（末尾を+09:00に変更）
+  return jstTime.toISOString().replace('Z', '+09:00');
+}
+
 module.exports = async (req, res) => {
   // CORSヘッダー
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -159,7 +169,7 @@ module.exports = async (req, res) => {
           .from('diagnoses')
           .update({ 
             is_paid: true,
-            paid_at: new Date().toISOString(),
+            paid_at: getJSTDateTime(),
             stripe_session_id: session_id,
             payment_amount: session.amount_total
           })
@@ -288,7 +298,7 @@ module.exports = async (req, res) => {
         .from('diagnoses')
         .update({ 
           stripe_session_id: session.id,
-          checkout_created_at: new Date().toISOString()
+          checkout_created_at: getJSTDateTime()
         })
         .eq('id', diagnosisId);
       
@@ -342,7 +352,7 @@ module.exports = async (req, res) => {
               moon_power_3: resultData?.moon_power_3
             },
             metadata: {},
-            created_at: new Date().toISOString()
+            created_at: getJSTDateTime()
           })
           .select()
           .single();
@@ -395,7 +405,7 @@ module.exports = async (req, res) => {
           userName: name,
           birthDate: birthDate,
           moonPatternId: patternId,
-          diagnosisDate: new Date().toISOString(),
+          diagnosisDate: getJSTDateTime(),
           diagnosisType: 'otsukisama',
           isPaid: false
         };
@@ -412,7 +422,7 @@ module.exports = async (req, res) => {
           pattern_id: patternId,
           diagnosis_type: 'otsukisama',
           is_paid: false,
-          created_at: new Date().toISOString()
+          created_at: getJSTDateTime()
         };
         
         // プロファイルもprofiles DBに保存（LINE連携用）
@@ -421,7 +431,7 @@ module.exports = async (req, res) => {
             userName: name,
             birthDate: birthDate,
             moonPatternId: patternId,
-            diagnosisDate: new Date().toISOString(),
+            diagnosisDate: getJSTDateTime(),
             diagnosisType: 'otsukisama'
           };
           await profilesDB.saveProfile(userId, profileData);
@@ -1233,7 +1243,7 @@ module.exports = async (req, res) => {
           moonPatternId: moonPatternId,
           diagnosisType: 'otsukisama',
           diagnosisId: diagnosisId,
-          diagnosisDate: new Date().toISOString()
+          diagnosisDate: getJSTDateTime()
         };
         
         await profilesDB.saveProfile(userId, profileData);
@@ -1282,7 +1292,7 @@ module.exports = async (req, res) => {
         distanceStyle,
         loveValues,
         loveEnergy,
-        updatedAt: new Date().toISOString()
+        updatedAt: getJSTDateTime()
       };
       
       // データベースのカラムに合わせたデータも設定
