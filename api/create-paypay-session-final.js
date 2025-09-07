@@ -159,12 +159,17 @@ module.exports = async function handler(req, res) {
         const merchantPaymentId = `diag_${diagnosisId}_${Date.now()}`;
         const amount = diagnosis.diagnosis_types?.price || 2980;
         
+        // User-Agentからモバイルデバイスを検出
+        const userAgent = req.headers['user-agent'] || '';
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(userAgent);
+        
         const paymentData = {
             merchantPaymentId: merchantPaymentId,
             codeType: "ORDER_QR",
             redirectUrl: `https://line-love-edu.vercel.app/payment-success.html?id=${diagnosisId}&userId=${userId || ''}&merchantPaymentId=${merchantPaymentId}`,
-            redirectType: "WEB_LINK",
+            redirectType: isMobile ? "APP_DEEP_LINK" : "WEB_LINK", // モバイルの場合はAPP_DEEP_LINK
             orderDescription: `おつきさま診断 - ${diagnosis.user_name || 'お客様'}`,
+            userAgent: userAgent, // PayPayにユーザーエージェントを送信
             orderItems: [{
                 name: "おつきさま診断 完全版",
                 category: "DIGITAL_CONTENT",

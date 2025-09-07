@@ -358,6 +358,26 @@
             
             // PayPay決済完了をデータベースに記録（purchasesテーブル）
             if (merchantPaymentId) {
+                // 即座に記録を試みる
+                recordPayment();
+                
+                // モバイルの場合、リダイレクトが失敗する可能性があるため、ポーリングも実施
+                if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+                    // 3秒ごとに最大10回まで決済状態を確認
+                    let pollCount = 0;
+                    const maxPolls = 10;
+                    const pollInterval = setInterval(() => {
+                        pollCount++;
+                        if (pollCount > maxPolls) {
+                            clearInterval(pollInterval);
+                            return;
+                        }
+                        recordPayment();
+                    }, 3000);
+                }
+            }
+            
+            function recordPayment() {
                 fetch('/api/update-paypay-payment', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -371,6 +391,12 @@
                 .then(data => {
                     if (data.success) {
                         console.log('PayPay payment recorded:', data.purchaseId);
+                        // 成功したらポーリングを停止
+                        if (typeof pollInterval !== 'undefined') {
+                            clearInterval(pollInterval);
+                        }
+                    } else if (data.status === 'pending') {
+                        console.log('Payment still pending...');
                     } else {
                         console.error('Failed to record payment:', data);
                     }
