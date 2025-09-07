@@ -187,23 +187,25 @@ module.exports = async function handler(req, res) {
         // リダイレクトURL設定
         const baseUrl = 'https://line-love-edu.vercel.app';
         
-        // LINE公式アカウントのチャットに戻るUniversal Link
-        // @025gwcywは公式アカウントのID
-        const lineOfficialAccountId = '@025gwcyw';
-        const message = `決済完了 診断ID:${diagnosisId}`;
-        const encodedMsg = encodeURIComponent(message);
+        // LINEアプリに戻るための最適な方法を試す
+        // 1. about:blank - 何も開かずに元のアプリに戻る可能性
+        // 2. LINE Universal Link - LINEアプリを直接開く
         
-        // LINE Universal Link - 公式アカウントのチャットを開く
+        // LINE公式アカウントのチャットに戻るUniversal Link
+        const lineOfficialAccountId = '@025gwcyw';
+        
+        // 複数の戻り方を試す（優先順位順）
+        // 1. LINE Universal Link（公式アカウントを開く）
         const lineUniversalUrl = `https://line.me/R/ti/p/${lineOfficialAccountId}`;
         
-        // モバイルの場合はLINEアプリを開くUniversal Linkを使用
-        const successUrl = isMobile 
-            ? lineUniversalUrl
-            : `${baseUrl}/payment-success.html?id=${diagnosisId}&userId=${userId || ''}&merchantPaymentId=${merchantPaymentId}`;
+        // 2. 通常のWebページ（フォールバック）
+        const webSuccessUrl = `${baseUrl}/payment-success.html?id=${diagnosisId}&userId=${userId || ''}&merchantPaymentId=${merchantPaymentId}`;
+        
+        // モバイルの場合はLINE Universal Linkを使用
+        const successUrl = isMobile ? lineUniversalUrl : webSuccessUrl;
         
         console.log('[PayPay] Redirect URL:', successUrl);
         console.log('[PayPay] Is Mobile:', isMobile);
-        console.log('[PayPay] Using LINE Universal Link:', isMobile);
         
         // PayPay公式SDKの例と完全に同じ構造にする
         const paymentData = {
