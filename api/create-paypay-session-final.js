@@ -181,15 +181,15 @@ module.exports = async function handler(req, res) {
         const userAgent = req.headers['user-agent'] || '';
         const isMobile = /iPhone|iPad|iPod|Android/i.test(userAgent);
         
-        // サンドボックス環境では実際のPayPayアプリが使えないため、Webリンクを使用
-        const isSandbox = process.env.PAYPAY_ENV === 'sandbox';
-        const redirectType = isMobile && !isSandbox ? "APP_DEEP_LINK" : "WEB_LINK";
+        // サンドボックス環境でもAPP_DEEP_LINKは動作する（PayPayアプリのDeveloper Mode使用）
+        // モバイルの場合はAPP_DEEP_LINK、デスクトップの場合はWEB_LINKを使用
+        const redirectType = isMobile ? "APP_DEEP_LINK" : "WEB_LINK";
         
         const paymentData = {
             merchantPaymentId: merchantPaymentId,
             codeType: "ORDER_QR",
             redirectUrl: `https://line-love-edu.vercel.app/payment-success.html?id=${diagnosisId}&userId=${userId || ''}&merchantPaymentId=${merchantPaymentId}`,
-            redirectType: redirectType, // サンドボックスではWebリンクを使用
+            redirectType: redirectType,
             orderDescription: `おつきさま診断 - ${diagnosis.user_name || 'お客様'}`,
             userAgent: userAgent, // PayPayにユーザーエージェントを送信
             orderItems: [{
@@ -210,7 +210,6 @@ module.exports = async function handler(req, res) {
 
         console.log('Making PayPay API request with crypto-js...');
         console.log('Mobile detected:', isMobile);
-        console.log('Sandbox mode:', isSandbox);
         console.log('RedirectType:', redirectType);
         
         const response = await callPayPayAPI('/v2/codes', 'POST', paymentData);
@@ -222,8 +221,8 @@ module.exports = async function handler(req, res) {
         }
         
         if (response.success && response.data.data) {
-            // サンドボックス環境ではWebリンクのみ使用、本番環境でのみdeeplinkを使用
-            const redirectUrl = isMobile && !isSandbox && response.data.data.deeplink 
+            // モバイルの場合はdeeplinkを優先、デスクトップの場合はurlを使用
+            const redirectUrl = isMobile && response.data.data.deeplink 
                 ? response.data.data.deeplink 
                 : response.data.data.url;
             

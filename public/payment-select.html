@@ -370,7 +370,22 @@
                 
             } catch (error) {
                 console.error('決済エラー:', error);
-                alert(error.message || '決済の開始に失敗しました。もう一度お試しください。');
+                
+                // PayPayエラーの場合、サンドボックスガイドを案内
+                if (method === 'paypay') {
+                    const showGuide = confirm(
+                        'PayPay決済の開始に失敗しました。\n\n' +
+                        'テスト環境でPayPayを使用するには、PayPayアプリを「サンドボックスモード」に切り替える必要があります。\n\n' +
+                        '設定ガイドを表示しますか？'
+                    );
+                    
+                    if (showGuide) {
+                        window.open('/paypay-sandbox-guide.html', '_blank');
+                    }
+                } else {
+                    alert(error.message || '決済の開始に失敗しました。もう一度お試しください。');
+                }
+                
                 document.getElementById('loadingOverlay').style.display = 'none';
             }
         }

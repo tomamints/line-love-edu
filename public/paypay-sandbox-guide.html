@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PayPayサンドボックスモード設定ガイド | おつきさま診断</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+        
+        .header {
+            background: #FF0033;
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .warning-box {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin-bottom: 30px;
+            border-radius: 5px;
+        }
+        
+        .warning-box p {
+            color: #856404;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        
+        .step {
+            margin-bottom: 30px;
+            padding-bottom: 30px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .step:last-child {
+            border-bottom: none;
+        }
+        
+        .step-number {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            background: #FF0033;
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 30px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        
+        .step h2 {
+            font-size: 18px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        .step p {
+            font-size: 14px;
+            line-height: 1.8;
+            color: #666;
+            margin-bottom: 15px;
+        }
+        
+        .step img {
+            max-width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin: 15px 0;
+        }
+        
+        .highlight {
+            background: #ffeaa7;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .code-box {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 10px;
+            font-family: monospace;
+            font-size: 14px;
+            margin: 10px 0;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            text-align: center;
+            display: block;
+        }
+        
+        .btn-primary {
+            background: #FF0033;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #e60030;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 0, 51, 0.3);
+        }
+        
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #333;
+            border: 2px solid #dee2e6;
+        }
+        
+        .btn-secondary:hover {
+            background: #e9ecef;
+        }
+        
+        .app-links {
+            display: flex;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .app-link {
+            flex: 1;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            text-align: center;
+            text-decoration: none;
+            color: #333;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+        
+        .app-link:hover {
+            border-color: #FF0033;
+            transform: translateY(-2px);
+        }
+        
+        .app-link img {
+            width: 30px;
+            height: 30px;
+            margin-bottom: 5px;
+        }
+        
+        .app-link span {
+            display: block;
+            font-size: 12px;
+        }
+        
+        .footer {
+            background: #f8f9fa;
+            padding: 20px 30px;
+            text-align: center;
+            border-top: 1px solid #e0e0e0;
+        }
+        
+        .footer p {
+            font-size: 12px;
+            color: #666;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>PayPay サンドボックスモード設定ガイド</h1>
+            <p>テスト決済を行うための設定手順</p>
+        </div>
+        
+        <div class="content">
+            <div class="warning-box">
+                <p>
+                    <strong>⚠️ 重要：</strong><br>
+                    PayPayでテスト決済を行うには、PayPayアプリを「サンドボックスモード（開発者モード）」に切り替える必要があります。
+                    通常モードのままでは「エラーが発生しました」と表示されます。
+                </p>
+            </div>
+            
+            <div class="step">
+                <span class="step-number">1</span>
+                <h2>PayPayアプリをダウンロード</h2>
+                <p>まだPayPayアプリをお持ちでない場合は、以下からダウンロードしてください：</p>
+                <div class="app-links">
+                    <a href="https://apps.apple.com/jp/app/id1435783608?mt=8" class="app-link" target="_blank">
+                        <img src="https://cdn-icons-png.flaticon.com/512/831/831276.png" alt="iOS">
+                        <span>iOS版<br>(App Store)</span>
+                    </a>
+                    <a href="https://play.google.com/store/apps/details?id=jp.ne.paypay.android.app&hl=ja" class="app-link" target="_blank">
+                        <img src="https://cdn-icons-png.flaticon.com/512/888/888857.png" alt="Android">
+                        <span>Android版<br>(Google Play)</span>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="step">
+                <span class="step-number">2</span>
+                <h2>サンドボックスモードを有効化</h2>
+                <p>
+                    PayPayアプリを開き、サインイン画面で<br>
+                    <span class="highlight">PayPayロゴを7回タップ</span>してください。
+                </p>
+                <p style="font-size: 12px; color: #999;">
+                    ※ログイン済みの場合は一度ログアウトしてから行ってください
+                </p>
+            </div>
+            
+            <div class="step">
+                <span class="step-number">3</span>
+                <h2>Developer Modeへ切り替え</h2>
+                <p>
+                    「Developer Mode Sign In」への切り替え確認画面が表示されたら、<br>
+                    <span class="highlight">「Yes」をタップ</span>してください。
+                </p>
+            </div>
+            
+            <div class="step">
+                <span class="step-number">4</span>
+                <h2>テストユーザーでログイン</h2>
+                <p>以下のテストユーザー情報でログインしてください：</p>
+                <div class="code-box">
+                    電話番号: 09012345678<br>
+                    パスワード: test1234
+                </div>
+                <p style="font-size: 12px; color: #999;">
+                    ※これは共通のテストアカウントです。実際の決済は発生しません。
+                </p>
+            </div>
+            
+            <div class="step">
+                <span class="step-number">5</span>
+                <h2>OTP認証</h2>
+                <p>
+                    OTP（ワンタイムパスワード）の入力画面で<br>
+                    <span class="highlight">「1234」</span>を入力してください。
+                </p>
+            </div>
+            
+            <div class="step">
+                <span class="step-number">6</span>
+                <h2>設定完了！</h2>
+                <p>
+                    これでサンドボックスモードの設定は完了です。<br>
+                    もう一度診断ページから決済を試してみてください。
+                </p>
+                <p style="margin-top: 15px; color: #28a745; font-weight: bold;">
+                    ✅ サンドボックスモードでは実際の請求は発生しません
+                </p>
+            </div>
+            
+            <div class="button-group">
+                <a href="javascript:history.back()" class="btn btn-primary">
+                    決済画面に戻る
+                </a>
+                <button onclick="copyTestCredentials()" class="btn btn-secondary">
+                    テスト情報をコピー
+                </button>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>
+                ※サンドボックスモードはテスト専用です<br>
+                通常の決済に戻る場合は、PayPayアプリから通常のアカウントでログインし直してください
+            </p>
+        </div>
+    </div>
+    
+    <script>
+        function copyTestCredentials() {
+            const text = `PayPayテストユーザー情報
+電話番号: 09012345678
+パスワード: test1234
+OTP: 1234`;
+            
+            navigator.clipboard.writeText(text).then(() => {
+                alert('テスト情報をクリップボードにコピーしました！');
+            }).catch(() => {
+                alert('コピーに失敗しました。手動でコピーしてください。');
+            });
+        }
+    </script>
+</body>
+</html>

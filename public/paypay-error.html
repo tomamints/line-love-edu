@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PayPay決済エラー | おつきさま診断</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #f56565 0%, #c53030 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 500px;
+            width: 100%;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #f56565 0%, #c53030 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+        
+        .error-icon {
+            width: 80px;
+            height: 80px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+        }
+        
+        .error-icon svg {
+            width: 50px;
+            height: 50px;
+            stroke: #f56565;
+            stroke-width: 3;
+            fill: none;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+        
+        h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        
+        .subtitle {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 40px 30px;
+        }
+        
+        .error-message {
+            background: #fff5f5;
+            border-left: 4px solid #f56565;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+        
+        .error-message h2 {
+            color: #c53030;
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+        
+        .error-message p {
+            color: #742a2a;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        
+        .solution-box {
+            background: #f0fff4;
+            border: 2px solid #48bb78;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .solution-box h3 {
+            color: #22543d;
+            font-size: 16px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .solution-box h3::before {
+            content: '💡';
+            margin-right: 8px;
+            font-size: 20px;
+        }
+        
+        .steps {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .steps li {
+            color: #2d3748;
+            font-size: 14px;
+            line-height: 1.8;
+            padding-left: 30px;
+            position: relative;
+            margin-bottom: 12px;
+        }
+        
+        .steps li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 8px;
+            width: 20px;
+            height: 20px;
+            background: #48bb78;
+            color: white;
+            border-radius: 50%;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        .steps li:nth-child(1)::before { content: '1'; }
+        .steps li:nth-child(2)::before { content: '2'; }
+        .steps li:nth-child(3)::before { content: '3'; }
+        .steps li:nth-child(4)::before { content: '4'; }
+        .steps li:nth-child(5)::before { content: '5'; }
+        
+        .highlight {
+            background: #ffd700;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+        
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .btn {
+            padding: 18px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            text-align: center;
+            transition: all 0.3s;
+            display: block;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(72, 187, 120, 0.4);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(72, 187, 120, 0.5);
+        }
+        
+        .btn-secondary {
+            background: #f7fafc;
+            color: #2d3748;
+            border: 2px solid #e2e8f0;
+        }
+        
+        .btn-secondary:hover {
+            background: #edf2f7;
+        }
+        
+        .note {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f7fafc;
+            border-radius: 8px;
+            font-size: 12px;
+            color: #718096;
+            text-align: center;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="error-icon">
+                <svg viewBox="0 0 24 24">
+                    <path d="M12 9v4m0 4h.01M12 2L2 20h20L12 2z"/>
+                </svg>
+            </div>
+            <h1>PayPay決済エラー</h1>
+            <p class="subtitle">申し訳ございません</p>
+        </div>
+        
+        <div class="content">
+            <div class="error-message">
+                <h2>⚠️ PayPayアプリでエラーが発生しました</h2>
+                <p>
+                    「エラーが発生しました」と表示される場合、<br>
+                    PayPayアプリが通常モードで起動している可能性があります。
+                </p>
+            </div>
+            
+            <div class="solution-box">
+                <h3>解決方法</h3>
+                <ul class="steps">
+                    <li>PayPayアプリを完全に終了する</li>
+                    <li>PayPayアプリを再度開く</li>
+                    <li>サインイン画面で<span class="highlight">PayPayロゴを7回タップ</span></li>
+                    <li>「Developer Mode」に切り替える</li>
+                    <li>テストユーザーでログインする</li>
+                </ul>
+            </div>
+            
+            <div class="button-group">
+                <a href="/paypay-sandbox-guide.html" class="btn btn-primary">
+                    📖 詳しい設定ガイドを見る
+                </a>
+                <a href="/payment-select.html" id="retryLink" class="btn btn-secondary">
+                    もう一度決済を試す
+                </a>
+            </div>
+            
+            <div class="note">
+                <strong>ご注意：</strong><br>
+                テスト環境では、PayPayアプリを「サンドボックスモード」に切り替える必要があります。<br>
+                通常モードでは決済できません。
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // URLパラメータから診断IDを取得してリトライリンクに追加
+        const urlParams = new URLSearchParams(window.location.search);
+        const diagnosisId = urlParams.get('id');
+        const userId = urlParams.get('userId');
+        
+        if (diagnosisId) {
+            const retryLink = document.getElementById('retryLink');
+            retryLink.href = `/payment-select.html?id=${diagnosisId}${userId ? '&userId=' + userId : ''}`;
+        }
+    </script>
+</body>
+</html>
