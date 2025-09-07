@@ -110,8 +110,8 @@ module.exports = async function handler(req, res) {
     <script>
         // 自動的にLINEアプリを開く
         setTimeout(function() {
-            // LINEアプリを開く
-            window.location.href = 'line://nv/chat';
+            // LINEアプリを開く（チャット画面）
+            window.location.href = 'line://ti/p';
             
             // もしLINEアプリが開かない場合は成功ページへ
             setTimeout(function() {

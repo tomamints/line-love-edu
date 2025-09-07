@@ -294,21 +294,15 @@
         
         // LINEアプリに戻る機能（外部ブラウザの場合のみ使用）
         function returnToLINE() {
-            // LINE公式アカウントにメッセージを送信するURL
-            const lineAccountId = '@CZRKwBv';
-            const message = encodeURIComponent('決済完了');
-            
-            // LINEアプリを開いてメッセージを送信
-            const lineMessageUrl = `https://line.me/R/oaMessage/${lineAccountId}?${message}`;
-            
-            // LINEアプリを開く
-            window.location.href = lineMessageUrl;
+            // LINEアプリを開く（チャット画面）
+            // line://ti/p でLINEアプリのトーク画面を開く
+            window.location.href = 'line://ti/p';
             
             // もしLINEアプリが開かない場合のフォールバック
             setTimeout(() => {
-                // チャット画面を開く
+                // Universal Linkでチャット画面を開く
                 window.location.href = 'https://line.me/R/nv/chat';
-            }, 3000);
+            }, 2000);
         }
         
         // PayPayから戻ってきた場合の処理
