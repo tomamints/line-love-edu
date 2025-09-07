@@ -192,7 +192,7 @@ module.exports = async function handler(req, res) {
         // 2. LINE Universal Link - LINEアプリを直接開く
         
         // LINE公式アカウントのチャットに戻るUniversal Link
-        const lineOfficialAccountId = '@025gwcyw';
+        const lineOfficialAccountId = '@CZRKwBv';
         
         // 複数の戻り方を試す（優先順位順）
         // 1. LINE Universal Link（公式アカウントを開く）
