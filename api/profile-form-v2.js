@@ -3,7 +3,7 @@
 
 const ordersDB = require('../core/database/orders-db');
 const profilesDB = require('../core/database/profiles-db');
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+// Stripe関連は削除（PayPayのみ使用）
 const { createClient } = require('@supabase/supabase-js');
 
 const supabase = createClient(
@@ -163,8 +163,8 @@ module.exports = async (req, res) => {
       }
     }
     
-    // 決済成功処理
-    if (action === 'payment-success') {
+    // Stripe決済成功処理は削除（PayPayのみ使用）
+    if (false && action === 'payment-success') {
       const { session_id, diagnosis_id } = req.query;
       
       if (!session_id || !diagnosis_id) {
@@ -253,8 +253,8 @@ module.exports = async (req, res) => {
     }
   }
   
-  // POSTリクエストのアクション処理
-  if (req.method === 'POST' && req.query.action === 'create-checkout') {
+  // Stripe Checkout作成処理は削除（PayPayのみ使用）
+  if (false && req.method === 'POST' && req.query.action === 'create-checkout') {
     const { diagnosisId, userId } = req.body;
     
     if (!diagnosisId) {
