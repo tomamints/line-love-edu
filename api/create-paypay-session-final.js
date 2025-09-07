@@ -207,20 +207,7 @@ module.exports = async function handler(req, res) {
             // 成功時の処理
             if (hasSupabase) {
                 try {
-                    // payment_intentsテーブルに記録
-                    await supabase
-                        .from('payment_intents')
-                        .insert({
-                            id: merchantPaymentId,
-                            diagnosis_id: diagnosisId,
-                            user_id: userId || diagnosis.user_id,
-                            amount: amount,
-                            status: 'pending',
-                            payment_method: 'paypay',
-                            payment_data: response.data.data
-                        });
-                    
-                    // purchasesテーブルにも記録（Stripeと同じ構造）
+                    // purchasesテーブルに記録（Stripeと同じ構造）
                     const purchaseId = `pur_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
                     const productName = diagnosis?.diagnosis_types?.name || 'おつきさま診断';
                     const productId = diagnosis?.diagnosis_types?.id || 'otsukisama';

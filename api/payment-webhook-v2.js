@@ -64,15 +64,6 @@ async function handleCheckoutSessionCompleted(session) {
     }
 
     try {
-        // payment_intentsテーブルを更新
-        await supabase
-            .from('payment_intents')
-            .update({ 
-                status: 'completed',
-                completed_at: new Date().toISOString()
-            })
-            .eq('id', session.id);
-
         // 購入記録を作成
         const purchaseId = `pur_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
         
@@ -140,14 +131,8 @@ async function handlePaymentIntentSucceeded(paymentIntent) {
         return;
     }
 
-    // payment_intentsテーブルを更新
-    await supabase
-        .from('payment_intents')
-        .update({ 
-            status: 'succeeded',
-            updated_at: new Date().toISOString()
-        })
-        .eq('payment_data->>payment_intent', paymentIntent.id);
+    // 必要に応じて購入記録を更新
+    console.log('Payment intent succeeded for diagnosis:', diagnosisId);
 }
 
 async function handlePaymentIntentFailed(paymentIntent) {
@@ -160,15 +145,8 @@ async function handlePaymentIntentFailed(paymentIntent) {
         return;
     }
 
-    // payment_intentsテーブルを更新
-    await supabase
-        .from('payment_intents')
-        .update({ 
-            status: 'failed',
-            updated_at: new Date().toISOString(),
-            error_message: paymentIntent.last_payment_error?.message
-        })
-        .eq('payment_data->>payment_intent', paymentIntent.id);
+    // 失敗をログに記録
+    console.log('Payment failed for diagnosis:', diagnosisId);
 }
 
 // Vercelでは以下の設定が必要

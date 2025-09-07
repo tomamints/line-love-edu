@@ -97,22 +97,6 @@ module.exports = async function handler(req, res) {
             }
         });
 
-        // payment_intentsテーブルに記録
-        await supabase
-            .from('payment_intents')
-            .insert({
-                id: session.id,
-                diagnosis_id: diagnosisId,
-                user_id: userId || diagnosis.user_id,
-                amount: price,
-                status: 'pending',
-                payment_method: 'stripe',
-                payment_data: {
-                    session_id: session.id,
-                    payment_intent: session.payment_intent
-                }
-            });
-
         return res.json({ 
             sessionId: session.id,
             redirectUrl: session.url
