@@ -358,7 +358,7 @@
             
             // PayPay決済完了をデータベースに記録（purchasesテーブル）
             if (merchantPaymentId) {
-                fetch('/api/paypay-webhook', {
+                fetch('/api/update-paypay-payment', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({

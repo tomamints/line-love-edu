@@ -1,7 +1,6 @@
 /**
- * PayPay Webhook処理用API
- * 支払い完了時にpurchasesテーブルに記録し、アクセス権限を付与
- * Stripeと同じテーブル構造を使用
+ * PayPay決済完了後のステータス更新API
+ * purchasesテーブルとaccess_rightsテーブルを更新
  */
 
 const { createClient } = require('@supabase/supabase-js');
@@ -110,125 +109,112 @@ async function callPayPayAPI(path, method, body = null) {
     });
 }
 
-/**
- * PayPay決済完了処理（Stripeと同じ構造）
- */
-async function handlePayPayPaymentCompleted(merchantPaymentId, diagnosisId, userId) {
-    console.log('Processing PayPay payment completion:', merchantPaymentId);
-    
+module.exports = async function handler(req, res) {
+    if (req.method !== 'POST') {
+        return res.status(405).json({ error: 'Method not allowed' });
+    }
+
+    const { merchantPaymentId, diagnosisId, userId } = req.body;
+
+    if (!merchantPaymentId || !diagnosisId || !userId) {
+        return res.status(400).json({ 
+            error: 'Missing required parameters',
+            required: ['merchantPaymentId', 'diagnosisId', 'userId']
+        });
+    }
+
     if (!supabase) {
         console.error('Supabase not configured');
-        return { success: false, error: 'Database not configured' };
+        return res.status(500).json({ error: 'Database not configured' });
     }
 
     try {
         // PayPay APIで決済状態を確認
+        console.log(`Checking PayPay payment status for: ${merchantPaymentId}`);
         const paymentResponse = await callPayPayAPI(`/v2/codes/payments/${merchantPaymentId}`, 'GET');
         
         if (!paymentResponse.success || !paymentResponse.data.data) {
             console.error('PayPay API Error:', paymentResponse.data);
-            return { success: false, error: 'Payment not found' };
+            return res.status(400).json({ 
+                error: 'Payment not found',
+                details: paymentResponse.data.resultInfo 
+            });
         }
 
         const paymentData = paymentResponse.data.data;
+        const paymentStatus = paymentData.status;
         
+        console.log(`Payment status: ${paymentStatus}`);
+
         // ステータスチェック（COMPLETED = 決済完了）
-        if (paymentData.status !== 'COMPLETED') {
-            return {
+        if (paymentStatus !== 'COMPLETED') {
+            return res.json({
                 success: false,
-                status: paymentData.status,
+                status: paymentStatus,
                 message: 'Payment not completed yet'
-            };
+            });
         }
 
-        // 既存の購入記録をチェック
+        // purchasesテーブルを更新
         const { data: existingPurchase } = await supabase
             .from('purchases')
-            .select('purchase_id')
+            .select('purchase_id, status')
             .eq('paypay_merchant_payment_id', merchantPaymentId)
             .single();
 
-        if (existingPurchase) {
-            console.log('Purchase already processed:', merchantPaymentId);
-            return { success: true, message: 'Already processed', purchaseId: existingPurchase.purchase_id };
+        if (existingPurchase && existingPurchase.status === 'completed') {
+            console.log('Purchase already completed:', merchantPaymentId);
+            return res.json({ 
+                success: true, 
+                message: 'Already processed',
+                purchaseId: existingPurchase.purchase_id 
+            });
         }
 
-        // 1. 診断情報を取得
-        const { data: diagnosis } = await supabase
-            .from('diagnoses')
-            .select(`
-                *,
-                diagnosis_types (
-                    id,
-                    name,
-                    price
-                )
-            `)
-            .eq('id', diagnosisId)
-            .single();
-
-        const productName = diagnosis?.diagnosis_types?.name || 'おつきさま診断';
-        const productId = diagnosis?.diagnosis_types?.id || 'otsukisama';
-        const amount = paymentData.amount?.amount || 2980;
-
-        // 2. 購入記録を作成（Stripeと同じ構造）
-        const purchaseId = `pur_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-        
-        const purchaseData = {
-            purchase_id: purchaseId,
-            user_id: userId,
-            diagnosis_id: diagnosisId,
-            product_type: 'diagnosis',
-            product_id: productId,
-            product_name: productName,
-            amount: amount,
-            currency: 'JPY',
-            payment_method: 'paypay',
-            paypay_merchant_payment_id: merchantPaymentId,
-            paypay_transaction_id: paymentData.transactionId,
-            status: 'completed',
-            completed_at: paymentData.acceptedAt || new Date().toISOString(),
-            metadata: {
-                order_description: paymentData.orderDescription,
-                payment_status: paymentData.status,
-                code_id: paymentData.codeId,
-                user_name: diagnosis?.user_name
-            }
-        };
-
-        const { data: purchase, error: purchaseError } = await supabase
+        // purchasesテーブルを完了状態に更新
+        const { data: updatedPurchase, error: updateError } = await supabase
             .from('purchases')
-            .insert([purchaseData])
+            .update({
+                status: 'completed',
+                completed_at: paymentData.acceptedAt || new Date().toISOString(),
+                paypay_transaction_id: paymentData.transactionId,
+                metadata: {
+                    payment_status: paymentData.status,
+                    transaction_id: paymentData.transactionId,
+                    accepted_at: paymentData.acceptedAt
+                }
+            })
+            .eq('paypay_merchant_payment_id', merchantPaymentId)
             .select()
             .single();
 
-        if (purchaseError) {
-            console.error('Failed to create purchase record:', purchaseError);
-            throw purchaseError;
+        if (updateError) {
+            console.error('Failed to update purchase:', updateError);
         }
 
-        console.log('Purchase record created:', purchase.purchase_id);
+        // アクセス権限を付与（Stripeと同じ）
+        const purchaseId = updatedPurchase?.purchase_id || existingPurchase?.purchase_id;
+        if (purchaseId) {
+            const { error: accessError } = await supabase
+                .from('access_rights')
+                .upsert({
+                    user_id: userId,
+                    resource_type: 'diagnosis',
+                    resource_id: diagnosisId,
+                    access_level: 'full',
+                    purchase_id: purchaseId,
+                    valid_from: new Date().toISOString(),
+                    valid_until: null // 永久アクセス
+                }, {
+                    onConflict: 'user_id,resource_type,resource_id'
+                });
 
-        // 3. アクセス権限を付与（Stripeと同じ）
-        const { error: accessError } = await supabase
-            .from('access_rights')
-            .upsert({
-                user_id: userId,
-                resource_type: 'diagnosis',
-                resource_id: diagnosisId,
-                access_level: 'full',
-                purchase_id: purchaseId,
-                valid_from: new Date().toISOString(),
-                valid_until: null // 永久アクセス
-            }, {
-                onConflict: 'user_id,resource_type,resource_id'
-            });
-
-        if (accessError) {
-            console.error('Failed to grant access rights:', accessError);
+            if (accessError) {
+                console.error('Failed to grant access rights:', accessError);
+            }
         }
 
-        // 4. 診断テーブルのis_paidをtrueに更新
+        // 診断テーブルのis_paidをtrueに更新
         const { error: diagnosisError } = await supabase
             .from('diagnoses')
             .update({
@@ -242,31 +228,34 @@ async function handlePayPayPaymentCompleted(merchantPaymentId, diagnosisId, user
             console.error('Failed to update diagnosis:', diagnosisError);
         }
 
-        // 5. LINE通知送信（オプション）
+        // LINE通知送信（オプション）
         if (process.env.LINE_CHANNEL_ACCESS_TOKEN) {
-            await sendLineNotification(userId, productName, amount);
+            const amount = paymentData.amount?.amount || 2980;
+            await sendLineNotification(userId, 'おつきさま診断', amount);
         }
 
-        return {
+        return res.json({
             success: true,
             purchaseId: purchaseId,
             paymentData: {
                 merchantPaymentId: paymentData.merchantPaymentId,
-                amount: amount,
-                orderDescription: paymentData.orderDescription,
+                amount: paymentData.amount?.amount,
                 completedAt: paymentData.acceptedAt,
                 transactionId: paymentData.transactionId
             }
-        };
+        });
 
     } catch (error) {
-        console.error('Error processing PayPay payment:', error);
-        return { success: false, error: error.message };
+        console.error('[PayPay Update] Error:', error);
+        return res.status(500).json({ 
+            error: 'Failed to update payment status',
+            details: error.message 
+        });
     }
 }
 
 /**
- * LINE通知送信（Stripeと同じ）
+ * LINE通知送信
  */
 async function sendLineNotification(userId, productName, amount) {
     try {
@@ -295,39 +284,5 @@ async function sendLineNotification(userId, productName, amount) {
         }
     } catch (error) {
         console.error('Error sending LINE notification:', error);
-    }
-}
-
-/**
- * メインハンドラー
- */
-module.exports = async function handler(req, res) {
-    if (req.method !== 'POST') {
-        return res.status(405).json({ error: 'Method not allowed' });
-    }
-
-    const { merchantPaymentId, diagnosisId, userId } = req.body;
-
-    if (!merchantPaymentId || !diagnosisId || !userId) {
-        return res.status(400).json({ 
-            error: 'Missing required parameters',
-            required: ['merchantPaymentId', 'diagnosisId', 'userId']
-        });
-    }
-
-    try {
-        const result = await handlePayPayPaymentCompleted(merchantPaymentId, diagnosisId, userId);
-        
-        if (result.success) {
-            return res.json(result);
-        } else {
-            return res.status(400).json(result);
-        }
-    } catch (error) {
-        console.error('[PayPay Webhook] Error:', error);
-        return res.status(500).json({ 
-            error: 'Failed to process payment',
-            details: error.message 
-        });
     }
 }

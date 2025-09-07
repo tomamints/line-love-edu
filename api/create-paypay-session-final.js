@@ -191,6 +191,7 @@ module.exports = async function handler(req, res) {
             // 成功時の処理
             if (hasSupabase) {
                 try {
+                    // payment_intentsテーブルに記録
                     await supabase
                         .from('payment_intents')
                         .insert({
@@ -201,6 +202,31 @@ module.exports = async function handler(req, res) {
                             status: 'pending',
                             payment_method: 'paypay',
                             payment_data: response.data.data
+                        });
+                    
+                    // purchasesテーブルにも記録（Stripeと同じ構造）
+                    const purchaseId = `pur_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+                    const productName = diagnosis?.diagnosis_types?.name || 'おつきさま診断';
+                    const productId = diagnosis?.diagnosis_types?.id || 'otsukisama';
+                    
+                    await supabase
+                        .from('purchases')
+                        .insert({
+                            purchase_id: purchaseId,
+                            user_id: userId || diagnosis.user_id,
+                            diagnosis_id: diagnosisId,
+                            product_type: 'diagnosis',
+                            product_id: productId,
+                            product_name: productName,
+                            amount: amount,
+                            currency: 'JPY',
+                            payment_method: 'paypay',
+                            paypay_merchant_payment_id: merchantPaymentId,
+                            status: 'pending', // 初期はpending、決済完了後にcompletedに更新
+                            metadata: {
+                                order_description: `おつきさま診断 - ${diagnosis.user_name || 'お客様'}`,
+                                code_url: response.data.data.url
+                            }
                         });
                 } catch (dbError) {
                     console.error('Database save error:', dbError);
