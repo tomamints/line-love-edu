@@ -99,7 +99,6 @@ async function generatePersonalizedCalendar(providedPatternId) {
     console.log('[Calendar] Current date:', currentYear, currentMonth + 1);
     
     // 2ヶ月分のカレンダーを生成
-    let fullCalendarHTML = '';
     const monthNames = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'];
     
     // 月の範囲を表示
@@ -110,6 +109,10 @@ async function generatePersonalizedCalendar(providedPatternId) {
         monthYearElement.textContent = `${currentYear}年 ${monthNames[currentMonth]} - ${nextYear}年 ${monthNames[nextMonth]}`;
     }
     
+    // カレンダーコンテナの内容を完全に再構築
+    // 1ヶ月目のグリッド、2ヶ月目のヘッダー、2ヶ月目のグリッドという構造にする
+    let monthsHTML = [];
+    
     // 2ヶ月分のカレンダーを生成
     for (let monthOffset = 0; monthOffset < 2; monthOffset++) {
         const targetMonth = (currentMonth + monthOffset) % 12;
@@ -117,28 +120,11 @@ async function generatePersonalizedCalendar(providedPatternId) {
         const daysInMonth = new Date(targetYear, targetMonth + 1, 0).getDate();
         const firstDayOfMonth = new Date(targetYear, targetMonth, 1).getDay();
         
-        // 2ヶ月目の場合、月名ヘッダーと曜日ヘッダーを追加
-        if (monthOffset === 1) {
-            // 2ヶ月目のヘッダー
-            fullCalendarHTML += `
-                <div style="clear: both; width: 100%; margin-top: 40px; margin-bottom: 20px; text-align: center; color: #ffd700; font-size: 18px; font-weight: bold;">
-                    ${targetYear}年 ${monthNames[targetMonth]}
-                </div>
-                <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; margin-bottom: 10px; width: 100%;">
-                    <div style="text-align: center; color: #ffd700; font-size: 12px; opacity: 0.8;">日</div>
-                    <div style="text-align: center; color: #ffd700; font-size: 12px; opacity: 0.8;">月</div>
-                    <div style="text-align: center; color: #ffd700; font-size: 12px; opacity: 0.8;">火</div>
-                    <div style="text-align: center; color: #ffd700; font-size: 12px; opacity: 0.8;">水</div>
-                    <div style="text-align: center; color: #ffd700; font-size: 12px; opacity: 0.8;">木</div>
-                    <div style="text-align: center; color: #ffd700; font-size: 12px; opacity: 0.8;">金</div>
-                    <div style="text-align: center; color: #ffd700; font-size: 12px; opacity: 0.8;">土</div>
-                </div>
-            `;
-        }
+        let monthHTML = '';
         
         // 月初めまでの空白
         for (let i = 0; i < firstDayOfMonth; i++) {
-            fullCalendarHTML += '<div class="calendar-day empty" style="aspect-ratio: 1; min-height: 60px;"></div>';
+            monthHTML += '<div class="calendar-day empty" style="aspect-ratio: 1; min-height: 60px;"></div>';
         }
         
         // 各日付
@@ -179,7 +165,7 @@ async function generatePersonalizedCalendar(providedPatternId) {
                 dayClass += ' today';
             }
             
-            fullCalendarHTML += `
+            monthHTML += `
                 <div class="${dayClass}" data-day="${day}" data-month="${targetMonth}" data-year="${targetYear}" style="aspect-ratio: 1; min-height: 60px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 5px;">
                     <div class="day-content" style="text-align: center;">
                         <span class="day-number" style="display: block; font-size: 14px; margin-bottom: 2px;">${day}</span>
@@ -196,14 +182,50 @@ async function generatePersonalizedCalendar(providedPatternId) {
         const remainingCells = 7 - (totalCells % 7);
         if (remainingCells < 7) {
             for (let i = 0; i < remainingCells; i++) {
-                fullCalendarHTML += '<div class="calendar-day empty" style="aspect-ratio: 1; min-height: 60px;"></div>';
+                monthHTML += '<div class="calendar-day empty" style="aspect-ratio: 1; min-height: 60px;"></div>';
             }
         }
+        
+        monthsHTML.push({
+            year: targetYear,
+            month: targetMonth,
+            monthName: monthNames[targetMonth],
+            html: monthHTML
+        });
     }
     
+    // 全体のHTMLを構築
+    let fullHTML = '';
+    
+    // 1ヶ月目のグリッド
+    fullHTML += '<div class="calendar-grid" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px;">';
+    fullHTML += monthsHTML[0].html;
+    fullHTML += '</div>';
+    
+    // 2ヶ月目のヘッダーと曜日行
+    fullHTML += `
+        <div style="margin-top: 40px; margin-bottom: 20px; text-align: center; color: #ffd700; font-size: 18px; font-weight: bold;">
+            ${monthsHTML[1].year}年 ${monthsHTML[1].monthName}
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; margin-bottom: 10px;">
+            <div style="text-align: center; color: #ffd700; font-size: 12px; opacity: 0.8;">日</div>
+            <div style="text-align: center; color: #ffd700; font-size: 12px; opacity: 0.8;">月</div>
+            <div style="text-align: center; color: #ffd700; font-size: 12px; opacity: 0.8;">火</div>
+            <div style="text-align: center; color: #ffd700; font-size: 12px; opacity: 0.8;">水</div>
+            <div style="text-align: center; color: #ffd700; font-size: 12px; opacity: 0.8;">木</div>
+            <div style="text-align: center; color: #ffd700; font-size: 12px; opacity: 0.8;">金</div>
+            <div style="text-align: center; color: #ffd700; font-size: 12px; opacity: 0.8;">土</div>
+        </div>
+    `;
+    
+    // 2ヶ月目のグリッド
+    fullHTML += '<div class="calendar-grid" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px;">';
+    fullHTML += monthsHTML[1].html;
+    fullHTML += '</div>';
+    
     // カレンダーのセルのみを更新
-    container.innerHTML = fullCalendarHTML;
-    console.log('[Calendar] Calendar HTML inserted, length:', fullCalendarHTML.length);
+    container.innerHTML = fullHTML;
+    console.log('[Calendar] Calendar HTML inserted, length:', fullHTML.length);
     console.log('[Calendar] Container now has children:', container.children.length);
 }
 
