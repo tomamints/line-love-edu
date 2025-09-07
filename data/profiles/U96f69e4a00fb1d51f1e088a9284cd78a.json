@@ -1,0 +1,92 @@
+{
+  "userId": "U96f69e4a00fb1d51f1e088a9284cd78a",
+  "userName": null,
+  "partnerName": null,
+  "loveSituation": null,
+  "wantToKnow": null,
+  "emotionalExpression": null,
+  "distanceStyle": null,
+  "loveValues": null,
+  "loveEnergy": null,
+  "moonPatternId": null,
+  "diagnosisType": null,
+  "diagnosisId": null,
+  "diagnosisDate": null,
+  "isPaid": false,
+  "createdAt": "2025-09-07T14:49:01.670954",
+  "updatedAt": "2025-09-07T14:49:01.437",
+  "personalInfo": {
+    "userAge": null,
+    "partnerAge": null,
+    "updatedAt": "2025-09-07T23:49:07.941+09:00"
+  },
+  "lastFortuneResult": {
+    "user": {
+      "moonType": "新月",
+      "emoji": "🌑",
+      "story": {
+        "title": "新月タイプの物語",
+        "introduction": "あなたが生まれた夜、空には月が見えませんでした。",
+        "symbolism": "新月は「始まり」「真っさらな可能性」「まだ見えない未来」を象徴します。",
+        "traits": [
+          "直感力と瞬発力が飛び抜けています",
+          "未知の人・場所・体験に強く惹かれる",
+          "心が動いた瞬間に行動できる",
+          "初対面でも自然に距離を縮められる",
+          "「今」の気持ちを大事にし、勢いがある"
+        ],
+        "loveStyle": "新月の恋は、雷が落ちるように始まります。「この人だ！」と直感したら、一気に距離を詰め、短期間で深い関係に。",
+        "examples": [
+          "出会って数時間で「来週、ご飯行こう！」と即提案",
+          "LINEは熱量高め、写真や動画もすぐ共有",
+          "付き合う前でもサプライズや遠出を提案し、相手をワクワクさせる"
+        ],
+        "caution": "ただし、安定期に入るとメッセージが短くなったり、会う間隔が空いたりすることも。本人は「落ち着いただけ」でも、相手は「冷められた？」と感じやすい点に注意。",
+        "advice": [
+          "「安定デー」をカレンダーに先置き：月に2回は動かないデート（自炊・散歩・映画）を予約",
+          "熱量の\"3段変速\"運転：初期＝全開／中期＝安定／長期＝低燃費",
+          "週1日は連絡や提案をせず、相手からの動きを待つ"
+        ]
+      }
+    },
+    "monthlyFortune": {
+      "currentMoon": {
+        "type": "満月",
+        "emoji": "🌕"
+      },
+      "compatibility": 95,
+      "fortune": {
+        "level": "絶好調",
+        "message": "9月の満月は、新月タイプのあなたに最高のエネルギーを注ぎます。直感力と瞬発力が飛び抜けていますという特性が最大限に発揮される時。",
+        "advice": "「安定デー」をカレンダーに先置き：月に2回は動かないデート（自炊・散歩・映画）を予約"
+      },
+      "luckyDays": [
+        {
+          "date": 5,
+          "moonType": "十三夜",
+          "emoji": "🌔",
+          "advice": "最高の波動が訪れる日。大切な告白や決断に最適。"
+        },
+        {
+          "date": 6,
+          "moonType": "十三夜",
+          "emoji": "🌔",
+          "advice": "最高の波動が訪れる日。大切な告白や決断に最適。"
+        },
+        {
+          "date": 7,
+          "moonType": "十三夜",
+          "emoji": "🌔",
+          "advice": "最高の波動が訪れる日。大切な告白や決断に最適。"
+        }
+      ],
+      "actionAdvice": {
+        "seasonal": "秋の始まり。落ち着いた関係構築を。",
+        "personal": [
+          "「安定デー」をカレンダーに先置き：月に2回は動かないデート（自炊・散歩・映画）を予約",
+          "熱量の\"3段変速\"運転：初期＝全開／中期＝安定／長期＝低燃費"
+        ]
+      }
+    }
+  }
+}

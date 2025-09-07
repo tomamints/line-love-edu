@@ -86,7 +86,8 @@ async function updateMoonPhaseContent(patternId) {
             const moonDescription = window.OtsukisamaDataLoader.getMoonPhaseDescription(pattern.moonPhase);
             if (moonDescription) {
                 // テキストフォーマッターを使用してユーザー名を置換
-                const userName = profile?.userName || profile?.user_name || 'あなた';
+                // profileはまだ定義されていない可能性があるため、window.currentUserNameを使用
+                const userName = window.currentUserName || 'あなた';
                 if (window.TextFormatter) {
                     moonPhaseDesc.innerHTML = window.TextFormatter.formatDescription(moonDescription.description, userName);
                 } else {
@@ -1207,7 +1208,8 @@ async function updateMoonPhaseExplanations(moonPhase, hiddenMoonPhase) {
             if (subtitleElement) subtitleElement.textContent = moonPhaseDesc.subtitle;
             if (descElement) {
                 // テキストフォーマッターを使用してユーザー名を置換
-                const userName = profile?.userName || profile?.user_name || 'あなた';
+                // この関数内ではprofileが渡されていないため、window.currentUserNameを使用
+                const userName = window.currentUserName || 'あなた';
                 if (window.TextFormatter) {
                     descElement.innerHTML = window.TextFormatter.formatDescription(moonPhaseDesc.description, userName);
                 } else {
