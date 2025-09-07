@@ -18,10 +18,19 @@
             padding: 20px;
             border-radius: 10px;
         }
-        #personalizedCalendar {
+        .calendar-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 10px;
+            gap: 8px;
+        }
+        @media (max-width: 600px) {
+            .calendar-grid {
+                gap: 4px;
+            }
+            .calendar-day {
+                min-height: 45px !important;
+                font-size: 11px;
+            }
         }
     </style>
 </head>

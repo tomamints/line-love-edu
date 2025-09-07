@@ -191,6 +191,117 @@ app.post('/webhook', middleware(config), async (req, res) => {
         const messageText = event.message.text;
         loadHeavyModules();
         
+        // 本格テストコマンド - 完全版表示（テスト用）
+        if (messageText === '本格テスト') {
+          logger.log('🧪 本格テストコマンド受信:', userId);
+          
+          // 最新の診断IDを取得
+          const { createClient } = require('@supabase/supabase-js');
+          const supabase = createClient(
+            process.env.NEXT_PUBLIC_SUPABASE_URL,
+            process.env.SUPABASE_SERVICE_ROLE_KEY
+          );
+          
+          // ユーザーの最新診断を取得
+          const { data: diagnosis } = await supabase
+            .from('diagnoses')
+            .select('id')
+            .eq('user_id', userId)
+            .order('created_at', { ascending: false })
+            .limit(1)
+            .single();
+          
+          if (diagnosis) {
+            const testUrl = `${process.env.BASE_URL || 'https://line-love-edu.vercel.app'}/lp-otsukisama-unified.html?id=${diagnosis.id}&userId=${userId}&test=true`;
+            
+            return client.replyMessage(event.replyToken, {
+              type: 'flex',
+              altText: '🧪 テスト用完全版リンク',
+              contents: {
+                type: 'bubble',
+                size: 'mega',
+                header: {
+                  type: 'box',
+                  layout: 'vertical',
+                  backgroundColor: '#ff6b6b',
+                  contents: [
+                    {
+                      type: 'text',
+                      text: '🧪 テスト用完全版',
+                      color: '#ffffff',
+                      size: 'xl',
+                      weight: 'bold',
+                      align: 'center'
+                    },
+                    {
+                      type: 'text',
+                      text: '（権限チェックをバイパス）',
+                      color: '#ffcccc',
+                      size: 'sm',
+                      align: 'center',
+                      margin: 'sm'
+                    }
+                  ],
+                  paddingAll: '20px'
+                },
+                body: {
+                  type: 'box',
+                  layout: 'vertical',
+                  spacing: 'md',
+                  contents: [
+                    {
+                      type: 'text',
+                      text: '診断結果の完全版を確認できます',
+                      wrap: true,
+                      size: 'md'
+                    },
+                    {
+                      type: 'text',
+                      text: '※このリンクは権限チェックをバイパスして全文を表示します',
+                      wrap: true,
+                      size: 'sm',
+                      color: '#ff0000',
+                      weight: 'bold',
+                      margin: 'md'
+                    },
+                    {
+                      type: 'text',
+                      text: `診断ID: ${diagnosis.id}`,
+                      size: 'xs',
+                      color: '#666666',
+                      margin: 'lg'
+                    }
+                  ],
+                  paddingAll: '20px'
+                },
+                footer: {
+                  type: 'box',
+                  layout: 'vertical',
+                  contents: [
+                    {
+                      type: 'button',
+                      action: {
+                        type: 'uri',
+                        label: '完全版を確認する',
+                        uri: testUrl
+                      },
+                      style: 'primary',
+                      color: '#ff6b6b',
+                      height: 'sm'
+                    }
+                  ],
+                  paddingAll: '10px'
+                }
+              }
+            });
+          } else {
+            return client.replyMessage(event.replyToken, {
+              type: 'text',
+              text: '診断データが見つかりません。\nまず診断を完了してください。'
+            });
+          }
+        }
+        
         // プロフィール保存完了通知を受け取った場合
         if (messageText === '診断開始' || messageText === '保存完了') {
           const profile = await profileManager.getProfile(userId);

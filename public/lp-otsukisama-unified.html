@@ -1182,10 +1182,18 @@
                     console.log('取得したデータ:', data);
                     
                     if (data.success && data.diagnosis) {
-                        // アクセスレベルに基づいてモードを設定
-                        const isPaid = data.accessLevel === 'full';
+                        // テストモードの確認（test=trueパラメータがある場合は権限をバイパス）
+                        const isTestMode = urlParams.get('test') === 'true';
+                        
+                        // アクセスレベルに基づいてモードを設定（テストモードの場合は常にfull）
+                        const isPaid = isTestMode ? true : (data.accessLevel === 'full');
                         const mode = setDisplayMode(isPaid);
                         window.currentMode = mode;  // グローバルに保存
+                        
+                        // テストモードの場合は警告表示
+                        if (isTestMode) {
+                            console.warn('⚠️ テストモード: 権限チェックをバイパスして完全版を表示しています');
+                        }
                         window.currentUserId = userId;  // ユーザーIDも保存
                         // 名前を表示
                         const resultName = document.getElementById('resultName');
