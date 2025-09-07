@@ -283,10 +283,18 @@
         const paymentStatus = urlParams.get('payment');
         const merchantPaymentId = urlParams.get('merchantPaymentId');
         
-        // LINEアプリに戻る機能
+        // LINEアプリ内ブラウザかどうかを判定
+        const userAgent = navigator.userAgent || '';
+        const isLineApp = userAgent.includes('Line/') || userAgent.includes('LIFF');
+        const isExternalBrowser = !isLineApp && merchantPaymentId;
+        
+        console.log('User Agent:', userAgent);
+        console.log('Is LINE App:', isLineApp);
+        console.log('Is External Browser:', isExternalBrowser);
+        
+        // LINEアプリに戻る機能（外部ブラウザの場合のみ使用）
         function returnToLINE() {
             // LINE公式アカウントにメッセージを送信するURL
-            // これにより決済完了が伝わり、次のアクションが促される
             const lineAccountId = '@CZRKwBv';
             const message = encodeURIComponent('決済完了');
             
@@ -304,33 +312,66 @@
         }
         
         // PayPayから戻ってきた場合の処理
-        if (merchantPaymentId && !sessionStorage.getItem('lineReturnAttempted')) {
-            // 二重実行を防ぐ
-            sessionStorage.setItem('lineReturnAttempted', 'true');
-            
-            // 決済完了メッセージを表示
-            const messageDiv = document.createElement('div');
-            messageDiv.style.cssText = `
-                position: fixed;
-                top: 20px;
-                left: 50%;
-                transform: translateX(-50%);
-                background: #00B900;
-                color: white;
-                padding: 15px 30px;
-                border-radius: 25px;
-                font-weight: bold;
-                z-index: 10000;
-                animation: slideDown 0.5s ease;
-            `;
-            messageDiv.textContent = '✅ 決済完了！3秒後にLINEに戻ります...';
-            document.body.appendChild(messageDiv);
-            
-            // 3秒後にLINEに戻る（メッセージ送信付き）
-            setTimeout(() => {
-                console.log('PayPay決済完了 - LINEアプリに戻ります');
-                returnToLINE();
-            }, 3000);
+        if (merchantPaymentId) {
+            // LINEアプリ内ブラウザの場合
+            if (isLineApp) {
+                console.log('LINEアプリ内ブラウザで決済完了ページを表示');
+                // 決済完了メッセージを表示
+                const messageDiv = document.createElement('div');
+                messageDiv.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    background: #00B900;
+                    color: white;
+                    padding: 15px 30px;
+                    border-radius: 25px;
+                    font-weight: bold;
+                    z-index: 10000;
+                    animation: slideDown 0.5s ease;
+                `;
+                messageDiv.textContent = '✅ 決済が完了しました！';
+                document.body.appendChild(messageDiv);
+                
+                // LINEアプリ内なので、そのまま表示を続ける
+                // 「LINEに戻る」ボタンは非表示にする
+                const lineReturnBtn = document.querySelector('button[onclick="returnToLINE()"]');
+                if (lineReturnBtn) {
+                    lineReturnBtn.style.display = 'none';
+                }
+            } 
+            // 外部ブラウザの場合
+            else if (!sessionStorage.getItem('lineReturnAttempted')) {
+                // 二重実行を防ぐ
+                sessionStorage.setItem('lineReturnAttempted', 'true');
+                
+                console.log('外部ブラウザから決済完了 - LINEに戻す');
+                
+                // 決済完了メッセージを表示
+                const messageDiv = document.createElement('div');
+                messageDiv.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    background: #00B900;
+                    color: white;
+                    padding: 15px 30px;
+                    border-radius: 25px;
+                    font-weight: bold;
+                    z-index: 10000;
+                    animation: slideDown 0.5s ease;
+                `;
+                messageDiv.textContent = '✅ 決済完了！3秒後にLINEに戻ります...';
+                document.body.appendChild(messageDiv);
+                
+                // 3秒後にLINEに戻る（外部ブラウザの場合のみ）
+                setTimeout(() => {
+                    console.log('PayPay決済完了 - LINEアプリに戻ります');
+                    returnToLINE();
+                }, 3000);
+            }
         }
         
         // 日付を設定

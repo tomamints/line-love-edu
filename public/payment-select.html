@@ -339,6 +339,9 @@
                 // ローディングを非表示にする
                 document.getElementById('loadingOverlay').style.display = 'none';
                 console.log('PayPayから戻ってきました - ローディングを非表示');
+                
+                // 決済が完了したか確認（決済完了ページに遷移したか）
+                checkPaymentStatus();
             }
         });
         
@@ -350,9 +353,21 @@
                 if (loadingOverlay && loadingOverlay.style.display === 'flex') {
                     console.log('ページが表示されました - ローディングを非表示');
                     loadingOverlay.style.display = 'none';
+                    
+                    // 決済が完了したか確認
+                    checkPaymentStatus();
                 }
             }
         });
+        
+        // 決済完了をチェックして、完了していれば決済完了ページへ遷移
+        function checkPaymentStatus() {
+            // セッションストレージから決済完了フラグをチェック
+            if (sessionStorage.getItem('paymentCompleted') === 'true') {
+                // 決済完了ページへ遷移
+                window.location.href = `/payment-success.html?id=${diagnosisId}&userId=${userId || ''}`;
+            }
+        }
         
         async function selectPayment(method) {
             if (!diagnosisId) {
