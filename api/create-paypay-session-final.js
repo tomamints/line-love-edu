@@ -211,10 +211,12 @@ module.exports = async function handler(req, res) {
         console.log('Making PayPay API request with crypto-js...');
         console.log('Mobile detected:', isMobile);
         console.log('RedirectType:', redirectType);
+        console.log('PaymentData:', JSON.stringify(paymentData, null, 2));
         
         const response = await callPayPayAPI('/v2/codes', 'POST', paymentData);
         
         console.log('PayPay API Response:', response.success ? 'SUCCESS' : 'FAILED');
+        console.log('Full Response:', JSON.stringify(response, null, 2));
         if (response.success && response.data.data) {
             console.log('Response URL:', response.data.data.url);
             console.log('Response deeplink:', response.data.data.deeplink);
