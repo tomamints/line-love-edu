@@ -34,48 +34,42 @@ module.exports = async (req, res) => {
       }
       
       try {
-        // diagnosesテーブルから診断データを取得
-        const { data, error } = await supabase
-          .from('diagnoses')
-          .select('*')
-          .eq('id', id)
-          .single();
+        // Supabaseから直接診断データを取得
+        const { supabase } = require('../core/database/supabase');
+        
+        if (supabase) {
+          const { data, error } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('diagnosis_id', id)
+            .single();
+            
+          if (error || !data) {
+            console.log('診断データが見つかりません:', id);
+            return res.status(404).json({ 
+              success: false,
+              error: '診断データが見つかりません' 
+            });
+          }
           
-        if (error || !data) {
-          console.log('診断データが見つかりません:', id);
-          return res.status(404).json({ 
-            success: false,
-            error: '診断データが見つかりません' 
-          });
-        }
-        
-        // purchasesテーブルで支払い状態をチェック
-        const { data: purchase } = await supabase
-          .from('purchases')
-          .select('*')
-          .eq('diagnosis_id', id)
-          .eq('status', 'completed')
-          .single();
-        
-        const isPaid = !!purchase;
+          // 支払い状態をチェック
+          const isPaid = data.is_paid || false;
           
           // 基本データ（プレビュー版でも表示）
           const basicDiagnosis = {
-            id: data.id,
+            id: data.diagnosis_id,
             user_id: data.user_id,
             user_name: data.user_name,
             birth_date: data.birth_date,
-            moon_pattern_id: data.result_data?.moon_pattern_id,
-            pattern_id: data.result_data?.moon_pattern_id,  // 互換性のため両方提供
-            diagnosis_type: data.diagnosis_type_id || 'otsukisama',
-            emotional_expression: data.result_data?.emotional_expression,
-            distance_style: data.result_data?.distance_style,
-            love_values: data.result_data?.love_values,
-            love_energy: data.result_data?.love_energy,
-            moon_phase: data.result_data?.moon_phase,
-            hidden_moon_phase: data.result_data?.hidden_moon_phase,
+            moon_pattern_id: data.moon_pattern_id,
+            pattern_id: data.moon_pattern_id,  // 互換性のため両方提供
+            diagnosis_type: data.diagnosis_type || 'otsukisama',
+            emotional_expression: data.emotional_expression,
+            distance_style: data.distance_style,
+            love_values: data.love_values,
+            love_energy: data.love_energy,
             is_paid: isPaid,
-            created_at: data.created_at
+            created_at: data.diagnosis_date || data.created_at
           };
           
           // 支払い済みの場合は完全データを返す
@@ -94,6 +88,12 @@ module.exports = async (req, res) => {
             diagnosis: basicDiagnosis,
             isPaid: false,
             accessLevel: 'preview'
+          });
+        } else {
+          // ファイルベースのフォールバック
+          return res.status(500).json({ 
+            success: false,
+            error: 'データベース接続エラー' 
           });
         }
       } catch (error) {
@@ -285,55 +285,24 @@ module.exports = async (req, res) => {
       if (action === 'save-diagnosis') {
         const diagnosisId = `diag_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
         
-        // diagnosesテーブルに保存
-        const { data: diagnosis, error: diagError } = await supabase
-          .from('diagnoses')
-          .insert({
-            id: diagnosisId,
-            user_id: userId || 'anonymous',
-            user_name: userName || name,
-            birth_date: birthDate,
-            diagnosis_type_id: diagnosisType || 'otsukisama',
-            result_data: {
-              moon_pattern_id: resultData?.moon_pattern_id || patternId,
-              moon_phase: resultData?.moon_phase,
-              hidden_moon_phase: resultData?.hidden_moon_phase,
-              emotional_expression: resultData?.emotional_expression || 'straight',
-              distance_style: resultData?.distance_style || 'moderate',
-              love_values: resultData?.love_values || 'romantic',
-              love_energy: resultData?.love_energy || 'intense',
-              moon_power_1: resultData?.moon_power_1,
-              moon_power_2: resultData?.moon_power_2,
-              moon_power_3: resultData?.moon_power_3
-            },
-            metadata: {},
-            created_at: new Date().toISOString()
-          })
-          .select()
-          .single();
+        // 診断データの保存
+        const diagnosisData = {
+          diagnosisId: diagnosisId,
+          userName: userName || name,
+          birthDate: birthDate,
+          moonPatternId: resultData?.moon_pattern_id || patternId,
+          diagnosisDate: new Date().toISOString(),
+          diagnosisType: diagnosisType || 'otsukisama',
+          // 4つの軸データを保存
+          emotionalExpression: resultData?.emotional_expression || 'straight',
+          distanceStyle: resultData?.distance_style || 'moderate',
+          loveValues: resultData?.love_values || 'romantic',
+          loveEnergy: resultData?.love_energy || 'intense',
+          isPaid: false
+        };
         
-        if (diagError) {
-          console.error('診断データ保存エラー:', diagError);
-          return res.status(500).json({
-            success: false,
-            error: '診断データの保存に失敗しました'
-          });
-        }
-        
-        // profilesテーブルも更新（ユーザーの最新診断として）
         if (userId) {
-          const profileData = {
-            diagnosisId: diagnosisId,
-            userName: userName || name,
-            birthDate: birthDate,
-            diagnosisDate: new Date().toISOString(),
-            diagnosisType: diagnosisType || 'otsukisama',
-            emotionalExpression: resultData?.emotional_expression || 'straight',
-            distanceStyle: resultData?.distance_style || 'moderate',
-            loveValues: resultData?.love_values || 'romantic',
-            loveEnergy: resultData?.love_energy || 'intense'
-          };
-          await profilesDB.saveProfile(userId, profileData);
+          await profilesDB.saveProfile(userId, diagnosisData);
         }
         
         return res.status(200).json({
