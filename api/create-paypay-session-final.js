@@ -6,7 +6,7 @@ const { createClient } = require('@supabase/supabase-js');
 const { HmacSHA256, enc, algo } = require("crypto-js");
 const crypto = require("crypto");
 const https = require("https");
-const PaymentHandler = require('./common/payment-handler');
+const PaymentHandler = require('../lib/payment-handler');
 
 // UUID生成
 const uuidv4 = () => crypto.randomUUID();
