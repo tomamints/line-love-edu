@@ -1,30 +1,33 @@
 # PayPay Webhook設定ガイド
 
-## 概要
-PayPay Webhookを設定することで、決済完了を即座に検知できます。
+## 重要な注意事項
+**PayPayのWebhook設定は、PayPayのビジネスアカウント管理者から直接設定してもらう必要があります。**
+開発者が自由に設定できるものではありません。
 
-## 設定手順
+## 現在の実装
 
-### 1. PayPay管理画面にログイン
-- [PayPay for Developers](https://developer.paypay.ne.jp/) にアクセス
-- Sandbox環境の管理画面にログイン
+### 1. 高速ポーリング（実装済み）
+- 0.5秒間隔で決済状態をチェック
+- これにより、ほぼリアルタイムで決済完了を検知
+- Webhookが使えない場合でも問題なく動作
 
-### 2. Webhook URLの設定
-管理画面で以下のWebhook URLを設定：
-```
-https://line-love-edu.vercel.app/api/paypay-webhook
-```
+### 2. Webhookエンドポイント（準備済み）
+- エンドポイント: `https://line-love-edu.vercel.app/api/paypay-webhook`
+- PayPayから通知を受け取る準備は完了
+- ただし、PayPay側での設定が必要
 
-### 3. 通知タイプの選択
-以下の通知タイプを有効にする：
-- Transaction (決済完了通知)
-- Refund (返金通知) ※必要に応じて
+## PayPay側での設定（PayPayビジネスアカウント管理者が行う）
 
-### 4. Webhook Secretの取得
-- 管理画面でWebhook Secretが表示される
-- この値を環境変数に設定
+### 1. PayPayビジネスアカウント管理者に依頼
+以下の情報を伝えて設定を依頼：
+- Webhook URL: `https://line-love-edu.vercel.app/api/paypay-webhook`
+- 通知タイプ: Transaction（決済完了通知）
 
-### 5. Vercelに環境変数を設定
+### 2. IPアドレスのホワイトリスト設定
+セキュリティのため、PayPayのIPアドレスからのみ受信するよう設定することを推奨
+
+### 3. Webhook Secretの共有
+PayPay側で生成されるWebhook Secretを取得し、環境変数に設定：
 ```bash
 vercel env add PAYPAY_WEBHOOK_SECRET
 ```
