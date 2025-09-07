@@ -309,7 +309,13 @@
         
         // PayPayからのリダイレクトの場合、またはpayment=successの場合は成功と判定
         // PayPayはカスタムパラメータを保持しない可能性があるため、diagnosisIdがあれば成功とみなす
-        const isPayPayRedirect = document.referrer.includes('paypay') || window.location.href.includes('paypay');
+        const isPayPayRedirect = document.referrer.includes('paypay') || 
+                                window.location.href.includes('paypay') ||
+                                merchantPaymentId?.includes('diag_');
+        
+        // PayPayアプリからのリダイレクトを検出
+        const isFromPayPayApp = window.location.search.includes('merchantPaymentId') && 
+                               /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
         
         // エラー表示の条件を明確化
         // - payment=error または payment=cancel の場合はエラー
@@ -345,7 +351,7 @@
         }
         
         // PayPay決済の場合、支払い方法を更新とデータベース記録
-        if ((isPayPayRedirect || merchantPaymentId) && diagnosisId && userId) {
+        if ((isPayPayRedirect || isFromPayPayApp || merchantPaymentId) && diagnosisId) {
             const paymentMethodElement = document.querySelector('.info-row:nth-child(2) .info-value');
             if (paymentMethodElement) {
                 paymentMethodElement.textContent = 'PayPay';
@@ -357,12 +363,12 @@
             }
             
             // PayPay決済完了をデータベースに記録（purchasesテーブル）
-            if (merchantPaymentId) {
+            if (merchantPaymentId || isFromPayPayApp) {
                 // 即座に記録を試みる
                 recordPayment();
                 
                 // モバイルの場合、リダイレクトが失敗する可能性があるため、ポーリングも実施
-                if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+                if (isFromPayPayApp) {
                     // 3秒ごとに最大10回まで決済状態を確認
                     let pollCount = 0;
                     const maxPolls = 10;
