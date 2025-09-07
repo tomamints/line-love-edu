@@ -79,7 +79,7 @@ async function callPayPayAPI(path, method, body) {
         const authHeader = createAuthHeader(method, path, body);
         
         const options = {
-            hostname: 'stg-api.paypay.ne.jp',
+            hostname: 'stg-api.sandbox.paypay.ne.jp', // 公式SDKと同じサンドボックスURL
             port: 443,
             path: path,
             method: method,
@@ -188,27 +188,19 @@ module.exports = async function handler(req, res) {
         const baseUrl = 'https://line-love-edu.vercel.app';
         const successUrl = `${baseUrl}/payment-success.html?id=${diagnosisId}&userId=${userId || ''}&merchantPaymentId=${merchantPaymentId}`;
         
+        // PayPay公式SDKの例と完全に同じ構造にする
         const paymentData = {
             merchantPaymentId: merchantPaymentId,
-            codeType: "ORDER_QR",
-            redirectUrl: successUrl,
-            redirectType: redirectType,
-            orderDescription: `おつきさま診断 - ${diagnosis.user_name || 'お客様'}`,
-            userAgent: userAgent, // PayPayにユーザーエージェントを送信
-            orderItems: [{
-                name: "おつきさま診断 完全版",
-                category: "DIGITAL_CONTENT",
-                quantity: 1,
-                productId: "otsukisama_diagnosis",
-                unitPrice: {
-                    amount: amount,
-                    currency: "JPY"
-                }
-            }],
             amount: {
                 amount: amount,
                 currency: "JPY"
-            }
+            },
+            codeType: "ORDER_QR",
+            orderDescription: `おつきさま診断 - ${diagnosis.user_name || 'お客様'}`,
+            isAuthorization: false,
+            redirectUrl: successUrl,
+            redirectType: "APP_DEEP_LINK",
+            userAgent: userAgent
         };
 
         console.log('[PayPay App Invoke] Request Details:');

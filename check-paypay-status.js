@@ -55,7 +55,7 @@ async function callPayPayAPI(path, method, body) {
         const authHeader = createAuthHeader(method, path, body);
         
         const options = {
-            hostname: 'stg-api.paypay.ne.jp',
+            hostname: 'stg-api.sandbox.paypay.ne.jp', // 公式SDKと同じサンドボックスURL
             port: 443,
             path: path,
             method: method,
