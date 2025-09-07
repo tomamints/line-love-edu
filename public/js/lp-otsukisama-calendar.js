@@ -41,6 +41,9 @@ async function generatePersonalizedCalendar(providedPatternId) {
     const monthYearElement = document.getElementById('calendarMonthYear');
     
     console.log('[Calendar] Starting generation for pattern:', providedPatternId);
+    console.log('[Calendar] Container element:', container);
+    console.log('[Calendar] Message element:', messageElement);
+    console.log('[Calendar] MonthYear element:', monthYearElement);
     
     if (!container) {
         console.error('[Calendar] Container not found: personalizedCalendar');
@@ -78,16 +81,22 @@ async function generatePersonalizedCalendar(providedPatternId) {
         return;
     }
     console.log('[Calendar] Pattern data found:', patternData);
+    console.log('[Calendar] Lucky days:', patternData.lucky_days);
+    console.log('[Calendar] Power days:', patternData.power_days);
+    console.log('[Calendar] Caution days:', patternData.caution_days);
     
     // メッセージを表示
     if (messageElement) {
         messageElement.textContent = patternData.monthly_message;
+        console.log('[Calendar] Message set:', patternData.monthly_message);
     }
     
     // 現在の月の情報を取得
     const currentDate = new Date();
     const currentYear = currentDate.getFullYear();
     const currentMonth = currentDate.getMonth();
+    
+    console.log('[Calendar] Current date:', currentYear, currentMonth + 1);
     
     // 2ヶ月分のカレンダーを生成
     let fullCalendarHTML = '';
@@ -115,14 +124,14 @@ async function generatePersonalizedCalendar(providedPatternId) {
                 <div style="margin-top: 40px; margin-bottom: 20px; text-align: center; color: #ffd700; font-size: 18px; font-weight: bold;">
                     ${targetYear}年 ${monthNames[targetMonth]}
                 </div>
-                <div class="weekday-header" style="margin-bottom: 10px;">
-                    <div class="weekday">日</div>
-                    <div class="weekday">月</div>
-                    <div class="weekday">火</div>
-                    <div class="weekday">水</div>
-                    <div class="weekday">木</div>
-                    <div class="weekday">金</div>
-                    <div class="weekday">土</div>
+                <div class="weekday-header" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; margin-bottom: 10px;">
+                    <div class="weekday" style="text-align: center; color: #ffd700; font-size: 12px; opacity: 0.8;">日</div>
+                    <div class="weekday" style="text-align: center; color: #ffd700; font-size: 12px; opacity: 0.8;">月</div>
+                    <div class="weekday" style="text-align: center; color: #ffd700; font-size: 12px; opacity: 0.8;">火</div>
+                    <div class="weekday" style="text-align: center; color: #ffd700; font-size: 12px; opacity: 0.8;">水</div>
+                    <div class="weekday" style="text-align: center; color: #ffd700; font-size: 12px; opacity: 0.8;">木</div>
+                    <div class="weekday" style="text-align: center; color: #ffd700; font-size: 12px; opacity: 0.8;">金</div>
+                    <div class="weekday" style="text-align: center; color: #ffd700; font-size: 12px; opacity: 0.8;">土</div>
                 </div>
             `;
         }
@@ -182,10 +191,10 @@ async function generatePersonalizedCalendar(providedPatternId) {
             `;
         }
         
-        // 月末以降の空白を追加（次の月の区切りまで）
+        // 月末以降の空白を追加（7日で割り切れるように）
         const totalCells = firstDayOfMonth + daysInMonth;
         const remainingCells = 7 - (totalCells % 7);
-        if (remainingCells < 7 && monthOffset === 1) { // 最後の月のみ
+        if (remainingCells < 7) {
             for (let i = 0; i < remainingCells; i++) {
                 fullCalendarHTML += '<div class="calendar-day empty"></div>';
             }
@@ -194,6 +203,8 @@ async function generatePersonalizedCalendar(providedPatternId) {
     
     // カレンダーのセルのみを更新
     container.innerHTML = fullCalendarHTML;
+    console.log('[Calendar] Calendar HTML inserted, length:', fullCalendarHTML.length);
+    console.log('[Calendar] Container now has children:', container.children.length);
 }
 
 // 月齢から月の絵文字を取得
