@@ -184,14 +184,26 @@ module.exports = async function handler(req, res) {
         // App Invoke専用設定 - 常にAPP_DEEP_LINKを使用
         const redirectType = "APP_DEEP_LINK";
         
-        // App Invoke用のリダイレクトURL
-        // LINEアプリに戻すためのリダイレクトAPIを使用
+        // リダイレクトURL設定
         const baseUrl = 'https://line-love-edu.vercel.app';
         
-        // モバイルの場合はLINEリダイレクトAPIを使用
+        // LINE公式アカウントのチャットに戻るUniversal Link
+        // @025gwcywは公式アカウントのID
+        const lineOfficialAccountId = '@025gwcyw';
+        const message = `決済完了 診断ID:${diagnosisId}`;
+        const encodedMsg = encodeURIComponent(message);
+        
+        // LINE Universal Link - 公式アカウントのチャットを開く
+        const lineUniversalUrl = `https://line.me/R/ti/p/${lineOfficialAccountId}`;
+        
+        // モバイルの場合はLINEアプリを開くUniversal Linkを使用
         const successUrl = isMobile 
-            ? `${baseUrl}/api/line-redirect?id=${diagnosisId}&userId=${userId || ''}&merchantPaymentId=${merchantPaymentId}`
+            ? lineUniversalUrl
             : `${baseUrl}/payment-success.html?id=${diagnosisId}&userId=${userId || ''}&merchantPaymentId=${merchantPaymentId}`;
+        
+        console.log('[PayPay] Redirect URL:', successUrl);
+        console.log('[PayPay] Is Mobile:', isMobile);
+        console.log('[PayPay] Using LINE Universal Link:', isMobile);
         
         // PayPay公式SDKの例と完全に同じ構造にする
         const paymentData = {
