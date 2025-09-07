@@ -1054,7 +1054,7 @@ function updateDynamicContentFromPattern(pattern) {
 }
 
 // 各タイプの説明を更新する関数
-async function updateEmotionalExpressionContent(type) {
+async function updateEmotionalExpressionContent(type, profile) {
     // データが読み込まれていない場合は読み込む
     if (!personalityAxesData) {
         await loadPersonalityAxesData();
@@ -1076,8 +1076,8 @@ async function updateEmotionalExpressionContent(type) {
     
     const typeData = personalityAxesData.emotionalExpression[japaneseKey];
     if (typeData) {
-        // ユーザー名を取得して〇〇さんを置換
-        const userName = window.currentUserName || 'あなた';
+        // profileから直接ユーザー名を取得
+        const userName = profile?.userName || window.currentUserName || 'あなた';
         if (window.TextFormatter) {
             element.innerHTML = window.TextFormatter.formatDescription(typeData.description, userName);
         } else {
@@ -1086,7 +1086,7 @@ async function updateEmotionalExpressionContent(type) {
     }
 }
 
-async function updateDistanceStyleContent(type) {
+async function updateDistanceStyleContent(type, profile) {
     // データが読み込まれていない場合は読み込む
     if (!personalityAxesData) {
         await loadPersonalityAxesData();
@@ -1108,8 +1108,8 @@ async function updateDistanceStyleContent(type) {
     
     const typeData = personalityAxesData.distanceStyle[japaneseKey];
     if (typeData) {
-        // ユーザー名を取得して〇〇さんを置換
-        const userName = window.currentUserName || 'あなた';
+        // profileから直接ユーザー名を取得
+        const userName = profile?.userName || window.currentUserName || 'あなた';
         if (window.TextFormatter) {
             element.innerHTML = window.TextFormatter.formatDescription(typeData.description, userName);
         } else {
@@ -1118,7 +1118,7 @@ async function updateDistanceStyleContent(type) {
     }
 }
 
-async function updateLoveValuesContent(type) {
+async function updateLoveValuesContent(type, profile) {
     // データが読み込まれていない場合は読み込む
     if (!personalityAxesData) {
         await loadPersonalityAxesData();
@@ -1140,8 +1140,8 @@ async function updateLoveValuesContent(type) {
     
     const typeData = personalityAxesData.loveValues[japaneseKey];
     if (typeData) {
-        // ユーザー名を取得して〇〇さんを置換
-        const userName = window.currentUserName || 'あなた';
+        // profileから直接ユーザー名を取得
+        const userName = profile?.userName || window.currentUserName || 'あなた';
         if (window.TextFormatter) {
             element.innerHTML = window.TextFormatter.formatDescription(typeData.description, userName);
         } else {
@@ -1150,7 +1150,7 @@ async function updateLoveValuesContent(type) {
     }
 }
 
-async function updateLoveEnergyContent(type) {
+async function updateLoveEnergyContent(type, profile) {
     // データが読み込まれていない場合は読み込む
     if (!personalityAxesData) {
         await loadPersonalityAxesData();
@@ -1172,8 +1172,8 @@ async function updateLoveEnergyContent(type) {
     
     const typeData = personalityAxesData.loveEnergy[japaneseKey];
     if (typeData) {
-        // ユーザー名を取得して〇〇さんを置換
-        const userName = window.currentUserName || 'あなた';
+        // profileから直接ユーザー名を取得
+        const userName = profile?.userName || window.currentUserName || 'あなた';
         if (window.TextFormatter) {
             element.innerHTML = window.TextFormatter.formatDescription(typeData.description, userName);
         } else {
