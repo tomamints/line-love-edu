@@ -201,8 +201,8 @@
             
             // データを保存してプレビューページへ遷移
             try {
-                // 新しいAPI構造でデータベースに保存
-                if (userId) {
+                // 新しいAPI構造でデータベースに保存（userIdの有無にかかわらず保存）
+                {
                     // 月相データを計算
                     const moonPhaseIndex = Math.floor(patternId / 8);
                     const hiddenPhaseIndex = patternId % 8;
@@ -258,7 +258,7 @@
                         },
                         body: JSON.stringify({
                             action: 'save-diagnosis',
-                            userId: userId,
+                            userId: userId || 'anonymous',
                             userName: formData.name,
                             birthDate: `${formData.year}-${String(formData.month).padStart(2, '0')}-${String(formData.day).padStart(2, '0')}`,
                             diagnosisType: 'otsukisama',
@@ -270,12 +270,16 @@
                     
                     if (result.success && result.diagnosisId) {
                         // データベースに保存されたIDを使用してプレビューページへ
-                        window.location.href = `/lp-otsukisama-unified.html?id=${result.diagnosisId}&userId=${userId}`;
+                        const userParam = userId ? `&userId=${userId}` : '';
+                        window.location.href = `/lp-otsukisama-unified.html?id=${result.diagnosisId}${userParam}`;
                         return;
+                    } else {
+                        // APIが失敗した場合のフォールバック
+                        throw new Error('データベース保存に失敗');
                     }
                 }
                 
-                // フォールバック：ローカルストレージを使用
+                // フォールバック：ローカルストレージを使用（ブロック内のコードが失敗した場合のみ）
                 const diagnosisData = {
                     name: formData.name,
                     birthDate: `${formData.year}-${String(formData.month).padStart(2, '0')}-${String(formData.day).padStart(2, '0')}`,
