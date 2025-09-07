@@ -360,13 +360,61 @@
             }
         });
         
+        // 決済ステータスをポーリングして確認
+        let pollingInterval = null;
+        let pollingCount = 0;
+        const maxPollingCount = 60; // 最大60回（2分間）
+        
         // 決済完了をチェックして、完了していれば決済完了ページへ遷移
-        function checkPaymentStatus() {
-            // セッションストレージから決済完了フラグをチェック
-            if (sessionStorage.getItem('paymentCompleted') === 'true') {
-                // 決済完了ページへ遷移
-                window.location.href = `/payment-success.html?id=${diagnosisId}&userId=${userId || ''}`;
+        async function checkPaymentStatus() {
+            if (!diagnosisId) return;
+            
+            try {
+                // 決済ステータスをAPIで確認
+                const response = await fetch(`/api/check-payment-status?diagnosisId=${diagnosisId}`);
+                const data = await response.json();
+                
+                console.log('Payment status check:', data);
+                
+                if (data.isPaid) {
+                    // 決済完了を検知
+                    console.log('決済完了を検知しました！');
+                    clearInterval(pollingInterval);
+                    
+                    // ローディングメッセージを更新
+                    const loadingText = document.querySelector('.loading-text');
+                    if (loadingText) {
+                        loadingText.textContent = '決済完了を確認しました！';
+                    }
+                    
+                    // 決済完了ページへ遷移
+                    setTimeout(() => {
+                        window.location.href = `/payment-success.html?id=${diagnosisId}&userId=${userId || ''}&paymentCompleted=true`;
+                    }, 1000);
+                }
+                
+                pollingCount++;
+                if (pollingCount >= maxPollingCount) {
+                    // タイムアウト
+                    console.log('決済確認タイムアウト');
+                    clearInterval(pollingInterval);
+                    document.getElementById('loadingOverlay').style.display = 'none';
+                }
+            } catch (error) {
+                console.error('決済ステータス確認エラー:', error);
             }
+        }
+        
+        // 決済ステータスの監視を開始
+        function startPaymentPolling() {
+            console.log('決済ステータスの監視を開始');
+            pollingCount = 0;
+            
+            // 即座に1回チェック
+            checkPaymentStatus();
+            
+            // 2秒ごとにチェック
+            pollingInterval = setInterval(checkPaymentStatus, 2000);
         }
         
         async function selectPayment(method) {
@@ -393,7 +441,10 @@
                     const data = await response.json();
                     
                     if (data.success && data.redirectUrl) {
-                        // PayPayページへリダイレクト（WEB_LINKはアプリがある場合自動的にアプリを開く）
+                        // 決済監視を開始
+                        startPaymentPolling();
+                        
+                        // PayPayページへリダイレクト
                         window.location.href = data.redirectUrl;
                     } else {
                         throw new Error(data.error || 'PayPay決済の開始に失敗しました');
