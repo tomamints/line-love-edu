@@ -195,12 +195,13 @@ app.post('/webhook', middleware(config), async (req, res) => {
         if (messageText === '本格テスト') {
           logger.log('🧪 本格テストコマンド受信:', userId);
           
-          // 最新の診断IDを取得
-          const { createClient } = require('@supabase/supabase-js');
-          const supabase = createClient(
-            process.env.NEXT_PUBLIC_SUPABASE_URL,
-            process.env.SUPABASE_SERVICE_ROLE_KEY
-          );
+          try {
+            // 最新の診断IDを取得
+            const { createClient } = require('@supabase/supabase-js');
+            const supabase = createClient(
+              process.env.SUPABASE_URL,
+              process.env.SUPABASE_ANON_KEY
+            );
           
           // ユーザーの最新診断を取得
           const { data: diagnosis } = await supabase
@@ -211,10 +212,10 @@ app.post('/webhook', middleware(config), async (req, res) => {
             .limit(1)
             .single();
           
-          if (diagnosis) {
-            const testUrl = `${process.env.BASE_URL || 'https://line-love-edu.vercel.app'}/lp-otsukisama-unified.html?id=${diagnosis.id}&userId=${userId}&test=true`;
-            
-            return client.replyMessage(event.replyToken, {
+            if (diagnosis) {
+              const testUrl = `${process.env.BASE_URL || 'https://line-love-edu.vercel.app'}/lp-otsukisama-unified.html?id=${diagnosis.id}&userId=${userId}&test=true`;
+              
+              return client.replyMessage(event.replyToken, {
               type: 'flex',
               altText: '🧪 テスト用完全版リンク',
               contents: {
@@ -294,10 +295,17 @@ app.post('/webhook', middleware(config), async (req, res) => {
                 }
               }
             });
-          } else {
+            } else {
+              return client.replyMessage(event.replyToken, {
+                type: 'text',
+                text: '診断データが見つかりません。\nまず診断を完了してください。'
+              });
+            }
+          } catch (error) {
+            logger.log('❌ 本格テストコマンドエラー:', error);
             return client.replyMessage(event.replyToken, {
               type: 'text',
-              text: '診断データが見つかりません。\nまず診断を完了してください。'
+              text: `エラーが発生しました:\n${error.message}\n\n診断を完了してから再度お試しください。`
             });
           }
         }
