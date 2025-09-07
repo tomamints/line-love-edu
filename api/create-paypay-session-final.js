@@ -187,12 +187,23 @@ module.exports = async function handler(req, res) {
         };
 
         console.log('Making PayPay API request with crypto-js...');
+        console.log('Mobile detected:', isMobile);
+        console.log('RedirectType:', paymentData.redirectType);
         
         const response = await callPayPayAPI('/v2/codes', 'POST', paymentData);
         
         console.log('PayPay API Response:', response.success ? 'SUCCESS' : 'FAILED');
+        if (response.success && response.data.data) {
+            console.log('Response URL:', response.data.data.url);
+            console.log('Response deeplink:', response.data.data.deeplink);
+        }
         
         if (response.success && response.data.data) {
+            // モバイルの場合、deeplinkを優先的に使用
+            const redirectUrl = isMobile && response.data.data.deeplink 
+                ? response.data.data.deeplink 
+                : response.data.data.url;
+            
             // 成功時の処理
             if (hasSupabase) {
                 try {
@@ -240,9 +251,11 @@ module.exports = async function handler(req, res) {
 
             return res.json({
                 success: true,
-                redirectUrl: response.data.data.url,
+                redirectUrl: redirectUrl,
                 paymentId: merchantPaymentId,
-                expiresAt: response.data.data.expiryDate
+                expiresAt: response.data.data.expiryDate,
+                isMobile: isMobile,
+                deeplink: response.data.data.deeplink
             });
         } else {
             console.error('PayPay API Error:', response.data);
