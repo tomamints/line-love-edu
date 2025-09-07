@@ -133,6 +133,7 @@ module.exports = async (req, res) => {
             love_energy: data.result_data?.love_energy,
             moon_phase: data.result_data?.moon_phase,
             hidden_moon_phase: data.result_data?.hidden_moon_phase,
+            three_powers_keys: data.result_data?.three_powers_keys,
             is_paid: isPaid,
             created_at: data.created_at
           };
@@ -343,6 +344,28 @@ module.exports = async (req, res) => {
       if (action === 'save-diagnosis') {
         const diagnosisId = `diag_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
         
+        // 月相番号を取得するヘルパー関数
+        function getMoonPhaseNumber(moonPhase) {
+          const moonPhaseMap = {
+            '新月': 1,
+            '三日月': 2,
+            '上弦の月': 3,
+            '十三夜': 4,
+            '満月': 5,
+            '十六夜': 6,
+            '下弦の月': 7,
+            '暁': 8
+          };
+          return moonPhaseMap[moonPhase] || 1;
+        }
+        
+        // 3つの力を計算（誕生日ベース）
+        const [year, month, day] = birthDate.split('-').map(Number);
+        const moonPhaseNumber = getMoonPhaseNumber(resultData?.moon_phase);
+        const actionKey = (year + day + month) % 20;
+        const emotionKey = (month + (moonPhaseNumber - 1)) % 20;
+        const thinkingKey = year % 20;
+        
         // 1. diagnosesテーブルに新規診断を保存（毎回新規）
         const { data: diagnosis, error: diagError } = await supabase
           .from('diagnoses')
@@ -362,7 +385,12 @@ module.exports = async (req, res) => {
               love_energy: resultData?.love_energy || 'intense',
               moon_power_1: resultData?.moon_power_1,
               moon_power_2: resultData?.moon_power_2,
-              moon_power_3: resultData?.moon_power_3
+              moon_power_3: resultData?.moon_power_3,
+              three_powers_keys: {
+                action: actionKey,
+                emotion: emotionKey,
+                thinking: thinkingKey
+              }
             },
             metadata: {},
             created_at: getJSTDateTime()

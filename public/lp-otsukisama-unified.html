@@ -1373,6 +1373,14 @@
                         // ユーザー名をグローバル変数に設定
                         window.currentUserName = data.diagnosis.user_name || 'あなた';
                         
+                        // 診断データから誕生日と3つの力のキーを保存
+                        if (data.diagnosis.birth_date) {
+                            window.currentUserBirthdate = data.diagnosis.birth_date;
+                        }
+                        if (data.diagnosis.three_powers_keys) {
+                            window.currentThreePowersKeys = data.diagnosis.three_powers_keys;
+                        }
+                        
                         // 月相パターンIDを設定
                         if (typeof currentPatternId !== 'undefined') {
                             currentPatternId = data.diagnosis.moon_pattern_id || data.diagnosis.pattern_id;

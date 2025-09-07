@@ -3,6 +3,42 @@
 // personality-axes-descriptions.jsonのデータを格納
 let personalityAxesData = null;
 
+// データベースから取得した3つの力のキーを使って表示
+async function displayThreePowersFromKeys(keys, moonPhase) {
+    if (!window.ThreePowersCalculator) {
+        console.log('ThreePowersCalculator not loaded yet');
+        return;
+    }
+    
+    // データが読み込まれるまで待つ
+    await window.ThreePowersCalculator.load();
+    
+    // キーから3つの力のデータを取得
+    const threePowersData = await fetch('/data/three-powers-calculated.json').then(r => r.json());
+    
+    const powers = {
+        action: threePowersData.action[keys.action],
+        emotion: threePowersData.emotion[keys.emotion],
+        thinking: threePowersData.thinking[keys.thinking]
+    };
+    
+    if (powers) {
+        const userName = window.currentUserName || 'あなた';
+        const formattedPowers = window.ThreePowersCalculator.format(powers, userName);
+        
+        // 表示を更新
+        const powerItems = document.querySelectorAll('.three-powers .energy-item');
+        powerItems.forEach((item, index) => {
+            if (formattedPowers[index]) {
+                const titleEl = item.querySelector('.energy-title');
+                const descEl = item.querySelector('.energy-description');
+                if (titleEl) titleEl.textContent = formattedPowers[index].title;
+                if (descEl) descEl.textContent = formattedPowers[index].desc;
+            }
+        });
+    }
+}
+
 // personality-axes-descriptions.jsonを読み込む
 async function loadPersonalityAxesData() {
     try {
@@ -158,8 +194,13 @@ async function updateMoonPhaseContent(patternId) {
         birthdate = `${baseYear}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
     }
     
+    // データベースから取得した3つの力のキーがある場合は直接使用
+    if (window.currentThreePowersKeys) {
+        // データベースからの値を直接表示
+        displayThreePowersFromKeys(window.currentThreePowersKeys, actualMoonPhase);
+    }
     // 3つの月の力を更新（誕生日ベースの計算）
-    if (window.ThreePowersCalculator && birthdate) {
+    else if (window.ThreePowersCalculator && birthdate) {
         // 誕生日から3つの力を計算
         window.ThreePowersCalculator.calculate(birthdate, actualMoonPhase).then(powers => {
             if (powers) {
