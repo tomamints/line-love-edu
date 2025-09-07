@@ -110,7 +110,9 @@ module.exports = async function handler(req, res) {
         // LINE通知送信（オプション）
         if (process.env.LINE_CHANNEL_ACCESS_TOKEN) {
             const amount = order.totalMoney?.amount || 980;
-            await sendLineNotification(userId, 'おつきさま診断', amount);
+            const baseUrl = process.env.BASE_URL || 'https://line-love-edu.vercel.app';
+            const resultUrl = `${baseUrl}/lp-otsukisama-unified.html?id=${diagnosisId}`;
+            await sendLineNotification(userId, 'おつきさま診断', amount, resultUrl);
         }
 
         return res.json({
@@ -136,7 +138,7 @@ module.exports = async function handler(req, res) {
 /**
  * LINE通知送信（PayPayと共通）
  */
-async function sendLineNotification(userId, productName, amount) {
+async function sendLineNotification(userId, productName, amount, resultUrl) {
     try {
         const message = {
             to: userId,
@@ -145,7 +147,8 @@ async function sendLineNotification(userId, productName, amount) {
                 text: `✨ お支払いありがとうございます！\n\n` +
                       `${productName}の完全版が閲覧可能になりました。\n` +
                       `金額: ¥${amount.toLocaleString()}\n\n` +
-                      `診断結果ページからご確認ください。`
+                      `診断結果を見る:\n` +
+                      `${resultUrl}`
             }]
         };
 
