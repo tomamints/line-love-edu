@@ -1,0 +1,335 @@
+/* 月齢カレンダー新デザイン */
+.moon-calendar-section {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+/* カレンダー全体のコンテナ */
+.moon-calendar-container {
+    background: linear-gradient(135deg, #1a1e3e 0%, #2d1b69 100%);
+    border-radius: 24px;
+    padding: 30px;
+    box-shadow: 0 20px 60px rgba(138, 97, 250, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.moon-calendar-container::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255, 215, 0, 0.05) 0%, transparent 70%);
+    animation: rotate 60s linear infinite;
+}
+
+@keyframes rotate {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* 月ごとのカレンダー */
+.month-calendar {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 25px;
+    margin-bottom: 30px;
+    border: 1px solid rgba(255, 215, 0, 0.2);
+    position: relative;
+    z-index: 1;
+}
+
+.month-calendar:last-child {
+    margin-bottom: 0;
+}
+
+/* 月ヘッダー */
+.month-header {
+    text-align: center;
+    font-size: 22px;
+    font-weight: bold;
+    color: #ffd700;
+    margin-bottom: 25px;
+    text-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
+    letter-spacing: 2px;
+}
+
+/* 曜日ヘッダー */
+.weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid rgba(255, 215, 0, 0.2);
+}
+
+.weekday {
+    text-align: center;
+    font-size: 13px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.7);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.weekday.sunday {
+    color: #ff6b9d;
+}
+
+.weekday.saturday {
+    color: #66d9ef;
+}
+
+/* カレンダーグリッド */
+.days-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+}
+
+/* 日付セル */
+.day-cell {
+    aspect-ratio: 1;
+    min-height: 50px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 12px;
+    position: relative;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    overflow: visible;
+}
+
+.day-cell:hover {
+    transform: translateY(-3px) scale(1.05);
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 5px 20px rgba(138, 97, 250, 0.4);
+    z-index: 10;
+}
+
+/* 空のセル */
+.day-cell.empty {
+    background: transparent;
+    cursor: default;
+}
+
+.day-cell.empty:hover {
+    transform: none;
+    background: transparent;
+    box-shadow: none;
+}
+
+/* 日付番号 */
+.day-number {
+    font-size: 14px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 4px;
+}
+
+/* 月の絵文字 */
+.moon-phase {
+    font-size: 20px;
+    line-height: 1;
+    filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.5));
+}
+
+/* 今日の日付 */
+.day-cell.today {
+    background: linear-gradient(135deg, rgba(138, 97, 250, 0.4) 0%, rgba(199, 125, 255, 0.3) 100%);
+    border: 2px solid #8a61fa;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { box-shadow: 0 0 20px rgba(138, 97, 250, 0.5); }
+    50% { box-shadow: 0 0 30px rgba(138, 97, 250, 0.8); }
+}
+
+/* ラッキーデー */
+.day-cell.lucky {
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.2) 0%, rgba(255, 183, 77, 0.15) 100%);
+    border: 2px solid rgba(255, 215, 0, 0.6);
+}
+
+.day-cell.lucky::after {
+    content: '✨';
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    font-size: 12px;
+}
+
+/* パワーデー */
+.day-cell.power {
+    background: linear-gradient(135deg, rgba(147, 112, 219, 0.25) 0%, rgba(138, 43, 226, 0.15) 100%);
+    border: 2px solid rgba(147, 112, 219, 0.6);
+}
+
+.day-cell.power::after {
+    content: '💫';
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    font-size: 12px;
+}
+
+/* 注意日 */
+.day-cell.caution {
+    background: linear-gradient(135deg, rgba(255, 99, 132, 0.2) 0%, rgba(255, 61, 99, 0.1) 100%);
+    border: 1px solid rgba(255, 99, 132, 0.5);
+    opacity: 0.8;
+}
+
+.day-cell.caution::after {
+    content: '⚠️';
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    font-size: 10px;
+}
+
+/* 特別メッセージ */
+.special-tooltip {
+    position: absolute;
+    bottom: -35px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(20, 20, 40, 0.95);
+    color: #ffd700;
+    padding: 6px 10px;
+    border-radius: 8px;
+    font-size: 11px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+    z-index: 100;
+    border: 1px solid rgba(255, 215, 0, 0.3);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+.day-cell:hover .special-tooltip {
+    opacity: 1;
+}
+
+/* 凡例 */
+.calendar-legend {
+    display: flex;
+    justify-content: center;
+    gap: 25px;
+    margin-top: 25px;
+    padding-top: 25px;
+    border-top: 1px solid rgba(255, 215, 0, 0.2);
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.legend-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px solid;
+}
+
+.legend-dot.lucky {
+    background: rgba(255, 215, 0, 0.3);
+    border-color: #ffd700;
+}
+
+.legend-dot.power {
+    background: rgba(147, 112, 219, 0.3);
+    border-color: #9370db;
+}
+
+.legend-dot.caution {
+    background: rgba(255, 99, 132, 0.3);
+    border-color: #ff6384;
+}
+
+/* カレンダーメッセージ */
+.calendar-message {
+    text-align: center;
+    color: rgba(255, 215, 0, 0.9);
+    font-size: 14px;
+    margin-bottom: 30px;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 215, 0, 0.2);
+    font-style: italic;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 640px) {
+    .moon-calendar-container {
+        padding: 20px 15px;
+    }
+    
+    .month-calendar {
+        padding: 20px 15px;
+    }
+    
+    .month-header {
+        font-size: 18px;
+    }
+    
+    .days-grid {
+        gap: 5px;
+    }
+    
+    .day-cell {
+        min-height: 45px;
+    }
+    
+    .day-number {
+        font-size: 12px;
+    }
+    
+    .moon-phase {
+        font-size: 18px;
+    }
+    
+    .weekday {
+        font-size: 11px;
+    }
+    
+    .calendar-legend {
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+}
+
+/* アニメーション */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.month-calendar {
+    animation: fadeIn 0.6s ease-out;
+}
+
+.month-calendar:nth-child(2) {
+    animation-delay: 0.2s;
+}

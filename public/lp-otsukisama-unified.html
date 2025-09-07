@@ -1044,6 +1044,54 @@
                         </div>
                     </div>
                     
+                    <!-- おつきさまからの約束（CTA） -->
+                    <div class="moon-promise-section" style="background: linear-gradient(135deg, rgba(118, 75, 162, 0.1), rgba(102, 126, 234, 0.1)); border: 2px solid rgba(255, 215, 0, 0.3); border-radius: 20px; padding: 40px 20px; margin: 40px auto; max-width: 600px; text-align: center;">
+                        <h2 style="color: #ffd700; font-size: 24px; margin-bottom: 20px; text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);">
+                            🌙 おつきさまからの約束
+                        </h2>
+                        
+                        <p style="color: #fff; line-height: 1.8; margin-bottom: 25px;">
+                            <span class="user-name-display">あなた</span>さん、<br>
+                            今日ここで受け取ったおつきさまからのメッセージは、<br>
+                            読んで終わりではありません。
+                        </p>
+                        
+                        <div style="background: rgba(255, 255, 255, 0.05); border-radius: 15px; padding: 20px; margin: 20px 0;">
+                            <p style="color: #87ceeb; font-size: 16px; margin-bottom: 15px;">
+                                おつきさまは、<span id="nextVisitDate" style="color: #ffd700; font-weight: bold;">2週間後</span>に<br>
+                                もう一度、<span class="user-name-display">あなた</span>さんのもとを訪れます。
+                            </p>
+                            
+                            <p style="color: #ccc; font-size: 14px; line-height: 1.6;">
+                                そのとき<br>
+                                「今の行動が続けられているか」<br>
+                                「心にどんな変化が芽生えているか」<br>
+                                を一緒に確かめましょう。
+                            </p>
+                        </div>
+                        
+                        <p style="color: #fff; margin: 20px 0; font-size: 15px;">
+                            まずは小さな習慣を2週間続けるだけで、<br>
+                            未来の景色は驚くほど変わります。
+                        </p>
+                        
+                        <div style="background: linear-gradient(135deg, #ffd700, #ffed4e); border-radius: 30px; padding: 3px; margin: 30px auto; max-width: 400px;">
+                            <button onclick="saveToBookmark()" style="width: 100%; background: linear-gradient(135deg, #764ba2, #667eea); color: white; padding: 15px 30px; border: none; border-radius: 27px; font-size: 16px; font-weight: bold; cursor: pointer; transition: all 0.3s;">
+                                📱 このページをブックマークする
+                            </button>
+                        </div>
+                        
+                        <p style="color: #aaa; font-size: 13px; margin-top: 15px;">
+                            「続けられているかな？」と感じたときは、<br>
+                            またこのページを開いてみてください。
+                        </p>
+                        
+                        <p style="color: #ffd700; margin-top: 25px; font-size: 14px; font-style: italic;">
+                            おつきさまはいつでも、<br>
+                            <span class="user-name-display">あなた</span>さんのそばで成長を見守っています。
+                        </p>
+                    </div>
+                    
                     <!-- CTAセクション -->
                     <div class="cta-section">
                         <h3 class="cta-title">月詠とLINEで繋がる</h3>
@@ -1339,6 +1387,51 @@
         }
         
         // 購入処理を実行する関数
+        // ブックマーク保存機能
+        function saveToBookmark() {
+            const pageTitle = 'おつきさま診断 - あなたの運命の3ヶ月';
+            const pageUrl = window.location.href;
+            
+            // モバイルデバイスかチェック
+            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+            
+            if (navigator.share && isMobile) {
+                // Web Share APIが使える場合（モバイル）
+                navigator.share({
+                    title: pageTitle,
+                    text: 'おつきさまからのメッセージを定期的に確認しよう',
+                    url: pageUrl
+                }).then(() => {
+                    alert('ブックマークに追加してください！');
+                }).catch((error) => {
+                    console.log('共有エラー:', error);
+                });
+            } else {
+                // デスクトップの場合
+                alert('このページをブックマークに追加してください。\n\nWindows: Ctrl + D\nMac: Command + D\n\nまたは、ブラウザのメニューから「ブックマークに追加」を選択してください。');
+            }
+            
+            // 2週間後の日付を計算して表示
+            const twoWeeksLater = new Date();
+            twoWeeksLater.setDate(twoWeeksLater.getDate() + 14);
+            const dateStr = `${twoWeeksLater.getMonth() + 1}月${twoWeeksLater.getDate()}日`;
+            
+            const nextVisitElement = document.getElementById('nextVisitDate');
+            if (nextVisitElement) {
+                nextVisitElement.textContent = `${dateStr}（2週間後）`;
+            }
+        }
+        
+        // ユーザー名表示の更新
+        function updateUserNameDisplays() {
+            const userName = window.currentUserName || 'あなた';
+            const displayName = userName === 'あなた' ? 'あなた' : userName + 'さん';
+            
+            document.querySelectorAll('.user-name-display').forEach(elem => {
+                elem.textContent = userName;
+            });
+        }
+        
         async function scrollToPayment() {
             const urlParams = new URLSearchParams(window.location.search);
             const diagnosisId = urlParams.get('id');
@@ -1380,6 +1473,9 @@
                         
                         // ユーザー名をグローバル変数に設定
                         window.currentUserName = data.diagnosis.user_name || 'あなた';
+                        
+                        // ユーザー名表示を更新
+                        updateUserNameDisplays();
                         
                         // 診断データから誕生日と3つの力のキーを保存
                         if (data.diagnosis.birth_date) {
