@@ -381,6 +381,9 @@
                     console.log('決済完了を検知しました！');
                     clearInterval(pollingInterval);
                     
+                    // ローディングを表示
+                    document.getElementById('loadingOverlay').style.display = 'flex';
+                    
                     // ローディングメッセージを更新
                     const loadingText = document.querySelector('.loading-text');
                     if (loadingText) {
