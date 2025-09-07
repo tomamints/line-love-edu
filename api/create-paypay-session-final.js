@@ -184,9 +184,14 @@ module.exports = async function handler(req, res) {
         // App Invoke専用設定 - 常にAPP_DEEP_LINKを使用
         const redirectType = "APP_DEEP_LINK";
         
-        // App Invoke用のリダイレクトURL（シンプルに）
+        // App Invoke用のリダイレクトURL
+        // LINEアプリに戻すためのリダイレクトAPIを使用
         const baseUrl = 'https://line-love-edu.vercel.app';
-        const successUrl = `${baseUrl}/payment-success.html?id=${diagnosisId}&userId=${userId || ''}&merchantPaymentId=${merchantPaymentId}`;
+        
+        // モバイルの場合はLINEリダイレクトAPIを使用
+        const successUrl = isMobile 
+            ? `${baseUrl}/api/line-redirect?id=${diagnosisId}&userId=${userId || ''}&merchantPaymentId=${merchantPaymentId}`
+            : `${baseUrl}/payment-success.html?id=${diagnosisId}&userId=${userId || ''}&merchantPaymentId=${merchantPaymentId}`;
         
         // PayPay公式SDKの例と完全に同じ構造にする
         const paymentData = {
