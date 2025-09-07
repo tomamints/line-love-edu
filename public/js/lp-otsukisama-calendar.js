@@ -124,7 +124,7 @@ async function generatePersonalizedCalendar(providedPatternId) {
         
         // 月初めまでの空白
         for (let i = 0; i < firstDayOfMonth; i++) {
-            monthHTML += '<div class="calendar-day empty" style="aspect-ratio: 1; min-height: 60px;"></div>';
+            monthHTML += '<div class="calendar-day empty"></div>';
         }
         
         // 各日付
@@ -197,31 +197,55 @@ async function generatePersonalizedCalendar(providedPatternId) {
     // 全体のHTMLを構築
     let fullHTML = '';
     
+    // 1ヶ月目のラッパー
+    fullHTML += '<div class="calendar-wrapper">';
+    
+    // 1ヶ月目のヘッダー
+    fullHTML += `<div class="month-header">${monthsHTML[0].year}年 ${monthsHTML[0].monthName}</div>`;
+    
+    // 1ヶ月目の曜日行
+    fullHTML += `
+        <div class="weekday-header">
+            <div class="weekday">日</div>
+            <div class="weekday">月</div>
+            <div class="weekday">火</div>
+            <div class="weekday">水</div>
+            <div class="weekday">木</div>
+            <div class="weekday">金</div>
+            <div class="weekday">土</div>
+        </div>
+    `;
+    
     // 1ヶ月目のグリッド
-    fullHTML += '<div class="calendar-grid" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px;">';
+    fullHTML += '<div class="calendar-grid">';
     fullHTML += monthsHTML[0].html;
     fullHTML += '</div>';
+    fullHTML += '</div>'; // calendar-wrapper を閉じる
     
-    // 2ヶ月目のヘッダーと曜日行
+    // 2ヶ月目のラッパー
+    fullHTML += '<div class="calendar-wrapper" style="margin-top: 30px;">';
+    
+    // 2ヶ月目のヘッダー
+    fullHTML += `<div class="month-header">${monthsHTML[1].year}年 ${monthsHTML[1].monthName}</div>`;
+    
+    // 2ヶ月目の曜日行
     fullHTML += `
-        <div style="margin-top: 40px; margin-bottom: 20px; text-align: center; color: #ffd700; font-size: 18px; font-weight: bold;">
-            ${monthsHTML[1].year}年 ${monthsHTML[1].monthName}
-        </div>
-        <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; margin-bottom: 10px;">
-            <div style="text-align: center; color: #ffd700; font-size: 12px; opacity: 0.8;">日</div>
-            <div style="text-align: center; color: #ffd700; font-size: 12px; opacity: 0.8;">月</div>
-            <div style="text-align: center; color: #ffd700; font-size: 12px; opacity: 0.8;">火</div>
-            <div style="text-align: center; color: #ffd700; font-size: 12px; opacity: 0.8;">水</div>
-            <div style="text-align: center; color: #ffd700; font-size: 12px; opacity: 0.8;">木</div>
-            <div style="text-align: center; color: #ffd700; font-size: 12px; opacity: 0.8;">金</div>
-            <div style="text-align: center; color: #ffd700; font-size: 12px; opacity: 0.8;">土</div>
+        <div class="weekday-header">
+            <div class="weekday">日</div>
+            <div class="weekday">月</div>
+            <div class="weekday">火</div>
+            <div class="weekday">水</div>
+            <div class="weekday">木</div>
+            <div class="weekday">金</div>
+            <div class="weekday">土</div>
         </div>
     `;
     
     // 2ヶ月目のグリッド
-    fullHTML += '<div class="calendar-grid" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px;">';
+    fullHTML += '<div class="calendar-grid">';
     fullHTML += monthsHTML[1].html;
     fullHTML += '</div>';
+    fullHTML += '</div>'; // calendar-wrapper を閉じる
     
     // カレンダーのセルのみを更新
     container.innerHTML = fullHTML;

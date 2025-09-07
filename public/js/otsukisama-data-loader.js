@@ -41,10 +41,24 @@ class OtsukisamaDataLoader {
     }
 
     // パターンIDから運勢データを取得
-    getPatternFortune(patternId) {
+    async getPatternFortune(patternId) {
         if (!this.loaded || !this.patternsData) {
             console.error('Data not loaded yet');
             return null;
+        }
+
+        // まず新フォーマットのファイルが存在するか確認
+        try {
+            const newFormatResponse = await fetch(`data/pattern-${patternId}-new-format.json`);
+            if (newFormatResponse.ok) {
+                const newPattern = await newFormatResponse.json();
+                console.log(`Loading new format for pattern ${patternId}`);
+                // 新フォーマットの場合、patternIdに対応するデータを取得
+                return newPattern[String(patternId)] || newPattern;
+            }
+        } catch (error) {
+            // 新フォーマットが見つからない場合は旧フォーマットを使用
+            console.log(`New format not found for pattern ${patternId}, using old format`);
         }
 
         const pattern = this.patternsData[String(patternId)];

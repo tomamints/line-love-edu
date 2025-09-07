@@ -3,6 +3,26 @@
 // personality-axes-descriptions.jsonのデータを格納
 let personalityAxesData = null;
 
+// 動的な月表示を置換する関数
+function replaceMonthPlaceholders(text) {
+    if (!text) return text;
+    
+    const now = new Date();
+    const currentMonth = now.getMonth() + 1; // 0-indexed to 1-indexed
+    const currentYear = now.getFullYear();
+    
+    // M（Xヶ月先）月 のパターンを置換
+    text = text.replace(/M（(\d+)ヶ月先）月/g, (match, monthsAhead) => {
+        const targetDate = new Date(currentYear, now.getMonth() + parseInt(monthsAhead), 1);
+        return `${targetDate.getMonth() + 1}月`;
+    });
+    
+    // M（今月）月 のパターンを置換
+    text = text.replace(/M（今月）月/g, `${currentMonth}月`);
+    
+    return text;
+}
+
 // データベースから取得した3つの力のキーを使って表示
 async function displayThreePowersFromKeys(keys, moonPhase) {
     if (!window.ThreePowersCalculator) {
@@ -62,7 +82,7 @@ async function updateMoonPhaseContent(patternId) {
         });
     }
     
-    const pattern = window.OtsukisamaDataLoader.getPatternFortune(patternId);
+    const pattern = await window.OtsukisamaDataLoader.getPatternFortune(patternId);
     if (!pattern) {
         console.log('Pattern data not found for ID:', patternId);
         return;
@@ -352,7 +372,7 @@ async function updateSixElements(patternId, moonPhase, hiddenMoonPhase, profile 
         });
     }
     
-    const pattern = window.OtsukisamaDataLoader.getPatternFortune(patternId);
+    const pattern = await window.OtsukisamaDataLoader.getPatternFortune(patternId);
     if (!pattern) {
         console.error('Pattern not found for updateSixElements:', patternId);
         return;
@@ -879,7 +899,7 @@ async function updateUserDisplayContent(userData, profile = null) {
     }
     
     // パターン固有のコンテンツを更新（パターンデータから）
-    const patternData = window.OtsukisamaDataLoader?.getPatternFortune(patternId);
+    const patternData = await window.OtsukisamaDataLoader?.getPatternFortune(patternId);
     if (patternData) {
         updateDynamicContentFromPattern(patternData);
     }
@@ -921,12 +941,47 @@ function updateDynamicContentFromPattern(pattern) {
     }
     console.log('Pattern has overall data:', pattern.overall);
     
+    // ユーザー名を取得
+    const userName = window.currentUserName || 'あなた';
+    
     // 全体運のタイトルと導入文
     const overallTitle = document.getElementById('fortune-overall-title');
-    if (overallTitle) overallTitle.textContent = pattern.overall.title || '運命の3ヶ月';
+    if (overallTitle) overallTitle.textContent = replaceMonthPlaceholders(pattern.overall.title) || '運命の3ヶ月';
     
     const overallIntro = document.getElementById('fortune-overall-intro');
-    if (overallIntro) overallIntro.textContent = pattern.overall.intro || pattern.overall.mainText;
+    if (overallIntro) {
+        let introText = pattern.overall.intro || pattern.overall.mainText || '';
+        
+        // 新フォーマットの場合は各要素を結合
+        if (pattern.overall.emotionalValidation || pattern.overall.reassurance || pattern.overall.reason) {
+            introText = [
+                pattern.overall.intro,
+                pattern.overall.emotionalValidation,
+                pattern.overall.reassurance,
+                pattern.overall.reason,
+                pattern.overall.pastValidation
+            ].filter(Boolean).join('\n\n');
+        }
+        
+        // 月の置換とユーザー名の置換
+        introText = replaceMonthPlaceholders(introText);
+        introText = introText.replace(/〇〇/g, userName);
+        
+        overallIntro.textContent = introText;
+    }
+    
+    // アクションステップがある場合は表示
+    if (pattern.overall.actionSteps && pattern.overall.actionSteps.length > 0) {
+        const actionStepsContainer = document.getElementById('fortune-overall-action-steps');
+        if (actionStepsContainer) {
+            const steps = pattern.overall.actionSteps.map(step => {
+                let stepText = replaceMonthPlaceholders(step);
+                stepText = stepText.replace(/〇〇/g, userName);
+                return `• ${stepText}`;
+            }).join('\n');
+            actionStepsContainer.textContent = steps;
+        }
+    }
     
     // 全体運の月別タイトルと説明を更新
     // 全体運の月別表示（全体運は残す）
@@ -976,18 +1031,38 @@ function updateDynamicContentFromPattern(pattern) {
     
     // 恋愛運のメインテキスト
     const loveMainText = document.getElementById('fortune-love-text');
-    if (loveMainText && pattern.love) loveMainText.textContent = pattern.love.mainText || '';
+    if (loveMainText && pattern.love) {
+        let loveText = pattern.love.mainText || '';
+        loveText = replaceMonthPlaceholders(loveText);
+        loveText = loveText.replace(/〇〇/g, userName);
+        loveMainText.textContent = loveText;
+    }
     
     // 恋愛運の新規セクション
     if (pattern.love) {
         const destinyMeeting = document.getElementById('fortune-love-destiny-meeting');
-        if (destinyMeeting) destinyMeeting.textContent = pattern.love.destinyMeeting || '';
+        if (destinyMeeting) {
+            let text = pattern.love.destinyMeeting || '';
+            text = replaceMonthPlaceholders(text);
+            text = text.replace(/〇〇/g, userName);
+            destinyMeeting.textContent = text;
+        }
         
         const admirerType = document.getElementById('fortune-love-admirer-type');
-        if (admirerType) admirerType.textContent = pattern.love.admirerType || '';
+        if (admirerType) {
+            let text = pattern.love.admirerType || '';
+            text = replaceMonthPlaceholders(text);
+            text = text.replace(/〇〇/g, userName);
+            admirerType.textContent = text;
+        }
         
         const dangerousType = document.getElementById('fortune-love-dangerous-type');
-        if (dangerousType) dangerousType.textContent = pattern.love.dangerousType || '';
+        if (dangerousType) {
+            let text = pattern.love.dangerousType || '';
+            text = replaceMonthPlaceholders(text);
+            text = text.replace(/〇〇/g, userName);
+            dangerousType.textContent = text;
+        }
     }
     
     // month1, month2, month3関連の処理は削除
@@ -1005,7 +1080,12 @@ function updateDynamicContentFromPattern(pattern) {
     if (workTitle && pattern.work) workTitle.textContent = pattern.work.title || '仕事運の展開';
     
     const workMainText = document.getElementById('fortune-work-text');
-    if (workMainText && pattern.work) workMainText.textContent = pattern.work.mainText || '';
+    if (workMainText && pattern.work) {
+        let text = pattern.work.mainText || '';
+        text = replaceMonthPlaceholders(text);
+        text = text.replace(/〇〇/g, userName);
+        workMainText.textContent = text;
+    }
     
     // 人間関係の転機と注意
     const relationshipSection = document.querySelector('.fortune-section.relationship');
@@ -1024,13 +1104,21 @@ function updateDynamicContentFromPattern(pattern) {
     // 人間関係運の新規セクション
     if (pattern.relationship) {
         const newConnections = document.getElementById('fortune-relationship-new-connections');
-        if (newConnections) newConnections.textContent = pattern.relationship.newConnections || '';
+        if (newConnections) {
+            let text = pattern.relationship.newConnections || '';
+            text = replaceMonthPlaceholders(text);
+            text = text.replace(/〇〇/g, userName);
+            newConnections.textContent = text;
+        }
         
         const challenges = document.getElementById('fortune-relationship-challenges');
         if (challenges) {
             // デフォルトテキストを設定
             const defaultChallengesText = '切るべき縁は、あなたの成長を阻害し、エネルギーを奪う人たち。一方的に依存してくる人、否定的な言葉ばかりを投げかける人、あなたの可能性を信じない人とは距離を置きましょう。繋ぐべき縁は、互いに高め合い、前向きなエネルギーを共有できる人たちです。';
-            challenges.textContent = (pattern.relationship && pattern.relationship.challengesAndSolutions) || defaultChallengesText;
+            let text = (pattern.relationship && pattern.relationship.challengesAndSolutions) || defaultChallengesText;
+            text = replaceMonthPlaceholders(text);
+            text = text.replace(/〇〇/g, userName);
+            challenges.textContent = text;
         }
     }
     
@@ -1046,7 +1134,12 @@ function updateDynamicContentFromPattern(pattern) {
     // 金運の新規セクション
     if (pattern.money) {
         const moneyTrouble = document.getElementById('fortune-money-trouble');
-        if (moneyTrouble) moneyTrouble.textContent = pattern.money.moneyTrouble || '';
+        if (moneyTrouble) {
+            let text = pattern.money.moneyTrouble || '';
+            text = replaceMonthPlaceholders(text);
+            text = text.replace(/〇〇/g, userName);
+            moneyTrouble.textContent = text;
+        }
     }
     
     // 各運勢のメインテキストを設定
@@ -1058,7 +1151,10 @@ function updateDynamicContentFromPattern(pattern) {
         mainText: pattern.overall?.mainText?.substring(0, 50)
     });
     if (overallText && pattern.overall && pattern.overall.mainText) {
-        overallText.textContent = pattern.overall.mainText;
+        let text = pattern.overall.mainText;
+        text = replaceMonthPlaceholders(text);
+        text = text.replace(/〇〇/g, userName);
+        overallText.textContent = text;
         console.log('Overall text set successfully');
     } else {
         console.log('Failed to set overall text');
@@ -1067,14 +1163,20 @@ function updateDynamicContentFromPattern(pattern) {
     // 恋愛運
     const loveText = document.getElementById('fortune-love-text');
     if (loveText && pattern.love && pattern.love.mainText) {
-        loveText.textContent = pattern.love.mainText;
+        let text = pattern.love.mainText;
+        text = replaceMonthPlaceholders(text);
+        text = text.replace(/〇〇/g, userName);
+        loveText.textContent = text;
         console.log('Love text set successfully');
     }
     
     // 仕事運
     const workText = document.getElementById('fortune-work-text');
     if (workText && pattern.work && pattern.work.mainText) {
-        workText.textContent = pattern.work.mainText;
+        let text = pattern.work.mainText;
+        text = replaceMonthPlaceholders(text);
+        text = text.replace(/〇〇/g, userName);
+        workText.textContent = text;
         console.log('Work text set successfully');
     }
     
@@ -1083,14 +1185,20 @@ function updateDynamicContentFromPattern(pattern) {
         const newTalent = document.getElementById('fortune-work-new-talent');
         if (newTalent) {
             const defaultTalentText = 'この3ヶ月で開花するのは、あなたの中に眠っていたリーダーシップの才能。今までは裏方に徹していたあなたが、チームを率いる立場に立つことになります。また、クリエイティブなアイデアを形にする力も向上し、周りから注目される成果を上げるでしょう。';
-            newTalent.textContent = (pattern.work && pattern.work.newTalent) || defaultTalentText;
+            let text = (pattern.work && pattern.work.newTalent) || defaultTalentText;
+            text = replaceMonthPlaceholders(text);
+            text = text.replace(/〇〇/g, userName);
+            newTalent.textContent = text;
             console.log('Work new talent set successfully');
         }
         
         const turningPoint = document.getElementById('fortune-work-turning-point');
         if (turningPoint) {
             const defaultTurningText = '診断から2ヶ月目の第3週頃、重要な転機が訪れます。新しいプロジェクトへの参加打診、昇進の話、転職のチャンスなど、キャリアを大きく変える出来事が起こりそう。そのサインは、上司からの思いがけない声かけや、突然のミーティング設定として現れるでしょう。';
-            turningPoint.textContent = (pattern.work && pattern.work.turningPoint) || defaultTurningText;
+            let text = (pattern.work && pattern.work.turningPoint) || defaultTurningText;
+            text = replaceMonthPlaceholders(text);
+            text = text.replace(/〇〇/g, userName);
+            turningPoint.textContent = text;
             console.log('Work turning point set successfully');
         }
     }
@@ -1098,14 +1206,20 @@ function updateDynamicContentFromPattern(pattern) {
     // 人間関係運のメインテキスト
     const relationshipText = document.getElementById('fortune-relationship-text');
     if (relationshipText && pattern.relationship && pattern.relationship.mainText) {
-        relationshipText.textContent = pattern.relationship.mainText;
+        let text = pattern.relationship.mainText;
+        text = replaceMonthPlaceholders(text);
+        text = text.replace(/〇〇/g, userName);
+        relationshipText.textContent = text;
         console.log('Relationship text set successfully');
     }
     
     // 金運のメインテキスト
     const moneyText = document.getElementById('fortune-money-text');
     if (moneyText && pattern.money && pattern.money.mainText) {
-        moneyText.textContent = pattern.money.mainText;
+        let text = pattern.money.mainText;
+        text = replaceMonthPlaceholders(text);
+        text = text.replace(/〇〇/g, userName);
+        moneyText.textContent = text;
         console.log('Money text set successfully');
     }
     
