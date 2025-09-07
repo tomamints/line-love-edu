@@ -260,7 +260,8 @@ module.exports = async function handler(req, res) {
                 paymentId: merchantPaymentId,
                 expiresAt: response.data.data.expiryDate,
                 isMobile: isMobile,
-                deeplink: response.data.data.deeplink
+                deeplink: response.data.data.deeplink,
+                errorUrl: `/paypay-error.html?id=${diagnosisId}&userId=${userId || ''}&merchantPaymentId=${merchantPaymentId}`
             });
         } else {
             console.error('PayPay API Error:', response.data);

@@ -247,9 +247,17 @@
                 <a href="/paypay-sandbox-guide.html" class="btn btn-primary">
                     📖 詳しい設定ガイドを見る
                 </a>
-                <a href="/payment-select.html" id="retryLink" class="btn btn-secondary">
+                <button onclick="runDiagnosis()" class="btn btn-secondary" id="diagnosisBtn">
+                    🔍 エラーを診断する
+                </button>
+                <a href="/payment-select.html" id="retryLink" class="btn btn-secondary" style="display: none;">
                     もう一度決済を試す
                 </a>
+            </div>
+            
+            <div id="diagnosisResult" style="display: none; margin-top: 20px; padding: 20px; background: white; border-radius: 8px; color: #333;">
+                <h3 style="color: #333; margin-bottom: 15px;">診断結果</h3>
+                <div id="diagnosisContent"></div>
             </div>
             
             <div class="note">
@@ -265,10 +273,141 @@
         const urlParams = new URLSearchParams(window.location.search);
         const diagnosisId = urlParams.get('id');
         const userId = urlParams.get('userId');
+        const merchantPaymentId = urlParams.get('merchantPaymentId');
         
         if (diagnosisId) {
             const retryLink = document.getElementById('retryLink');
             retryLink.href = `/payment-select.html?id=${diagnosisId}${userId ? '&userId=' + userId : ''}`;
+        }
+        
+        // 診断機能（クライアントサイドで実装）
+        async function runDiagnosis() {
+            const diagnosisBtn = document.getElementById('diagnosisBtn');
+            const diagnosisResult = document.getElementById('diagnosisResult');
+            const diagnosisContent = document.getElementById('diagnosisContent');
+            const retryLink = document.getElementById('retryLink');
+            
+            diagnosisBtn.disabled = true;
+            diagnosisBtn.textContent = '診断中...';
+            
+            try {
+                // エラー情報をローカルストレージに記録
+                const errorLog = {
+                    errorType: 'APP_ERROR',
+                    errorMessage: 'User reported app error in PayPay app',
+                    merchantPaymentId: merchantPaymentId,
+                    diagnosisId: diagnosisId,
+                    userId: userId,
+                    userAgent: navigator.userAgent,
+                    timestamp: new Date().toISOString(),
+                    referrer: document.referrer,
+                    url: window.location.href
+                };
+                
+                // ローカルストレージに保存
+                const existingLogs = JSON.parse(localStorage.getItem('paypay_error_logs') || '[]');
+                existingLogs.push(errorLog);
+                // 最新の10件のみ保持
+                if (existingLogs.length > 10) {
+                    existingLogs.shift();
+                }
+                localStorage.setItem('paypay_error_logs', JSON.stringify(existingLogs));
+                
+                console.log('PayPay Error Log:', errorLog);
+                
+                // クライアントサイドで診断
+                let html = '<div style="margin-bottom: 20px;">';
+                
+                if (merchantPaymentId) {
+                    html += `<p><strong>セッションID:</strong> ${merchantPaymentId}</p>`;
+                    html += `<p><strong>診断時刻:</strong> ${new Date().toLocaleString('ja-JP')}</p>`;
+                    html += '</div>';
+                    
+                    // チェック項目
+                    html += '<h4 style="margin-bottom: 10px;">チェック項目:</h4>';
+                    html += '<ul style="list-style: none; padding: 0;">';
+                    
+                    // Developer Mode確認
+                    html += '<li style="margin-bottom: 8px; color: #ffa500;">';
+                    html += '⚠️ <strong>PayPay Developer Mode:</strong> ';
+                    html += 'アプリのサインイン画面でロゴを7回タップして確認してください';
+                    html += '</li>';
+                    
+                    // モバイル判定
+                    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+                    html += '<li style="margin-bottom: 8px; color: #48bb78;">';
+                    html += `✅ <strong>デバイス:</strong> ${isMobile ? 'モバイル' : 'デスクトップ'}`;
+                    html += '</li>';
+                    
+                    // ネットワーク状態
+                    if (navigator.onLine) {
+                        html += '<li style="margin-bottom: 8px; color: #48bb78;">';
+                        html += '✅ <strong>ネットワーク:</strong> オンライン';
+                        html += '</li>';
+                    } else {
+                        html += '<li style="margin-bottom: 8px; color: #f56565;">';
+                        html += '❌ <strong>ネットワーク:</strong> オフライン';
+                        html += '</li>';
+                    }
+                    
+                    // セッションIDフォーマット確認
+                    if (merchantPaymentId.startsWith('diag_')) {
+                        html += '<li style="margin-bottom: 8px; color: #48bb78;">';
+                        html += '✅ <strong>セッションID形式:</strong> 正常';
+                        html += '</li>';
+                    } else {
+                        html += '<li style="margin-bottom: 8px; color: #ffa500;">';
+                        html += '⚠️ <strong>セッションID形式:</strong> 非標準';
+                        html += '</li>';
+                    }
+                    
+                    html += '</ul>';
+                    
+                    // 推奨アクション
+                    html += '<h4 style="margin-top: 20px; margin-bottom: 10px;">推奨アクション:</h4>';
+                    html += '<ol style="padding-left: 20px;">';
+                    html += '<li style="margin-bottom: 5px;">PayPayアプリを完全に終了する</li>';
+                    html += '<li style="margin-bottom: 5px;">PayPayアプリを再起動</li>';
+                    html += '<li style="margin-bottom: 5px;">サインイン画面でPayPayロゴを7回タップ</li>';
+                    html += '<li style="margin-bottom: 5px;">Developer Modeに切り替える</li>';
+                    html += '<li style="margin-bottom: 5px;">テストユーザーでログイン（OTP: 1234）</li>';
+                    html += '<li style="margin-bottom: 5px;">もう一度決済を試す</li>';
+                    html += '</ol>';
+                    
+                    // エラーログ情報
+                    html += '<div style="margin-top: 20px; padding: 10px; background: #f7fafc; border-radius: 5px;">';
+                    html += '<p style="font-size: 12px; color: #718096;">';
+                    html += 'エラー情報はブラウザに記録されました。<br>';
+                    html += '技術サポートが必要な場合は、以下の情報をお伝えください：<br>';
+                    html += `MerchantPaymentId: ${merchantPaymentId}<br>`;
+                    html += `Timestamp: ${errorLog.timestamp}`;
+                    html += '</p>';
+                    html += '</div>';
+                    
+                } else {
+                    // merchantPaymentIdがない場合の一般的な診断
+                    html += '<p><strong>一般的な原因と対策:</strong></p>';
+                    html += '<ol style="padding-left: 20px;">';
+                    html += '<li>PayPayアプリがDeveloper Modeでない → ロゴを7回タップ</li>';
+                    html += '<li>セッションの有効期限切れ → 新しく決済をやり直す</li>';
+                    html += '<li>ネットワーク接続の問題 → Wi-Fi/モバイル通信を確認</li>';
+                    html += '<li>PayPayアプリのバージョンが古い → 最新版に更新</li>';
+                    html += '</ol>';
+                    html += '</div>';
+                }
+                
+                diagnosisContent.innerHTML = html;
+                diagnosisResult.style.display = 'block';
+                diagnosisBtn.style.display = 'none';
+                retryLink.style.display = 'block';
+                
+            } catch (error) {
+                console.error('診断エラー:', error);
+                diagnosisContent.innerHTML = '<p style="color: #f56565;">診断中にエラーが発生しました。</p>';
+                diagnosisResult.style.display = 'block';
+                diagnosisBtn.disabled = false;
+                diagnosisBtn.textContent = '🔍 もう一度診断する';
+            }
         }
     </script>
 </body>
