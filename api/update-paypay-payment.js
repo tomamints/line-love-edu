@@ -11,6 +11,23 @@ const https = require("https");
 // UUID生成
 const uuidv4 = () => crypto.randomUUID();
 
+// 日本標準時（JST）のISO文字列を取得する関数
+function getJSTDateTime() {
+    const now = new Date();
+    const jstOffset = 9 * 60; // 9時間 = 540分
+    const jstTime = new Date(now.getTime() + jstOffset * 60 * 1000);
+    
+    const year = jstTime.getUTCFullYear();
+    const month = String(jstTime.getUTCMonth() + 1).padStart(2, '0');
+    const day = String(jstTime.getUTCDate()).padStart(2, '0');
+    const hours = String(jstTime.getUTCHours()).padStart(2, '0');
+    const minutes = String(jstTime.getUTCMinutes()).padStart(2, '0');
+    const seconds = String(jstTime.getUTCSeconds()).padStart(2, '0');
+    const milliseconds = String(jstTime.getUTCMilliseconds()).padStart(3, '0');
+    
+    return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${milliseconds}+09:00`;
+}
+
 // Supabase設定
 const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseServiceKey = process.env.SUPABASE_ANON_KEY || process.env.SUPABASE_SERVICE_KEY;
@@ -155,11 +172,11 @@ module.exports = async function handler(req, res) {
             });
         }
 
-        // purchasesテーブルを更新
+        // purchasesテーブルを更新 (metadataからpaypay_merchant_payment_idを検索)
         const { data: existingPurchase } = await supabase
             .from('purchases')
             .select('purchase_id, status')
-            .eq('paypay_merchant_payment_id', merchantPaymentId)
+            .contains('metadata', { paypay_merchant_payment_id: merchantPaymentId })
             .single();
 
         if (existingPurchase && existingPurchase.status === 'completed') {
@@ -176,15 +193,16 @@ module.exports = async function handler(req, res) {
             .from('purchases')
             .update({
                 status: 'completed',
-                completed_at: paymentData.acceptedAt || new Date().toISOString(),
-                paypay_transaction_id: paymentData.transactionId,
+                completed_at: getJSTDateTime(),
                 metadata: {
                     payment_status: paymentData.status,
                     transaction_id: paymentData.transactionId,
-                    accepted_at: paymentData.acceptedAt
+                    paypay_transaction_id: paymentData.transactionId,
+                    accepted_at: paymentData.acceptedAt,
+                    paypay_merchant_payment_id: merchantPaymentId
                 }
             })
-            .eq('paypay_merchant_payment_id', merchantPaymentId)
+            .contains('metadata', { paypay_merchant_payment_id: merchantPaymentId })
             .select()
             .single();
 
@@ -203,7 +221,7 @@ module.exports = async function handler(req, res) {
                     resource_id: diagnosisId,
                     access_level: 'full',
                     purchase_id: purchaseId,
-                    valid_from: new Date().toISOString(),
+                    valid_from: getJSTDateTime(),
                     valid_until: null // 永久アクセス
                 }, {
                     onConflict: 'user_id,resource_type,resource_id'
@@ -214,19 +232,8 @@ module.exports = async function handler(req, res) {
             }
         }
 
-        // 診断テーブルのis_paidをtrueに更新
-        const { error: diagnosisError } = await supabase
-            .from('diagnoses')
-            .update({
-                is_paid: true,
-                payment_method: 'paypay',
-                payment_completed_at: paymentData.acceptedAt || new Date().toISOString()
-            })
-            .eq('id', diagnosisId);
-
-        if (diagnosisError) {
-            console.error('Failed to update diagnosis:', diagnosisError);
-        }
+        // 診断テーブルは支払い関連カラムがないため、更新をスキップ
+        // access_rightsテーブルで支払い状態を管理
 
         // LINE通知送信（オプション）
         if (process.env.LINE_CHANNEL_ACCESS_TOKEN) {

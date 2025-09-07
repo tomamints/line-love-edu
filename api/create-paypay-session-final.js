@@ -10,6 +10,23 @@ const https = require("https");
 // UUID生成
 const uuidv4 = () => crypto.randomUUID();
 
+// 日本標準時（JST）のISO文字列を取得する関数
+function getJSTDateTime() {
+    const now = new Date();
+    const jstOffset = 9 * 60; // 9時間 = 540分
+    const jstTime = new Date(now.getTime() + jstOffset * 60 * 1000);
+    
+    const year = jstTime.getUTCFullYear();
+    const month = String(jstTime.getUTCMonth() + 1).padStart(2, '0');
+    const day = String(jstTime.getUTCDate()).padStart(2, '0');
+    const hours = String(jstTime.getUTCHours()).padStart(2, '0');
+    const minutes = String(jstTime.getUTCMinutes()).padStart(2, '0');
+    const seconds = String(jstTime.getUTCSeconds()).padStart(2, '0');
+    const milliseconds = String(jstTime.getUTCMilliseconds()).padStart(3, '0');
+    
+    return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${milliseconds}+09:00`;
+}
+
 // Supabase設定
 const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseServiceKey = process.env.SUPABASE_ANON_KEY || process.env.SUPABASE_SERVICE_KEY;
@@ -224,11 +241,12 @@ module.exports = async function handler(req, res) {
                             amount: amount,
                             currency: 'JPY',
                             payment_method: 'paypay',
-                            paypay_merchant_payment_id: merchantPaymentId,
                             status: 'pending', // 初期はpending、決済完了後にcompletedに更新
+                            created_at: getJSTDateTime(),
                             metadata: {
                                 order_description: `おつきさま診断 - ${diagnosis.user_name || 'お客様'}`,
-                                code_url: response.data.data.url
+                                code_url: response.data.data.url,
+                                paypay_merchant_payment_id: merchantPaymentId
                             }
                         });
                 } catch (dbError) {
