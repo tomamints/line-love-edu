@@ -1076,7 +1076,13 @@ async function updateEmotionalExpressionContent(type) {
     
     const typeData = personalityAxesData.emotionalExpression[japaneseKey];
     if (typeData) {
-        element.textContent = typeData.description;
+        // ユーザー名を取得して〇〇さんを置換
+        const userName = window.currentUserName || 'あなた';
+        if (window.TextFormatter) {
+            element.innerHTML = window.TextFormatter.formatDescription(typeData.description, userName);
+        } else {
+            element.textContent = typeData.description;
+        }
     }
 }
 
@@ -1102,7 +1108,13 @@ async function updateDistanceStyleContent(type) {
     
     const typeData = personalityAxesData.distanceStyle[japaneseKey];
     if (typeData) {
-        element.textContent = typeData.description;
+        // ユーザー名を取得して〇〇さんを置換
+        const userName = window.currentUserName || 'あなた';
+        if (window.TextFormatter) {
+            element.innerHTML = window.TextFormatter.formatDescription(typeData.description, userName);
+        } else {
+            element.textContent = typeData.description;
+        }
     }
 }
 
@@ -1128,7 +1140,13 @@ async function updateLoveValuesContent(type) {
     
     const typeData = personalityAxesData.loveValues[japaneseKey];
     if (typeData) {
-        element.textContent = typeData.description;
+        // ユーザー名を取得して〇〇さんを置換
+        const userName = window.currentUserName || 'あなた';
+        if (window.TextFormatter) {
+            element.innerHTML = window.TextFormatter.formatDescription(typeData.description, userName);
+        } else {
+            element.textContent = typeData.description;
+        }
     }
 }
 
@@ -1154,7 +1172,13 @@ async function updateLoveEnergyContent(type) {
     
     const typeData = personalityAxesData.loveEnergy[japaneseKey];
     if (typeData) {
-        element.textContent = typeData.description;
+        // ユーザー名を取得して〇〇さんを置換
+        const userName = window.currentUserName || 'あなた';
+        if (window.TextFormatter) {
+            element.innerHTML = window.TextFormatter.formatDescription(typeData.description, userName);
+        } else {
+            element.textContent = typeData.description;
+        }
     }
 }
 
