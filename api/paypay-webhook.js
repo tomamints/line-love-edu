@@ -144,6 +144,24 @@ module.exports = async function handler(req, res) {
                 } else {
                     console.log('Access rights granted for diagnosis:', diagnosisId);
                 }
+                
+                // 購入者のリッチメニューを切り替え
+                try {
+                    // diagnosisからuser_idを取得
+                    const { data: diagnosis } = await supabase
+                        .from('diagnoses')
+                        .select('user_id')
+                        .eq('id', diagnosisId)
+                        .single();
+                    
+                    if (diagnosis?.user_id) {
+                        const { updateUserRichMenu } = require('./update-user-rich-menu');
+                        await updateUserRichMenu(diagnosis.user_id, true);
+                        console.log('Rich menu updated to premium for user:', diagnosis.user_id);
+                    }
+                } catch (menuError) {
+                    console.error('Failed to update rich menu:', menuError);
+                }
             }
             
             // 成功レスポンスを返す
