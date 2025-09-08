@@ -1092,7 +1092,7 @@
     
     <!-- JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="js/otsukisama-data-loader.js?v=20250901001"></script>
+    <script src="js/otsukisama-data-loader.js?v=20250108002"></script>
     <script src="js/text-formatter.js?v=20250107001"></script>
     <script src="js/personality-type-mapper.js?v=20250107001"></script>
     <script src="js/three-powers-calculator.js?v=20250107002"></script>
@@ -1260,7 +1260,7 @@
                         console.log('Database values:', loveProfile);
                         console.log('API response:', data.diagnosis);
                         console.log('Access level:', data.accessLevel);
-                        console.log('Cache version: 20250901001');
+                        console.log('Cache version: 20250108001');
                         
                         
                         // 6つの要素を更新
@@ -1414,7 +1414,7 @@
             
             try {
                 // パターンデータを取得
-                const response = await fetch('/data/otsukisama-patterns-v3.json');
+                const response = await fetch('/data/otsukisama-patterns-v3.json?v=' + Date.now());
                 const patterns = await response.json();
                 const pattern = patterns[patternId];
                 

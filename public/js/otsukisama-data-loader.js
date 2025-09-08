@@ -16,7 +16,7 @@ class OtsukisamaDataLoader {
     async loadAllData() {
         try {
             const [patterns, threePowers, personalityAxes, moonPhases, hiddenPhases, uiTexts] = await Promise.all([
-                fetch('data/otsukisama-patterns-v3.json').then(r => r.json()),
+                fetch('data/otsukisama-patterns-v3.json?v=' + Date.now()).then(r => r.json()),
                 fetch('data/three-powers.json').then(r => r.json()),
                 fetch('data/personality-axes-descriptions.json').then(r => r.json()),
                 fetch('data/moon-phase-descriptions.json').then(r => r.json()),
@@ -47,20 +47,7 @@ class OtsukisamaDataLoader {
             return null;
         }
 
-        // まず新フォーマットのファイルが存在するか確認
-        try {
-            const newFormatResponse = await fetch(`data/pattern-${patternId}-new-format.json`);
-            if (newFormatResponse.ok) {
-                const newPattern = await newFormatResponse.json();
-                console.log(`Loading new format for pattern ${patternId}`);
-                // 新フォーマットの場合、patternIdに対応するデータを取得
-                return newPattern[String(patternId)] || newPattern;
-            }
-        } catch (error) {
-            // 新フォーマットが見つからない場合は旧フォーマットを使用
-            console.log(`New format not found for pattern ${patternId}, using old format`);
-        }
-
+        // 統一されたパターンデータから取得
         const pattern = this.patternsData[String(patternId)];
         if (!pattern) {
             console.error(`Pattern ${patternId} not found`);

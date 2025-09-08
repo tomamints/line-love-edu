@@ -100,7 +100,7 @@ class DiagnosisRenderer {
     // パターンデータの読み込み
     async loadPatternData(patternId) {
         try {
-            const response = await fetch('/data/otsukisama-patterns-v3.json');
+            const response = await fetch('/data/otsukisama-patterns-v3.json?v=' + Date.now());
             const patterns = await response.json();
             const pattern = patterns[patternId] || patterns[0];
             
