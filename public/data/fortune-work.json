@@ -1,0 +1,43 @@
+{
+  "mainText": {
+    "pattern": 1,
+    "declaration": "〇〇さんのお仕事の月には、今ちょっとした試練の影が差しています。でもそれは、次のステージへ進むための大切な準備期間なんです。",
+    "feeling1": "一生懸命やっているのに、周りに気づいてもらえない気がする",
+    "feeling2": "頑張りすぎて、\"私だけ空回りしてるかも…\"と感じる瞬間がある",
+    "feeling3": "新しいことを任されたときに、\"私にできるのかな\"と不安になる",
+    "feelingConclusion": "これらは決して弱さではなく、〇〇さんが真剣に仕事と向き合っている証拠なんです。",
+    "reassurance": "だから大丈夫。その努力は必ず実を結び、〇〇さんの価値として認められる日が来ます。",
+    "reason": "なぜなら、<span class='moon-characteristic'>M（3ヶ月先）月</span>に、これまでの頑張りが評価され、次のチャンスにつながる流れが訪れるからです。",
+    "evidence1": "『ありがとう』と言われてふっと心が救われた瞬間",
+    "evidence2": "以前より少しスムーズに仕事ができた感覚",
+    "evidence3": "小さな達成感を得られた出来事",
+    "evidenceConclusion": "これらはすでに〇〇さんの仕事運が動き始めているサインなんです。",
+    "adviceIntro": "その流れを確かなものにするために、今できることを3つお伝えします。",
+    "advice1": "毎日の中で小さな\"できたこと\"をメモに残す",
+    "advice2": "無理なときは素直に助けを求める勇気を持つ",
+    "advice3": "1日1回、自分の頑張りを\"よくやった\"と認める",
+    "adviceConclusion": "これを続ければ、〇〇さんは仕事で自然に輝けるはずです。"
+  },
+  
+  "newTalents": {
+    "distribution": [3,1,5,2,4,3,1,5,2,4,3,1,5,2,4,3,1,5,2,4,3,1,5,2,4,3,1,5,2,4,3,1,5,2,4,3,1,5,2,4,3,1,5,2,4,3,1,5,2,4,3,1,5,2,4,3,1,5,2,4,3,1,5,2],
+    "patterns": {
+      "1": "〇〇さんがこれから気づく新しい才能は、<span class='moon-characteristic'>「まとめ役」として周りを自然に引っ張る力</span>です。特に<span class='moon-characteristic'>M（１ヶ月先）月の10日〜15日ごろ</span>に、その芽がはっきり現れます。最初は「私が仕切るなんて…」と不安かもしれません。でも気づけば、〇〇さんの声かけや段取りで場がスムーズに回っているでしょう。ヒントは、<span class='moon-characteristic'>小さなプロジェクトや日常のチーム作業</span>。その中で\"任せられる力\"が新しい才能として花開きます。",
+      "2": "〇〇さんが開花させるのは、<span class='moon-characteristic'>「工夫で改善する力」</span>です。<span class='moon-characteristic'>特にM（2ヶ月先）月の前半（5日〜9日ごろ）</span>、ふとしたアイデアが周囲を助ける場面が訪れます。「これならもっと効率的にできるかも」と思った工夫が、思いのほか高く評価されるでしょう。ヒントは、<span class='moon-characteristic'>日常業務のちょっとした工夫や書き方</span>。そこに〇〇さんの新しい才能が隠れています。",
+      "3": "〇〇さんがこれから気づく才能は、<span class='moon-characteristic'>「人に伝える力」です</span>。特に<span class='moon-characteristic'>M（1ヶ月先）月の25日〜28日ごろ</span>、同僚や後輩に説明する機会で光るでしょう。「わかりやすい！」と感謝されることで、自分でもその力に気づくはずです。ヒントは、<span class='moon-characteristic'>日常会話や小さな説明の場面</span>。自然に出た言葉の中に、才能が開花していきます。",
+      "4": "〇〇さんが芽生えさせるのは、<span class='moon-characteristic'>「整理して見せる力」</span>です。特に<span class='moon-characteristic'>M（3ヶ月先）月の中旬、特に12日〜15日ごろ</span>、資料やメモをまとめた瞬間にその才能が発揮されます。周囲から「助かる！」と声をかけられ、意識していなかった力に気づくでしょう。ヒントは、<span class='moon-characteristic'>書類やタスクを整える小さな習慣</span>。そこから新しい可能性が広がっていきます。",
+      "5": "〇〇さんが開花させる才能は、<span class='moon-characteristic'>「プレッシャーを力に変える集中力」</span>です。特に<span class='moon-characteristic'>M（2ヶ月先）月の月末（27日〜30日ごろ）</span>、時間が限られた場面でその力が現れます。「やればできる」と自分でも驚くくらいの結果を出せるでしょう。ヒントは、<span class='moon-characteristic'>短い期限や制約のあるタスク</span>。その状況こそが、〇〇さんの力を引き出すきっかけになります。"
+    }
+  },
+  
+  "turningPoints": {
+    "distribution": [2,5,1,3,4,2,5,1,3,4,2,5,1,3,4,2,5,1,3,4,2,5,1,3,4,2,5,1,3,4,2,5,1,3,4,2,5,1,3,4,2,5,1,3,4,2,5,1,3,4,2,5,1,3,4,2,5,1,3,4,2,5,1,3],
+    "patterns": {
+      "1": "〇〇さんの転機は、<span class='moon-characteristic'>思いがけない依頼</span>から訪れます。特に<span class='moon-characteristic'>M（１ヶ月先）月7日〜9日ごろ</span>、急に任されることがあるでしょう。最初は「私にできるかな」と戸惑うかもしれません。でもそれこそが、〇〇さんの力を試すチャンスです。サインは、<span class='moon-characteristic'>普段あまり話さない上司や先輩からのひとこと</span>。その声かけが飛躍の合図になります。",
+      "2": "〇〇さんのキャリアを動かすのは、<span class='moon-characteristic'>意外な人からの推薦</span>です。特に<span class='moon-characteristic'>M（2ヶ月先）月の15日〜18日</span>は要注意。「〇〇さんならできるよ」と紹介されたことが、次のチャンスへつながっていきます。サインは、<span class='moon-characteristic'>周囲からの小さな信頼の言葉</span>。その一言が未来の扉を開きます。",
+      "3": "〇〇さんの転機は、<span class='moon-characteristic'>一度のつまずきの中</span>に隠れています。特に<span class='moon-characteristic'>M（2ヶ月先）月の3日〜6日ごろ</span>、思うようにいかない出来事が起きるかもしれません。でもその経験こそが、次の挑戦を後押しする力になります。サインは、<span class='moon-characteristic'>悔しさや「もっと良くしたい」という気持ち</span>。それが飛躍のエネルギーに変わります。",
+      "4": "〇〇さんのキャリアを変える転機は、<span class='moon-characteristic'>人前で意見を求められたとき</span>です。特に<span class='moon-characteristic'>M（3ヶ月先）月の20日〜23日ごろ</span>、思いがけず声をかけられるでしょう。最初は緊張しても、その一言が周りの印象を大きく変えます。サインは、<span class='moon-characteristic'>会議や集まりで「どう思う？」と聞かれる瞬間</span>。そこから道が開けていきます。",
+      "5": "〇〇さんの転機は、<span class='moon-characteristic'>学びの場での気づき</span>です。特に<span class='moon-characteristic'>M（1ヶ月先）月11日〜13日ごろ</span>、セミナーや研修、あるいはYouTubeやインスタなどのSNSで不意に流れてきた動画で将来に繋がる学びに触れるでしょう。「これを活かしたい」と思った瞬間が、次のキャリアへの一歩になります。サインは、<span class='moon-characteristic'>心がワクワクして止まらないインプット</span>。それが未来の可能性を広げます。"
+    }
+  }
+}

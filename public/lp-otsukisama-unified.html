@@ -1102,12 +1102,15 @@
     <script src="js/lp-otsukisama-display-line.js?v=20250901001"></script>
     <script src="js/lp-otsukisama-calendar.js?v=20250901001"></script>
     <script src="js/lp-otsukisama-graph.js?v=20250901001"></script>
+    <script src="js/fortune-date-calculator.js?v=20250109001"></script>
+    <script src="js/fortune-display.js?v=20250109001"></script>
     
     <!-- lp-otsukisama-main.jsは統合版では使用しない（重複を避けるため） -->
     
     <script>
         // グローバル変数
         let currentPatternId = null;
+        let userName = '〇〇'; // デフォルトユーザー名
         window.moonPhaseData = null;
         window.hiddenPhaseData = null;
         window.uiTexts = null;
@@ -1234,6 +1237,9 @@
                             resultName.textContent = data.diagnosis.user_name || 'あなた';
                         }
                         
+                        // ユーザー名をグローバル変数に設定
+                        userName = data.diagnosis.user_name || '〇〇';
+                        
                         // パターンIDをグローバル変数に設定
                         currentPatternId = data.diagnosis.moon_pattern_id || data.diagnosis.pattern_id;
                         
@@ -1296,11 +1302,16 @@
                             await updateLoveEnergyContent(loveProfile.loveEnergy);
                         }
                         
-                        // 運勢コンテンツを更新（全体運、恋愛運、人間関係運、仕事運、金運）
-                        // データローダーが準備できているか確認
+                        // 新しい運勢表示システムを使用
+                        const fortuneDisplay = new FortuneDisplay();
+                        await fortuneDisplay.loadFortuneData();
+                        const graphType = await fortuneDisplay.displayAllFortunes(currentPatternId, userName);
+                        console.log('Fortune display completed with graph type:', graphType);
+                        
+                        // 旧システムとの互換性のため、パターンデータも更新
                         if (window.OtsukisamaDataLoader && window.OtsukisamaDataLoader.isLoaded()) {
                             const pattern = window.OtsukisamaDataLoader.getPatternFortune(currentPatternId);
-                            console.log('Pattern data for fortune:', pattern);
+                            console.log('Pattern data for legacy system:', pattern);
                             if (pattern && typeof updateDynamicContentFromPattern === 'function') {
                                 updateDynamicContentFromPattern(pattern);
                             }
@@ -1308,7 +1319,7 @@
                             // データローダーの読み込みを待ってから再試行
                             window.addEventListener('otsukisama-data-loaded', () => {
                                 const pattern = window.OtsukisamaDataLoader.getPatternFortune(currentPatternId);
-                                console.log('Pattern data for fortune (after wait):', pattern);
+                                console.log('Pattern data for legacy system (after wait):', pattern);
                                 if (pattern && typeof updateDynamicContentFromPattern === 'function') {
                                     updateDynamicContentFromPattern(pattern);
                                 }

@@ -1,0 +1,658 @@
+/**
+ * 運勢表示システム
+ * 新しいJSON構造に対応した運勢コンテンツの表示
+ */
+
+class FortuneDisplay {
+    constructor() {
+        this.dateCalculator = new FortuneDateCalculator();
+        this.fortuneData = {};
+        this.isLoaded = false;
+        this.patternId = 1; // デフォルトパターン
+    }
+
+    /**
+     * 運勢データを読み込む
+     */
+    async loadFortuneData() {
+        try {
+            const [
+                overallData,
+                loveData,
+                relationshipsData,
+                workData,
+                moneyData,
+                moonMessagesData
+            ] = await Promise.all([
+                fetch('/data/fortune-overall.json').then(r => r.json()),
+                fetch('/data/fortune-love.json').then(r => r.json()),
+                fetch('/data/fortune-relationships.json').then(r => r.json()),
+                fetch('/data/fortune-work.json').then(r => r.json()),
+                fetch('/data/fortune-money.json').then(r => r.json()),
+                fetch('/data/moon-messages.json').then(r => r.json())
+            ]);
+
+            this.fortuneData = {
+                overall: overallData,
+                love: loveData,
+                relationships: relationshipsData,
+                work: workData,
+                money: moneyData,
+                moonMessages: moonMessagesData
+            };
+
+            this.isLoaded = true;
+            console.log('Fortune data loaded successfully');
+            return true;
+        } catch (error) {
+            console.error('Failed to load fortune data:', error);
+            return false;
+        }
+    }
+
+    /**
+     * パターンIDを設定（0-63）
+     */
+    setPatternId(id) {
+        this.patternId = id;
+        console.log('Pattern ID set to:', id);
+    }
+
+    /**
+     * 全体運を表示
+     */
+    displayOverallFortune(userName = '〇〇') {
+        if (!this.fortuneData.overall) {
+            console.error('Overall fortune data not loaded');
+            return;
+        }
+
+        // パターンIDから対応する運勢パターンを取得
+        const distribution = this.fortuneData.overall.distribution;
+        const patternIndex = distribution[this.patternId % distribution.length];
+        const pattern = this.fortuneData.overall.patterns[patternIndex];
+
+        if (!pattern) {
+            console.error('Pattern not found:', patternIndex);
+            return;
+        }
+
+        // タイトルを更新
+        const titleElement = document.getElementById('fortune-overall-title');
+        if (titleElement) {
+            titleElement.textContent = pattern.title.replace('〇〇', userName);
+        }
+
+        // 説明文を更新（日付を置換）
+        const introElement = document.getElementById('fortune-overall-intro');
+        if (introElement) {
+            const processedDescription = this.dateCalculator.replaceDatePlaceholders(
+                pattern.description.replace(/〇〇/g, userName)
+            );
+            introElement.innerHTML = processedDescription;
+        }
+
+        // メインテキストを更新
+        const textElement = document.getElementById('fortune-overall-text');
+        if (textElement) {
+            textElement.innerHTML = this.dateCalculator.replaceDatePlaceholders(
+                pattern.description.replace(/〇〇/g, userName)
+            );
+        }
+
+        // グラフタイプを設定（グラフ表示用）
+        return pattern.graphType;
+    }
+
+    /**
+     * 恋愛運を表示
+     */
+    displayLoveFortune(userName = '〇〇') {
+        if (!this.fortuneData.love) {
+            console.error('Love fortune data not loaded');
+            return;
+        }
+
+        const data = this.fortuneData.love;
+        
+        // メインテキストを構築
+        const mainText = data.mainText;
+        let htmlContent = '';
+
+        // 結果を表示
+        htmlContent += `<p>${this.processText(mainText.result, userName)}</p>`;
+        
+        // 感情の承認
+        htmlContent += `<p>${this.processText(mainText.feelingAcknowledgment, userName)}</p>`;
+        
+        // 安心感を与える
+        htmlContent += `<p>${this.processText(mainText.reassurance, userName)}</p>`;
+        
+        // 理由
+        htmlContent += `<p>${this.processText(mainText.reason, userName)}</p>`;
+        
+        // 証拠セクション
+        htmlContent += '<div class="evidence-section">';
+        htmlContent += '<p>最近こんなこと、ありませんでしたか？</p>';
+        htmlContent += '<ul>';
+        if (mainText.evidence1) htmlContent += `<li>${this.processText(mainText.evidence1, userName)}</li>`;
+        if (mainText.evidence2) htmlContent += `<li>${this.processText(mainText.evidence2, userName)}</li>`;
+        if (mainText.evidence3) htmlContent += `<li>${this.processText(mainText.evidence3, userName)}</li>`;
+        htmlContent += '</ul>';
+        if (mainText.evidence4) htmlContent += `<p>${this.processText(mainText.evidence4, userName)}</p>`;
+        htmlContent += '</div>';
+        
+        // アドバイスセクション
+        htmlContent += '<div class="advice-section">';
+        if (mainText.advice1) htmlContent += `<p>${this.processText(mainText.advice1, userName)}</p>`;
+        htmlContent += '<p>そのためにできることを、今の〇〇さんに合わせて、3つご紹介しますね。</p>';
+        htmlContent += '<ol>';
+        if (mainText.advice2) htmlContent += `<li>${this.processText(mainText.advice2, userName)}</li>`;
+        if (mainText.advice3) htmlContent += `<li>${this.processText(mainText.advice3, userName)}</li>`;
+        if (mainText.advice4) htmlContent += `<li>${this.processText(mainText.advice4, userName)}</li>`;
+        htmlContent += '</ol>';
+        if (mainText.advice5) htmlContent += `<p>${this.processText(mainText.advice5, userName)}</p>`;
+        htmlContent += '</div>';
+
+        // メインテキストを更新
+        const textElement = document.getElementById('fortune-love-text');
+        if (textElement) {
+            textElement.innerHTML = htmlContent;
+        }
+
+        // 運命の出会いセクション
+        this.displayDestinyMeeting(data.destinyMeeting, userName);
+        
+        // 恋の矢を向けている人セクション
+        this.displayAdmirerType(data.admirerType, userName);
+        
+        // 危険な異性タイプセクション
+        this.displayDangerousType(data.dangerousType, userName);
+    }
+
+    /**
+     * 運命の出会いセクションを表示
+     */
+    displayDestinyMeeting(data, userName) {
+        if (!data) return;
+        
+        let htmlContent = '';
+        htmlContent += `<h3>① 運命の新しい出会い</h3>`;
+        htmlContent += `<p>${this.processText(data.declaration, userName)}</p>`;
+        htmlContent += `<p>${this.processText(data.details, userName)}</p>`;
+        htmlContent += `<p>${this.processText(data.condition, userName)}</p>`;
+        htmlContent += `<p>${this.processText(data.action, userName)}</p>`;
+        
+        const element = document.getElementById('fortune-love-destiny-meeting');
+        if (element) {
+            element.innerHTML = htmlContent;
+        }
+    }
+
+    /**
+     * 恋の矢を向けている人セクションを表示
+     */
+    displayAdmirerType(data, userName) {
+        if (!data) return;
+        
+        let htmlContent = '';
+        htmlContent += `<h3>② 今後3ヶ月、あなたに恋の矢を向けているお相手はこんな人</h3>`;
+        htmlContent += `<p>${this.processText(data.declaration, userName)}</p>`;
+        htmlContent += `<p>${this.processText(data.characteristics, userName)}</p>`;
+        
+        // サインリスト
+        htmlContent += '<div class="signs-section">';
+        if (data.sign1_title) {
+            htmlContent += `<h4>${data.sign1_title}</h4>`;
+            htmlContent += `<p>${this.processText(data.sign1_desc, userName)}</p>`;
+        }
+        if (data.sign2_title) {
+            htmlContent += `<h4>${data.sign2_title}</h4>`;
+            htmlContent += `<p>${this.processText(data.sign2_desc, userName)}</p>`;
+        }
+        if (data.sign3_title) {
+            htmlContent += `<h4>${data.sign3_title}</h4>`;
+            htmlContent += `<p>${this.processText(data.sign3_desc, userName)}</p>`;
+        }
+        htmlContent += '</div>';
+        
+        if (data.realization) {
+            htmlContent += `<p>${this.processText(data.realization, userName)}</p>`;
+        }
+        if (data.condition) {
+            htmlContent += `<p>${this.processText(data.condition, userName)}</p>`;
+        }
+        
+        const element = document.getElementById('fortune-love-admirer-type');
+        if (element) {
+            element.innerHTML = htmlContent;
+        }
+    }
+
+    /**
+     * 危険な異性タイプセクションを表示
+     */
+    displayDangerousType(data, userName) {
+        if (!data) return;
+        
+        let htmlContent = '';
+        htmlContent += `<h3>③ 危険な恋の罠？この3ヶ月、あなたが出会うと危険な異性のタイプ</h3>`;
+        htmlContent += `<p>${this.processText(data.warning, userName)}</p>`;
+        
+        if (data.introduction) {
+            htmlContent += `<p>${this.processText(data.introduction, userName)}</p>`;
+        }
+        
+        // 特徴リスト
+        htmlContent += '<div class="characteristics-section">';
+        if (data.characteristic1_title) {
+            htmlContent += `<h4>${data.characteristic1_title}</h4>`;
+            htmlContent += `<p>${this.processText(data.characteristic1_desc, userName)}</p>`;
+        }
+        if (data.characteristic2_title) {
+            htmlContent += `<h4>${data.characteristic2_title}</h4>`;
+            htmlContent += `<p>${this.processText(data.characteristic2_desc, userName)}</p>`;
+        }
+        if (data.characteristic3_title) {
+            htmlContent += `<h4>${data.characteristic3_title}</h4>`;
+            htmlContent += `<p>${this.processText(data.characteristic3_desc, userName)}</p>`;
+        }
+        htmlContent += '</div>';
+        
+        if (data.condition) {
+            htmlContent += `<p>${this.processText(data.condition, userName)}</p>`;
+        }
+        
+        const element = document.getElementById('fortune-love-dangerous-type');
+        if (element) {
+            element.innerHTML = htmlContent;
+        }
+    }
+
+    /**
+     * 人間関係運を表示
+     */
+    displayRelationshipFortune(userName = '〇〇') {
+        if (!this.fortuneData.relationships) {
+            console.error('Relationship fortune data not loaded');
+            return;
+        }
+
+        const data = this.fortuneData.relationships;
+        const mainText = data.mainText;
+        
+        let htmlContent = '';
+        
+        // 宣言
+        htmlContent += `<p>${this.processText(mainText.declaration, userName)}</p>`;
+        
+        // 感情セクション
+        htmlContent += '<div class="feelings-section">';
+        htmlContent += '<p>最近こんな気持ちになったことはありませんか？</p>';
+        htmlContent += '<ul>';
+        if (mainText.feeling1) htmlContent += `<li>${this.processText(mainText.feeling1, userName)}</li>`;
+        if (mainText.feeling2) htmlContent += `<li>${this.processText(mainText.feeling2, userName)}</li>`;
+        if (mainText.feeling3) htmlContent += `<li>${this.processText(mainText.feeling3, userName)}</li>`;
+        if (mainText.feeling4) htmlContent += `<li>${this.processText(mainText.feeling4, userName)}</li>`;
+        if (mainText.feeling5) htmlContent += `<li>${this.processText(mainText.feeling5, userName)}</li>`;
+        htmlContent += '</ul>';
+        if (mainText.feelingConclusion) {
+            htmlContent += `<p>${this.processText(mainText.feelingConclusion, userName)}</p>`;
+        }
+        htmlContent += '</div>';
+        
+        // 安心感と理由
+        htmlContent += `<p>${this.processText(mainText.reassurance, userName)}</p>`;
+        htmlContent += `<p>${this.processText(mainText.reason, userName)}</p>`;
+        
+        // 証拠セクション
+        htmlContent += '<div class="evidence-section">';
+        htmlContent += '<p>最近、こんなことはありませんでしたか？</p>';
+        htmlContent += '<ul>';
+        if (mainText.evidence1) htmlContent += `<li>${this.processText(mainText.evidence1, userName)}</li>`;
+        if (mainText.evidence2) htmlContent += `<li>${this.processText(mainText.evidence2, userName)}</li>`;
+        if (mainText.evidence3) htmlContent += `<li>${this.processText(mainText.evidence3, userName)}</li>`;
+        htmlContent += '</ul>';
+        if (mainText.evidenceConclusion) {
+            htmlContent += `<p>${this.processText(mainText.evidenceConclusion, userName)}</p>`;
+        }
+        htmlContent += '</div>';
+        
+        // アドバイスセクション
+        htmlContent += '<div class="advice-section">';
+        if (mainText.adviceIntro) {
+            htmlContent += `<p>${this.processText(mainText.adviceIntro, userName)}</p>`;
+        }
+        htmlContent += '<ol>';
+        if (mainText.advice1) htmlContent += `<li>${this.processText(mainText.advice1, userName)}</li>`;
+        if (mainText.advice2) htmlContent += `<li>${this.processText(mainText.advice2, userName)}</li>`;
+        if (mainText.advice3) htmlContent += `<li>${this.processText(mainText.advice3, userName)}</li>`;
+        htmlContent += '</ol>';
+        if (mainText.adviceConclusion) {
+            htmlContent += `<p>${this.processText(mainText.adviceConclusion, userName)}</p>`;
+        }
+        htmlContent += '</div>';
+        
+        const textElement = document.getElementById('fortune-relationship-text');
+        if (textElement) {
+            textElement.innerHTML = htmlContent;
+        }
+
+        // 新しい人間関係セクション
+        this.displayNewConnections(data.newConnections, userName);
+        
+        // 課題セクション
+        this.displayRelationshipChallenges(data.challenges, userName);
+    }
+
+    /**
+     * 新しい人間関係セクションを表示
+     */
+    displayNewConnections(data, userName) {
+        if (!data) return;
+        
+        const distribution = data.distribution;
+        const patternIndex = distribution[this.patternId % distribution.length];
+        const pattern = data.patterns[patternIndex];
+        
+        if (!pattern) return;
+        
+        let htmlContent = '<h3>① すでに繋がってる？あなたが気づいていない新しい人間関係</h3>';
+        htmlContent += `<p>${this.processText(pattern, userName)}</p>`;
+        
+        const element = document.getElementById('fortune-relationship-new-connections');
+        if (element) {
+            element.innerHTML = htmlContent;
+        }
+    }
+
+    /**
+     * 人間関係の課題セクションを表示
+     */
+    displayRelationshipChallenges(data, userName) {
+        if (!data) return;
+        
+        const distribution = data.distribution;
+        const patternIndex = distribution[this.patternId % distribution.length];
+        const pattern = data.patterns[patternIndex];
+        
+        if (!pattern) return;
+        
+        let htmlContent = '<h3>② これから3ヶ月で、あなたが克服すべき人間関係の課題</h3>';
+        htmlContent += `<p>${this.processText(pattern, userName)}</p>`;
+        
+        const element = document.getElementById('fortune-relationship-challenges');
+        if (element) {
+            element.innerHTML = htmlContent;
+        }
+    }
+
+    /**
+     * 仕事運を表示
+     */
+    displayWorkFortune(userName = '〇〇') {
+        if (!this.fortuneData.work) {
+            console.error('Work fortune data not loaded');
+            return;
+        }
+
+        const data = this.fortuneData.work;
+        const mainText = data.mainText;
+        
+        let htmlContent = '';
+        
+        // 宣言
+        htmlContent += `<p>${this.processText(mainText.declaration, userName)}</p>`;
+        
+        // 感情セクション
+        htmlContent += '<div class="feelings-section">';
+        htmlContent += '<p>最近こんなことはありませんか？</p>';
+        htmlContent += '<ul>';
+        if (mainText.feeling1) htmlContent += `<li>${this.processText(mainText.feeling1, userName)}</li>`;
+        if (mainText.feeling2) htmlContent += `<li>${this.processText(mainText.feeling2, userName)}</li>`;
+        if (mainText.feeling3) htmlContent += `<li>${this.processText(mainText.feeling3, userName)}</li>`;
+        htmlContent += '</ul>';
+        if (mainText.feelingConclusion) {
+            htmlContent += `<p>${this.processText(mainText.feelingConclusion, userName)}</p>`;
+        }
+        htmlContent += '</div>';
+        
+        // 安心感と理由
+        htmlContent += `<p>${this.processText(mainText.reassurance, userName)}</p>`;
+        htmlContent += `<p>${this.processText(mainText.reason, userName)}</p>`;
+        
+        // 証拠セクション
+        htmlContent += '<div class="evidence-section">';
+        htmlContent += '<p>その証拠にこんなことがあったはず、、、、</p>';
+        htmlContent += '<ul>';
+        if (mainText.evidence1) htmlContent += `<li>${this.processText(mainText.evidence1, userName)}</li>`;
+        if (mainText.evidence2) htmlContent += `<li>${this.processText(mainText.evidence2, userName)}</li>`;
+        if (mainText.evidence3) htmlContent += `<li>${this.processText(mainText.evidence3, userName)}</li>`;
+        htmlContent += '</ul>';
+        if (mainText.evidenceConclusion) {
+            htmlContent += `<p>${this.processText(mainText.evidenceConclusion, userName)}</p>`;
+        }
+        htmlContent += '</div>';
+        
+        // アドバイスセクション
+        htmlContent += '<div class="advice-section">';
+        if (mainText.adviceIntro) {
+            htmlContent += `<p>${this.processText(mainText.adviceIntro, userName)}</p>`;
+        }
+        htmlContent += '<ol>';
+        if (mainText.advice1) htmlContent += `<li>${this.processText(mainText.advice1, userName)}</li>`;
+        if (mainText.advice2) htmlContent += `<li>${this.processText(mainText.advice2, userName)}</li>`;
+        if (mainText.advice3) htmlContent += `<li>${this.processText(mainText.advice3, userName)}</li>`;
+        htmlContent += '</ol>';
+        if (mainText.adviceConclusion) {
+            htmlContent += `<p>${this.processText(mainText.adviceConclusion, userName)}</p>`;
+        }
+        htmlContent += '</div>';
+        
+        const textElement = document.getElementById('fortune-work-text');
+        if (textElement) {
+            textElement.innerHTML = htmlContent;
+        }
+
+        // 新しい才能セクション
+        this.displayNewTalents(data.newTalents, userName);
+        
+        // 転機セクション
+        this.displayTurningPoints(data.turningPoints, userName);
+    }
+
+    /**
+     * 新しい才能セクションを表示
+     */
+    displayNewTalents(data, userName) {
+        if (!data) return;
+        
+        const distribution = data.distribution;
+        const patternIndex = distribution[this.patternId % distribution.length];
+        const pattern = data.patterns[patternIndex];
+        
+        if (!pattern) return;
+        
+        let htmlContent = '<h3>① あなたがまだ気づいていない新しい才能の芽生え</h3>';
+        htmlContent += `<p>${this.processText(pattern, userName)}</p>`;
+        
+        const element = document.getElementById('fortune-work-new-talent');
+        if (element) {
+            element.innerHTML = htmlContent;
+        }
+    }
+
+    /**
+     * 転機セクションを表示
+     */
+    displayTurningPoints(data, userName) {
+        if (!data) return;
+        
+        const distribution = data.distribution;
+        const patternIndex = distribution[this.patternId % distribution.length];
+        const pattern = data.patterns[patternIndex];
+        
+        if (!pattern) return;
+        
+        let htmlContent = '<h3>② この3ヶ月で訪れる、あなたのキャリアを動かす転機</h3>';
+        htmlContent += `<p>${this.processText(pattern, userName)}</p>`;
+        
+        const element = document.getElementById('fortune-work-turning-point');
+        if (element) {
+            element.innerHTML = htmlContent;
+        }
+    }
+
+    /**
+     * 金運を表示
+     */
+    displayMoneyFortune(userName = '〇〇') {
+        if (!this.fortuneData.money) {
+            console.error('Money fortune data not loaded');
+            return;
+        }
+
+        const data = this.fortuneData.money;
+        const mainText = data.mainText;
+        
+        let htmlContent = '';
+        
+        // 宣言
+        htmlContent += `<p>${this.processText(mainText.declaration, userName)}</p>`;
+        
+        // 感情セクション
+        htmlContent += '<div class="feelings-section">';
+        htmlContent += '<p>最近こんなことはありませんでしたか？</p>';
+        htmlContent += '<ul>';
+        if (mainText.feeling1) htmlContent += `<li>${this.processText(mainText.feeling1, userName)}</li>`;
+        if (mainText.feeling2) htmlContent += `<li>${this.processText(mainText.feeling2, userName)}</li>`;
+        if (mainText.feeling3) htmlContent += `<li>${this.processText(mainText.feeling3, userName)}</li>`;
+        htmlContent += '</ul>';
+        if (mainText.feelingConclusion) {
+            htmlContent += `<p>${this.processText(mainText.feelingConclusion, userName)}</p>`;
+        }
+        htmlContent += '</div>';
+        
+        // 安心感と理由
+        htmlContent += `<p>${this.processText(mainText.reassurance, userName)}</p>`;
+        htmlContent += `<p>${this.processText(mainText.reason, userName)}</p>`;
+        
+        // 証拠セクション
+        htmlContent += '<div class="evidence-section">';
+        htmlContent += '<p>最近、こんなことはありませんでしたか？</p>';
+        htmlContent += '<ul>';
+        if (mainText.evidence1) htmlContent += `<li>${this.processText(mainText.evidence1, userName)}</li>`;
+        if (mainText.evidence2) htmlContent += `<li>${this.processText(mainText.evidence2, userName)}</li>`;
+        if (mainText.evidence3) htmlContent += `<li>${this.processText(mainText.evidence3, userName)}</li>`;
+        htmlContent += '</ul>';
+        if (mainText.evidenceConclusion) {
+            htmlContent += `<p>${this.processText(mainText.evidenceConclusion, userName)}</p>`;
+        }
+        htmlContent += '</div>';
+        
+        const textElement = document.getElementById('fortune-money-text');
+        if (textElement) {
+            textElement.innerHTML = htmlContent;
+        }
+
+        // ラッキーアクションセクション
+        this.displayLuckyActions(data.luckyActions, userName);
+        
+        // お金のトラブル警告セクション
+        this.displayMoneyTrouble(data.moneyTrouble, userName);
+    }
+
+    /**
+     * ラッキーアクションを表示
+     */
+    displayLuckyActions(actions, userName) {
+        if (!actions || actions.length === 0) return;
+        
+        // ランダムに5つ選択
+        const selectedActions = [];
+        const actionsCopy = [...actions];
+        for (let i = 0; i < 5 && actionsCopy.length > 0; i++) {
+            const index = Math.floor(Math.random() * actionsCopy.length);
+            selectedActions.push(actionsCopy[index]);
+            actionsCopy.splice(index, 1);
+        }
+        
+        let htmlContent = '<h3>① 金運アップ！今すぐできるラッキーアクション</h3>';
+        htmlContent += '<ul class="lucky-actions">';
+        selectedActions.forEach(action => {
+            htmlContent += `<li>${this.processText(action, userName)}</li>`;
+        });
+        htmlContent += '</ul>';
+        
+        // ラッキーアクション用の要素がない場合は作成が必要
+        // 現状のHTMLには存在しないので、必要に応じて追加
+        console.log('Lucky actions prepared:', selectedActions);
+    }
+
+    /**
+     * お金のトラブル警告を表示
+     */
+    displayMoneyTrouble(data, userName) {
+        if (!data) return;
+        
+        let htmlContent = '<h3>② 要注意！この3ヶ月で起こりうるお金のトラブル</h3>';
+        
+        if (data.warning) {
+            htmlContent += `<p>${this.processText(data.warning, userName)}</p>`;
+        }
+        
+        if (data.patterns && data.distribution) {
+            const distribution = data.distribution;
+            const patternIndex = distribution[this.patternId % distribution.length];
+            const pattern = data.patterns[patternIndex];
+            
+            if (pattern) {
+                htmlContent += `<p>${this.processText(pattern, userName)}</p>`;
+            }
+        }
+        
+        const element = document.getElementById('fortune-money-trouble');
+        if (element) {
+            element.innerHTML = htmlContent;
+        }
+    }
+
+    /**
+     * テキストを処理（ユーザー名置換、日付置換）
+     */
+    processText(text, userName) {
+        if (!text) return '';
+        
+        // ユーザー名を置換
+        let processed = text.replace(/〇〇/g, userName);
+        
+        // 日付プレースホルダーを置換
+        processed = this.dateCalculator.replaceDatePlaceholders(processed);
+        
+        return processed;
+    }
+
+    /**
+     * すべての運勢を表示
+     */
+    async displayAllFortunes(patternId, userName = '〇〇') {
+        this.setPatternId(patternId);
+        
+        if (!this.isLoaded) {
+            await this.loadFortuneData();
+        }
+        
+        // 各運勢を表示
+        const graphType = this.displayOverallFortune(userName);
+        this.displayLoveFortune(userName);
+        this.displayRelationshipFortune(userName);
+        this.displayWorkFortune(userName);
+        this.displayMoneyFortune(userName);
+        
+        console.log('All fortunes displayed for pattern:', patternId);
+        return graphType;
+    }
+}
+
+// グローバルに公開
+window.FortuneDisplay = FortuneDisplay;

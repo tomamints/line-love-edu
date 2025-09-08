@@ -1,0 +1,244 @@
+{
+  "messages": [
+    {
+      "theme": "<span class='moon-characteristic'>整えること</span>",
+      "actions": [
+        "朝：机の上を片付けてスタートする",
+        "夜：寝る前にスマホをベッドから離す",
+        "週に一度：冷蔵庫の中を整理する"
+      ]
+    },
+    {
+      "theme": "<span class='moon-characteristic'>受け入れること</span>",
+      "actions": [
+        "夜：寝る前に「今日よかったこと」を一つ思い出す",
+        "週に一度：苦手な相手の良いところをノートに書く",
+        "失敗したとき：「学びだった」と口にして気持ちを整える"
+      ]
+    },
+    {
+      "theme": "<span class='moon-characteristic'>広げること</span>",
+      "actions": [
+        "週末：新しいカフェやお店に足を運ぶ",
+        "日中：音楽や本を普段と違うものに変えてみる",
+        "SNSをみた時：気になる人を一人フォローしてみる"
+      ]
+    },
+    {
+      "theme": "<span class='moon-characteristic'>軽やかさ</span>",
+      "actions": [
+        "朝：通勤・通学で1駅分歩けるくらい時間に余裕を持つ",
+        "出かける前：バッグの中身を軽く整える",
+        "夜悩んだ時：一日の終わりに「まあいっか」とつぶやく"
+      ]
+    },
+    {
+      "theme": "<span class='moon-characteristic'>感謝すること</span>",
+      "actions": [
+        "日中：誰かに「ありがとう」を3回伝える",
+        "食事前：「いただきます」を丁寧に言う",
+        "夜：小さな感謝をメッセージで送る"
+      ]
+    },
+    {
+      "theme": "<span class='moon-characteristic'>つながること</span>",
+      "actions": [
+        "日中：誰かの話を最後まで聞く",
+        "週末：久しぶりの友達に「元気？」と連絡する",
+        "朝・夜：家族や身近な人に挨拶を交わす"
+      ]
+    },
+    {
+      "theme": "<span class='moon-characteristic'>癒すこと</span>",
+      "actions": [
+        "夜：温かい飲み物をゆっくり飲む",
+        "休日：自然に触れる時間を30分以上つくる",
+        "疲れを感じたとき：好きな香りでリフレッシュ"
+      ]
+    },
+    {
+      "theme": "<span class='moon-characteristic'>挑戦すること</span>",
+      "actions": [
+        "朝：「今日は一つ挑戦する」と心に決める",
+        "日中：会議や授業で意見を一度は発言する",
+        "週末：気になる資格や習い事に一歩踏み出す"
+      ]
+    },
+    {
+      "theme": "<span class='moon-characteristic'>手放すこと</span>",
+      "actions": [
+        "週末：着なくなった服を1着処分する",
+        "夜：ネガティブな言葉を紙に書いて破る",
+        "気づいたとき：「これは今いらない」と声にする"
+      ]
+    },
+    {
+      "theme": "<span class='moon-characteristic'>愛を注ぐこと</span>",
+      "actions": [
+        "朝：植物やペットに声をかける",
+        "夜：鏡の前で自分に「ありがとう」と言う",
+        "日中：親しい人に「あなたがいてよかった」と伝える"
+      ]
+    },
+    {
+      "theme": "<span class='moon-characteristic'>受け止めること</span>",
+      "actions": [
+        "ネガティブな気持ちが出たとき：「今の気持ちはこれ」と書く",
+        "日中：相手の言葉を遮らずに聞く",
+        "夜：「これでも十分頑張ってる」と自分に言う"
+      ]
+    },
+    {
+      "theme": "<span class='moon-characteristic'>変化を楽しむこと</span>",
+      "actions": [
+        "朝：髪型や服を少し変える",
+        "昼：普段選ばないランチを試す",
+        "夜：スマホの待ち受けを変える"
+      ]
+    },
+    {
+      "theme": "<span class='moon-characteristic'>深めること</span>",
+      "actions": [
+        "夜：興味ある本を10分以上読む",
+        "日中：1日の出来事から「学び」を一つ探す",
+        "週末：親しい人と深い話をしてみる"
+      ]
+    },
+    {
+      "theme": "<span class='moon-characteristic'>休むこと</span>",
+      "actions": [
+        "夜：30分早く布団に入る",
+        "昼：5分だけ目を閉じて休む",
+        "休日：あえて予定を入れずに過ごす"
+      ]
+    },
+    {
+      "theme": "<span class='moon-characteristic'>表現すること</span>",
+      "actions": [
+        "日中：気持ちを一度言葉にする",
+        "その場で：写真や絵で気分を表す",
+        "夜：ノートに今日の気持ちを一行書く"
+      ]
+    },
+    {
+      "theme": "<span class='moon-characteristic'>待つこと</span>",
+      "actions": [
+        "日中：返事を急がずに待つ",
+        "週末：結果より「今できること」に集中する",
+        "夜：「待つ時間も育つ時間」とつぶやく"
+      ]
+    },
+    {
+      "theme": "<span class='moon-characteristic'>自分を信じること</span>",
+      "actions": [
+        "夜：今日やったことを3つ数える",
+        "不安になったとき：「大丈夫」と深呼吸",
+        "比較しそうなとき：「私には私の道」と言う"
+      ]
+    },
+    {
+      "theme": "<span class='moon-characteristic'>遊び心</span>",
+      "actions": [
+        "朝：普段選ばない色の服を着る",
+        "日中：少し寄り道してみる",
+        "夜：くだらないことをあえて真剣にやる"
+      ]
+    },
+    {
+      "theme": "<span class='moon-characteristic'>喜びを分け合うこと</span>",
+      "actions": [
+        "日中：美味しかったものを誰かに伝える",
+        "夜：小さな成功を友達に話す",
+        "その場で：褒めたいと感じたら言葉にする"
+      ]
+    },
+    {
+      "theme": "<span class='moon-characteristic'>シンプルにすること</span>",
+      "actions": [
+        "朝：今日やることを3つに絞る",
+        "出かける前：バッグを必要最低限に整える",
+        "週末：予定を1つ減らして余白をつくる"
+      ]
+    },
+    {
+      "theme": "<span class='moon-characteristic'>学ぶこと</span>",
+      "actions": [
+        "朝：5分だけ新しいことを調べる",
+        "日中：人の話を「学び」として聞く",
+        "夜：興味ある動画を1本見る"
+      ]
+    },
+    {
+      "theme": "<span class='moon-characteristic'>柔軟さ</span>",
+      "actions": [
+        "予定変更があったとき：「これも流れ」と思う",
+        "会話中：相手の意見を一度受け止める",
+        "夜：うまくいかなかったことを「別の道もある」と考える"
+      ]
+    },
+    {
+      "theme": "<span class='moon-characteristic'>自分を癒すこと</span>",
+      "actions": [
+        "夜：湯船にゆっくりつかる",
+        "寝る前：好きな香りをかぐ",
+        "その日：「お疲れさま」と自分に声をかける"
+      ]
+    },
+    {
+      "theme": "<span class='moon-characteristic'>調和すること</span>",
+      "actions": [
+        "会話中：一度は「そうだね」と共感する",
+        "日中：誰かのペースに合わせてみる",
+        "週末：チームで役割を一つ引き受ける"
+      ]
+    },
+    {
+      "theme": "<span class='moon-characteristic'>感情を解放すること</span>",
+      "actions": [
+        "泣きたいとき：我慢せずに涙を流す",
+        "嬉しいとき：声に出して笑う",
+        "怒ったとき：紙に書いて破る"
+      ]
+    },
+    {
+      "theme": "<span class='moon-characteristic'>感覚を大事にすること</span>",
+      "actions": [
+        "食事中：味わいながら食べる",
+        "外出時：空気を吸って季節を感じる",
+        "夜：好きな音楽を耳だけで集中して聴く"
+      ]
+    },
+    {
+      "theme": "<span class='moon-characteristic'>勇気を持つこと</span>",
+      "actions": [
+        "朝：「今日は一つ挑戦する」と決める",
+        "日中：怖くても「まず聞いてみる」",
+        "夜：一日の振り返りで「よく頑張った」と言う"
+      ]
+    },
+    {
+      "theme": "<span class='moon-characteristic'>継続すること</span>",
+      "actions": [
+        "朝：同じ時間に起きる",
+        "日中：今日の一歩をノートに記録する",
+        "3日間：続けたいことを実践してみる"
+      ]
+    },
+    {
+      "theme": "<span class='moon-characteristic'>未来を描くこと</span>",
+      "actions": [
+        "夜：3ヶ月後に叶えたいことをノートに書く",
+        "日中：欲しい未来のイメージをスクショする",
+        "寝る前：「叶った自分」を想像する"
+      ]
+    },
+    {
+      "theme": "<span class='moon-characteristic'>信頼すること</span>",
+      "actions": [
+        "日中：誰かに小さなお願いをして任せる",
+        "選択のとき：自分の判断を信じて選ぶ",
+        "不安なとき：「流れに任せよう」と思う"
+      ]
+    }
+  ]
+}

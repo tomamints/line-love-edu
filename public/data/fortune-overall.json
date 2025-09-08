@@ -1,0 +1,35 @@
+{
+  "distribution": [5,4,6,1,5,1,5,5,6,5,3,1,5,3,2,6,5,5,6,2,4,5,5,3,6,4,2,1,3,6,5,2,3,5,6,1,4,2,3,4,6,6,5,5,6,5,3,5,2,3,5,6,3,1,6,6,1,2,1,4,3,5,4,3],
+  "patterns": {
+    "1": {
+      "title": "即行動 × 勢いを形にする3ヶ月",
+      "description": "スタートダッシュが鍵。<span class='moon-characteristic'>1ヶ月目は行動すれば成果が得やすく</span>、2ヶ月目以降は調整と維持がテーマになります。やりたいことは早めに着手しましょう。",
+      "graphType": "declining"
+    },
+    "2": {
+      "title": "準備と基盤 × 開花へと向かう3ヶ月",
+      "description": "序盤は焦らず<span class='moon-characteristic'>「整える」ことが大切</span>。1ヶ月目は心や環境の整理、2ヶ月目からチャンスが増え、<span class='moon-characteristic'>3ヶ月目に最高潮を迎えます</span>。大事な挑戦は後半に。",
+      "graphType": "ascending"
+    },
+    "3": {
+      "title": "迷いと挑戦 × 自信を得る変化の3ヶ月",
+      "description": "1ヶ月目は不安や停滞を感じやすいですが、それは<span class='moon-characteristic'>力をためている証拠</span>。2ヶ月目に大きな波が訪れ、3ヶ月目には落ち着きと共に自信が残ります。",
+      "graphType": "peak-middle"
+    },
+    "4": {
+      "title": "静かな積み重ね × ラストに花開く3ヶ月",
+      "description": "序盤は大きな動きがなくても、<span class='moon-characteristic'>コツコツ続けることで力が蓄えられます</span>。3ヶ月目に一気にチャンスが巡り、努力が報われる展開になりやすいでしょう。",
+      "graphType": "late-surge"
+    },
+    "5": {
+      "title": "安定と調整 × タイミングを見極める3ヶ月",
+      "description": "大きな浮き沈みはありません。だからこそ<span class='moon-characteristic'>余裕をもって人間関係や環境を整えるのに最適</span>。大事な決断や挑戦は<span class='moon-characteristic'>「直感でピンと来たとき」</span>を選ぶのがおすすめです。",
+      "graphType": "stable"
+    },
+    "6": {
+      "title": "変化と柔軟性 × 波を楽しむ3ヶ月",
+      "description": "好調と停滞が交互に訪れます。<span class='moon-characteristic'>調子がいいときに一気に進め、落ち込んだときは休む</span>。波をうまく使えば、結果的に大きな流れをつかめます。",
+      "graphType": "wavy"
+    }
+  }
+}
