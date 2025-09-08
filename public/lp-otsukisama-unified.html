@@ -1718,10 +1718,13 @@
                             const userName = data.diagnosis.user_name || localStorage.getItem('userName');
                             updateHiddenPhaseCard(currentPatternId, hiddenPhaseIndex, hiddenMoonPhase, userName);
                             
-                            // 3つの力を更新
-                            const birthDate = data.diagnosis.birth_date || localStorage.getItem('birthDate');
-                            if (birthDate) {
-                                updateThreePowers(birthDate, moonPhase, userName);
+                            // 3つの力の更新はupdateMoonPhaseContent内で行われるためここでは不要
+                            // updateMoonPhaseContentが呼ばれない場合のみ更新
+                            if (!window.currentThreePowersKeys) {
+                                const birthDate = data.diagnosis.birth_date || localStorage.getItem('birthDate');
+                                if (birthDate) {
+                                    updateThreePowers(birthDate, moonPhase, userName);
+                                }
                             }
                             
                             // 6つの要素を更新（4つの軸データを含む）
