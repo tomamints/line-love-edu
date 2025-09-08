@@ -1460,12 +1460,10 @@
                     // ユーザー名を取得（パラメータから、またはlocalStorageから）
                     const displayName = userName || localStorage.getItem('userName') || '〇〇';
                     
-                    // 太字処理とユーザー名置換を両方適用
+                    // ユーザー名置換を適用（HTMLタグはそのまま保持）
                     const processText = (text) => {
                         if (!text) return '';
-                        return text
-                            .replace(/〇〇/g, displayName)
-                            .replace(/『『『(.*?)』』』/g, '<strong>$1</strong>');
+                        return text.replace(/〇〇/g, displayName);
                     };
                     
                     const processedMainText1 = processText(desc.mainText1);
