@@ -1,0 +1,122 @@
+{
+  "1": {
+    "title": "直感行動の力",
+    "mainText": "〇〇さんは、周りの人よりも<span class='moon-characteristic'>思いついたらすぐ動いてしまう</span>タイプです。",
+    "exampleText": "例えば、新しいお店や気になることを見つけると「とりあえずやってみよう」と思うこと、ありませんか？",
+    "conclusionText": "その行動力は、〇〇さんの強みなんです。"
+  },
+  "2": {
+    "title": "気配り行動の力",
+    "mainText": "〇〇さんは、周りの人よりも<span class='moon-characteristic'>人の様子に気づいてすぐ動いてしまう</span>ところがあります。",
+    "exampleText": "例えば、誰かが困っているとき、頼まれる前につい手を貸してしまうこと、ありませんか？",
+    "conclusionText": "その優しさは、〇〇さんらしい魅力のひとつです。"
+  },
+  "3": {
+    "title": "準備の力",
+    "mainText": "〇〇さんは、周りの人よりも<span class='moon-characteristic'>先に準備を整えてしまう</span>タイプです。",
+    "exampleText": "例えば、出かける前に必要そうなものをつい多めに持っていくこと、ありませんか？",
+    "conclusionText": "その慎重さが、〇〇さんの安心感をつくっています。"
+  },
+  "4": {
+    "title": "集中行動の力",
+    "mainText": "〇〇さんは、周りの人よりも<span class='moon-characteristic'>一度始めると夢中になって止まらなくなる</span>ところがあります。",
+    "exampleText": "例えば、気づけば時間を忘れて作業や趣味に没頭してしまうこと、ありませんか？",
+    "conclusionText": "その集中力は、〇〇さんの大切な力です。"
+  },
+  "5": {
+    "title": "探求の力",
+    "mainText": "〇〇さんは、周りの人よりも<span class='moon-characteristic'>気になることを調べ尽くしてしまう</span>傾向があります。",
+    "exampleText": "例えば、ちょっと疑問に思ったことを放っておけず、気づけばスマホや本でとことん調べてしまうこと、ありませんか？",
+    "conclusionText": "その探求心こそ、〇〇さんの原動力です。"
+  },
+  "6": {
+    "title": "挑戦の力",
+    "mainText": "〇〇さんは、周りの人よりも<span class='moon-characteristic'>新しいことに挑戦したくなってしまう</span>タイプです。",
+    "exampleText": "例えば、人がまだやっていないことに出会うと「私も試してみたい」と思ってしまうこと、ありませんか？",
+    "conclusionText": "その前向きさが、〇〇さんの未来を開いていくのです。"
+  },
+  "7": {
+    "title": "面倒見の力",
+    "mainText": "〇〇さんは、周りの人よりも<span class='moon-characteristic'>人のことを放っておけない</span>ところがあります。",
+    "exampleText": "例えば、後輩や友達が困っていると「助けてあげなきゃ」とつい世話を焼いてしまうこと、ありませんか？",
+    "conclusionText": "その面倒見の良さが、〇〇さんの大きな魅力です。"
+  },
+  "8": {
+    "title": "整理整頓の力",
+    "mainText": "〇〇さんは、周りの人よりも<span class='moon-characteristic'>気づけば片づけを始めてしまう</span>タイプです。",
+    "exampleText": "例えば、散らかっている部屋やデスクをそのままにできず、つい手を動かしてしまうこと、ありませんか？",
+    "conclusionText": "その整える力は、〇〇さんらしい強みなんです。"
+  },
+  "9": {
+    "title": "想像を形にする力",
+    "mainText": "〇〇さんは、周りの人よりも<span class='moon-characteristic'>頭に浮かんだことを形にしたくなる</span>ところがあります。",
+    "exampleText": "例えば、ふと思いついたアイデアをメモに残したり、すぐ試してみたりすること、ありませんか？",
+    "conclusionText": "その行動の速さが、〇〇さんの創造性を輝かせています。"
+  },
+  "10": {
+    "title": "粘り強さの力",
+    "mainText": "〇〇さんは、周りの人よりも<span class='moon-characteristic'>途中で諦めずに続けてしまう</span>タイプです。",
+    "exampleText": "例えば、一度始めたことを投げ出すのが嫌で「もう少しだけ頑張ろう」と思ってしまうこと、ありませんか？",
+    "conclusionText": "その粘り強さが、〇〇さんの信頼をつくっているのです。"
+  },
+  "11": {
+    "title": "寄り道の力",
+    "mainText": "〇〇さんは、周りの人よりも<span class='moon-characteristic'>気になるものにすぐ寄り道してしまう</span>ところがあります。",
+    "exampleText": "例えば、買い物の途中で予定外のお店にふらっと入ってしまうこと、ありませんか？",
+    "conclusionText": "その好奇心こそ、〇〇さんらしい行動力の表れです。"
+  },
+  "12": {
+    "title": "観察の力",
+    "mainText": "〇〇さんは、周りの人よりも<span class='moon-characteristic'>人や場の様子をじっと観察してしまう</span>タイプです。",
+    "exampleText": "例えば、集まりのときについ周りを眺めて「今日はどんな雰囲気かな」と感じてしまうこと、ありませんか？",
+    "conclusionText": "その観察眼が、〇〇さんを安心させる力になっています。"
+  },
+  "13": {
+    "title": "段取りの力",
+    "mainText": "〇〇さんは、周りの人よりも<span class='moon-characteristic'>先の流れを考えて動いてしまう</span>タイプです。",
+    "exampleText": "例えば、旅行の前に持ち物や予定を細かく決めてしまうこと、ありませんか？",
+    "conclusionText": "その段取り力が、〇〇さんの安心感を生み出しているのです。"
+  },
+  "14": {
+    "title": "習慣化の力",
+    "mainText": "〇〇さんは、周りの人よりも<span class='moon-characteristic'>同じ行動を繰り返して習慣にしてしまう</span>ところがあります。",
+    "exampleText": "例えば、朝起きたらまず〇〇をする、という自分ルールを自然と続けてしまうこと、ありませんか？",
+    "conclusionText": "その継続力は、〇〇さんの強みです。"
+  },
+  "15": {
+    "title": "発言の力",
+    "mainText": "〇〇さんは、周りの人よりも<span class='moon-characteristic'>思ったことをつい口にしてしまう</span>タイプです。",
+    "exampleText": "例えば、場の空気を読んでいても「やっぱり言いたいな」とつい発言してしまうこと、ありませんか？",
+    "conclusionText": "その率直さが、〇〇さんの魅力になっています。"
+  },
+  "16": {
+    "title": "工夫の力",
+    "mainText": "〇〇さんは、周りの人よりも<span class='moon-characteristic'>やり方を工夫したくなってしまう</span>タイプです。",
+    "exampleText": "例えば、同じ作業でも「もっと効率よくできないかな」と考えて試してしまうこと、ありませんか？",
+    "conclusionText": "その工夫心が、〇〇さんを成長させています。"
+  },
+  "17": {
+    "title": "整理思考の力",
+    "mainText": "〇〇さんは、周りの人よりも<span class='moon-characteristic'>頭の中を整理したくなってしまう</span>ところがあります。",
+    "exampleText": "例えば、考えごとを紙に書き出したり、ノートにまとめてしまうこと、ありませんか？",
+    "conclusionText": "その整理する行動が、〇〇さんを落ち着かせているのです。"
+  },
+  "18": {
+    "title": "優先行動の力",
+    "mainText": "〇〇さんは、周りの人よりも<span class='moon-characteristic'>大事なことを優先して動いてしまう</span>タイプです。",
+    "exampleText": "例えば、遊びたい気持ちがあっても「まずはやるべきことを終わらせよう」と考えてしまうこと、ありませんか？",
+    "conclusionText": "そのまじめさこそ、〇〇さんの強みです。"
+  },
+  "19": {
+    "title": "挑発への反応の力",
+    "mainText": "〇〇さんは、周りの人よりも<span class='moon-characteristic'>挑まれると燃えてしまう</span>ところがあります。",
+    "exampleText": "例えば、「できないんじゃない？」と言われると「やってやろう！」とつい頑張ってしまうこと、ありませんか？",
+    "conclusionText": "その負けず嫌いが、〇〇さんのエネルギー源です。"
+  },
+  "20": {
+    "title": "気遣い行動の力",
+    "mainText": "〇〇さんは、周りの人よりも<span class='moon-characteristic'>人の小さな変化に気づいてしまう</span>タイプです。",
+    "exampleText": "例えば、友達が少し元気なさそうだと「声をかけようかな」と自然に思ってしまうこと、ありませんか？",
+    "conclusionText": "その思いやりこそ、〇〇さんの魅力です。"
+  }
+}

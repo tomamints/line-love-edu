@@ -1,0 +1,122 @@
+{
+  "1": {
+    "title": "未来予測の力",
+    "mainText": "〇〇さんは、周りの人よりも<span class='moon-characteristic'>先のことを考えすぎてしまう</span>タイプです。",
+    "exampleText": "例えば、まだ起きていないことまで「もしこうなったら…」と想像してしまうこと、ありませんか？",
+    "conclusionText": "その想像力は、〇〇さんの準備力の源になっています。"
+  },
+  "2": {
+    "title": "反省の力",
+    "mainText": "〇〇さんは、周りの人よりも<span class='moon-characteristic'>過去の出来事を何度も考えてしまう</span>傾向があります。",
+    "exampleText": "例えば、会話の中で言った一言を「もっと違う言い方がよかったかな」と振り返ること、ありませんか？",
+    "conclusionText": "その思慮深さは、〇〇さんの誠実さの証です。"
+  },
+  "3": {
+    "title": "選択の力",
+    "mainText": "〇〇さんは、周りの人よりも<span class='moon-characteristic'>選択肢をあれこれ考えすぎてしまう</span>タイプです。",
+    "exampleText": "例えば、買い物や予定を決めるとき「本当にこれでいいのかな」と悩んでしまうこと、ありませんか？",
+    "conclusionText": "その慎重さは、〇〇さんが物事を大切にしている証なんです。"
+  },
+  "4": {
+    "title": "自己分析の力",
+    "mainText": "〇〇さんは、周りの人よりも<span class='moon-characteristic'>自分の気持ちや行動を振り返ってしまう</span>傾向があります。",
+    "exampleText": "例えば、「どうして私はあのときあんな風にしたんだろう」と考えること、ありませんか？",
+    "conclusionText": "その探究心が、〇〇さんを成長させています。"
+  },
+  "5": {
+    "title": "可能性を探る力",
+    "mainText": "〇〇さんは、周りの人よりも<span class='moon-characteristic'>「もしも」の可能性をよく考えてしまう</span>タイプです。",
+    "exampleText": "例えば、予定が決まっていても「他にもっといい方法があるかも」と思ってしまうこと、ありませんか？",
+    "conclusionText": "その柔軟さが、〇〇さんの強みになっています。"
+  },
+  "6": {
+    "title": "細部にこだわる力",
+    "mainText": "〇〇さんは、周りの人よりも<span class='moon-characteristic'>細かい部分を気にしてしまう</span>タイプです。",
+    "exampleText": "例えば、文書の誤字やちょっとした段取りのズレが気になって頭から離れないこと、ありませんか？",
+    "conclusionText": "そのこだわりが、〇〇さんの信頼につながっています。"
+  },
+  "7": {
+    "title": "妄想の力",
+    "mainText": "〇〇さんは、周りの人よりも<span class='moon-characteristic'>頭の中で物語を膨らませてしまう</span>タイプです。",
+    "exampleText": "例えば、ふとしたきっかけから「もしあの人とこうなったら…」と空想を広げること、ありませんか？",
+    "conclusionText": "その想像力が、〇〇さんの世界を豊かにしています。"
+  },
+  "8": {
+    "title": "比較の力",
+    "mainText": "〇〇さんは、周りの人よりも<span class='moon-characteristic'>自分と他人を比べて考えてしまう</span>ところがあります。",
+    "exampleText": "例えば、友達の成功を見て「私は大丈夫かな」と思ってしまうこと、ありませんか？",
+    "conclusionText": "その気持ちは、〇〇さんが努力を惜しまない証です。"
+  },
+  "9": {
+    "title": "慎重さの力",
+    "mainText": "〇〇さんは、周りの人よりも<span class='moon-characteristic'>一歩踏み出す前に考え込んでしまう</span>タイプです。",
+    "exampleText": "例えば、新しいことを始めるとき「本当に大丈夫かな」と頭で繰り返し確認してしまうこと、ありませんか？",
+    "conclusionText": "その慎重さが、〇〇さんを守る力になっています。"
+  },
+  "10": {
+    "title": "記憶を反すうする力",
+    "mainText": "〇〇さんは、周りの人よりも<span class='moon-characteristic'>思い出を何度も頭の中で再生してしまう</span>タイプです。",
+    "exampleText": "例えば、楽しかった時間を繰り返し思い出しては余韻に浸ること、ありませんか？",
+    "conclusionText": "その豊かな記憶力が、〇〇さんの感受性を育てています。"
+  },
+  "11": {
+    "title": "疑問を持つ力",
+    "mainText": "〇〇さんは、周りの人よりも<span class='moon-characteristic'>「なぜ？」と考えすぎてしまう</span>タイプです。",
+    "exampleText": "例えば、当たり前のことにも「どうしてそうなるんだろう」と思ってしまうこと、ありませんか？",
+    "conclusionText": "その探究心が、〇〇さんを賢くしています。"
+  },
+  "12": {
+    "title": "先延ばしの力",
+    "mainText": "〇〇さんは、周りの人よりも<span class='moon-characteristic'>考えすぎて決断を先延ばしにしてしまう</span>ところがあります。",
+    "exampleText": "例えば、「もう少し考えてからにしよう」と後回しにしてしまうこと、ありませんか？",
+    "conclusionText": "でもそれは、〇〇さんが丁寧に選びたい気持ちの表れです。"
+  },
+  "13": {
+    "title": "理想を描く力",
+    "mainText": "〇〇さんは、周りの人よりも<span class='moon-characteristic'>理想の未来を思い描きやすい</span>タイプです。",
+    "exampleText": "例えば、「もっとこうだったらいいな」と頭の中で完璧な形を作ってしまうこと、ありませんか？",
+    "conclusionText": "その理想が、〇〇さんを前に進ませています。"
+  },
+  "14": {
+    "title": "警戒の力",
+    "mainText": "〇〇さんは、周りの人よりも<span class='moon-characteristic'>危険やリスクを考えすぎてしまう</span>傾向があります。",
+    "exampleText": "例えば、新しい挑戦の前に「失敗したらどうしよう」と不安が浮かぶこと、ありませんか？",
+    "conclusionText": "その慎重さは、〇〇さんを守る知恵でもあります。"
+  },
+  "15": {
+    "title": "分析の力",
+    "mainText": "〇〇さんは、周りの人よりも<span class='moon-characteristic'>物事を細かく分析してしまう</span>タイプです。",
+    "exampleText": "例えば、人の言葉や出来事を「どういう意味だったんだろう」と分解して考えること、ありませんか？",
+    "conclusionText": "その分析力が、〇〇さんの強みになっています。"
+  },
+  "16": {
+    "title": "先を計算する力",
+    "mainText": "〇〇さんは、周りの人よりも<span class='moon-characteristic'>物事の損得や効率を考えすぎてしまう</span>ところがあります。",
+    "exampleText": "例えば、行動する前に「これって得かな、損かな」と計算してしまうこと、ありませんか？",
+    "conclusionText": "その合理性は、〇〇さんの頭脳の力です。"
+  },
+  "17": {
+    "title": "思い込みの力",
+    "mainText": "〇〇さんは、周りの人よりも<span class='moon-characteristic'>一度思い込むと頭から離れなくなる</span>タイプです。",
+    "exampleText": "例えば、「きっとあの人はこう思ってる」と考えすぎてしまうこと、ありませんか？",
+    "conclusionText": "その集中力は、〇〇さんの個性のひとつです。"
+  },
+  "18": {
+    "title": "複雑に考える力",
+    "mainText": "〇〇さんは、周りの人よりも<span class='moon-characteristic'>シンプルなことを複雑に考えてしまう</span>ところがあります。",
+    "exampleText": "例えば、人からの一言を何度も反芻して深読みしてしまうこと、ありませんか？",
+    "conclusionText": "その慎重さは、〇〇さんの誠実さに通じています。"
+  },
+  "19": {
+    "title": "計画の力",
+    "mainText": "〇〇さんは、周りの人よりも<span class='moon-characteristic'>計画を練るのに時間をかけてしまう</span>タイプです。",
+    "exampleText": "例えば、旅行の予定を細かく立てすぎて「時間が足りない」と思うこと、ありませんか？",
+    "conclusionText": "その計画性が、〇〇さんの安心を生んでいます。"
+  },
+  "20": {
+    "title": "頭の中で会話する力",
+    "mainText": "〇〇さんは、周りの人よりも<span class='moon-characteristic'>頭の中で会話をシミュレーションしてしまう</span>傾向があります。",
+    "exampleText": "例えば、「あのときこう言えばよかった」「次はこう言おう」と考えてしまうこと、ありませんか？",
+    "conclusionText": "その習慣は、〇〇さんの誠実さや準備力の証です。"
+  }
+}

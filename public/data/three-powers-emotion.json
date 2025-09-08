@@ -1,0 +1,122 @@
+{
+  "1": {
+    "title": "安心を求める力",
+    "mainText": "〇〇さんは、周りの人よりも<span class='moon-characteristic'>安心できる状況を強く求めやすい</span>タイプです。",
+    "exampleText": "例えば、新しい場所に行くとき「ちゃんと大丈夫かな」と不安を感じてしまうこと、ありませんか？",
+    "conclusionText": "その気持ちは、〇〇さんが環境や人を大切に思っている証なんです。"
+  },
+  "2": {
+    "title": "共感の力",
+    "mainText": "〇〇さんは、周りの人よりも<span class='moon-characteristic'>人の気持ちに共鳴しやすい</span>タイプです。",
+    "exampleText": "例えば、友達が泣いていると自分の胸まで苦しくなってしまうこと、ありませんか？",
+    "conclusionText": "その共感力は、人と深くつながれる〇〇さんの特別な力です。"
+  },
+  "3": {
+    "title": "不安感知の力",
+    "mainText": "〇〇さんは、周りの人よりも<span class='moon-characteristic'>ちょっとした不安を敏感に感じやすい</span>ところがあります。",
+    "exampleText": "例えば、小さな違和感や相手の表情の曇りにすぐ心がざわつくこと、ありませんか？",
+    "conclusionText": "その敏感さは、〇〇さんの繊細さとやさしさの証です。"
+  },
+  "4": {
+    "title": "ときめきの力",
+    "mainText": "〇〇さんは、周りの人よりも<span class='moon-characteristic'>小さなことに心がときめきやすい</span>タイプです。",
+    "exampleText": "例えば、きれいな景色やちょっとした優しさで心がパッと明るくなること、ありませんか？",
+    "conclusionText": "その感受性が、〇〇さんの魅力を輝かせています。"
+  },
+  "5": {
+    "title": "孤独を感じやすい力",
+    "mainText": "〇〇さんは、周りの人よりも<span class='moon-characteristic'>ふと孤独を感じやすい</span>ところがあります。",
+    "exampleText": "例えば、みんなと一緒にいても「私だけ違うのかな」と心がよぎること、ありませんか？",
+    "conclusionText": "その感覚は、〇〇さんが本当に人とのつながりを大事にしている証拠です。"
+  },
+  "6": {
+    "title": "感動の力",
+    "mainText": "〇〇さんは、周りの人よりも<span class='moon-characteristic'>感動しやすい</span>タイプです。",
+    "exampleText": "例えば、映画や音楽に触れると涙が出たり胸が熱くなったりすること、ありませんか？",
+    "conclusionText": "その豊かな感情が、〇〇さんを魅力的にしているんです。"
+  },
+  "7": {
+    "title": "期待の力",
+    "mainText": "〇〇さんは、周りの人よりも<span class='moon-characteristic'>未来に期待しやすい</span>タイプです。",
+    "exampleText": "例えば、予定が入ると「どんな日になるかな」とワクワクしてしまうこと、ありませんか？",
+    "conclusionText": "その前向きな気持ちが、〇〇さんのエネルギー源です。"
+  },
+  "8": {
+    "title": "照れやすさの力",
+    "mainText": "〇〇さんは、周りの人よりも<span class='moon-characteristic'>褒められるとすぐ照れてしまう</span>ところがあります。",
+    "exampleText": "例えば、ちょっとしたことを「ありがとう」と言われただけで心が熱くなること、ありませんか？",
+    "conclusionText": "その純粋さが、〇〇さんの愛される理由です。"
+  },
+  "9": {
+    "title": "さみしさの力",
+    "mainText": "〇〇さんは、周りの人よりも<span class='moon-characteristic'>人恋しさを感じやすい</span>タイプです。",
+    "exampleText": "例えば、夜になると「誰かと話したいな」と思うこと、ありませんか？",
+    "conclusionText": "その気持ちは、〇〇さんが人を大切に思う優しさの表れです。"
+  },
+  "10": {
+    "title": "喜びを見つける力",
+    "mainText": "〇〇さんは、周りの人よりも<span class='moon-characteristic'>小さな出来事で喜びを感じやすい</span>タイプです。",
+    "exampleText": "例えば、美味しいものを食べたときや空がきれいなだけで幸せを感じること、ありませんか？",
+    "conclusionText": "その心の柔らかさが、〇〇さんを笑顔にしてくれるのです。"
+  },
+  "11": {
+    "title": "緊張の力",
+    "mainText": "〇〇さんは、周りの人よりも<span class='moon-characteristic'>緊張しやすい</span>ところがあります。",
+    "exampleText": "例えば、人前に立つと心臓がドキドキしてしまうこと、ありませんか？",
+    "conclusionText": "その敏感さは、〇〇さんが真剣に向き合っている証拠です。"
+  },
+  "12": {
+    "title": "感謝の力",
+    "mainText": "〇〇さんは、周りの人よりも<span class='moon-characteristic'>「ありがとう」を感じやすい</span>タイプです。",
+    "exampleText": "例えば、ちょっとした気遣いに心が温かくなること、ありませんか？",
+    "conclusionText": "その感謝の心が、〇〇さんの魅力を引き立てています。"
+  },
+  "13": {
+    "title": "切なさの力",
+    "mainText": "〇〇さんは、周りの人よりも<span class='moon-characteristic'>切なさを感じやすい</span>タイプです。",
+    "exampleText": "例えば、過去の思い出をふと思い出して胸がきゅっとなること、ありませんか？",
+    "conclusionText": "その感覚が、〇〇さんの感受性を豊かにしているんです。"
+  },
+  "14": {
+    "title": "誠実さの力",
+    "mainText": "〇〇さんは、周りの人よりも<span class='moon-characteristic'>約束を大事にしたいと強く感じやすい</span>タイプです。",
+    "exampleText": "例えば、時間や言葉を守れないと心がモヤモヤしてしまうこと、ありませんか？",
+    "conclusionText": "その気持ちが、〇〇さんの誠実さの証です。"
+  },
+  "15": {
+    "title": "優しさの力",
+    "mainText": "〇〇さんは、周りの人よりも<span class='moon-characteristic'>人に優しくしたいと感じやすい</span>タイプです。",
+    "exampleText": "例えば、誰かが困っていると「大丈夫かな」と胸がそわそわしてしまうこと、ありませんか？",
+    "conclusionText": "その優しさこそ、〇〇さんの魅力です。"
+  },
+  "16": {
+    "title": "寂しさに敏感な力",
+    "mainText": "〇〇さんは、周りの人よりも<span class='moon-characteristic'>ちょっとした孤独に敏感</span>です。",
+    "exampleText": "例えば、LINEの返信が遅いだけで「嫌われたのかな」と感じてしまうこと、ありませんか？",
+    "conclusionText": "その敏感さは、〇〇さんが人を想う気持ちの強さなんです。"
+  },
+  "17": {
+    "title": "達成感の力",
+    "mainText": "〇〇さんは、周りの人よりも<span class='moon-characteristic'>小さなことでも達成感を感じやすい</span>タイプです。",
+    "exampleText": "例えば、やるべきことを終えた瞬間に心からホッとすること、ありませんか？",
+    "conclusionText": "その達成感が、〇〇さんを前に進ませています。"
+  },
+  "18": {
+    "title": "期待外れを感じやすい力",
+    "mainText": "〇〇さんは、周りの人よりも<span class='moon-characteristic'>期待が外れると強く感じやすい</span>タイプです。",
+    "exampleText": "例えば、思っていたより楽しくなかったときに心が沈んでしまうこと、ありませんか？",
+    "conclusionText": "その気持ちは、〇〇さんが楽しみを大切にしているからこそなんです。"
+  },
+  "19": {
+    "title": "希望を抱く力",
+    "mainText": "〇〇さんは、周りの人よりも<span class='moon-characteristic'>未来に希望を見つけやすい</span>タイプです。",
+    "exampleText": "例えば、新しいことを始めるとき「きっと上手くいく」と自然に思えること、ありませんか？",
+    "conclusionText": "その前向きさが、〇〇さんの力になっています。"
+  },
+  "20": {
+    "title": "不満を覚えやすい力",
+    "mainText": "〇〇さんは、周りの人よりも<span class='moon-characteristic'>不満を感じやすい</span>ところがあります。",
+    "exampleText": "例えば、小さなことでも「なんでだろう」とモヤモヤすること、ありませんか？",
+    "conclusionText": "でもその感覚は、〇〇さんがより良くしたいと思う前向きさの表れです。"
+  }
+}
