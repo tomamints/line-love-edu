@@ -1259,7 +1259,7 @@
                         // 3つの力を更新
                         const birthDate = data.diagnosis.birth_date || localStorage.getItem('birthDate');
                         if (birthDate) {
-                            updateThreePowers(birthDate, mainMoonPhase, userName);
+                            updateThreePowers(birthDate, moonPhase, userName);
                         }
                         
                         // 4つの軸データを設定（データベースから直接使用）
@@ -1696,7 +1696,7 @@
                             // 3つの力を更新
                             const birthDate = data.diagnosis.birth_date || localStorage.getItem('birthDate');
                             if (birthDate) {
-                                updateThreePowers(birthDate, mainMoonPhase, userName);
+                                updateThreePowers(birthDate, moonPhase, userName);
                             }
                             
                             // 6つの要素を更新（4つの軸データを含む）
