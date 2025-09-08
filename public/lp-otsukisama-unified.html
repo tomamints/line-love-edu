@@ -1252,8 +1252,9 @@
                         // 月相カードを動的に生成
                         updateMoonPhaseCard(currentPatternId, moonPhaseIndex, moonPhase);
                         
-                        // 裏月相カードを動的に生成
-                        updateHiddenPhaseCard(currentPatternId, hiddenPhaseIndex, hiddenMoonPhase);
+                        // 裏月相カードを動的に生成（ユーザー名を渡す）
+                        const userName = data.diagnosis.user_name || localStorage.getItem('userName');
+                        updateHiddenPhaseCard(currentPatternId, hiddenPhaseIndex, hiddenMoonPhase, userName);
                         
                         // 4つの軸データを設定（データベースから直接使用）
                         const loveProfile = {
@@ -1445,7 +1446,7 @@
         }
         
         // 裏月相カードを動的に更新
-        async function updateHiddenPhaseCard(patternId, hiddenPhaseIndex, hiddenMoonPhase) {
+        async function updateHiddenPhaseCard(patternId, hiddenPhaseIndex, hiddenMoonPhase, userName = null) {
             const hiddenPhaseCard = document.getElementById('hidden-phase-card');
             if (!hiddenPhaseCard) return;
             
@@ -1456,9 +1457,20 @@
                 const desc = hiddenPhaseData[hiddenMoonPhase];
                 
                 if (desc) {
-                    // 太字処理
-                    const processedMainText1 = desc.mainText1 ? 
-                        desc.mainText1.replace(/『『『(.*?)』』』/g, '<strong>$1</strong>') : '';
+                    // ユーザー名を取得（パラメータから、またはlocalStorageから）
+                    const displayName = userName || localStorage.getItem('userName') || '〇〇';
+                    
+                    // 太字処理とユーザー名置換を両方適用
+                    const processText = (text) => {
+                        if (!text) return '';
+                        return text
+                            .replace(/〇〇/g, displayName)
+                            .replace(/『『『(.*?)』』』/g, '<strong>$1</strong>');
+                    };
+                    
+                    const processedMainText1 = processText(desc.mainText1);
+                    const processedMainText2 = processText(desc.mainText2);
+                    const processedDescription = processText(desc.description);
                     
                     // HTMLを生成
                     let html = `
@@ -1472,17 +1484,17 @@
                         <div class="content-locked-mini">
                             <div class="text-blur">
                                 <div class="moon-phase-description" id="hidden-phase-description">
-                                    ${desc.mainText1 ? `<p>${processedMainText1}</p>` : ''}
+                                    ${processedMainText1 ? `<p>${processedMainText1}</p>` : ''}
                                     ${desc.bulletPoints ? `
                                         <div class="hidden-phase-moment">
                                             <p class="moment-title"><strong>こんな瞬間、ありませんか？</strong></p>
                                             <ul>
-                                                ${desc.bulletPoints.map(point => `<li>${point}</li>`).join('')}
+                                                ${desc.bulletPoints.map(point => `<li>${processText(point)}</li>`).join('')}
                                             </ul>
                                         </div>
                                     ` : ''}
-                                    ${desc.mainText2 ? `<p>${desc.mainText2}</p>` : ''}
-                                    ${!desc.mainText1 && desc.description ? `<p>${desc.description}</p>` : ''}
+                                    ${processedMainText2 ? `<p>${processedMainText2}</p>` : ''}
+                                    ${!processedMainText1 && processedDescription ? `<p>${processedDescription}</p>` : ''}
                                 </div>
                             </div>
                             <div class="lock-overlay-mini">
@@ -1601,8 +1613,9 @@
                             // 月相カードを動的に生成
                             updateMoonPhaseCard(currentPatternId, moonPhaseIndex, moonPhase);
                             
-                            // 裏月相カードを動的に生成
-                            updateHiddenPhaseCard(currentPatternId, hiddenPhaseIndex, hiddenMoonPhase);
+                            // 裏月相カードを動的に生成（ユーザー名を渡す）
+                            const userName = data.diagnosis.user_name || localStorage.getItem('userName');
+                            updateHiddenPhaseCard(currentPatternId, hiddenPhaseIndex, hiddenMoonPhase, userName);
                             
                             // 6つの要素を更新（4つの軸データを含む）
                             if (typeof updateSixElements === 'function') {
