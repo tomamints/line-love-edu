@@ -1256,6 +1256,12 @@
                         const userName = data.diagnosis.user_name || localStorage.getItem('userName');
                         updateHiddenPhaseCard(currentPatternId, hiddenPhaseIndex, hiddenMoonPhase, userName);
                         
+                        // 3つの力を更新
+                        const birthDate = data.diagnosis.birth_date || localStorage.getItem('birthDate');
+                        if (birthDate) {
+                            updateThreePowers(birthDate, mainMoonPhase, userName);
+                        }
+                        
                         // 4つの軸データを設定（データベースから直接使用）
                         const loveProfile = {
                             emotionalExpression: data.diagnosis.emotional_expression,
@@ -1686,6 +1692,12 @@
                             // 裏月相カードを動的に生成（ユーザー名を渡す）
                             const userName = data.diagnosis.user_name || localStorage.getItem('userName');
                             updateHiddenPhaseCard(currentPatternId, hiddenPhaseIndex, hiddenMoonPhase, userName);
+                            
+                            // 3つの力を更新
+                            const birthDate = data.diagnosis.birth_date || localStorage.getItem('birthDate');
+                            if (birthDate) {
+                                updateThreePowers(birthDate, mainMoonPhase, userName);
+                            }
                             
                             // 6つの要素を更新（4つの軸データを含む）
                             if (typeof updateSixElements === 'function') {
