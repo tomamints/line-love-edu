@@ -5,6 +5,12 @@
     padding: 40px 20px;
 }
 
+/* 既存のgridレイアウトを上書き */
+#personalizedCalendar.calendar-grid {
+    display: block !important;
+    grid-template-columns: none !important;
+}
+
 /* カレンダー全体のコンテナ */
 .moon-calendar-container {
     background: linear-gradient(135deg, #1a1e3e 0%, #2d1b69 100%);
@@ -13,6 +19,9 @@
     box-shadow: 0 20px 60px rgba(138, 97, 250, 0.3);
     position: relative;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
 }
 
 .moon-calendar-container::before {
@@ -41,6 +50,8 @@
     border: 1px solid rgba(255, 215, 0, 0.2);
     position: relative;
     z-index: 1;
+    width: 100%;
+    display: block;
 }
 
 .month-calendar:last-child {

@@ -1529,6 +1529,44 @@
             box-shadow: none !important;
         }
         
+        /* 裏月相「こんな瞬間、ありませんか？」のスタイル */
+        .hidden-phase-moment {
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(181, 165, 214, 0.1);
+            border-left: 4px solid #b5a5d6;
+            border-radius: 8px;
+        }
+        
+        .hidden-phase-moment .moment-title {
+            color: #b5a5d6;
+            font-size: 18px;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+        
+        .hidden-phase-moment ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .hidden-phase-moment li {
+            position: relative;
+            padding-left: 25px;
+            margin-bottom: 10px;
+            color: #d0d0ff;
+            line-height: 1.6;
+        }
+        
+        .hidden-phase-moment li:before {
+            content: "・";
+            position: absolute;
+            left: 0;
+            color: #b5a5d6;
+            font-weight: bold;
+        }
+        
         /* カレンダーの凡例 */
         .calendar-legend {
             display: flex;

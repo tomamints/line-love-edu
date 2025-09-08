@@ -126,6 +126,21 @@ module.exports = async function handler(req, res) {
                     console.log('Purchase record updated via webhook:', updateData.id);
                 }
                 
+                // diagnosesテーブルのpayment_statusを更新
+                const { error: diagnosisUpdateError } = await supabase
+                    .from('diagnoses')
+                    .update({
+                        payment_status: 'completed',
+                        updated_at: new Date().toISOString()
+                    })
+                    .eq('id', diagnosisId);
+                
+                if (diagnosisUpdateError) {
+                    console.error('Failed to update diagnosis payment status:', diagnosisUpdateError);
+                } else {
+                    console.log('Diagnosis payment status updated to completed:', diagnosisId);
+                }
+                
                 // access_rightsテーブルも更新
                 const { error: accessError } = await supabase
                     .from('access_rights')
@@ -147,17 +162,17 @@ module.exports = async function handler(req, res) {
                 
                 // 購入者のリッチメニューを切り替え
                 try {
-                    // diagnosisからuser_idを取得
+                    // diagnosisからline_user_idを取得
                     const { data: diagnosis } = await supabase
                         .from('diagnoses')
-                        .select('user_id')
+                        .select('line_user_id')
                         .eq('id', diagnosisId)
                         .single();
                     
-                    if (diagnosis?.user_id) {
+                    if (diagnosis?.line_user_id) {
                         const { updateUserRichMenu } = require('./update-user-rich-menu');
-                        await updateUserRichMenu(diagnosis.user_id, true);
-                        console.log('Rich menu updated to premium for user:', diagnosis.user_id);
+                        await updateUserRichMenu(diagnosis.line_user_id, true);
+                        console.log('Rich menu updated to premium for user:', diagnosis.line_user_id);
                     }
                 } catch (menuError) {
                     console.error('Failed to update rich menu:', menuError);

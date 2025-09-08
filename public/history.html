@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>診断履歴 - おつきさま占い</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans JP', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .header .moon-icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+
+        .history-list {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #666;
+        }
+
+        .empty-state .icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .diagnosis-item {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .diagnosis-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .diagnosis-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .diagnosis-date {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 5px;
+        }
+
+        .diagnosis-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .diagnosis-pattern {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .view-button {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 8px 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 20px;
+            font-size: 12px;
+            text-decoration: none;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: white;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .error-message {
+            background: #fee;
+            color: #c33;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="moon-icon">🌙</div>
+            <h1>診断履歴</h1>
+            <p>過去の診断結果を確認できます</p>
+        </div>
+
+        <div id="content" class="loading">
+            <div class="loading-spinner"></div>
+            <p style="margin-top: 20px;">読み込み中...</p>
+        </div>
+    </div>
+
+    <script>
+        // URLパラメータからuserIdを取得
+        const urlParams = new URLSearchParams(window.location.search);
+        const userId = urlParams.get('userId');
+
+        // 月相パターンのマッピング
+        const patternNames = {
+            1: '新月×新月',
+            2: '新月×三日月',
+            3: '新月×上弦の月',
+            4: '新月×十三夜月',
+            5: '新月×満月',
+            6: '新月×下弦の月',
+            7: '三日月×新月',
+            8: '三日月×三日月',
+            9: '三日月×上弦の月',
+            10: '三日月×十三夜月',
+            11: '三日月×満月',
+            12: '三日月×下弦の月'
+        };
+
+        async function loadHistory() {
+            const contentDiv = document.getElementById('content');
+
+            if (!userId) {
+                contentDiv.className = 'history-list';
+                contentDiv.innerHTML = `
+                    <div class="error-message">
+                        ユーザー情報が見つかりません。<br>
+                        LINEから正しくアクセスしてください。
+                    </div>
+                `;
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/diagnoses/history?userId=${userId}`);
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'Failed to load history');
+                }
+
+                contentDiv.className = 'history-list';
+
+                if (data.diagnoses.length === 0) {
+                    contentDiv.innerHTML = `
+                        <div class="empty-state">
+                            <div class="icon">📚</div>
+                            <h3>診断履歴がありません</h3>
+                            <p>まだ診断を受けていません。<br>新しい診断を受けてみましょう！</p>
+                        </div>
+                    `;
+                } else {
+                    const historyHtml = data.diagnoses.map(diagnosis => {
+                        const date = new Date(diagnosis.createdAt);
+                        const formattedDate = `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`;
+                        const patternName = patternNames[diagnosis.patternId] || `パターン ${diagnosis.patternId}`;
+
+                        return `
+                            <a href="${diagnosis.viewUrl}" class="diagnosis-item">
+                                <div class="diagnosis-date">${formattedDate}</div>
+                                <div class="diagnosis-title">${diagnosis.userName}さんの診断結果</div>
+                                <div class="diagnosis-pattern">月相: ${patternName}</div>
+                                <span class="view-button">結果を見る →</span>
+                            </a>
+                        `;
+                    }).join('');
+
+                    contentDiv.innerHTML = historyHtml;
+                }
+            } catch (error) {
+                console.error('Error loading history:', error);
+                contentDiv.className = 'history-list';
+                contentDiv.innerHTML = `
+                    <div class="error-message">
+                        履歴の読み込みに失敗しました。<br>
+                        しばらくしてから再度お試しください。
+                    </div>
+                `;
+            }
+        }
+
+        // ページ読み込み時に履歴を取得
+        loadHistory();
+    </script>
+</body>
+</html>

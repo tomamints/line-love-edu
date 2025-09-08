@@ -230,8 +230,7 @@ module.exports = async (req, res) => {
               currency: 'jpy',
               product_data: {
                 name: 'おつきさま診断 - 完全版',
-                description: 'あなただけの月相診断結果と詳細な運勢分析',
-                images: ['https://honkaku-ccln.com/images/banner/1-title.png']
+                description: 'あなただけの月相診断結果と詳細な運勢分析'
               },
               unit_amount: 980,
             },

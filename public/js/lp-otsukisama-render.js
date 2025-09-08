@@ -100,9 +100,17 @@ class DiagnosisRenderer {
     // パターンデータの読み込み
     async loadPatternData(patternId) {
         try {
-            const response = await fetch('/data/otsukisama-patterns-v3.json');
-            const patterns = await response.json();
-            const pattern = patterns[patternId] || patterns[0];
+            // パターン6の場合は新フォーマットJSONを読み込む
+            let pattern;
+            if (patternId === 6) {
+                const response = await fetch('/data/pattern-6-new-format.json');
+                const patterns = await response.json();
+                pattern = patterns[patternId];
+            } else {
+                const response = await fetch('/data/otsukisama-patterns-v3.json');
+                const patterns = await response.json();
+                pattern = patterns[patternId] || patterns[0];
+            }
             
             // パターンデータをフラット化
             // 月相インデックスを計算
@@ -114,6 +122,15 @@ class DiagnosisRenderer {
                 hiddenPhase: pattern.hiddenPhase,
                 moonPhaseIndex: moonPhaseIndex,
                 hiddenPhaseIndex: hiddenPhaseIndex,
+                // 月相説明（新フォーマット対応）
+                phaseDescriptionTitle: pattern.phaseDescription?.title,
+                phaseDescriptionText: pattern.phaseDescription?.text,
+                // 裏月相説明（新フォーマット対応）
+                hiddenPhaseTitle: pattern.hiddenPhaseDescription?.title,
+                hiddenPhaseMainText1: pattern.hiddenPhaseDescription?.mainText1,
+                hiddenPhaseBulletPoints: pattern.hiddenPhaseDescription?.bulletPoints,
+                hiddenPhaseMainText2: pattern.hiddenPhaseDescription?.mainText2,
+                // 既存のフィールド
                 overallTitle: pattern.overall?.title,
                 overallIntro: pattern.overall?.intro,
                 overallMainText: pattern.overall?.mainText,

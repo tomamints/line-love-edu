@@ -60,7 +60,8 @@ const DIAGNOSIS_CONTENT = {
                             <div class="moon-phase-info">
                                 <div class="phase-label">表の月相</div>
                                 <h2>${data.moonPhase || '新月'}</h2>
-                                <p>${data.moonPhaseDescription || '始まりと創造のエネルギー'}</p>
+                                ${data.phaseDescriptionTitle ? `<h3>${data.phaseDescriptionTitle}</h3>` : ''}
+                                <p>${data.phaseDescriptionText || data.moonPhaseDescription || '始まりと創造のエネルギー'}</p>
                             </div>
                         </div>
                         
@@ -74,7 +75,18 @@ const DIAGNOSIS_CONTENT = {
                             <div class="moon-phase-info">
                                 <div class="phase-label">隠された月相</div>
                                 <h2>${data.hiddenPhase || '満月'}</h2>
-                                <p>${data.hiddenPhaseDescription || '完成と実現のエネルギー'}</p>
+                                ${data.hiddenPhaseTitle ? `<h3>${data.hiddenPhaseTitle}</h3>` : ''}
+                                ${data.hiddenPhaseMainText1 ? `<p>${data.hiddenPhaseMainText1.replace(/『『『(.*?)』』』/g, '<strong>$1</strong>')}</p>` : ''}
+                                ${data.hiddenPhaseBulletPoints ? `
+                                    <div class="hidden-phase-moment">
+                                        <p class="moment-title"><strong>こんな瞬間、ありませんか？</strong></p>
+                                        <ul>
+                                            ${data.hiddenPhaseBulletPoints.map(point => `<li>${point}</li>`).join('')}
+                                        </ul>
+                                    </div>
+                                ` : ''}
+                                ${data.hiddenPhaseMainText2 ? `<p>${data.hiddenPhaseMainText2}</p>` : ''}
+                                ${!data.hiddenPhaseMainText1 ? `<p>${data.hiddenPhaseDescription || '完成と実現のエネルギー'}</p>` : ''}
                             </div>
                         </div>
                     </div>

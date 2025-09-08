@@ -28,11 +28,11 @@ async function checkUserPurchased(userId) {
     if (!supabase) return false;
     
     try {
-        // purchasesテーブルから購入履歴を確認
-        const { data: purchases, error } = await supabase
-            .from('purchases')
+        // diagnosesテーブルから購入済み診断を確認
+        const { data: diagnoses, error } = await supabase
+            .from('diagnoses')
             .select('*')
-            .eq('user_id', userId)
+            .eq('line_user_id', userId)
             .eq('payment_status', 'completed')
             .limit(1);
         
@@ -41,7 +41,7 @@ async function checkUserPurchased(userId) {
             return false;
         }
         
-        return purchases && purchases.length > 0;
+        return diagnoses && diagnoses.length > 0;
     } catch (error) {
         console.error('Error checking user purchases:', error);
         return false;

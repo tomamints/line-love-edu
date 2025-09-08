@@ -124,7 +124,7 @@ async function generatePersonalizedCalendar(providedPatternId) {
         
         // 月初めまでの空白
         for (let i = 0; i < firstDayOfMonth; i++) {
-            monthHTML += '<div class="calendar-day empty"></div>';
+            monthHTML += '<div class="day-cell empty"></div>';
         }
         
         // 各日付
@@ -133,31 +133,28 @@ async function generatePersonalizedCalendar(providedPatternId) {
             const moonAge = calculateMoonAge(date);
             const moonEmoji = getMoonEmoji(moonAge);
             
-            let dayClass = 'calendar-day';
-            let specialMark = '';
-            let specialMessage = '';
+            let dayClass = 'day-cell';
+            let specialTooltip = '';
             
             // ラッキーデーをチェック
             if (patternData.lucky_days && patternData.lucky_days.includes(day)) {
-                dayClass += ' lucky-day';
+                dayClass += ' lucky';
             }
             
             // パワーデーをチェック
             if (patternData.power_days && patternData.power_days.includes(day)) {
-                dayClass += ' power-day';
+                dayClass += ' power';
             }
             
             // 注意日をチェック
             if (patternData.caution_days && patternData.caution_days.includes(day)) {
-                dayClass += ' caution-day';
+                dayClass += ' caution';
             }
             
             // 特別な日のマークとメッセージ
             if (patternData.special_marks && patternData.special_marks[String(day)]) {
                 const special = patternData.special_marks[String(day)];
-                specialMark = special.mark;
-                specialMessage = `<div class="special-message">${special.message}</div>`;
-                dayClass += ' special-day';
+                specialTooltip = `<div class="special-tooltip">${special.message}</div>`;
             }
             
             // 今日の日付をハイライト
@@ -167,12 +164,9 @@ async function generatePersonalizedCalendar(providedPatternId) {
             
             monthHTML += `
                 <div class="${dayClass}" data-day="${day}" data-month="${targetMonth}" data-year="${targetYear}">
-                    <div class="day-content">
-                        <span class="day-number">${day}</span>
-                        <span class="moon-emoji">${moonEmoji}</span>
-                        ${specialMark ? `<span class="special-mark">${specialMark}</span>` : ''}
-                    </div>
-                    ${specialMessage}
+                    <div class="day-number">${day}</div>
+                    <div class="moon-phase">${moonEmoji}</div>
+                    ${specialTooltip}
                 </div>
             `;
         }
@@ -182,7 +176,7 @@ async function generatePersonalizedCalendar(providedPatternId) {
         const remainingCells = 7 - (totalCells % 7);
         if (remainingCells < 7) {
             for (let i = 0; i < remainingCells; i++) {
-                monthHTML += '<div class="calendar-day empty"></div>';
+                monthHTML += '<div class="day-cell empty"></div>';
             }
         }
         
@@ -195,57 +189,62 @@ async function generatePersonalizedCalendar(providedPatternId) {
     }
     
     // 全体のHTMLを構築
-    let fullHTML = '';
+    let fullHTML = '<div class="moon-calendar-container">';
     
-    // 1ヶ月目のラッパー
-    fullHTML += '<div class="calendar-wrapper">';
+    // カレンダーメッセージ
+    if (patternData.monthly_message) {
+        fullHTML += `<div class="calendar-message">${patternData.monthly_message}</div>`;
+    }
     
-    // 1ヶ月目のヘッダー
-    fullHTML += `<div class="month-header">${monthsHTML[0].year}年 ${monthsHTML[0].monthName}</div>`;
+    // 各月のカレンダーを生成
+    for (let i = 0; i < monthsHTML.length; i++) {
+        const monthData = monthsHTML[i];
+        
+        fullHTML += '<div class="month-calendar">';
+        
+        // 月ヘッダー
+        fullHTML += `<div class="month-header">${monthData.year}年 ${monthData.monthName}</div>`;
+        
+        // 曜日行
+        fullHTML += `
+            <div class="weekdays">
+                <div class="weekday sunday">日</div>
+                <div class="weekday">月</div>
+                <div class="weekday">火</div>
+                <div class="weekday">水</div>
+                <div class="weekday">木</div>
+                <div class="weekday">金</div>
+                <div class="weekday saturday">土</div>
+            </div>
+        `;
+        
+        // 日付グリッド
+        fullHTML += '<div class="days-grid">';
+        fullHTML += monthData.html;
+        fullHTML += '</div>';
+        
+        fullHTML += '</div>'; // month-calendar を閉じる
+    }
     
-    // 1ヶ月目の曜日行
+    // 凡例を追加
     fullHTML += `
-        <div class="weekday-header">
-            <div class="weekday">日</div>
-            <div class="weekday">月</div>
-            <div class="weekday">火</div>
-            <div class="weekday">水</div>
-            <div class="weekday">木</div>
-            <div class="weekday">金</div>
-            <div class="weekday">土</div>
+        <div class="calendar-legend">
+            <div class="legend-item">
+                <div class="legend-dot lucky"></div>
+                <span>ラッキーデー</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-dot power"></div>
+                <span>パワーデー</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-dot caution"></div>
+                <span>注意日</span>
+            </div>
         </div>
     `;
     
-    // 1ヶ月目のグリッド
-    fullHTML += '<div class="calendar-grid">';
-    fullHTML += monthsHTML[0].html;
-    fullHTML += '</div>';
-    fullHTML += '</div>'; // calendar-wrapper を閉じる
-    
-    // 2ヶ月目のラッパー
-    fullHTML += '<div class="calendar-wrapper" style="margin-top: 30px;">';
-    
-    // 2ヶ月目のヘッダー
-    fullHTML += `<div class="month-header">${monthsHTML[1].year}年 ${monthsHTML[1].monthName}</div>`;
-    
-    // 2ヶ月目の曜日行
-    fullHTML += `
-        <div class="weekday-header">
-            <div class="weekday">日</div>
-            <div class="weekday">月</div>
-            <div class="weekday">火</div>
-            <div class="weekday">水</div>
-            <div class="weekday">木</div>
-            <div class="weekday">金</div>
-            <div class="weekday">土</div>
-        </div>
-    `;
-    
-    // 2ヶ月目のグリッド
-    fullHTML += '<div class="calendar-grid">';
-    fullHTML += monthsHTML[1].html;
-    fullHTML += '</div>';
-    fullHTML += '</div>'; // calendar-wrapper を閉じる
+    fullHTML += '</div>'; // moon-calendar-container を閉じる
     
     // カレンダーのセルのみを更新
     container.innerHTML = fullHTML;
