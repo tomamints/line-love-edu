@@ -101,6 +101,7 @@ class FortuneDisplay {
         }
 
         // グラフタイプを設定（グラフ表示用）
+        console.log('Overall fortune displayed with pattern:', patternIndex, pattern.title);
         return pattern.graphType;
     }
 
