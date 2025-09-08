@@ -440,7 +440,7 @@
                 
                 <div class="content-locked-mini">
                     <div class="text-blur">
-                        <div class="energy-types three-powers">
+                        <div class="energy-types three-powers" id="threePowersContainer">
                             <div class="energy-item">
                                 <div class="energy-title">直感力</div>
                                 <div class="energy-description">
@@ -1526,6 +1526,78 @@
                 }
             } catch (error) {
                 console.error('裏月相カード更新エラー:', error);
+            }
+        }
+        
+        // 3つの力を更新する関数
+        async function updateThreePowers(birthdate, moonPhase, userName = null) {
+            const container = document.getElementById('threePowersContainer');
+            if (!container) {
+                console.log('3つの力のコンテナが見つかりません');
+                return;
+            }
+            
+            // ThreePowersCalculatorが読み込まれているか確認
+            if (!window.ThreePowersCalculator) {
+                console.error('ThreePowersCalculator が読み込まれていません');
+                return;
+            }
+            
+            try {
+                // 3つの力を計算
+                const powers = await window.ThreePowersCalculator.calculate(birthdate, moonPhase);
+                if (!powers) {
+                    console.error('3つの力の計算に失敗しました');
+                    return;
+                }
+                
+                const displayName = userName || localStorage.getItem('userName') || '〇〇';
+                
+                // HTMLを生成
+                let html = '';
+                
+                // 行動の力
+                if (powers.action) {
+                    html += `
+                        <div class="energy-item">
+                            <div class="energy-title">${powers.action.title}</div>
+                            <div class="energy-description">
+                                ${powers.action.desc.replace(/〇〇/g, displayName).replace(/\n/g, '<br>')}
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                // 感情の力
+                if (powers.emotion) {
+                    html += `
+                        <div class="energy-item">
+                            <div class="energy-title">${powers.emotion.title}</div>
+                            <div class="energy-description">
+                                ${powers.emotion.desc.replace(/〇〇/g, displayName).replace(/\n/g, '<br>')}
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                // 思考の力
+                if (powers.thinking) {
+                    html += `
+                        <div class="energy-item">
+                            <div class="energy-title">${powers.thinking.title}</div>
+                            <div class="energy-description">
+                                ${powers.thinking.desc.replace(/〇〇/g, displayName).replace(/\n/g, '<br>')}
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                // コンテナを更新
+                container.innerHTML = html;
+                console.log('3つの力を更新しました');
+                
+            } catch (error) {
+                console.error('3つの力の更新エラー:', error);
             }
         }
         
