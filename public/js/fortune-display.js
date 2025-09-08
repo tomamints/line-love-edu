@@ -563,7 +563,7 @@ class FortuneDisplay {
         this.displayLuckyActions(data.luckyActions, userName);
         
         // お金のトラブル警告セクション
-        this.displayMoneyTrouble(data.moneyTrouble, userName);
+        this.displayMoneyTrouble(data.moneyTroubleWarning, userName);
     }
 
     /**
@@ -602,25 +602,15 @@ class FortuneDisplay {
     displayMoneyTrouble(data, userName) {
         if (!data) return;
         
-        let htmlContent = '<h3>② 要注意！この3ヶ月で起こりうるお金のトラブル</h3>';
+        // dataは文字列として直接渡される
+        const warningText = this.processText(data, userName);
         
-        if (data.warning) {
-            htmlContent += `<p>${this.processText(data.warning, userName)}</p>`;
-        }
-        
-        if (data.patterns && data.distribution) {
-            const distribution = data.distribution;
-            const patternIndex = distribution[this.patternId % distribution.length];
-            const pattern = data.patterns[patternIndex];
-            
-            if (pattern) {
-                htmlContent += `<p>${this.processText(pattern, userName)}</p>`;
-            }
-        }
+        // 改行をHTMLブレークタグに変換
+        const formattedText = warningText.replace(/\n/g, '<br>');
         
         const element = document.getElementById('fortune-money-trouble');
         if (element) {
-            element.innerHTML = htmlContent;
+            element.innerHTML = `<p>${formattedText}</p>`;
         }
     }
 
