@@ -1210,6 +1210,255 @@
             color: #ffd700;
         }
         
+        /* 最近こんなことありませんでしたか？セクション */
+        .recent-events-section {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 30px 0;
+            position: relative;
+        }
+
+        .recent-events-section::before {
+            content: "✨";
+            position: absolute;
+            top: -15px;
+            left: 20px;
+            background: #1a0033;
+            padding: 0 10px;
+            font-size: 20px;
+        }
+
+        .recent-events-title {
+            color: #ffd700;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-align: center;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+        }
+
+        .recent-events-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .recent-events-list li {
+            background: rgba(255, 255, 255, 0.03);
+            border-left: 3px solid #ffd700;
+            padding: 15px 20px;
+            margin-bottom: 12px;
+            border-radius: 8px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .recent-events-list li:hover {
+            background: rgba(255, 215, 0, 0.08);
+            transform: translateX(5px);
+        }
+
+        /* アクションリストのスタイル */
+        .action-list {
+            background: rgba(255, 215, 0, 0.03);
+            border: 1px dashed rgba(255, 215, 0, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 25px 0;
+        }
+
+        .action-list-title {
+            color: #ffd700;
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .action-list ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .action-list li {
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 8px;
+            position: relative;
+            padding-left: 35px;
+        }
+
+        .action-list li::before {
+            content: "💫";
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        /* 感情セクション用のスタイル */
+        .feelings-section {
+            background: linear-gradient(135deg, rgba(147, 112, 219, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+            border: 1px solid rgba(147, 112, 219, 0.2);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 25px 0;
+            position: relative;
+        }
+
+        .feelings-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #9370DB, #BA55D3);
+            border-radius: 15px 15px 0 0;
+        }
+
+        .feelings-section > p:first-child {
+            color: #9370DB;
+            font-size: 1.1em;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 15px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .feelings-section ul {
+            list-style: none;
+            padding: 0;
+            margin: 15px 0;
+        }
+
+        .feelings-section ul li {
+            background: rgba(147, 112, 219, 0.05);
+            border-left: 3px solid #9370DB;
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .feelings-section ul li:hover {
+            background: rgba(147, 112, 219, 0.1);
+            transform: translateX(3px);
+            box-shadow: 0 2px 8px rgba(147, 112, 219, 0.2);
+        }
+
+        /* 証拠セクション用のスタイル */
+        .evidence-section {
+            background: linear-gradient(135deg, rgba(70, 130, 180, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+            border: 1px solid rgba(70, 130, 180, 0.2);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 25px 0;
+            position: relative;
+        }
+
+        .evidence-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #4682B4, #5F9FD8);
+            border-radius: 15px 15px 0 0;
+        }
+
+        .evidence-section > p:first-child {
+            color: #4682B4;
+            font-size: 1.1em;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 15px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .evidence-section ul {
+            list-style: none;
+            padding: 0;
+            margin: 15px 0;
+        }
+
+        .evidence-section ul li {
+            background: rgba(70, 130, 180, 0.05);
+            border-left: 3px solid #4682B4;
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .evidence-section ul li:hover {
+            background: rgba(70, 130, 180, 0.1);
+            transform: translateX(3px);
+            box-shadow: 0 2px 8px rgba(70, 130, 180, 0.2);
+        }
+
+        /* 重要メッセージのアクションリスト */
+        .important-actions-list {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.04) 0%, rgba(255, 255, 255, 0.02) 100%);
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 25px 0;
+        }
+
+        .important-actions-list ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .important-actions-list li {
+            background: rgba(255, 255, 255, 0.03);
+            border-left: 3px solid #ffd700;
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            position: relative;
+            padding-left: 35px;
+        }
+
+        .important-actions-list li::before {
+            content: '🌙';
+            position: absolute;
+            left: 10px;
+        }
+
+        .important-actions-list li:hover {
+            background: rgba(255, 215, 0, 0.08);
+            transform: translateX(5px);
+            box-shadow: 0 2px 8px rgba(255, 215, 0, 0.2);
+        }
+
+        /* 結論セクション */
+        .conclusion-box {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 30px 0;
+            text-align: center;
+            position: relative;
+        }
+
+        .conclusion-box::after {
+            content: "✨";
+            position: absolute;
+            bottom: -10px;
+            right: 20px;
+            font-size: 20px;
+        }
+        
         /* 月齢カレンダー */
         .monthly-fortune {
             background: linear-gradient(135deg, rgba(30,50,70,0.95) 0%, rgba(50,60,80,0.9) 100%);

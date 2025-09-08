@@ -136,26 +136,26 @@ class FortuneDisplay {
         htmlContent += `<p>${this.processText(mainText.reason, userName)}</p>`;
         
         // 証拠セクション
-        htmlContent += '<div class="evidence-section">';
-        htmlContent += '<p>最近こんなこと、ありませんでしたか？</p>';
-        htmlContent += '<ul>';
+        htmlContent += '<div class="recent-events-section">';
+        htmlContent += '<p class="recent-events-title">最近こんなこと、ありませんでしたか？</p>';
+        htmlContent += '<ul class="recent-events-list">';
         if (mainText.evidence1) htmlContent += `<li>${this.processText(mainText.evidence1, userName)}</li>`;
         if (mainText.evidence2) htmlContent += `<li>${this.processText(mainText.evidence2, userName)}</li>`;
         if (mainText.evidence3) htmlContent += `<li>${this.processText(mainText.evidence3, userName)}</li>`;
         htmlContent += '</ul>';
-        if (mainText.evidence4) htmlContent += `<p>${this.processText(mainText.evidence4, userName)}</p>`;
+        if (mainText.evidence4) htmlContent += `<p class="conclusion-text">${this.processText(mainText.evidence4, userName)}</p>`;
         htmlContent += '</div>';
         
         // アドバイスセクション
-        htmlContent += '<div class="advice-section">';
+        htmlContent += '<div class="action-list">';
         if (mainText.advice1) htmlContent += `<p>${this.processText(mainText.advice1, userName)}</p>`;
-        htmlContent += '<p>そのためにできることを、今の〇〇さんに合わせて、3つご紹介しますね。</p>';
-        htmlContent += '<ol>';
+        htmlContent += '<p class="action-list-title">そのためにできることを、今の〇〇さんに合わせて、3つご紹介しますね。</p>';
+        htmlContent += '<ul>';
         if (mainText.advice2) htmlContent += `<li>${this.processText(mainText.advice2, userName)}</li>`;
         if (mainText.advice3) htmlContent += `<li>${this.processText(mainText.advice3, userName)}</li>`;
         if (mainText.advice4) htmlContent += `<li>${this.processText(mainText.advice4, userName)}</li>`;
-        htmlContent += '</ol>';
-        if (mainText.advice5) htmlContent += `<p>${this.processText(mainText.advice5, userName)}</p>`;
+        htmlContent += '</ul>';
+        if (mainText.advice5) htmlContent += `<div class="conclusion-box"><p>${this.processText(mainText.advice5, userName)}</p></div>`;
         htmlContent += '</div>';
 
         // メインテキストを更新
@@ -292,8 +292,9 @@ class FortuneDisplay {
         
         // 感情セクション
         htmlContent += '<div class="feelings-section">';
-        htmlContent += '<p>最近こんな気持ちになったことはありませんか？</p>';
-        htmlContent += '<ul>';
+        htmlContent += '<div class="recent-events-section">';
+        htmlContent += '<p class="recent-events-title">最近こんな気持ちになったことはありませんか？</p>';
+        htmlContent += '<ul class="recent-events-list">';
         if (mainText.feeling1) htmlContent += `<li>${this.processText(mainText.feeling1, userName)}</li>`;
         if (mainText.feeling2) htmlContent += `<li>${this.processText(mainText.feeling2, userName)}</li>`;
         if (mainText.feeling3) htmlContent += `<li>${this.processText(mainText.feeling3, userName)}</li>`;
@@ -301,8 +302,9 @@ class FortuneDisplay {
         if (mainText.feeling5) htmlContent += `<li>${this.processText(mainText.feeling5, userName)}</li>`;
         htmlContent += '</ul>';
         if (mainText.feelingConclusion) {
-            htmlContent += `<p>${this.processText(mainText.feelingConclusion, userName)}</p>`;
+            htmlContent += `<p class="conclusion-text">${this.processText(mainText.feelingConclusion, userName)}</p>`;
         }
+        htmlContent += '</div>';
         htmlContent += '</div>';
         
         // 安心感と理由
@@ -311,15 +313,17 @@ class FortuneDisplay {
         
         // 証拠セクション
         htmlContent += '<div class="evidence-section">';
-        htmlContent += '<p>最近、こんなことはありませんでしたか？</p>';
-        htmlContent += '<ul>';
+        htmlContent += '<div class="recent-events-section">';
+        htmlContent += '<p class="recent-events-title">最近、こんなことはありませんでしたか？</p>';
+        htmlContent += '<ul class="recent-events-list">';
         if (mainText.evidence1) htmlContent += `<li>${this.processText(mainText.evidence1, userName)}</li>`;
         if (mainText.evidence2) htmlContent += `<li>${this.processText(mainText.evidence2, userName)}</li>`;
         if (mainText.evidence3) htmlContent += `<li>${this.processText(mainText.evidence3, userName)}</li>`;
         htmlContent += '</ul>';
         if (mainText.evidenceConclusion) {
-            htmlContent += `<p>${this.processText(mainText.evidenceConclusion, userName)}</p>`;
+            htmlContent += `<p class="conclusion-text">${this.processText(mainText.evidenceConclusion, userName)}</p>`;
         }
+        htmlContent += '</div>';
         htmlContent += '</div>';
         
         // アドバイスセクション
@@ -543,15 +547,17 @@ class FortuneDisplay {
         
         // 証拠セクション
         htmlContent += '<div class="evidence-section">';
-        htmlContent += '<p>最近、こんなことはありませんでしたか？</p>';
-        htmlContent += '<ul>';
+        htmlContent += '<div class="recent-events-section">';
+        htmlContent += '<p class="recent-events-title">最近、こんなことはありませんでしたか？</p>';
+        htmlContent += '<ul class="recent-events-list">';
         if (mainText.evidence1) htmlContent += `<li>${this.processText(mainText.evidence1, userName)}</li>`;
         if (mainText.evidence2) htmlContent += `<li>${this.processText(mainText.evidence2, userName)}</li>`;
         if (mainText.evidence3) htmlContent += `<li>${this.processText(mainText.evidence3, userName)}</li>`;
         htmlContent += '</ul>';
         if (mainText.evidenceConclusion) {
-            htmlContent += `<p>${this.processText(mainText.evidenceConclusion, userName)}</p>`;
+            htmlContent += `<p class="conclusion-text">${this.processText(mainText.evidenceConclusion, userName)}</p>`;
         }
+        htmlContent += '</div>';
         htmlContent += '</div>';
         
         const textElement = document.getElementById('fortune-money-text');
@@ -646,8 +652,96 @@ class FortuneDisplay {
         this.displayWorkFortune(userName);
         this.displayMoneyFortune(userName);
         
+        // 月が教えてくれる最も重要なメッセージを表示
+        await this.displayImportantMessage(userName);
+        
         console.log('All fortunes displayed for pattern:', patternId);
         return graphType;
+    }
+
+    /**
+     * 月が教えてくれる最も重要なメッセージを表示
+     */
+    async displayImportantMessage(userName) {
+        try {
+            // メッセージデータを読み込み
+            const response = await fetch('/data/moon-important-messages.json');
+            const data = await response.json();
+            
+            if (!data || !data.themes) {
+                console.error('Important messages data not found');
+                return;
+            }
+            
+            // パターンIDに基づいてテーマを選択（30パターン）
+            const themeIndex = this.patternId % 30;
+            const theme = data.themes[themeIndex];
+            
+            if (!theme) {
+                console.error('Theme not found for index:', themeIndex);
+                return;
+            }
+            
+            // メッセージ全体のHTMLを構築
+            let htmlContent = `
+                <p style="margin-bottom: 20px;">
+                    ${userName}さん、この3ヶ月においておつきさまが伝えているテーマは<br>
+                    <strong style="color: #ffd700; font-size: 1.2em;">「${theme.theme}」</strong><br>
+                    です。
+                </p>
+                <p style="margin-bottom: 20px;">
+                    恋愛でも仕事でも人間関係でも、「もっと頑張らなきゃ」と焦る気持ちが強くなるかもしれません。<br>
+                    でもその気持ちは、決して弱さではなく、未来を真剣に考えている証拠です。
+                </p>
+                <p style="margin-bottom: 20px;">
+                    おつきさまはこう語りかけています──<br>
+                    <span style="color: #ffd700; font-style: italic;">「${theme.message}」</span>
+                </p>
+                <p style="margin-bottom: 20px;">
+                    行動の指針はとてもシンプル。
+                </p>
+                <div class="important-actions-list">
+                    <ul>
+            `;
+            
+            // アクションを追加
+            theme.actions.forEach(action => {
+                htmlContent += `<li>${action}</li>`;
+            });
+            
+            htmlContent += `
+                    </ul>
+                </div>
+                <p style="margin-bottom: 20px;">
+                    こうした小さな積み重ねが、やがて大きな自信となり、<span class='moon-characteristic'>${this.getMonthAfter(3)}月</span>ごろには「私らしい幸せ」をつかむ力へと変わっていきます。
+                </p>
+                <p>
+                    迷ったときや不安なときは、夜空を見上げてください。<br>
+                    おつきさまはいつも、${userName}さんの歩む道を優しく照らしています。
+                </p>
+            `;
+            
+            // HTMLに挿入
+            const element = document.getElementById('fortune-important-message');
+            if (element) {
+                element.innerHTML = htmlContent;
+                console.log('Important message displayed for theme:', theme.theme);
+            } else {
+                console.error('Element not found: fortune-important-message');
+            }
+            
+        } catch (error) {
+            console.error('Error loading important messages:', error);
+        }
+    }
+
+    /**
+     * 現在から指定月数後の月を取得
+     */
+    getMonthAfter(months) {
+        const currentDate = new Date();
+        const futureDate = new Date(currentDate.setMonth(currentDate.getMonth() + months));
+        return futureDate.getMonth() + 1;
     }
 }
 
