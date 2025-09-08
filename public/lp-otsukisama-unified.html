@@ -1564,11 +1564,17 @@
                 
                 // 行動の力
                 if (powers.action) {
+                    // descの内容を処理（ユーザー名置換と改行処理）
+                    let actionDesc = powers.action.desc.replace(/〇〇/g, displayName);
+                    // 改行を<br>に変換しながら、HTMLタグはそのまま保持
+                    const actionLines = actionDesc.split('\n');
+                    const actionProcessed = actionLines.join('<br>');
+                    
                     html += `
                         <div class="energy-item">
                             <div class="energy-title">${powers.action.title}</div>
                             <div class="energy-description">
-                                ${powers.action.desc.replace(/〇〇/g, displayName).replace(/\n/g, '<br>')}
+                                ${actionProcessed}
                             </div>
                         </div>
                     `;
@@ -1576,11 +1582,17 @@
                 
                 // 感情の力
                 if (powers.emotion) {
+                    // descの内容を処理（ユーザー名置換と改行処理）
+                    let emotionDesc = powers.emotion.desc.replace(/〇〇/g, displayName);
+                    // 改行を<br>に変換しながら、HTMLタグはそのまま保持
+                    const emotionLines = emotionDesc.split('\n');
+                    const emotionProcessed = emotionLines.join('<br>');
+                    
                     html += `
                         <div class="energy-item">
                             <div class="energy-title">${powers.emotion.title}</div>
                             <div class="energy-description">
-                                ${powers.emotion.desc.replace(/〇〇/g, displayName).replace(/\n/g, '<br>')}
+                                ${emotionProcessed}
                             </div>
                         </div>
                     `;
@@ -1588,11 +1600,17 @@
                 
                 // 思考の力
                 if (powers.thinking) {
+                    // descの内容を処理（ユーザー名置換と改行処理）
+                    let thinkingDesc = powers.thinking.desc.replace(/〇〇/g, displayName);
+                    // 改行を<br>に変換しながら、HTMLタグはそのまま保持
+                    const thinkingLines = thinkingDesc.split('\n');
+                    const thinkingProcessed = thinkingLines.join('<br>');
+                    
                     html += `
                         <div class="energy-item">
                             <div class="energy-title">${powers.thinking.title}</div>
                             <div class="energy-description">
-                                ${powers.thinking.desc.replace(/〇〇/g, displayName).replace(/\n/g, '<br>')}
+                                ${thinkingProcessed}
                             </div>
                         </div>
                     `;
