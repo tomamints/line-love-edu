@@ -250,4 +250,4 @@ ISC
 
 ## 📞 サポート
 
-問題が発生した場合は、GitHubのIssuesでお知らせください。
+問題が発生した場合は、GitHubのIssuesでお知らせください。# Vercel Deploy Trigger: 20250908_154403
