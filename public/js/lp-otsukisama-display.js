@@ -1267,11 +1267,39 @@ async function updateEmotionalExpressionContent(type, profile) {
     if (typeData) {
         // profileから直接ユーザー名を取得
         const userName = profile?.userName || window.currentUserName || 'あなた';
+        let htmlContent = '';
+        
+        // 説明文を追加（HTMLタグ含む）
         if (window.TextFormatter) {
-            element.innerHTML = window.TextFormatter.formatDescription(typeData.description, userName);
+            htmlContent = window.TextFormatter.formatDescription(typeData.description, userName);
         } else {
-            element.textContent = typeData.description;
+            htmlContent = typeData.description.replace(/〇〇/g, userName);
         }
+        
+        // 相性セクションを追加
+        if (typeData.compatibility) {
+            htmlContent += `
+                <div class="compatibility-section" style="margin-top: 20px; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 10px;">
+                    <h4 style="color: #ffd700; margin-bottom: 15px; font-size: 16px;">
+                        🌙 ${userName}さんと周りの相性
+                    </h4>
+                    <div style="margin-bottom: 15px;">
+                        <h5 style="color: #87ceeb; margin-bottom: 8px; font-size: 14px;">良い相性</h5>
+                        <p style="color: #fff; line-height: 1.6; margin: 0;">
+                            ${typeData.compatibility.good.replace(/〇〇/g, userName)}
+                        </p>
+                    </div>
+                    <div>
+                        <h5 style="color: #ff9999; margin-bottom: 8px; font-size: 14px;">悪い相性</h5>
+                        <p style="color: #fff; line-height: 1.6; margin: 0;">
+                            ${typeData.compatibility.bad.replace(/〇〇/g, userName)}
+                        </p>
+                    </div>
+                </div>
+            `;
+        }
+        
+        element.innerHTML = htmlContent;
     }
 }
 
@@ -1299,11 +1327,39 @@ async function updateDistanceStyleContent(type, profile) {
     if (typeData) {
         // profileから直接ユーザー名を取得
         const userName = profile?.userName || window.currentUserName || 'あなた';
+        let htmlContent = '';
+        
+        // 説明文を追加（HTMLタグ含む）
         if (window.TextFormatter) {
-            element.innerHTML = window.TextFormatter.formatDescription(typeData.description, userName);
+            htmlContent = window.TextFormatter.formatDescription(typeData.description, userName);
         } else {
-            element.textContent = typeData.description;
+            htmlContent = typeData.description.replace(/〇〇/g, userName);
         }
+        
+        // 相性セクションを追加
+        if (typeData.compatibility) {
+            htmlContent += `
+                <div class="compatibility-section" style="margin-top: 20px; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 10px;">
+                    <h4 style="color: #ffd700; margin-bottom: 15px; font-size: 16px;">
+                        🌙 ${userName}さんと周りの相性
+                    </h4>
+                    <div style="margin-bottom: 15px;">
+                        <h5 style="color: #87ceeb; margin-bottom: 8px; font-size: 14px;">良い相性</h5>
+                        <p style="color: #fff; line-height: 1.6; margin: 0;">
+                            ${typeData.compatibility.good.replace(/〇〇/g, userName)}
+                        </p>
+                    </div>
+                    <div>
+                        <h5 style="color: #ff9999; margin-bottom: 8px; font-size: 14px;">悪い相性</h5>
+                        <p style="color: #fff; line-height: 1.6; margin: 0;">
+                            ${typeData.compatibility.bad.replace(/〇〇/g, userName)}
+                        </p>
+                    </div>
+                </div>
+            `;
+        }
+        
+        element.innerHTML = htmlContent;
     }
 }
 
@@ -1331,11 +1387,39 @@ async function updateLoveValuesContent(type, profile) {
     if (typeData) {
         // profileから直接ユーザー名を取得
         const userName = profile?.userName || window.currentUserName || 'あなた';
+        let htmlContent = '';
+        
+        // 説明文を追加（HTMLタグ含む）
         if (window.TextFormatter) {
-            element.innerHTML = window.TextFormatter.formatDescription(typeData.description, userName);
+            htmlContent = window.TextFormatter.formatDescription(typeData.description, userName);
         } else {
-            element.textContent = typeData.description;
+            htmlContent = typeData.description.replace(/〇〇/g, userName);
         }
+        
+        // 相性セクションを追加
+        if (typeData.compatibility) {
+            htmlContent += `
+                <div class="compatibility-section" style="margin-top: 20px; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 10px;">
+                    <h4 style="color: #ffd700; margin-bottom: 15px; font-size: 16px;">
+                        🌙 ${userName}さんと周りの相性
+                    </h4>
+                    <div style="margin-bottom: 15px;">
+                        <h5 style="color: #87ceeb; margin-bottom: 8px; font-size: 14px;">良い相性</h5>
+                        <p style="color: #fff; line-height: 1.6; margin: 0;">
+                            ${typeData.compatibility.good.replace(/〇〇/g, userName)}
+                        </p>
+                    </div>
+                    <div>
+                        <h5 style="color: #ff9999; margin-bottom: 8px; font-size: 14px;">悪い相性</h5>
+                        <p style="color: #fff; line-height: 1.6; margin: 0;">
+                            ${typeData.compatibility.bad.replace(/〇〇/g, userName)}
+                        </p>
+                    </div>
+                </div>
+            `;
+        }
+        
+        element.innerHTML = htmlContent;
     }
 }
 
@@ -1363,11 +1447,39 @@ async function updateLoveEnergyContent(type, profile) {
     if (typeData) {
         // profileから直接ユーザー名を取得
         const userName = profile?.userName || window.currentUserName || 'あなた';
+        let htmlContent = '';
+        
+        // 説明文を追加（HTMLタグ含む）
         if (window.TextFormatter) {
-            element.innerHTML = window.TextFormatter.formatDescription(typeData.description, userName);
+            htmlContent = window.TextFormatter.formatDescription(typeData.description, userName);
         } else {
-            element.textContent = typeData.description;
+            htmlContent = typeData.description.replace(/〇〇/g, userName);
         }
+        
+        // 相性セクションを追加
+        if (typeData.compatibility) {
+            htmlContent += `
+                <div class="compatibility-section" style="margin-top: 20px; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 10px;">
+                    <h4 style="color: #ffd700; margin-bottom: 15px; font-size: 16px;">
+                        🌙 ${userName}さんと周りの相性
+                    </h4>
+                    <div style="margin-bottom: 15px;">
+                        <h5 style="color: #87ceeb; margin-bottom: 8px; font-size: 14px;">良い相性</h5>
+                        <p style="color: #fff; line-height: 1.6; margin: 0;">
+                            ${typeData.compatibility.good.replace(/〇〇/g, userName)}
+                        </p>
+                    </div>
+                    <div>
+                        <h5 style="color: #ff9999; margin-bottom: 8px; font-size: 14px;">悪い相性</h5>
+                        <p style="color: #fff; line-height: 1.6; margin: 0;">
+                            ${typeData.compatibility.bad.replace(/〇〇/g, userName)}
+                        </p>
+                    </div>
+                </div>
+            `;
+        }
+        
+        element.innerHTML = htmlContent;
     }
 }
 
