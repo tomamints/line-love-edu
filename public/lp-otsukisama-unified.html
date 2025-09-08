@@ -1249,6 +1249,12 @@
                         const moonPhase = moonPhaseNames[moonPhaseIndex];
                         const hiddenMoonPhase = moonPhaseNames[hiddenPhaseIndex];
                         
+                        // 月相カードを動的に生成
+                        updateMoonPhaseCard(currentPatternId, moonPhaseIndex, moonPhase);
+                        
+                        // 裏月相カードを動的に生成
+                        updateHiddenPhaseCard(currentPatternId, hiddenPhaseIndex, hiddenMoonPhase);
+                        
                         // 4つの軸データを設定（データベースから直接使用）
                         const loveProfile = {
                             emotionalExpression: data.diagnosis.emotional_expression,
@@ -1407,20 +1413,49 @@
             }
         }
         
+        // 月相カードを動的に更新
+        async function updateMoonPhaseCard(patternId, moonPhaseIndex, moonPhase) {
+            const moonPhaseCard = document.querySelector('.moon-phase-card.new-moon');
+            if (!moonPhaseCard) return;
+            
+            try {
+                // 月相データを取得
+                const response = await fetch('/data/moon-phase-descriptions.json?v=' + Date.now());
+                const moonPhaseData = await response.json();
+                const desc = moonPhaseData[moonPhase];
+                
+                if (desc) {
+                    // カード全体のHTMLを更新
+                    moonPhaseCard.innerHTML = `
+                        <div class="moon-phase-header">
+                            <img src="/images/moon/omote-${moonPhaseIndex}.png" alt="${moonPhase}" class="moon-phase-visual moon-phase-image">
+                            <div class="moon-phase-info">
+                                <h2>${moonPhase}</h2>
+                                <p class="moon-phase-subtitle">${desc.subtitle || ''}</p>
+                            </div>
+                        </div>
+                        <div class="moon-phase-description" id="moon-phase-description">
+                            ${desc.description || ''}
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Failed to update moon phase card:', error);
+            }
+        }
+        
         // 裏月相カードを動的に更新
         async function updateHiddenPhaseCard(patternId, hiddenPhaseIndex, hiddenMoonPhase) {
             const hiddenPhaseCard = document.getElementById('hidden-phase-card');
             if (!hiddenPhaseCard) return;
             
             try {
-                // パターンデータを取得
-                const response = await fetch('/data/otsukisama-patterns-v3.json?v=' + Date.now());
-                const patterns = await response.json();
-                const pattern = patterns[patternId];
+                // 裏月相データを取得
+                const response = await fetch('/data/hidden-phase-descriptions.json?v=' + Date.now());
+                const hiddenPhaseData = await response.json();
+                const desc = hiddenPhaseData[hiddenMoonPhase];
                 
-                if (pattern && pattern.hiddenPhaseDescription) {
-                    const desc = pattern.hiddenPhaseDescription;
-                    
+                if (desc) {
                     // 太字処理
                     const processedMainText1 = desc.mainText1 ? 
                         desc.mainText1.replace(/『『『(.*?)』』』/g, '<strong>$1</strong>') : '';
@@ -1437,7 +1472,7 @@
                         <div class="content-locked-mini">
                             <div class="text-blur">
                                 <div class="moon-phase-description" id="hidden-phase-description">
-                                    ${processedMainText1 ? `<p>${processedMainText1}</p>` : ''}
+                                    ${desc.mainText1 ? `<p>${processedMainText1}</p>` : ''}
                                     ${desc.bulletPoints ? `
                                         <div class="hidden-phase-moment">
                                             <p class="moment-title"><strong>こんな瞬間、ありませんか？</strong></p>
@@ -1447,6 +1482,7 @@
                                         </div>
                                     ` : ''}
                                     ${desc.mainText2 ? `<p>${desc.mainText2}</p>` : ''}
+                                    ${!desc.mainText1 && desc.description ? `<p>${desc.description}</p>` : ''}
                                 </div>
                             </div>
                             <div class="lock-overlay-mini">
@@ -1561,6 +1597,9 @@
                             const moonPhaseNames = ['新月', '三日月', '上弦の月', '十三夜', '満月', '十六夜', '下弦の月', '暁'];
                             const moonPhase = moonPhaseNames[moonPhaseIndex];
                             const hiddenMoonPhase = moonPhaseNames[hiddenPhaseIndex];
+                            
+                            // 月相カードを動的に生成
+                            updateMoonPhaseCard(currentPatternId, moonPhaseIndex, moonPhase);
                             
                             // 裏月相カードを動的に生成
                             updateHiddenPhaseCard(currentPatternId, hiddenPhaseIndex, hiddenMoonPhase);
