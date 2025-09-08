@@ -5,36 +5,15 @@
 // 3つの力のデータを保持
 let threePowersData = null;
 
-// データを読み込む（新システムでは固定の3つの力を返す）
+// データを読み込む
 async function loadThreePowersData() {
     try {
-        // 新システムでは固定の3つの力を使用
-        threePowersData = {
-            action: {},
-            emotion: {},
-            thinking: {}
-        };
-        
-        // デフォルトの3つの力を設定
-        for (let i = 0; i < 20; i++) {
-            threePowersData.action[i] = {
-                title: '直感力',
-                desc: '第六感が鋭く、見えない危険を察知する能力があります。迷った時は、理屈より直感を信じることで正しい道を選べるでしょう。'
-            };
-            threePowersData.emotion[i] = {
-                title: '創造力',
-                desc: '無から有を生み出す力。アイデアが湧き出る泉のような存在で、周りの人に新しい視点を与えることができます。'
-            };
-            threePowersData.thinking[i] = {
-                title: '浄化力',
-                desc: 'ネガティブなエネルギーを跳ね返し、周りの空気を清める力。あなたがいるだけで、場の雰囲気が明るくなります。'
-            };
-        }
-        
-        console.log('Three powers data initialized with defaults');
+        const response = await fetch('/data/three-powers-calculated.json');
+        threePowersData = await response.json();
+        console.log('Three powers data loaded');
         return true;
     } catch (error) {
-        console.error('Failed to initialize three powers data:', error);
+        console.error('Failed to load three powers data:', error);
         return false;
     }
 }
