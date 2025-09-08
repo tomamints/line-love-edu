@@ -108,12 +108,15 @@ class FortuneDisplay {
      * 恋愛運を表示
      */
     displayLoveFortune(userName = '〇〇') {
+        console.log('displayLoveFortune called with userName:', userName);
+        
         if (!this.fortuneData.love) {
             console.error('Love fortune data not loaded');
             return;
         }
 
         const data = this.fortuneData.love;
+        console.log('Love fortune data:', data);
         
         // メインテキストを構築
         const mainText = data.mainText;

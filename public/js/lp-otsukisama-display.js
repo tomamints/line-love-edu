@@ -933,13 +933,33 @@ function hideLoadingOverlay() {
 }
 
 // 動的コンテンツを更新する関数（パターンから）
-function updateDynamicContentFromPattern(pattern) {
+async function updateDynamicContentFromPattern(pattern) {
     console.log('updateDynamicContentFromPattern called with pattern:', pattern);
+    
+    // 新しいFortuneDisplayシステムを使用
+    if (window.FortuneDisplay) {
+        console.log('Using new FortuneDisplay system');
+        const fortuneDisplay = new FortuneDisplay();
+        const patternId = pattern?.patternId || window.currentPatternId || 0;
+        const userName = window.currentUserName || window.userName || '〇〇';
+        
+        // 新しいシステムで運勢を表示
+        await fortuneDisplay.displayAllFortunes(patternId, userName);
+        console.log('FortuneDisplay completed for pattern:', patternId);
+        
+        // 旧システムとの互換性のため、patternが存在する場合は続行
+        if (!pattern || !pattern.overall) {
+            console.log('No legacy pattern data, using only new system');
+            return;
+        }
+    }
+    
+    // 旧システムのフォールバック
     if (!pattern || !pattern.overall) {
         console.warn('Pattern data not found or missing overall:', pattern);
         return;
     }
-    console.log('Pattern has overall data:', pattern.overall);
+    console.log('Pattern has overall data (legacy):', pattern.overall);
     
     // ユーザー名を取得
     const userName = window.currentUserName || 'あなた';

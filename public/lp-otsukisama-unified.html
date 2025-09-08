@@ -1313,15 +1313,15 @@
                             const pattern = window.OtsukisamaDataLoader.getPatternFortune(currentPatternId);
                             console.log('Pattern data for legacy system:', pattern);
                             if (pattern && typeof updateDynamicContentFromPattern === 'function') {
-                                updateDynamicContentFromPattern(pattern);
+                                await updateDynamicContentFromPattern(pattern);
                             }
                         } else {
                             // データローダーの読み込みを待ってから再試行
-                            window.addEventListener('otsukisama-data-loaded', () => {
+                            window.addEventListener('otsukisama-data-loaded', async () => {
                                 const pattern = window.OtsukisamaDataLoader.getPatternFortune(currentPatternId);
                                 console.log('Pattern data for legacy system (after wait):', pattern);
                                 if (pattern && typeof updateDynamicContentFromPattern === 'function') {
-                                    updateDynamicContentFromPattern(pattern);
+                                    await updateDynamicContentFromPattern(pattern);
                                 }
                             }, { once: true });
                         }
