@@ -15,9 +15,8 @@ class OtsukisamaDataLoader {
     // すべてのデータを読み込む
     async loadAllData() {
         try {
-            const [patterns, threePowers, personalityAxes, moonPhases, hiddenPhases, uiTexts] = await Promise.all([
+            const [patterns, personalityAxes, moonPhases, hiddenPhases, uiTexts] = await Promise.all([
                 fetch('data/otsukisama-patterns-v3.json?v=' + Date.now()).then(r => r.json()),
-                fetch('data/three-powers.json').then(r => r.json()),
                 fetch('data/personality-axes-descriptions.json').then(r => r.json()),
                 fetch('data/moon-phase-descriptions.json').then(r => r.json()),
                 fetch('data/hidden-phase-descriptions.json').then(r => r.json()),
@@ -25,7 +24,7 @@ class OtsukisamaDataLoader {
             ]);
 
             this.patternsData = patterns;
-            this.threePowersData = threePowers;
+            this.threePowersData = {}; // 空のオブジェクトに設定（three-powersは使用しない）
             this.personalityAxesData = personalityAxes;
             this.moonPhaseData = moonPhases;
             this.hiddenPhaseData = hiddenPhases;
