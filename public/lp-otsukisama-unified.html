@@ -1559,6 +1559,9 @@
                 
                 const displayName = userName || localStorage.getItem('userName') || '〇〇';
                 
+                // 既存の要素をクリア
+                container.innerHTML = '';
+                
                 // 行動の力
                 if (powers.action) {
                     const actionItem = document.createElement('div');
