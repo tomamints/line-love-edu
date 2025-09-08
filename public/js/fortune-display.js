@@ -581,15 +581,18 @@ class FortuneDisplay {
             actionsCopy.splice(index, 1);
         }
         
-        let htmlContent = '<h3>① 金運アップ！今すぐできるラッキーアクション</h3>';
-        htmlContent += '<ul class="lucky-actions">';
+        let htmlContent = '<ul class="lucky-actions">';
         selectedActions.forEach(action => {
             htmlContent += `<li>${this.processText(action, userName)}</li>`;
         });
         htmlContent += '</ul>';
         
-        // ラッキーアクション用の要素がない場合は作成が必要
-        // 現状のHTMLには存在しないので、必要に応じて追加
+        const element = document.getElementById('fortune-money-lucky');
+        if (element) {
+            element.innerHTML = htmlContent;
+        } else {
+            console.log('Lucky actions element not found');
+        }
         console.log('Lucky actions prepared:', selectedActions);
     }
 
