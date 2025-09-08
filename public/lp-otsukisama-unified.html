@@ -426,24 +426,8 @@
                 </div>
                 
                 <!-- 裏月相カード -->
-                <div class="moon-phase-card crescent">
-                    <div class="moon-phase-header">
-                        <img src="/images/moon/ura-1.png" alt="三日月" class="moon-phase-visual moon-phase-image">
-                        <div class="moon-phase-info">
-                            <h2>三日月（裏の顔）</h2>
-                            <p class="moon-phase-subtitle">内なる繊細さと慎重さを秘めた策士</p>
-                        </div>
-                    </div>
-                    <div class="content-locked-mini">
-                        <div class="text-blur">
-                            <div class="moon-phase-description" id="hidden-phase-description">
-                                表向きは勢いよく突き進むあなたですが、実は内面では細やかな配慮ができる繊細な人。新しいことを始める前に、実はしっかりと下調べをしていたり、リスクを計算していたりするでしょう。その慎重さと大胆さのバランスが、あなたの成功の秘訣。時々弱音を吐きたくなることもありますが、それは成長の証です。
-                            </div>
-                        </div>
-                        <div class="lock-overlay-mini">
-                            <button class="purchase-button-mini" onclick="scrollToPayment()">🔒 購入する</button>
-                        </div>
-                    </div>
+                <div class="moon-phase-card crescent" id="hidden-phase-card">
+                    <!-- コンテンツはJavaScriptで動的に生成 -->
                 </div>
                 
                 <!-- 3つの月の力セクション -->
@@ -1423,6 +1407,82 @@
             }
         }
         
+        // 裏月相カードを動的に更新
+        async function updateHiddenPhaseCard(patternId, hiddenPhaseIndex, hiddenMoonPhase) {
+            const hiddenPhaseCard = document.getElementById('hidden-phase-card');
+            if (!hiddenPhaseCard) return;
+            
+            try {
+                // パターンデータを取得
+                const response = await fetch('/data/otsukisama-patterns-v3.json');
+                const patterns = await response.json();
+                const pattern = patterns[patternId];
+                
+                if (pattern && pattern.hiddenPhaseDescription) {
+                    const desc = pattern.hiddenPhaseDescription;
+                    
+                    // 太字処理
+                    const processedMainText1 = desc.mainText1 ? 
+                        desc.mainText1.replace(/『『『(.*?)』』』/g, '<strong>$1</strong>') : '';
+                    
+                    // HTMLを生成
+                    let html = `
+                        <div class="moon-phase-header">
+                            <img src="/images/moon/ura-${hiddenPhaseIndex}.png" alt="${hiddenMoonPhase}" class="moon-phase-visual moon-phase-image">
+                            <div class="moon-phase-info">
+                                <h2>${hiddenMoonPhase}（裏の顔）</h2>
+                                ${desc.title ? `<p class="moon-phase-subtitle">${desc.title}</p>` : ''}
+                            </div>
+                        </div>
+                        <div class="content-locked-mini">
+                            <div class="text-blur">
+                                <div class="moon-phase-description" id="hidden-phase-description">
+                                    ${processedMainText1 ? `<p>${processedMainText1}</p>` : ''}
+                                    ${desc.bulletPoints ? `
+                                        <div class="hidden-phase-moment">
+                                            <p class="moment-title"><strong>こんな瞬間、ありませんか？</strong></p>
+                                            <ul>
+                                                ${desc.bulletPoints.map(point => `<li>${point}</li>`).join('')}
+                                            </ul>
+                                        </div>
+                                    ` : ''}
+                                    ${desc.mainText2 ? `<p>${desc.mainText2}</p>` : ''}
+                                </div>
+                            </div>
+                            <div class="lock-overlay-mini">
+                                <button class="purchase-button-mini" onclick="scrollToPayment()">🔒 購入する</button>
+                            </div>
+                        </div>
+                    `;
+                    
+                    hiddenPhaseCard.innerHTML = html;
+                } else {
+                    // フォールバック：デフォルトの内容を表示
+                    hiddenPhaseCard.innerHTML = `
+                        <div class="moon-phase-header">
+                            <img src="/images/moon/ura-${hiddenPhaseIndex}.png" alt="${hiddenMoonPhase}" class="moon-phase-visual moon-phase-image">
+                            <div class="moon-phase-info">
+                                <h2>${hiddenMoonPhase}（裏の顔）</h2>
+                                <p class="moon-phase-subtitle">内なる繊細さと慎重さを秘めた策士</p>
+                            </div>
+                        </div>
+                        <div class="content-locked-mini">
+                            <div class="text-blur">
+                                <div class="moon-phase-description" id="hidden-phase-description">
+                                    表向きは勢いよく突き進むあなたですが、実は内面では細やかな配慮ができる繊細な人。
+                                </div>
+                            </div>
+                            <div class="lock-overlay-mini">
+                                <button class="purchase-button-mini" onclick="scrollToPayment()">🔒 購入する</button>
+                            </div>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('裏月相カード更新エラー:', error);
+            }
+        }
+        
         // ユーザー名表示の更新
         function updateUserNameDisplays() {
             const userName = window.currentUserName || 'あなた';
@@ -1501,6 +1561,9 @@
                             const moonPhaseNames = ['新月', '三日月', '上弦の月', '十三夜', '満月', '十六夜', '下弦の月', '暁'];
                             const moonPhase = moonPhaseNames[moonPhaseIndex];
                             const hiddenMoonPhase = moonPhaseNames[hiddenPhaseIndex];
+                            
+                            // 裏月相カードを動的に生成
+                            updateHiddenPhaseCard(currentPatternId, hiddenPhaseIndex, hiddenMoonPhase);
                             
                             // 6つの要素を更新（4つの軸データを含む）
                             if (typeof updateSixElements === 'function') {
