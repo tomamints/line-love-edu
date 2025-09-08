@@ -53,7 +53,7 @@ async function displayThreePowersFromKeys(keys, moonPhase) {
                 const titleEl = item.querySelector('.energy-title');
                 const descEl = item.querySelector('.energy-description');
                 if (titleEl) titleEl.textContent = formattedPowers[index].title;
-                if (descEl) descEl.textContent = formattedPowers[index].desc;
+                if (descEl) descEl.innerHTML = formattedPowers[index].desc;
             }
         });
     }
