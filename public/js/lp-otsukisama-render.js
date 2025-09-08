@@ -100,45 +100,40 @@ class DiagnosisRenderer {
     // パターンデータの読み込み
     async loadPatternData(patternId) {
         try {
-            const response = await fetch('/data/otsukisama-patterns-v3.json?v=' + Date.now());
-            const patterns = await response.json();
-            const pattern = patterns[patternId] || patterns[0];
-            
-            // パターンデータをフラット化
-            // 月相インデックスを計算
+            // 新システムFortuneDisplayから生成された基本パターンを使用
+            const moonPhases = ['新月', '三日月', '上弦の月', '満月寄りの月', '満月', '欠けていく月', '下弦の月', '鎮静の月'];
             const moonPhaseIndex = Math.floor(patternId / 8);
             const hiddenPhaseIndex = patternId % 8;
             
             this.patternData = {
-                moonPhase: pattern.moonPhase,
-                hiddenPhase: pattern.hiddenPhase,
+                moonPhase: moonPhases[moonPhaseIndex],
+                hiddenPhase: moonPhases[hiddenPhaseIndex],
                 moonPhaseIndex: moonPhaseIndex,
                 hiddenPhaseIndex: hiddenPhaseIndex,
-                // 月相説明（新フォーマット対応）
-                phaseDescriptionTitle: pattern.phaseDescription?.title,
-                phaseDescriptionText: pattern.phaseDescription?.text,
-                // 裏月相説明（新フォーマット対応）
-                hiddenPhaseTitle: pattern.hiddenPhaseDescription?.title,
-                hiddenPhaseMainText1: pattern.hiddenPhaseDescription?.mainText1,
-                hiddenPhaseBulletPoints: pattern.hiddenPhaseDescription?.bulletPoints,
-                hiddenPhaseMainText2: pattern.hiddenPhaseDescription?.mainText2,
-                // 既存のフィールド
-                overallTitle: pattern.overall?.title,
-                overallIntro: pattern.overall?.intro,
-                overallMainText: pattern.overall?.mainText,
-                month1: pattern.overall?.month1,
-                month2: pattern.overall?.month2,
-                month3: pattern.overall?.month3,
-                loveMainText: pattern.love?.mainText,
-                loveDestinyMeeting: pattern.love?.destinyMeeting,
-                loveAdmirerType: pattern.love?.admirerType,
-                workTitle: pattern.work?.title,
-                workMainText: pattern.work?.mainText,
-                workNewTalent: pattern.work?.newTalent,
-                relationshipMainText: pattern.relationship?.mainText,
-                relationshipNewConnections: pattern.relationship?.newConnections,
-                moneyMainText: pattern.money?.mainText,
-                moneyPeakTiming: pattern.money?.peakTiming
+                // FortuneDisplayが動的に生成する内容のプレースホルダー
+                // 実際のコンテンツはlp-otsukisama-display.jsのupdateDynamicContentFromPatternで設定
+                phaseDescriptionTitle: '',
+                phaseDescriptionText: '',
+                hiddenPhaseTitle: '',
+                hiddenPhaseMainText1: '',
+                hiddenPhaseBulletPoints: [],
+                hiddenPhaseMainText2: '',
+                overallTitle: '',
+                overallIntro: '',
+                overallMainText: '',
+                month1: '',
+                month2: '',
+                month3: '',
+                loveMainText: '',
+                loveDestinyMeeting: '',
+                loveAdmirerType: '',
+                workTitle: '',
+                workMainText: '',
+                workNewTalent: '',
+                relationshipMainText: '',
+                relationshipNewConnections: '',
+                moneyMainText: '',
+                moneyPeakTiming: ''
             };
         } catch (error) {
             console.error('パターンデータの読み込みに失敗しました:', error);

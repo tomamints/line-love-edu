@@ -15,15 +15,15 @@ class OtsukisamaDataLoader {
     // すべてのデータを読み込む
     async loadAllData() {
         try {
-            const [patterns, personalityAxes, moonPhases, hiddenPhases, uiTexts] = await Promise.all([
-                fetch('data/otsukisama-patterns-v3.json?v=' + Date.now()).then(r => r.json()),
+            const [personalityAxes, moonPhases, hiddenPhases, uiTexts] = await Promise.all([
                 fetch('data/personality-axes-descriptions.json').then(r => r.json()),
                 fetch('data/moon-phase-descriptions.json').then(r => r.json()),
                 fetch('data/hidden-phase-descriptions.json').then(r => r.json()),
                 fetch('data/ui-texts.json').then(r => r.json())
             ]);
 
-            this.patternsData = patterns;
+            // 基本的なパターンデータを生成（月相の組み合わせのみ）
+            this.patternsData = this.generateBasicPatterns();
             this.threePowersData = {}; // 空のオブジェクトに設定（three-powersは使用しない）
             this.personalityAxesData = personalityAxes;
             this.moonPhaseData = moonPhases;
@@ -37,6 +37,25 @@ class OtsukisamaDataLoader {
             console.error('Failed to load data:', error);
             return false;
         }
+    }
+    
+    // 基本的なパターンデータを生成
+    generateBasicPatterns() {
+        const moonPhases = ['新月', '三日月', '上弦の月', '満月寄りの月', '満月', '欠けていく月', '下弦の月', '鎮静の月'];
+        const patterns = {};
+        
+        // 64パターンを生成（8x8の組み合わせ）
+        for (let i = 0; i < 64; i++) {
+            const mainPhaseIndex = Math.floor(i / 8);
+            const hiddenPhaseIndex = i % 8;
+            
+            patterns[i] = {
+                moonPhase: moonPhases[mainPhaseIndex],
+                hiddenPhase: moonPhases[hiddenPhaseIndex]
+            };
+        }
+        
+        return patterns;
     }
 
     // パターンIDから運勢データを取得
