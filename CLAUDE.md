@@ -93,6 +93,27 @@
 
 ---
 
+## ファイル整理ルール（2025-01-09追加）
+
+### 不要ファイルの取り扱い
+- **完全削除はしない**: 不要になったファイルは削除せず、`/public/data/disabled/`フォルダに移動
+- **移動対象**: 古いバージョンのファイル、バックアップファイル、未使用ファイル
+- **理由**: 将来的に参照が必要になる可能性があるため
+
+### 2025-01-09に移動したファイル
+`/public/data/disabled/`に以下のファイルを移動：
+- `three-powers.json` - 古い月相ベースの形式
+- `three-powers-calculated.json` - クラスなしの古い形式
+- `otsukisama-patterns-complete.json` - 古いバックアップ
+- `otsukisama-patterns-complete-backup-20250828.json` - 古いバックアップ
+- `otsukisama-patterns-complete.json.backup` - 古いバックアップ
+- `otsukisama-patterns-v2.json` - 古いバージョン
+- `otsukisama-patterns-v3-backup.json` - バックアップ
+- `fortune_graph_all_64_patterns.json.backup` - バックアップ
+- `fortune_graph_all_64_patterns.json.bak` - バックアップ
+
+---
+
 ## 今後の対応
 
 1. **エラー発生時は必ず調査**
