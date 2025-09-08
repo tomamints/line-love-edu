@@ -1559,65 +1559,69 @@
                 
                 const displayName = userName || localStorage.getItem('userName') || '〇〇';
                 
-                // HTMLを生成
-                let html = '';
-                
                 // 行動の力
                 if (powers.action) {
-                    // descの内容を処理（ユーザー名置換と改行処理）
-                    let actionDesc = powers.action.desc.replace(/〇〇/g, displayName);
-                    // 改行を<br>に変換しながら、HTMLタグはそのまま保持
-                    const actionLines = actionDesc.split('\n');
-                    const actionProcessed = actionLines.join('<br>');
+                    const actionItem = document.createElement('div');
+                    actionItem.className = 'energy-item';
                     
-                    html += `
-                        <div class="energy-item">
-                            <div class="energy-title">${powers.action.title}</div>
-                            <div class="energy-description">
-                                ${actionProcessed}
-                            </div>
-                        </div>
-                    `;
+                    const actionTitle = document.createElement('div');
+                    actionTitle.className = 'energy-title';
+                    actionTitle.textContent = powers.action.title;
+                    
+                    const actionDesc = document.createElement('div');
+                    actionDesc.className = 'energy-description';
+                    // ユーザー名置換と改行処理
+                    let processedDesc = powers.action.desc.replace(/〇〇/g, displayName);
+                    processedDesc = processedDesc.replace(/\n/g, '<br>');
+                    actionDesc.innerHTML = processedDesc;
+                    
+                    actionItem.appendChild(actionTitle);
+                    actionItem.appendChild(actionDesc);
+                    container.appendChild(actionItem);
                 }
                 
                 // 感情の力
                 if (powers.emotion) {
-                    // descの内容を処理（ユーザー名置換と改行処理）
-                    let emotionDesc = powers.emotion.desc.replace(/〇〇/g, displayName);
-                    // 改行を<br>に変換しながら、HTMLタグはそのまま保持
-                    const emotionLines = emotionDesc.split('\n');
-                    const emotionProcessed = emotionLines.join('<br>');
+                    const emotionItem = document.createElement('div');
+                    emotionItem.className = 'energy-item';
                     
-                    html += `
-                        <div class="energy-item">
-                            <div class="energy-title">${powers.emotion.title}</div>
-                            <div class="energy-description">
-                                ${emotionProcessed}
-                            </div>
-                        </div>
-                    `;
+                    const emotionTitle = document.createElement('div');
+                    emotionTitle.className = 'energy-title';
+                    emotionTitle.textContent = powers.emotion.title;
+                    
+                    const emotionDesc = document.createElement('div');
+                    emotionDesc.className = 'energy-description';
+                    // ユーザー名置換と改行処理
+                    let processedDesc = powers.emotion.desc.replace(/〇〇/g, displayName);
+                    processedDesc = processedDesc.replace(/\n/g, '<br>');
+                    emotionDesc.innerHTML = processedDesc;
+                    
+                    emotionItem.appendChild(emotionTitle);
+                    emotionItem.appendChild(emotionDesc);
+                    container.appendChild(emotionItem);
                 }
                 
                 // 思考の力
                 if (powers.thinking) {
-                    // descの内容を処理（ユーザー名置換と改行処理）
-                    let thinkingDesc = powers.thinking.desc.replace(/〇〇/g, displayName);
-                    // 改行を<br>に変換しながら、HTMLタグはそのまま保持
-                    const thinkingLines = thinkingDesc.split('\n');
-                    const thinkingProcessed = thinkingLines.join('<br>');
+                    const thinkingItem = document.createElement('div');
+                    thinkingItem.className = 'energy-item';
                     
-                    html += `
-                        <div class="energy-item">
-                            <div class="energy-title">${powers.thinking.title}</div>
-                            <div class="energy-description">
-                                ${thinkingProcessed}
-                            </div>
-                        </div>
-                    `;
+                    const thinkingTitle = document.createElement('div');
+                    thinkingTitle.className = 'energy-title';
+                    thinkingTitle.textContent = powers.thinking.title;
+                    
+                    const thinkingDesc = document.createElement('div');
+                    thinkingDesc.className = 'energy-description';
+                    // ユーザー名置換と改行処理
+                    let processedDesc = powers.thinking.desc.replace(/〇〇/g, displayName);
+                    processedDesc = processedDesc.replace(/\n/g, '<br>');
+                    thinkingDesc.innerHTML = processedDesc;
+                    
+                    thinkingItem.appendChild(thinkingTitle);
+                    thinkingItem.appendChild(thinkingDesc);
+                    container.appendChild(thinkingItem);
                 }
                 
-                // コンテナを更新
-                container.innerHTML = html;
                 console.log('3つの力を更新しました');
                 
             } catch (error) {
