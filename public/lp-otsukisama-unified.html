@@ -893,8 +893,8 @@
                     <h4 style="color: #ffd700; font-size: 22px; text-align: center; margin-bottom: 20px; font-weight: bold; text-shadow: 1px 1px 3px rgba(0,0,0,0.5);">
                         あなただけの月齢カレンダー（<span id="calendarMonthYear"></span>）
                     </h4>
-                    <div>
-                        <div>
+                    <div class="content-locked-mini">
+                        <div class="text-blur">
                             <div class="calendar-wrapper" style="overflow-x: auto;">
                                 <!-- 1ヶ月目 -->
                                 <div style="margin-bottom: 30px;">
@@ -921,7 +921,9 @@
                                 <!-- パターンごとのメッセージが動的に表示 -->
                             </p>
                         </div>
-                        <button class="purchase-button-mini" onclick="scrollToPayment()">🔒 購入する</button>
+                        <div class="lock-overlay-mini">
+                            <button class="purchase-button-mini" onclick="scrollToPayment()">🔒 購入する</button>
+                        </div>
                     </div>
                 </div>
                 
