@@ -1794,7 +1794,7 @@
             font-size: 20px;
         }
         
-        /* スクロールアニメーション用クラス - 全てフェードインに統一 */
+        /* スクロールアニメーション用クラス - 全てフェードインに統一（より大きな動きで明確に） */
         .animate-fade-up,
         .animate-fade-in,
         .animate-slide-left,
@@ -1802,7 +1802,7 @@
         .animate-bounce-in,
         .animate-diagonal-in,
         .animate-rotate-in {
-            animation: fadeIn 0.6s ease-out forwards !important;
+            animation: fadeIn 0.9s ease-out forwards !important;
             opacity: 1 !important;
         }
 
@@ -1853,7 +1853,7 @@
         @keyframes fadeInUp {
             0% {
                 opacity: 0;
-                transform: translateY(30px);
+                transform: translateY(80px);
             }
             100% {
                 opacity: 1;
@@ -1862,8 +1862,14 @@
         }
 
         @keyframes fadeIn {
-            0% { opacity: 0; }
-            100% { opacity: 1; }
+            0% { 
+                opacity: 0;
+                transform: translateY(60px);
+            }
+            100% { 
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         /* スライドイン（左から） */
