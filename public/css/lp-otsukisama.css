@@ -87,7 +87,7 @@
             position: absolute;
             background: white;
             border-radius: 50%;
-            animation: twinkle 3s infinite;
+            /* animation: twinkle 3s infinite; */
         }
         
         @keyframes twinkle {
@@ -100,7 +100,7 @@
             width: 2px;
             height: 2px;
             background: linear-gradient(90deg, white, transparent);
-            animation: shoot 3s linear infinite;
+            /* animation: shoot 3s linear infinite; */
         }
         
         @keyframes shoot {
@@ -143,7 +143,7 @@
                 0 0 80px rgba(255,255,255,0.8),
                 0 0 120px rgba(200,200,255,0.6),
                 inset -20px -20px 30px rgba(150,150,200,0.3);
-            animation: moonGlow 4s ease-in-out infinite;
+            /* animation: moonGlow 4s ease-in-out infinite; */
         }
         
         @keyframes moonGlow {
@@ -354,7 +354,7 @@
             border-radius: 20px;
             text-shadow: 0 3px 15px rgba(255, 215, 0, 0.5);
             overflow: hidden;
-            animation: bannerGlow 4s ease-in-out infinite;
+            /* animation: bannerGlow 4s ease-in-out infinite; */
             box-shadow: 0 10px 50px rgba(255, 215, 0, 0.3);
         }
         
@@ -552,7 +552,7 @@
         
         /* 回転アニメーション（必要時に有効化） */
         .elements-container.rotating {
-            animation: orbitRotation 40s linear infinite;
+            /* animation: orbitRotation 40s linear infinite; */
         }
         
         @keyframes orbitRotation {
@@ -573,7 +573,8 @@
             align-items: center;
             transition: all 0.3s;
             cursor: pointer;
-            backdrop-filter: blur(10px);
+            /* backdrop-filter: blur(10px); */
+            background: rgba(10, 20, 40, 0.85);
             box-shadow: 0 0 20px rgba(255,215,0,0.2);
             overflow: hidden; /* 円形マスクのため */
             /* 位置はdata属性で制御 */
@@ -618,13 +619,13 @@
         
         /* 回転時のカウンター回転 */
         .rotating .type-item {
-            animation: counterRotate 40s linear infinite;
+            /* animation: counterRotate 40s linear infinite; */
         }
         
         /* 月相画像専用のスタイル */
         .moon-phase-item {
             background: transparent !important;
-            backdrop-filter: none !important;
+            /* backdrop-filter: none !important; */
             overflow: visible !important; /* ラベル表示のためvisibleに */
         }
         
@@ -669,7 +670,8 @@
         /* 恋愛タイプアイコン専用スタイル */
         .love-type-item {
             background: rgba(255,255,255,0.1) !important;
-            backdrop-filter: blur(5px) !important;
+            /* backdrop-filter: blur(5px) !important; */
+            background: rgba(10, 20, 40, 0.75) !important;
             overflow: visible !important; /* ラベル表示のため */
         }
         
@@ -819,7 +821,8 @@
             background: linear-gradient(135deg, rgba(30,50,70,0.95) 0%, rgba(50,60,80,0.9) 100%);
             border-radius: 15px;
             transition: all 0.3s;
-            backdrop-filter: blur(5px);
+            /* backdrop-filter: blur(5px); */
+            background: rgba(10, 20, 40, 0.75);
             position: relative;
             overflow: hidden;
         }
@@ -891,7 +894,8 @@
             border-left: 6px solid rgba(255,215,0,0.9);
             border-radius: 20px;
             background: linear-gradient(90deg, rgba(20,30,50,0.95) 0%, rgba(40,50,70,0.9) 100%);
-            backdrop-filter: blur(8px);
+            /* backdrop-filter: blur(8px); */
+            background: rgba(30, 50, 70, 0.9);
             box-shadow: 0 8px 30px rgba(0,0,0,0.4), 
                         0 0 50px rgba(255,215,0,0.15),
                         inset 0 2px 0 rgba(255,255,255,0.15);
@@ -1057,7 +1061,8 @@
             background: linear-gradient(135deg, rgba(40,50,60,0.95) 0%, rgba(60,70,80,0.9) 100%);
             border-radius: 15px;
             padding: 20px;
-            backdrop-filter: blur(5px);
+            /* backdrop-filter: blur(5px); */
+            background: rgba(10, 20, 40, 0.75);
             position: relative;
             transition: all 0.3s;
         }
@@ -1134,7 +1139,8 @@
             margin-bottom: 30px;
             padding: 15px 8px;
             border-radius: 8px;
-            backdrop-filter: blur(8px);
+            /* backdrop-filter: blur(8px); */
+            background: rgba(30, 50, 70, 0.9);
         }
         
         /* 直近3ヶ月運命セクション - 紫系 */
@@ -1260,7 +1266,7 @@
             right: 0;
             height: 3px;
             background: linear-gradient(90deg, #ffd700, #ffed4e, #ffd700);
-            animation: shimmer 3s infinite;
+            /* animation: shimmer 3s infinite; */
         }
         
         @keyframes shimmer {
@@ -1373,8 +1379,9 @@
             padding: 18px 20px;
             margin-bottom: 1px;
             background: rgba(138, 97, 250, 0.08);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+            /* backdrop-filter: blur(20px); */
+            /* -webkit-backdrop-filter: blur(20px); */
+            background: rgba(138, 97, 250, 0.12);
             border: none;
             position: relative;
             line-height: 1.8;
@@ -1545,8 +1552,9 @@
             padding: 18px 20px;
             margin-bottom: 1px;
             background: rgba(138, 97, 250, 0.08);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+            /* backdrop-filter: blur(20px); */
+            /* -webkit-backdrop-filter: blur(20px); */
+            background: rgba(138, 97, 250, 0.12);
             border: none;
             position: relative;
             line-height: 1.8;
@@ -2044,7 +2052,8 @@
             margin: 40px 0;
             width: 100%;
             overflow-x: hidden;
-            backdrop-filter: blur(8px);
+            /* backdrop-filter: blur(8px); */
+            background: rgba(30, 50, 70, 0.9);
         }
         
         .calendar-wrapper {
@@ -2628,7 +2637,7 @@
             color: #ffd700;
             letter-spacing: 20px;
             text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
-            animation: starTwinkle 3s ease-in-out infinite;
+            /* animation: starTwinkle 3s ease-in-out infinite; */
         }
         
         @keyframes starTwinkle {
@@ -2807,7 +2816,7 @@
             width: 100%;
             height: 100%;
             background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-            animation: shimmer 2s infinite;
+            /* animation: shimmer 2s infinite; */
         }
         
         @keyframes rainbowShift {
@@ -2984,7 +2993,8 @@
             padding: 20px 25px;
             position: relative;
             box-shadow: 0 5px 20px rgba(0,0,0,0.4);
-            backdrop-filter: blur(10px);
+            /* backdrop-filter: blur(10px); */
+            background: rgba(10, 20, 40, 0.85);
         }
         
         .tsukuyomi-bubble::before {
@@ -3315,7 +3325,7 @@
             margin: 30px 0;
             box-shadow: none;
             position: relative;
-            backdrop-filter: none;
+            /* backdrop-filter: none; */
         }
         
         .advice-section::before {
@@ -3391,7 +3401,8 @@
             box-shadow: 0 8px 32px rgba(0,0,0,0.12),
                         inset 0 2px 0 rgba(255,255,255,0.05);
             position: relative;
-            backdrop-filter: blur(10px);
+            /* backdrop-filter: blur(10px); */
+            background: rgba(10, 20, 40, 0.85);
         }
         
         .feeling-list::before {
