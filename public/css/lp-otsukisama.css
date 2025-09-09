@@ -1362,215 +1362,227 @@
             margin: 20px 0 0 0;
         }
 
-        /* パターン1: Bento Gridスタイル（人間関係運・不安煽り系） - 2025トレンド */
+        /* パターン1: iOS Liquid Glassスタイル（人間関係運・不安煽り系） */
         .feelings-section.pattern1 ul {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 12px;
+            list-style: none;
             padding: 0;
             margin: 20px 0;
         }
         
         .feelings-section.pattern1 ul li {
-            padding: 20px;
-            margin: 0;
-            background: linear-gradient(145deg, #ffffff, #f5f5f5);
-            border-radius: 20px;
+            padding: 18px 20px;
+            margin-bottom: 1px;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: none;
             position: relative;
             line-height: 1.8;
-            box-shadow: 
-                5px 5px 10px rgba(0, 0, 0, 0.1),
-                -5px -5px 10px rgba(255, 255, 255, 0.8),
-                inset 1px 1px 2px rgba(255, 255, 255, 0.3);
-            border-left: 4px solid #ff6b6b;
-            transform: scale(1);
-            transition: transform 0.2s ease;
+            color: #000;
+            font-size: 16px;
+            transform: translateX(0);
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        
+        .feelings-section.pattern1 ul li:first-child {
+            border-radius: 12px 12px 0 0;
+        }
+        
+        .feelings-section.pattern1 ul li:last-child {
+            border-radius: 0 0 12px 12px;
+            margin-bottom: 0;
+        }
+        
+        .feelings-section.pattern1 ul li:only-child {
+            border-radius: 12px;
         }
         
         .feelings-section.pattern1 li:active {
-            transform: scale(0.98);
-            box-shadow: 
-                2px 2px 5px rgba(0, 0, 0, 0.1),
-                -2px -2px 5px rgba(255, 255, 255, 0.8),
-                inset 2px 2px 4px rgba(0, 0, 0, 0.1);
+            background: rgba(255, 255, 255, 0.95);
+            transform: translateX(10px);
         }
         
-        .feelings-section.pattern1 li::before {
-            content: "❗";
+        .feelings-section.pattern1 li::after {
+            content: '>';
             position: absolute;
-            left: -2px;
-            top: 20px;
-            background: #ff6b6b;
-            color: white;
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 16px;
-            box-shadow: 0 2px 8px rgba(255, 107, 107, 0.4);
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+            font-size: 18px;
+            font-weight: 300;
         }
         
-        /* パターン3: スワイプカード（仕事運・不安煽り系） - スマホジェスチャー対応 */
+        /* パターン3: Spotifyスタイルカード（仕事運・不安煽り系） */
         #fortune-career-text .feelings-section ul {
+            list-style: none;
             padding: 0;
-            margin: 20px -20px;
-            overflow-x: auto;
-            overflow-y: hidden;
-            -webkit-overflow-scrolling: touch;
-            scroll-snap-type: x mandatory;
+            margin: 20px 0;
             display: flex;
-            gap: 15px;
-            padding: 10px 20px;
+            flex-direction: column;
+            gap: 12px;
         }
         
         #fortune-career-text .feelings-section ul li {
-            flex: 0 0 85%;
-            max-width: 320px;
-            padding: 25px;
+            padding: 16px;
             margin: 0;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border-radius: 24px;
+            background: #121212;
+            color: #fff;
+            border-radius: 8px;
             position: relative;
-            line-height: 1.8;
-            scroll-snap-align: center;
-            box-shadow: 0 10px 30px rgba(118, 75, 162, 0.3);
+            line-height: 1.6;
+            display: flex;
+            align-items: center;
+            gap: 16px;
             transform: scale(1);
-            transition: transform 0.2s ease;
+            transition: all 0.15s ease;
         }
         
         #fortune-career-text .feelings-section li:active {
-            transform: scale(0.95);
+            background: #282828;
+            transform: scale(0.98);
         }
         
         #fortune-career-text .feelings-section li::before {
-            content: "💆";
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            font-size: 24px;
-            opacity: 0.3;
+            content: '';
+            flex-shrink: 0;
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #1DB954 0%, #1ED760 100%);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         
-        /* スクロールインジケーター */
-        #fortune-career-text .feelings-section::after {
-            content: '➡';
+        #fortune-career-text .feelings-section li::after {
+            content: '⋯';
             position: absolute;
-            right: 10px;
+            right: 16px;
             top: 50%;
             transform: translateY(-50%);
+            color: #b3b3b3;
             font-size: 24px;
-            color: rgba(255, 255, 255, 0.5);
-            animation: slide-indicator 1.5s ease-in-out infinite;
+            font-weight: bold;
         }
         
-        @keyframes slide-indicator {
-            0%, 100% { transform: translateY(-50%) translateX(0); }
-            50% { transform: translateY(-50%) translateX(5px); }
-        }
-        
-        /* パターン4: タップ可能チップ（仕事運・ありがとう） - Material Design 3風 */
+        /* パターン4: Instagram Storiesスタイル（仕事運・ありがとう） */
         #fortune-career-text .evidence-section ul {
             display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
+            gap: 8px;
             padding: 10px 0;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+        
+        #fortune-career-text .evidence-section ul::-webkit-scrollbar {
+            display: none;
         }
         
         #fortune-career-text .evidence-section ul li {
-            display: inline-flex;
-            align-items: center;
-            padding: 10px 20px;
+            flex: 0 0 auto;
+            padding: 0;
             margin: 0;
-            background: rgba(102, 126, 234, 0.1);
-            border: 2px solid rgba(102, 126, 234, 0.3);
-            border-radius: 100px;
+            background: transparent;
+            border: none;
             position: relative;
-            line-height: 1.4;
-            color: #667eea;
-            font-weight: 600;
-            font-size: 14px;
-            transform: scale(1);
-            transition: all 0.2s ease;
+            line-height: 1;
         }
         
-        #fortune-career-text .evidence-section li:active {
-            transform: scale(0.95);
-            background: rgba(102, 126, 234, 0.2);
-            border-color: #667eea;
+        #fortune-career-text .evidence-section ul li::before {
+            content: '';
+            display: block;
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #f99185, #f4679d, #c74c9f, #833ab4);
+            padding: 3px;
+            position: relative;
         }
         
-        #fortune-career-text .evidence-section li::before {
-            content: "✨";
-            margin-right: 8px;
-            font-size: 16px;
-            animation: sparkle-rotate 3s linear infinite;
+        #fortune-career-text .evidence-section ul li::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 70px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 11px;
+            color: #fff;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            max-width: 64px;
         }
         
-        @keyframes sparkle-rotate {
-            0% { transform: rotate(0deg) scale(1); }
-            25% { transform: rotate(90deg) scale(1.1); }
-            50% { transform: rotate(180deg) scale(1); }
-            75% { transform: rotate(270deg) scale(1.1); }
-            100% { transform: rotate(360deg) scale(1); }
+        #fortune-career-text .evidence-section li:active::before {
+            transform: scale(0.9);
         }
         
-        /* タップ済みスタイル */
-        #fortune-career-text .evidence-section li.tapped {
-            background: rgba(102, 126, 234, 0.3);
-            color: #764ba2;
+        /* 内側の白円 */
+        #fortune-career-text .evidence-section li span {
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 58px;
+            height: 58px;
+            border-radius: 50%;
+            background: #1a1a2e;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
         }
         
-        /* パターン1をデフォルトに適用 */
+        /* パターン1をデフォルトに適用 - iOS風 */
         .feelings-section ul {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 12px;
+            list-style: none;
             padding: 0;
             margin: 20px 0;
         }
         
         .feelings-section ul li {
-            padding: 20px;
-            margin: 0;
-            background: linear-gradient(145deg, #ffffff, #f5f5f5);
-            border-radius: 20px;
+            padding: 18px 20px;
+            margin-bottom: 1px;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: none;
             position: relative;
             line-height: 1.8;
-            box-shadow: 
-                5px 5px 10px rgba(0, 0, 0, 0.1),
-                -5px -5px 10px rgba(255, 255, 255, 0.8),
-                inset 1px 1px 2px rgba(255, 255, 255, 0.3);
-            border-left: 4px solid #ff6b6b;
-            transform: scale(1);
-            transition: transform 0.2s ease;
+            color: #000;
+            font-size: 16px;
+            transform: translateX(0);
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        
+        .feelings-section ul li:first-child {
+            border-radius: 12px 12px 0 0;
+        }
+        
+        .feelings-section ul li:last-child {
+            border-radius: 0 0 12px 12px;
+            margin-bottom: 0;
+        }
+        
+        .feelings-section ul li:only-child {
+            border-radius: 12px;
         }
         
         .feelings-section li:active {
-            transform: scale(0.98);
-            box-shadow: 
-                2px 2px 5px rgba(0, 0, 0, 0.1),
-                -2px -2px 5px rgba(255, 255, 255, 0.8),
-                inset 2px 2px 4px rgba(0, 0, 0, 0.1);
+            background: rgba(255, 255, 255, 0.95);
+            transform: translateX(10px);
         }
         
-        .feelings-section li::before {
-            content: "❗";
+        .feelings-section li::after {
+            content: '>';
             position: absolute;
-            left: -2px;
-            top: 20px;
-            background: #ff6b6b;
-            color: white;
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 16px;
-            box-shadow: 0 2px 8px rgba(255, 107, 107, 0.4);
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+            font-size: 18px;
+            font-weight: 300;
         }
 
         /* 証拠セクション用のスタイル - シンプル化 */
@@ -1591,72 +1603,48 @@
             margin: 20px 0 0 0;
         }
 
-        /* パターン2: Glassmorphismカード（人間関係運・安心できる人） - 2025トレンド */
+        /* パターン2: Material Youスタイル（人間関係運・安心できる人） */
         .evidence-section ul {
-            padding: 0 45px; /* チェックボックス用の余白を追加 */
+            list-style: none;
+            padding: 0;
             margin: 20px 0;
         }
         
         .evidence-section ul li {
-            padding: 22px 25px;
-            margin-bottom: 15px;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 16px;
+            padding: 20px 24px;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%);
+            border-radius: 28px;
             position: relative;
-            line-height: 1.8;
-            box-shadow: 
-                0 8px 32px 0 rgba(31, 38, 135, 0.15),
-                inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+            line-height: 1.7;
+            color: #1B5E20;
+            font-size: 15px;
+            font-weight: 500;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
             transform: scale(1);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            transition: all 0.2s ease;
         }
         
         .evidence-section li:active {
-            transform: scale(0.98);
-            box-shadow: 
-                0 4px 16px 0 rgba(31, 38, 135, 0.15),
-                inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+            transform: scale(0.97);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
         }
         
         .evidence-section li::before {
-            content: "";
+            content: '';
             position: absolute;
-            left: -40px;
+            left: 24px;
             top: 50%;
             transform: translateY(-50%);
-            width: 24px;
-            height: 24px;
-            border: 2px solid #87ceeb;
-            border-radius: 4px;
-            background: linear-gradient(135deg, rgba(135, 206, 250, 0.2), rgba(135, 206, 250, 0.1));
-            animation: pulse-check 2s ease-in-out infinite;
+            width: 8px;
+            height: 8px;
+            background: #4CAF50;
+            border-radius: 50%;
+            margin-right: 12px;
         }
         
-        .evidence-section li::after {
-            content: "";
-            position: absolute;
-            left: -35px;
-            top: 50%;
-            transform: translateY(-50%) rotate(45deg);
-            width: 7px;
-            height: 14px;
-            border: solid #87ceeb;
-            border-width: 0 3px 3px 0;
-            opacity: 0;
-            animation: check-appear 2s ease-in-out infinite;
-        }
-        
-        @keyframes pulse-check {
-            0%, 100% { transform: translateY(-50%) scale(1); opacity: 0.8; }
-            50% { transform: translateY(-50%) scale(1.05); opacity: 1; }
-        }
-        
-        @keyframes check-appear {
-            0%, 30% { opacity: 0; transform: translateY(-50%) rotate(45deg) scale(0.8); }
-            50%, 100% { opacity: 1; transform: translateY(-50%) rotate(45deg) scale(1); }
+        .evidence-section ul li {
+            padding-left: 48px;
         }
 
         /* 重要メッセージのアクションリスト - シンプル化 */
