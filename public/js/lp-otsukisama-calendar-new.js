@@ -418,6 +418,28 @@ async function generatePersonalizedCalendar(providedPatternId) {
         calendarHTML += `<div class="calendar-message">${patternData.monthly_message}</div>`;
     }
     
+    // main.mdに記載されている説明文を追加
+    calendarHTML += `
+        <div class="calendar-message">
+            <strong>あなたの運気が高まる日は、カレンダーに書いてある『パワーDAY（💫）』です。</strong><br>
+            その日には新しい挑戦をしたり、大切な一歩を踏み出すのがおすすめです。
+        </div>
+        
+        <div class="calendar-message" style="text-align: left; font-size: 13px; line-height: 1.8;">
+            <div style="margin-bottom: 8px;"><strong>例えば</strong></div>
+            <div style="margin-bottom: 6px;">💕 <strong>恋愛</strong> → 好きな人にLINEを送ってみる／気になる人と会う予定を入れる</div>
+            <div style="margin-bottom: 6px;">👥 <strong>人間関係</strong> → しばらく会ってない友達に連絡する／お世話になっている方に感謝の気持ちを一言伝える</div>
+            <div style="margin-bottom: 6px;">💼 <strong>仕事</strong> → やりたかった企画を上司に相談する／資格や勉強を始める</div>
+            <div style="margin-bottom: 6px;">💰 <strong>お金</strong> → 新しい貯金方法を始める／使っていないサブスクを解約する</div>
+            <div style="margin-bottom: 6px;">✨ <strong>自分磨き</strong> → 美容室やジムを予約する／あなたの好きな時間をとってみる</div>
+        </div>
+        
+        <div class="calendar-message" style="margin-top: 16px;">
+            <strong>必ず『お部屋のカレンダーやスマホの予定表にメモ』しておいてください。</strong><br>
+            日付を目にするだけで、行動のエネルギーが高まりますよ。
+        </div>
+    `;
+    
     // 2ヶ月分のカレンダーを生成
     for (let monthOffset = 0; monthOffset < 2; monthOffset++) {
         const targetMonth = (currentMonth + monthOffset) % 12;
