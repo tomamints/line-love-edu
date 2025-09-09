@@ -1225,13 +1225,34 @@
         .recent-events-list {
             list-style: none;
             padding: 0;
-            margin: 0;
+            margin: 20px 0;
         }
 
         .recent-events-list li {
-            border-left: 3px solid #ffd700;
-            padding: 10px 15px;
-            margin-bottom: 8px;
+            border-left: 4px solid #ffd700;
+            padding: 18px 20px;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.08), rgba(255, 255, 255, 0.02));
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .recent-events-list li:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 15px rgba(255,215,0,0.2);
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.12), rgba(255, 255, 255, 0.04));
+        }
+        
+        .recent-events-list li::before {
+            content: "✦";
+            position: absolute;
+            left: -2px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #ffd700;
+            font-size: 18px;
         }
 
         /* アクションリストのスタイル */
@@ -2611,15 +2632,150 @@
         }
         
         
-        /* 問いかけバナー画像のスタイル */
+        /* 問いかけバナー画像のスタイル - 全開で大きく表示 */
         .inquiry-banner {
             width: 100%;
-            max-width: 600px;
+            max-width: 100%;  /* 全幅表示 */
             height: auto;
-            margin: 20px auto;
+            margin: 30px auto;
             display: block;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(255,215,0,0.2);
+            animation: fadeInScale 0.8s ease-out;
+        }
+        
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        /* アドバイスセクションの番号リスト - 綺麗なカード型デザイン */
+        .advice-section ol {
+            counter-reset: advice-counter;
+            list-style: none;
+            padding: 0;
+            margin: 25px 0;
+        }
+
+        .advice-section ol li {
+            counter-increment: advice-counter;
+            padding: 20px 20px 20px 60px;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.06), rgba(255, 255, 255, 0.02));
+            border-radius: 15px;
+            position: relative;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .advice-section ol li:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(255,215,0,0.2);
+            border-color: rgba(255, 215, 0, 0.5);
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(255, 255, 255, 0.04));
+        }
+
+        .advice-section ol li::before {
+            content: counter(advice-counter);
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            color: #1a1a2e;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 16px;
+            box-shadow: 0 3px 10px rgba(255,215,0,0.4);
+        }
+        
+        .advice-section ol li::after {
+            content: "";
+            position: absolute;
+            left: 34px;
+            top: 0;
+            bottom: 0;
+            width: 1px;
+            background: linear-gradient(to bottom, transparent, rgba(255,215,0,0.2), transparent);
+        }
+        
+        /* フィーリングリスト - 綺麗なカード型デザイン */
+        .feeling-list ul {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0;
+        }
+        
+        .feeling-list li {
+            padding: 18px 20px 18px 45px;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, rgba(147, 112, 219, 0.08), rgba(255, 255, 255, 0.02));
+            border-radius: 12px;
+            border: 2px solid rgba(147, 112, 219, 0.3);
+            box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .feeling-list li:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 18px rgba(147,112,219,0.2);
+            background: linear-gradient(135deg, rgba(147, 112, 219, 0.12), rgba(255, 255, 255, 0.04));
+        }
+        
+        .feeling-list li::before {
+            content: "💫";
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 20px;
+        }
+        
+        /* すべてのul/olリストのベースデザイン改善 */
+        #fortune-text ul:not(.recent-events-list):not(.feeling-list ul),
+        #fortune-money-text ul:not(.recent-events-list):not(.feeling-list ul) {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0;
+        }
+        
+        #fortune-text ul:not(.recent-events-list):not(.feeling-list ul) li,
+        #fortune-money-text ul:not(.recent-events-list):not(.feeling-list ul) li {
+            padding: 15px 20px 15px 40px;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
             border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-left: 4px solid rgba(255,215,0,0.5);
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        #fortune-text ul:not(.recent-events-list):not(.feeling-list ul) li:hover,
+        #fortune-money-text ul:not(.recent-events-list):not(.feeling-list ul) li:hover {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03));
+            transform: translateX(3px);
+        }
+        
+        #fortune-text ul:not(.recent-events-list):not(.feeling-list ul) li::before,
+        #fortune-money-text ul:not(.recent-events-list):not(.feeling-list ul) li::before {
+            content: "▸";
+            position: absolute;
+            left: 15px;
+            color: rgba(255,215,0,0.8);
+            font-weight: bold;
         }
 
         /* ========================================

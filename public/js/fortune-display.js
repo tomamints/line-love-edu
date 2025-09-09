@@ -312,10 +312,14 @@ class FortuneDisplay {
         htmlContent += `<p>${this.processText(mainText.reassurance, userName)}</p>`;
         htmlContent += `<p>${this.processText(mainText.reason, userName)}</p>`;
         
-        // 証拠セクション
+        // 証拠セクション - バナー画像を表示
         htmlContent += '<div class="evidence-section">';
         htmlContent += '<div class="recent-events-section">';
-        htmlContent += '<p class="recent-events-title">最近、こんなことはありませんでしたか？</p>';
+        
+        // バナー画像を表示（テキストの代わりに）
+        const bannerColor = data.color === 'yellow' ? 'yellow' : 'white';
+        htmlContent += `<img src="/images/banner/inqur/${bannerColor}-recently-experienced-this.png" alt="最近、こんなことはありませんでしたか？" class="inquiry-banner">`;
+        
         htmlContent += '<ul class="recent-events-list">';
         if (mainText.evidence1) htmlContent += `<li>${this.processText(mainText.evidence1, userName)}</li>`;
         if (mainText.evidence2) htmlContent += `<li>${this.processText(mainText.evidence2, userName)}</li>`;
@@ -550,10 +554,14 @@ class FortuneDisplay {
         htmlContent += `<p>${this.processText(mainText.reassurance, userName)}</p>`;
         htmlContent += `<p>${this.processText(mainText.reason, userName)}</p>`;
         
-        // 証拠セクション
+        // 証拠セクション - バナー画像を表示
         htmlContent += '<div class="evidence-section">';
         htmlContent += '<div class="recent-events-section">';
-        htmlContent += '<p class="recent-events-title">最近、こんなことはありませんでしたか？</p>';
+        
+        // バナー画像を表示（テキストの代わりに）
+        const bannerColor = data.color === 'yellow' ? 'yellow' : 'white';
+        htmlContent += `<img src="/images/banner/inqur/${bannerColor}-recently-experienced-this.png" alt="最近、こんなことはありませんでしたか？" class="inquiry-banner">`;
+        
         htmlContent += '<ul class="recent-events-list">';
         if (mainText.evidence1) htmlContent += `<li>${this.processText(mainText.evidence1, userName)}</li>`;
         if (mainText.evidence2) htmlContent += `<li>${this.processText(mainText.evidence2, userName)}</li>`;
