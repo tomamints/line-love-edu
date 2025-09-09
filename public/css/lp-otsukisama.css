@@ -886,6 +886,7 @@
         .moon-phase-card {
             padding: 30px 25px;
             margin-bottom: 40px;
+            margin-top: 50px;
             border: 3px solid rgba(255,215,0,0.7);
             border-left: 6px solid rgba(255,215,0,0.9);
             border-radius: 20px;
@@ -895,6 +896,21 @@
                         0 0 50px rgba(255,215,0,0.15),
                         inset 0 2px 0 rgba(255,255,255,0.15);
             position: relative;
+        }
+        
+        /* 月相ラベル */
+        .moon-phase-label {
+            position: absolute;
+            top: -20px;
+            left: 30px;
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+            color: #1a1a2e;
+            padding: 6px 20px;
+            border-radius: 15px;
+            font-size: 14px;
+            font-weight: bold;
+            box-shadow: 0 3px 10px rgba(255, 215, 0, 0.3);
+            z-index: 10;
         }
         
         /* 新月用の色 */

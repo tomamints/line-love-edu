@@ -1431,11 +1431,12 @@
                 if (desc) {
                     // カード全体のHTMLを更新
                     moonPhaseCard.innerHTML = `
+                        <div class="moon-phase-label">月相</div>
                         <div class="moon-phase-header">
                             <img src="/images/moon/omote-${moonPhaseIndex}.png" alt="${moonPhase}" class="moon-phase-visual moon-phase-image">
                             <div class="moon-phase-info">
                                 <h2>${moonPhase}</h2>
-                                <p class="moon-phase-subtitle">${desc.subtitle || ''}</p>
+                                <p class="moon-phase-subtitle">${desc.title || ''}</p>
                             </div>
                         </div>
                         <div class="moon-phase-description" id="moon-phase-description">
@@ -1475,10 +1476,11 @@
                     
                     // HTMLを生成
                     let html = `
+                        <div class="moon-phase-label">裏月相</div>
                         <div class="moon-phase-header">
                             <img src="/images/moon/ura-${hiddenPhaseIndex}.png" alt="${hiddenMoonPhase}" class="moon-phase-visual moon-phase-image">
                             <div class="moon-phase-info">
-                                <h2>${hiddenMoonPhase}（裏の顔）</h2>
+                                <h2>${hiddenMoonPhase}</h2>
                                 ${desc.title ? `<p class="moon-phase-subtitle">${desc.title}</p>` : ''}
                             </div>
                         </div>
@@ -1511,7 +1513,7 @@
                         <div class="moon-phase-header">
                             <img src="/images/moon/ura-${hiddenPhaseIndex}.png" alt="${hiddenMoonPhase}" class="moon-phase-visual moon-phase-image">
                             <div class="moon-phase-info">
-                                <h2>${hiddenMoonPhase}（裏の顔）</h2>
+                                <h2>${hiddenMoonPhase}</h2>
                                 <p class="moon-phase-subtitle">内なる繊細さと慎重さを秘めた策士</p>
                             </div>
                         </div>
