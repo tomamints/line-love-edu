@@ -208,16 +208,22 @@ class FortuneDisplay {
         // サインリスト
         htmlContent += '<div class="signs-section">';
         if (data.sign1_title) {
+            htmlContent += '<div>';
             htmlContent += `<h4>${data.sign1_title}</h4>`;
             htmlContent += `<p>${this.processText(data.sign1_desc, userName)}</p>`;
+            htmlContent += '</div>';
         }
         if (data.sign2_title) {
+            htmlContent += '<div>';
             htmlContent += `<h4>${data.sign2_title}</h4>`;
             htmlContent += `<p>${this.processText(data.sign2_desc, userName)}</p>`;
+            htmlContent += '</div>';
         }
         if (data.sign3_title) {
+            htmlContent += '<div>';
             htmlContent += `<h4>${data.sign3_title}</h4>`;
             htmlContent += `<p>${this.processText(data.sign3_desc, userName)}</p>`;
+            htmlContent += '</div>';
         }
         htmlContent += '</div>';
         
@@ -251,16 +257,22 @@ class FortuneDisplay {
         // 特徴リスト
         htmlContent += '<div class="characteristics-section">';
         if (data.characteristic1_title) {
+            htmlContent += '<div>';
             htmlContent += `<h4>${data.characteristic1_title}</h4>`;
             htmlContent += `<p>${this.processText(data.characteristic1_desc, userName)}</p>`;
+            htmlContent += '</div>';
         }
         if (data.characteristic2_title) {
+            htmlContent += '<div>';
             htmlContent += `<h4>${data.characteristic2_title}</h4>`;
             htmlContent += `<p>${this.processText(data.characteristic2_desc, userName)}</p>`;
+            htmlContent += '</div>';
         }
         if (data.characteristic3_title) {
+            htmlContent += '<div>';
             htmlContent += `<h4>${data.characteristic3_title}</h4>`;
             htmlContent += `<p>${this.processText(data.characteristic3_desc, userName)}</p>`;
+            htmlContent += '</div>';
         }
         htmlContent += '</div>';
         

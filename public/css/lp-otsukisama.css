@@ -925,12 +925,12 @@
         
         /* 三日月用の色 */
         .moon-phase-card.crescent {
-            background: linear-gradient(90deg, rgba(60,50,70,0.95) 0%, rgba(80,70,90,0.9) 100%);
-            border: 3px solid rgba(180,100,255,0.6);
-            border-left: 6px solid rgba(180,100,255,0.9);
+            background: linear-gradient(90deg, rgba(75,50,100,0.95) 0%, rgba(100,75,120,0.9) 100%);
+            border: 3px solid rgba(147,112,219,0.6);
+            border-left: 6px solid rgba(147,112,219,0.9);
             box-shadow: 0 8px 30px rgba(0,0,0,0.4),
-                        0 0 40px rgba(180,100,255,0.2),
-                        inset 0 2px 0 rgba(180,100,255,0.2);
+                        0 0 40px rgba(147,112,219,0.2),
+                        inset 0 2px 0 rgba(147,112,219,0.2);
         }
         
         .moon-phase-header {
@@ -1186,6 +1186,7 @@
             line-height: 2.1;
             font-weight: 600;
             text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+            text-align: left;
         }
         
         .fortune-content {
@@ -1773,13 +1774,13 @@
         .hidden-phase-moment {
             margin: 20px 0;
             padding: 15px;
-            background: rgba(181, 165, 214, 0.1);
-            border-left: 4px solid #b5a5d6;
+            background: rgba(147, 112, 219, 0.1);
+            border-left: 4px solid #9370DB;
             border-radius: 8px;
         }
         
         .hidden-phase-moment .moment-title {
-            color: #b5a5d6;
+            color: #9370DB;
             font-size: 18px;
             margin-bottom: 12px;
             text-align: center;
@@ -1795,7 +1796,7 @@
             position: relative;
             padding-left: 25px;
             margin-bottom: 10px;
-            color: #d0d0ff;
+            color: #e6d9ff;
             line-height: 1.6;
         }
         
@@ -1803,7 +1804,7 @@
             content: "・";
             position: absolute;
             left: 0;
-            color: #b5a5d6;
+            color: #9370DB;
             font-weight: bold;
         }
         
@@ -2038,16 +2039,18 @@
         
         /* セクション内の見出しスタイル */
         .rhythm-heading {
-            background: linear-gradient(135deg, #ffd700 0%, #ff9500 100%);
-            color: white;
-            padding: 15px 25px;
-            border-radius: 3px;
+            background: linear-gradient(135deg, rgba(147, 112, 219, 0.15) 0%, rgba(181, 165, 214, 0.15) 100%);
+            color: #ffd700;
+            padding: 20px 30px;
+            border-radius: 12px;
             display: inline-block;
-            font-size: 22px;
+            font-size: 24px;
             font-weight: bold;
-            margin: 30px 0;
-            box-shadow: 0 5px 20px rgba(255, 215, 0, 0.4);
-            animation: pulse 2s ease-in-out infinite;
+            margin: 20px 0;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            letter-spacing: 1px;
         }
         
         @keyframes pulse {
@@ -2346,7 +2349,7 @@
         /* 月詠キャラクター強化 */
         .tsukuyomi-section {
             position: relative;
-            margin: 60px 0;
+            margin: 30px 0;
             display: flex;
             align-items: flex-start;
             gap: 25px;
@@ -3411,3 +3414,105 @@
             0%, 100% { text-shadow: 1px 1px 2px rgba(0,0,0,0.3), 0 0 10px rgba(255,215,0,0.3); }
             50% { text-shadow: 1px 1px 2px rgba(0,0,0,0.3), 0 0 20px rgba(255,215,0,0.5); }
         }
+
+/* サインセクション - 読みやすさ改善 */
+.signs-section {
+    margin: 30px 0;
+    padding: 0;
+}
+
+.signs-section > div {
+    margin-bottom: 35px;
+    padding: 25px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(252, 245, 255, 0.95) 100%);
+    border-radius: 16px;
+    border-left: 4px solid #ff6b9d;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.signs-section h4 {
+    font-size: 18px;
+    font-weight: 700;
+    color: #ff4757;
+    margin: 0 0 12px 0;
+    display: flex;
+    align-items: center;
+    line-height: 1.4;
+}
+
+.signs-section h4::before {
+    content: "✦";
+    margin-right: 10px;
+    color: #ff6b9d;
+    font-size: 20px;
+}
+
+.signs-section p {
+    font-size: 15px;
+    line-height: 1.8;
+    color: #333;
+    margin: 0;
+    max-width: 100%;
+    letter-spacing: 0.05em;
+}
+
+/* 特徴セクション - 読みやすさ改善 */
+.characteristics-section {
+    margin: 30px 0;
+    padding: 0;
+}
+
+.characteristics-section > div {
+    margin-bottom: 35px;
+    padding: 25px;
+    background: linear-gradient(135deg, rgba(255, 253, 245, 0.95) 0%, rgba(255, 248, 235, 0.95) 100%);
+    border-radius: 16px;
+    border-left: 4px solid #ffa500;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.characteristics-section h4 {
+    font-size: 18px;
+    font-weight: 700;
+    color: #ff8c00;
+    margin: 0 0 12px 0;
+    display: flex;
+    align-items: center;
+    line-height: 1.4;
+}
+
+.characteristics-section h4::before {
+    content: "⚠";
+    margin-right: 10px;
+    color: #ffa500;
+    font-size: 20px;
+}
+
+.characteristics-section p {
+    font-size: 15px;
+    line-height: 1.8;
+    color: #333;
+    margin: 0;
+    max-width: 100%;
+    letter-spacing: 0.05em;
+}
+
+/* モバイル対応 */
+@media (max-width: 767px) {
+    .signs-section > div,
+    .characteristics-section > div {
+        padding: 20px;
+        margin-bottom: 25px;
+    }
+    
+    .signs-section h4,
+    .characteristics-section h4 {
+        font-size: 16px;
+    }
+    
+    .signs-section p,
+    .characteristics-section p {
+        font-size: 14px;
+        line-height: 1.75;
+    }
+}
