@@ -803,7 +803,8 @@ function displayCombinedPersonality(profile) {
         profile.loveEnergy
     );
     
-    // 組み合わせ診断セクションを追加または更新
+    // 総合恋愛タイプ診断セクションは削除されたためコメントアウト
+    /*
     const combinedSection = document.getElementById('combinedPersonality');
     if (combinedSection) {
         combinedSection.innerHTML = `
@@ -839,6 +840,7 @@ function displayCombinedPersonality(profile) {
             `;
         }
     }
+    */
 }
 
 async function updateUserDisplayContent(userData, profile = null) {
