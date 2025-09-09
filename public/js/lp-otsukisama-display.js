@@ -7,19 +7,24 @@ let personalityAxesData = null;
 function replaceMonthPlaceholders(text) {
     if (!text) return text;
     
-    // 診断日を取得（URLパラメータ、localStorage、または現在日時の順で優先）
+    // 診断日を取得（診断IDに紐づけて管理）
     let diagnosisDate;
     const urlParams = new URLSearchParams(window.location.search);
+    const diagnosisId = urlParams.get('id');
     const diagnosisDateParam = urlParams.get('diagnosisDate');
     
     if (diagnosisDateParam) {
+        // URLパラメータに診断日がある場合はそれを使用
         diagnosisDate = new Date(diagnosisDateParam);
-    } else if (localStorage.getItem('diagnosisDate')) {
-        diagnosisDate = new Date(localStorage.getItem('diagnosisDate'));
+    } else if (diagnosisId && localStorage.getItem(`diagnosisDate_${diagnosisId}`)) {
+        // 診断IDに紐づく診断日がlocalStorageにある場合はそれを使用
+        diagnosisDate = new Date(localStorage.getItem(`diagnosisDate_${diagnosisId}`));
     } else {
-        // 初回の場合は現在日時を使用し、保存する
+        // どちらもない場合は現在日時を使用（診断IDがある場合は保存）
         diagnosisDate = new Date();
-        localStorage.setItem('diagnosisDate', diagnosisDate.toISOString());
+        if (diagnosisId) {
+            localStorage.setItem(`diagnosisDate_${diagnosisId}`, diagnosisDate.toISOString());
+        }
     }
     
     const currentMonth = diagnosisDate.getMonth() + 1; // 0-indexed to 1-indexed

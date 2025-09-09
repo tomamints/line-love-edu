@@ -1231,9 +1231,9 @@
                     console.log('取得したデータ:', data);
 
                     if (data.success && data.diagnosis) {
-                        // 診断日を保存（created_atがある場合はそれを使用）
-                        if (data.diagnosis.created_at) {
-                            localStorage.setItem('diagnosisDate', data.diagnosis.created_at);
+                        // 診断日を診断IDに紐づけて保存（created_atがある場合はそれを使用）
+                        if (data.diagnosis.created_at && diagnosisId) {
+                            localStorage.setItem(`diagnosisDate_${diagnosisId}`, data.diagnosis.created_at);
                             // URLパラメータにも追加（ページリロード時のため）
                             if (!urlParams.has('diagnosisDate')) {
                                 urlParams.set('diagnosisDate', data.diagnosis.created_at);
@@ -1717,9 +1717,9 @@
                     if (data.success && data.diagnosis) {
                         console.log('診断データ取得成功:', data.diagnosis);
                         
-                        // 診断日を保存（created_atがある場合はそれを使用）
-                        if (data.diagnosis.created_at) {
-                            localStorage.setItem('diagnosisDate', data.diagnosis.created_at);
+                        // 診断日を診断IDに紐づけて保存（created_atがある場合はそれを使用）
+                        if (data.diagnosis.created_at && diagnosisId) {
+                            localStorage.setItem(`diagnosisDate_${diagnosisId}`, data.diagnosis.created_at);
                             // URLパラメータにも追加
                             const urlParams = new URLSearchParams(window.location.search);
                             if (!urlParams.has('diagnosisDate')) {
