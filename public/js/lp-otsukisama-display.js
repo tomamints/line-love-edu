@@ -25,7 +25,7 @@ function replaceMonthPlaceholders(text) {
             diagnosisDate = new Date(diagnosisDateParam);
         } else {
             // 最終フォールバック：現在日時を使用
-            console.warn('診断日が設定されていません。現在日時を使用します。');
+            // console.warn('診断日が設定されていません。現在日時を使用します。');
             diagnosisDate = new Date();
         }
     }
