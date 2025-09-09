@@ -1194,8 +1194,8 @@
                             resultName.textContent = data.diagnosis.user_name || 'あなた';
                         }
                         
-                        // ユーザー名をグローバル変数に設定
-                        userName = data.diagnosis.user_name || '〇〇';
+                        // ユーザー名を定義（ローカル変数として）
+                        const userName = data.diagnosis.user_name || '〇〇';
                         
                         // パターンIDをグローバル変数に設定
                         currentPatternId = data.diagnosis.moon_pattern_id || data.diagnosis.pattern_id;
@@ -1216,7 +1216,6 @@
                         updateMoonPhaseCard(currentPatternId, moonPhaseIndex, moonPhase);
                         
                         // 裏月相カードを動的に生成（ユーザー名を渡す）
-                        const userName = data.diagnosis.user_name || localStorage.getItem('userName');
                         updateHiddenPhaseCard(currentPatternId, hiddenPhaseIndex, hiddenMoonPhase, userName);
                         
                         // 3つの力を更新
