@@ -1973,30 +1973,49 @@
         }
 
         /* 要素にアニメーション適用 */
-        .fortune-section,
-        .monthly-fortune,
-        .important-message-section,
-        .calendar-container {
+        .fortune-section {
             animation: fadeInUp 0.8s ease-out;
+            animation-fill-mode: both;
+        }
+        
+        .monthly-fortune {
+            animation: fadeInUp 0.8s ease-out;
+            animation-fill-mode: both;
+        }
+        
+        /* 月詠セクション全体 */
+        .tsukuyomi-section {
+            animation: fadeInUp 0.6s ease-out;
             animation-fill-mode: both;
         }
 
         /* 月相カードはぽよよんと跳ねる */
-        .moon-phase-card,
-        .hidden-phase-card {
+        .moon-phase-card {
+            animation: bounceIn 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            animation-fill-mode: both;
+        }
+        
+        /* 裏月相カードも同様 */
+        #hidden-phase-card {
             animation: bounceIn 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
             animation-fill-mode: both;
         }
 
-        /* 3つの力は斜めから */
-        .three-powers-container {
+        /* 3つの力セクション */
+        .three-powers {
             animation: diagonalIn 0.6s ease-out;
             animation-fill-mode: both;
         }
 
-        /* 6つの要素は回転しながら */
-        .six-elements-container {
+        /* 6つの要素セクション */
+        .six-elements {
             animation: rotateIn 0.8s ease-out;
+            animation-fill-mode: both;
+        }
+        
+        /* 重要メッセージセクション */
+        #important-message-section {
+            animation: fadeInUp 0.8s ease-out;
             animation-fill-mode: both;
         }
 
@@ -2015,18 +2034,39 @@
             animation-fill-mode: both;
             margin-top: 10px;
         }
+        
+        /* カレンダーセクション */
+        #moonCalendarSection {
+            animation: fadeInUp 0.8s ease-out;
+            animation-fill-mode: both;
+        }
+        
+        /* 運勢グラフ */
+        #fortune-graph {
+            animation: slideInRight 0.8s ease-out;
+            animation-fill-mode: both;
+        }
+        
+        /* バナー画像 */
+        .banner-image {
+            animation: fadeIn 0.6s ease-out;
+            animation-fill-mode: both;
+        }
 
         /* 遅延をつけて順番に表示 */
         .moon-phase-card { animation-delay: 0.2s; }
-        .hidden-phase-card { animation-delay: 0.3s; }
-        .three-powers-container { animation-delay: 0.4s; }
-        .six-elements-container { animation-delay: 0.5s; }
-        .fortune-section:nth-of-type(1) { animation-delay: 0.6s; }
-        .fortune-section:nth-of-type(2) { animation-delay: 0.7s; }
-        .fortune-section:nth-of-type(3) { animation-delay: 0.8s; }
-        .fortune-section:nth-of-type(4) { animation-delay: 0.9s; }
-        .monthly-fortune { animation-delay: 1s; }
-        .important-message-section { animation-delay: 1.1s; }
+        #hidden-phase-card { animation-delay: 0.3s; }
+        .three-powers { animation-delay: 0.4s; }
+        .six-elements { animation-delay: 0.5s; }
+        .fortune-section.destiny { animation-delay: 0.6s; }
+        .fortune-section.love { animation-delay: 0.7s; }
+        .fortune-section.relationship { animation-delay: 0.8s; }
+        .fortune-section.work { animation-delay: 0.9s; }
+        .fortune-section.money { animation-delay: 1s; }
+        .monthly-fortune { animation-delay: 1.1s; }
+        #important-message-section { animation-delay: 1.2s; }
+        #moonCalendarSection { animation-delay: 1.3s; }
+        #fortune-graph { animation-delay: 1.4s; }
 
         /* リストアイテムのアニメーション */
         .feelings-section.pattern1 ul li {
