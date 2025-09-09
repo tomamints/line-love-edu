@@ -13,9 +13,9 @@ function replaceMonthPlaceholders(text) {
     // グローバル診断日を優先的に使用（データベースから取得した値）
     let diagnosisDate;
     
-    if (globalDiagnosisDate) {
+    if (window.globalDiagnosisDate) {
         // データベースから取得した診断日がある場合はそれを使用
-        diagnosisDate = new Date(globalDiagnosisDate);
+        diagnosisDate = new Date(window.globalDiagnosisDate);
     } else {
         // フォールバック：URLパラメータから取得
         const urlParams = new URLSearchParams(window.location.search);

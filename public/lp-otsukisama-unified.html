@@ -1234,11 +1234,7 @@
                         // 診断日をグローバル変数に設定（データベースから取得したcreated_atを使用）
                         if (data.diagnosis.created_at) {
                             // グローバル変数に設定（lp-otsukisama-display.jsで使用）
-                            if (typeof globalDiagnosisDate !== 'undefined') {
-                                globalDiagnosisDate = data.diagnosis.created_at;
-                            } else {
-                                window.globalDiagnosisDate = data.diagnosis.created_at;
-                            }
+                            window.globalDiagnosisDate = data.diagnosis.created_at;
                             console.log('診断日を設定:', data.diagnosis.created_at);
                             
                             // URLパラメータにも追加（フォールバック用）
@@ -1727,11 +1723,7 @@
                         // 診断日をグローバル変数に設定（データベースから取得したcreated_atを使用）
                         if (data.diagnosis.created_at) {
                             // グローバル変数に設定
-                            if (typeof globalDiagnosisDate !== 'undefined') {
-                                globalDiagnosisDate = data.diagnosis.created_at;
-                            } else {
-                                window.globalDiagnosisDate = data.diagnosis.created_at;
-                            }
+                            window.globalDiagnosisDate = data.diagnosis.created_at;
                             console.log('診断日を設定:', data.diagnosis.created_at);
                             
                             // URLパラメータにも追加（フォールバック用）
