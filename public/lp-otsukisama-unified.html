@@ -190,6 +190,61 @@
             line-height: 1.8;
         }
         
+        /* プレビュー機能リストのスタイル */
+        .preview-features-list {
+            text-align: left;
+            max-width: 500px;
+            margin: 30px auto;
+            padding: 0;
+            list-style: none;
+        }
+        
+        .preview-features-list li {
+            color: #4a4a4a;
+            line-height: 2.2;
+            padding: 12px 20px;
+            margin-bottom: 8px;
+            position: relative;
+            background: transparent;
+            border-left: 3px solid rgba(138, 97, 250, 0.3);
+            padding-left: 35px;
+            transition: all 0.3s ease;
+        }
+        
+        .preview-features-list li:hover {
+            background: rgba(138, 97, 250, 0.05);
+            border-left-color: rgba(138, 97, 250, 0.6);
+            padding-left: 40px;
+        }
+        
+        .preview-features-list li::before {
+            content: "✨";
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 16px;
+        }
+        
+        /* スマホ表示用 */
+        @media (max-width: 480px) {
+            .preview-features-list {
+                max-width: 100%;
+                margin: 20px auto;
+            }
+            
+            .preview-features-list li {
+                font-size: 14px;
+                padding: 10px 15px 10px 30px;
+                margin-bottom: 6px;
+            }
+            
+            .preview-features-list li::before {
+                font-size: 14px;
+                left: 8px;
+            }
+        }
+        
         .price-info {
             margin: 30px 0;
         }
@@ -392,7 +447,7 @@
                 <p>
                     以下の内容を含む、あなただけの完全な診断結果をご覧いただけます：
                 </p>
-                <ul style="text-align: left; max-width: 500px; margin: 0 auto; color: #666; line-height: 2;">
+                <ul class="preview-features-list">
                     <li>裏の月相とあなたの隠された顔</li>
                     <li>3つの月の力の詳細解説</li>
                     <li>4つの軸から見た恋愛性格の完全分析</li>
