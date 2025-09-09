@@ -1007,7 +1007,7 @@
         }
         
         .combined-description {
-            color: #fff;
+            color: #e8e3ff;
             font-size: 18px;
             line-height: 1.8;
             margin-bottom: 20px;
@@ -1043,7 +1043,7 @@
         }
         
         .compatible-types-card li {
-            color: #fff;
+            color: #e8e3ff;
             padding: 10px 0;
             border-bottom: 1px solid rgba(255,255,255,0.1);
         }
@@ -1372,13 +1372,13 @@
         .feelings-section.pattern1 ul li {
             padding: 18px 20px;
             margin-bottom: 1px;
-            background: rgba(255, 255, 255, 0.85);
+            background: rgba(138, 97, 250, 0.08);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border: none;
             position: relative;
             line-height: 1.8;
-            color: #000;
+            color: #e8e3ff;
             font-size: 16px;
             transform: translateX(0);
             transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
@@ -1398,7 +1398,7 @@
         }
         
         .feelings-section.pattern1 li:active {
-            background: rgba(255, 255, 255, 0.95);
+            background: rgba(138, 97, 250, 0.12);
             transform: translateX(10px);
         }
         
@@ -1426,8 +1426,8 @@
         #fortune-career-text .feelings-section ul li {
             padding: 16px;
             margin: 0;
-            background: #121212;
-            color: #fff;
+            background: rgba(20, 30, 50, 0.85);
+            color: #e8e3ff;
             border-radius: 8px;
             position: relative;
             line-height: 1.6;
@@ -1448,7 +1448,7 @@
             flex-shrink: 0;
             width: 48px;
             height: 48px;
-            background: linear-gradient(135deg, #1DB954 0%, #1ED760 100%);
+            background: linear-gradient(135deg, #8a61fa 0%, #9370DB 100%);
             border-radius: 4px;
             display: flex;
             align-items: center;
@@ -1496,7 +1496,7 @@
             width: 64px;
             height: 64px;
             border-radius: 50%;
-            background: linear-gradient(45deg, #f99185, #f4679d, #c74c9f, #833ab4);
+            background: linear-gradient(45deg, #ffd700, #ffed4e, #ffd700, #9370DB);
             padding: 3px;
             position: relative;
         }
@@ -1508,7 +1508,7 @@
             left: 50%;
             transform: translateX(-50%);
             font-size: 11px;
-            color: #fff;
+            color: #e8e3ff;
             white-space: nowrap;
             text-overflow: ellipsis;
             overflow: hidden;
@@ -1544,13 +1544,13 @@
         .feelings-section ul li {
             padding: 18px 20px;
             margin-bottom: 1px;
-            background: rgba(255, 255, 255, 0.85);
+            background: rgba(138, 97, 250, 0.08);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border: none;
             position: relative;
             line-height: 1.8;
-            color: #000;
+            color: #e8e3ff;
             font-size: 16px;
             transform: translateX(0);
             transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
@@ -1570,7 +1570,7 @@
         }
         
         .feelings-section li:active {
-            background: rgba(255, 255, 255, 0.95);
+            background: rgba(138, 97, 250, 0.12);
             transform: translateX(10px);
         }
         
@@ -1613,11 +1613,11 @@
         .evidence-section ul li {
             padding: 20px 24px;
             margin-bottom: 12px;
-            background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%);
+            background: linear-gradient(135deg, rgba(147, 112, 219, 0.15) 0%, rgba(138, 97, 250, 0.1) 100%);
             border-radius: 28px;
             position: relative;
             line-height: 1.7;
-            color: #1B5E20;
+            color: #e8e3ff;
             font-size: 15px;
             font-weight: 500;
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
@@ -1638,7 +1638,7 @@
             transform: translateY(-50%);
             width: 8px;
             height: 8px;
-            background: #4CAF50;
+            background: #9370DB;
             border-radius: 50%;
             margin-right: 12px;
         }
@@ -2915,7 +2915,7 @@
             top: 50%;
             transform: translateY(-50%);
             background: linear-gradient(135deg, #ffd700, #ffed4e);
-            color: #fff;
+            color: #e8e3ff;
             width: 28px;
             height: 28px;
             border-radius: 50%;
@@ -3271,8 +3271,8 @@
         }
         
         .form-progress-step.completed .form-progress-number {
-            background: #4CAF50;
-            border-color: #4CAF50;
+            background: #9370DB;
+            border-color: #9370DB;
             color: white;
         }
         
@@ -3306,7 +3306,7 @@
         /* 入力フィールドの成功状態 */
         .form-group.success input,
         .form-group.success select {
-            border-color: #4CAF50;
+            border-color: #9370DB;
             background: rgba(76,175,80,0.05);
         }
         
