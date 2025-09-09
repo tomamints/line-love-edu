@@ -2539,6 +2539,16 @@
         #fortune-money-lucky p {
             color: #000000 !important;
         }
+        
+        /* ラッキーアクションのリスト要素も黒文字に */
+        .money-new-section ul,
+        .money-new-section ol,
+        .money-new-section li,
+        #fortune-money-lucky ul,
+        #fortune-money-lucky ol,
+        #fortune-money-lucky li {
+            color: #000000 !important;
+        }
 
         /* ========================================
            モバイル最適化改善 (2025年1月)
