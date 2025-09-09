@@ -3299,14 +3299,8 @@
         }
         
         .advice-section::before {
-            content: "✨ アドバイス";
-            position: absolute;
-            top: -12px;
-            left: 30px;
-            background: linear-gradient(135deg, #1a1a2e, #16213e);
-            padding: 5px 20px;
-            border-radius: 20px;
-            border: 2px solid rgba(255, 215, 0, 0.3);
+            content: "";
+            display: none;
             font-size: 14px;
             font-weight: bold;
             color: #ffd700;
