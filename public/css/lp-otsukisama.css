@@ -1222,20 +1222,28 @@
             margin-bottom: 12px;
         }
 
-        /* 証拠リスト - シンプルなセクション */
+        /* 証拠リスト - 一つのカード内に格納 */
         .recent-events-section {
-            background: transparent;
-            border: none;
-            border-radius: 0;
-            padding: 20px 0;
+            background: linear-gradient(135deg, rgba(30, 30, 45, 0.95), rgba(20, 20, 35, 0.95));
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            border-radius: 20px;
+            padding: 30px;
             margin: 30px 0;
-            box-shadow: none;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3),
+                        inset 0 1px 0 rgba(255,255,255,0.1);
             position: relative;
             overflow: hidden;
         }
         
         .recent-events-section::before {
-            display: none;
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #ffd700, #ffed4e, #ffd700);
+            animation: shimmer 3s infinite;
         }
         
         @keyframes shimmer {
@@ -1250,11 +1258,11 @@
         }
 
         .recent-events-list li {
-            padding: 8px 0 8px 35px;
+            padding: 15px 20px 15px 45px;
             margin-bottom: 12px;
-            background: transparent;
-            border-radius: 0;
-            border-left: 2px solid rgba(255, 215, 0, 0.4);
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            border-left: 3px solid rgba(255, 215, 0, 0.6);
             position: relative;
             transition: all 0.3s ease;
         }
@@ -1264,8 +1272,8 @@
         }
         
         .recent-events-list li:hover {
-            background: transparent;
-            transform: translateX(3px);
+            background: rgba(255, 255, 255, 0.06);
+            transform: translateX(5px);
             border-left-color: #ffd700;
         }
         
