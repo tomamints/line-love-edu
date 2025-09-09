@@ -1295,7 +1295,7 @@
         }
         
         .recent-events-list li::before {
-            content: "✦";
+            content: "";
             position: absolute;
             left: 15px;
             top: 50%;
@@ -1337,7 +1337,7 @@
         }
 
         .action-list li::before {
-            content: "💫";
+            content: "";
             position: absolute;
             left: 12px;
             top: 50%;
