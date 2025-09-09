@@ -2503,22 +2503,35 @@
         }
         
         /* テキストセクションのスタイル - バナーの下に吊り下がるデザイン */
+        /* シンプルで読みやすい箇条書きデザイン */
         .hanging-text {
-            margin-top: -20px;
-            padding: 35px 30px 25px;
-            background: #ffffff;
-            border-radius: 0 0 20px 20px;
-            border: 1px solid rgba(0, 0, 0, 0.1);
-            border-top: none;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            margin-top: 10px;
+            padding: 20px 15px;
+            background: transparent;
+            border-radius: 0;
+            border: none;
+            box-shadow: none;
             position: relative;
             z-index: 0;
         }
         
         .hanging-text p {
-            color: #333333;
-            line-height: 1.8;
+            color: #ffffff;
+            line-height: 1.9;
             margin: 0;
+            font-size: 16px;
+            padding-left: 25px;
+            position: relative;
+        }
+        
+        /* エレガントな箇条書きマーカー */
+        .hanging-text p::before {
+            content: "◆";
+            position: absolute;
+            left: 0;
+            color: #ffd700;
+            font-size: 14px;
+            top: 3px;
         }
         
         /* メインバナーと解説の吊り下げデザイン用ラッパー */
@@ -2561,7 +2574,10 @@
         .relationship-new-section.hanging-text,
         .money-new-section.hanging-text,
         .work-new-section.hanging-text {
-            margin: 0 0 40px 0;
+            margin: 15px 0 25px 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, transparent 100%);
+            border-left: 3px solid rgba(255,215,0,0.3);
+            padding-left: 25px;
         }
         
         .love-new-section h3,
@@ -2580,12 +2596,21 @@
         .work-new-section p,
         .fortune-work-new-talent,
         .fortune-work-turning-point {
-            color: #000000;
-            line-height: 1.8;
-            font-size: 18px;
-            text-shadow: none;
-            margin: 0;
+            color: #ffffff;
+            line-height: 2.0;
+            font-size: 16px;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+            margin: 0 0 15px 0;
             font-weight: 400;
+            letter-spacing: 0.5px;
+        }
+        
+        /* 最後の項目の余白調整 */
+        .love-new-section p:last-child,
+        .relationship-new-section p:last-child,
+        .money-new-section p:last-child,
+        .work-new-section p:last-child {
+            margin-bottom: 0;
         }
         
         /* ラッキーアクションも黒文字に統一 */
@@ -2600,56 +2625,46 @@
         #fortune-money-lucky ul,
         #fortune-money-lucky ol,
         #fortune-money-lucky li {
-            color: #000000 !important;
+            color: #ffffff !important;
         }
         
-        /* ラッキーアクションのチェックリスト風デザイン */
+        /* ラッキーアクションのエレガントなリストデザイン */
         #fortune-money-lucky ul {
             list-style: none !important;
-            padding: 20px !important;
+            padding: 0 !important;
             margin: 0 !important;
-            background: linear-gradient(135deg, #fff9f0 0%, #fffef8 100%);
-            border-radius: 15px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            background: transparent;
         }
         
         #fortune-money-lucky li {
             position: relative;
-            padding: 12px 20px 12px 45px !important;
-            margin-bottom: 15px !important;
-            background: white;
-            border-radius: 8px;
-            border: 1px solid #f0e0d0;
+            padding: 8px 0 8px 30px !important;
+            margin-bottom: 12px !important;
+            background: transparent;
+            border-radius: 0;
+            border: none;
+            border-left: 2px solid rgba(255,215,0,0.4);
             transition: all 0.3s ease;
             font-size: 16px !important;
-            line-height: 1.6 !important;
+            line-height: 1.8 !important;
+            color: #ffffff !important;
         }
         
         #fortune-money-lucky li:hover {
-            transform: translateX(5px);
-            box-shadow: 0 2px 8px rgba(255,200,100,0.2);
-            border-color: #ffd700;
+            padding-left: 35px !important;
+            border-left-color: #ffd700;
         }
         
         /* 番号の装飾 - 丸で囲まれた番号 */
         #fortune-money-lucky li::before {
             counter-increment: lucky-action;
-            content: counter(lucky-action);
+            content: counter(lucky-action) ".";
             position: absolute;
-            left: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: linear-gradient(135deg, #ffd700, #ffed4e);
-            color: #fff;
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
+            left: 5px;
+            top: 8px;
+            color: #ffd700;
+            font-size: 16px;
             font-weight: bold;
-            box-shadow: 0 2px 4px rgba(255,200,0,0.3);
         }
         
         /* ホバー時の色変更 */
@@ -3363,12 +3378,13 @@
         .relationship-new-section .moon-characteristic,
         .work-new-section .moon-characteristic,
         .money-new-section .moon-characteristic {
-            color: #e91e63;  /* ピンク系の色 */
+            color: #ffd700;  /* ゴールド系の色 */
             font-weight: bold;
-            text-shadow: none;
-            background: linear-gradient(135deg, rgba(233,30,99,0.1) 0%, rgba(233,30,99,0.05) 100%);
-            padding: 2px 4px;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+            background: linear-gradient(135deg, rgba(255,215,0,0.15) 0%, rgba(255,215,0,0.05) 100%);
+            padding: 2px 6px;
             border-radius: 3px;
+            display: inline-block;
         }
         
         /* より目立たせたい場合のバリエーション */
