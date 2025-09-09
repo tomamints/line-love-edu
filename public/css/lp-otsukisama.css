@@ -2929,7 +2929,7 @@
         /* 月詠キャラクター強化 */
         .tsukuyomi-section {
             position: relative;
-            margin: 30px 0;
+            margin: 20px 0;
             display: flex;
             align-items: flex-start;
             gap: 25px;
