@@ -1222,37 +1222,69 @@
             margin-bottom: 12px;
         }
 
+        /* 証拠リスト - 一つのカード内に格納 */
+        .recent-events-section {
+            background: linear-gradient(135deg, rgba(30, 30, 45, 0.95), rgba(20, 20, 35, 0.95));
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            border-radius: 20px;
+            padding: 30px;
+            margin: 30px 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3),
+                        inset 0 1px 0 rgba(255,255,255,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .recent-events-section::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #ffd700, #ffed4e, #ffd700);
+            animation: shimmer 3s infinite;
+        }
+        
+        @keyframes shimmer {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 1; }
+        }
+        
         .recent-events-list {
             list-style: none;
             padding: 0;
-            margin: 20px 0;
+            margin: 20px 0 0 0;
         }
 
         .recent-events-list li {
-            border-left: 4px solid #ffd700;
-            padding: 18px 20px;
-            margin-bottom: 15px;
-            background: linear-gradient(135deg, rgba(255, 215, 0, 0.08), rgba(255, 255, 255, 0.02));
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 15px 20px 15px 45px;
+            margin-bottom: 12px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            border-left: 3px solid rgba(255, 215, 0, 0.6);
             position: relative;
             transition: all 0.3s ease;
         }
         
+        .recent-events-list li:last-child {
+            margin-bottom: 0;
+        }
+        
         .recent-events-list li:hover {
+            background: rgba(255, 255, 255, 0.06);
             transform: translateX(5px);
-            box-shadow: 0 4px 15px rgba(255,215,0,0.2);
-            background: linear-gradient(135deg, rgba(255, 215, 0, 0.12), rgba(255, 255, 255, 0.04));
+            border-left-color: #ffd700;
         }
         
         .recent-events-list li::before {
             content: "✦";
             position: absolute;
-            left: -2px;
+            left: 15px;
             top: 50%;
             transform: translateY(-50%);
             color: #ffd700;
-            font-size: 18px;
+            font-size: 16px;
         }
 
         /* アクションリストのスタイル */
@@ -2632,15 +2664,15 @@
         }
         
         
-        /* 問いかけバナー画像のスタイル - 全開で大きく表示 */
+        /* 問いかけバナー画像のスタイル - 全開で大きく表示、囲いなし */
         .inquiry-banner {
             width: 100%;
             max-width: 100%;  /* 全幅表示 */
             height: auto;
-            margin: 30px auto;
+            margin: 30px 0;  /* 左右マージンを削除 */
             display: block;
-            border-radius: 15px;
-            box-shadow: 0 8px 25px rgba(255,215,0,0.2);
+            border-radius: 0;  /* 角丸を削除 */
+            box-shadow: none;  /* 影を削除 */
             animation: fadeInScale 0.8s ease-out;
         }
         
@@ -2655,84 +2687,135 @@
             }
         }
         
-        /* アドバイスセクションの番号リスト - 綺麗なカード型デザイン */
+        /* アドバイスセクション - 一つの美しいカードに統合 */
+        .advice-section {
+            background: linear-gradient(135deg, 
+                rgba(255, 215, 0, 0.03), 
+                rgba(147, 112, 219, 0.02));
+            border: 2px solid rgba(255, 215, 0, 0.25);
+            border-radius: 20px;
+            padding: 30px;
+            margin: 30px 0;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.15),
+                        inset 0 2px 0 rgba(255,255,255,0.05);
+            position: relative;
+            backdrop-filter: blur(10px);
+        }
+        
+        .advice-section::before {
+            content: "✨ アドバイス";
+            position: absolute;
+            top: -12px;
+            left: 30px;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            padding: 5px 20px;
+            border-radius: 20px;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            font-size: 14px;
+            font-weight: bold;
+            color: #ffd700;
+        }
+        
         .advice-section ol {
             counter-reset: advice-counter;
             list-style: none;
-            padding: 0;
-            margin: 25px 0;
+            padding: 10px 0 0 0;
+            margin: 0;
         }
 
         .advice-section ol li {
             counter-increment: advice-counter;
-            padding: 20px 20px 20px 60px;
-            margin-bottom: 20px;
-            background: linear-gradient(135deg, rgba(255, 215, 0, 0.06), rgba(255, 255, 255, 0.02));
-            border-radius: 15px;
+            padding: 15px 15px 15px 50px;
+            margin-bottom: 15px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 12px;
             position: relative;
-            border: 2px solid rgba(255, 215, 0, 0.3);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border-left: 3px solid rgba(255, 215, 0, 0.5);
             transition: all 0.3s ease;
+        }
+        
+        .advice-section ol li:last-child {
+            margin-bottom: 0;
         }
 
         .advice-section ol li:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(255,215,0,0.2);
-            border-color: rgba(255, 215, 0, 0.5);
-            background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(255, 255, 255, 0.04));
+            background: rgba(255, 255, 255, 0.05);
+            transform: translateX(5px);
+            border-left-color: #ffd700;
         }
 
         .advice-section ol li::before {
             content: counter(advice-counter);
             position: absolute;
-            left: 18px;
+            left: 15px;
             top: 50%;
             transform: translateY(-50%);
             background: linear-gradient(135deg, #ffd700, #ffed4e);
             color: #1a1a2e;
-            width: 32px;
-            height: 32px;
+            width: 26px;
+            height: 26px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: bold;
-            font-size: 16px;
-            box-shadow: 0 3px 10px rgba(255,215,0,0.4);
+            font-size: 14px;
+            box-shadow: 0 2px 8px rgba(255,215,0,0.3);
         }
         
-        .advice-section ol li::after {
-            content: "";
+        /* フィーリングリスト - 一つの綺麗なカードに統合 */
+        .feeling-list {
+            background: linear-gradient(135deg, 
+                rgba(147, 112, 219, 0.05), 
+                rgba(255, 107, 107, 0.03));
+            border: 2px solid rgba(147, 112, 219, 0.25);
+            border-radius: 20px;
+            padding: 30px;
+            margin: 30px 0;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.12),
+                        inset 0 2px 0 rgba(255,255,255,0.05);
+            position: relative;
+            backdrop-filter: blur(10px);
+        }
+        
+        .feeling-list::before {
+            content: "💖 最近の気持ち";
             position: absolute;
-            left: 34px;
-            top: 0;
-            bottom: 0;
-            width: 1px;
-            background: linear-gradient(to bottom, transparent, rgba(255,215,0,0.2), transparent);
+            top: -12px;
+            left: 30px;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            padding: 5px 20px;
+            border-radius: 20px;
+            border: 2px solid rgba(147, 112, 219, 0.3);
+            font-size: 14px;
+            font-weight: bold;
+            color: #9370db;
         }
         
-        /* フィーリングリスト - 綺麗なカード型デザイン */
         .feeling-list ul {
             list-style: none;
-            padding: 0;
-            margin: 20px 0;
+            padding: 10px 0 0 0;
+            margin: 0;
         }
         
         .feeling-list li {
-            padding: 18px 20px 18px 45px;
-            margin-bottom: 15px;
-            background: linear-gradient(135deg, rgba(147, 112, 219, 0.08), rgba(255, 255, 255, 0.02));
+            padding: 15px 20px 15px 45px;
+            margin-bottom: 12px;
+            background: rgba(255, 255, 255, 0.02);
             border-radius: 12px;
-            border: 2px solid rgba(147, 112, 219, 0.3);
-            box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+            border-left: 3px solid rgba(147, 112, 219, 0.5);
             position: relative;
             transition: all 0.3s ease;
         }
         
+        .feeling-list li:last-child {
+            margin-bottom: 0;
+        }
+        
         .feeling-list li:hover {
+            background: rgba(255, 255, 255, 0.05);
             transform: translateX(5px);
-            box-shadow: 0 5px 18px rgba(147,112,219,0.2);
-            background: linear-gradient(135deg, rgba(147, 112, 219, 0.12), rgba(255, 255, 255, 0.04));
+            border-left-color: #9370db;
         }
         
         .feeling-list li::before {
@@ -2741,7 +2824,7 @@
             left: 15px;
             top: 50%;
             transform: translateY(-50%);
-            font-size: 20px;
+            font-size: 18px;
         }
         
         /* すべてのul/olリストのベースデザイン改善 */
