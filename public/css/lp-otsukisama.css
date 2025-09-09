@@ -2502,23 +2502,6 @@
             }
         }
         
-        /* スマホ（480px以下）でのバナー最適化 */
-        @media (max-width: 480px) {
-            .section-banner {
-                width: 100%;
-                margin-left: 0;
-                margin-right: 0;
-                margin-top: 15px;
-                border-radius: 8px 8px 0 0;
-            }
-            
-            .fortune-content .section-banner {
-                width: 100%;
-                margin-left: 0;
-                margin-right: 0;
-            }
-        }
-        
         /* テキストセクションのスタイル - バナーの下に吊り下がるデザイン */
         /* シンプルで読みやすい箇条書きデザイン */
         .hanging-text {
@@ -2970,52 +2953,6 @@
             
             .sub-description {
                 font-size: 13px;
-            }
-            
-            /* 箇条書きのスマホ最適化 */
-            .hanging-text {
-                padding: 15px 10px;
-            }
-            
-            .hanging-text p {
-                font-size: 14px;
-                line-height: 1.8;
-                padding-left: 20px;
-            }
-            
-            .hanging-text p::before {
-                font-size: 12px;
-                top: 2px;
-            }
-            
-            .love-new-section.hanging-text,
-            .relationship-new-section.hanging-text,
-            .money-new-section.hanging-text,
-            .work-new-section.hanging-text {
-                margin: 10px 0 20px 0;
-                padding-left: 15px;
-            }
-            
-            .love-new-section p,
-            .relationship-new-section p,
-            .money-new-section p,
-            .work-new-section p {
-                font-size: 14px;
-                line-height: 1.8;
-                margin-bottom: 10px;
-            }
-            
-            #fortune-money-lucky li {
-                padding: 6px 0 6px 25px !important;
-                font-size: 14px !important;
-                line-height: 1.7 !important;
-                margin-bottom: 10px !important;
-            }
-            
-            #fortune-money-lucky li::before {
-                font-size: 14px;
-                top: 6px;
-                left: 3px;
             }
         }
         
