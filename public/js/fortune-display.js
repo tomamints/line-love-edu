@@ -729,9 +729,9 @@ class FortuneDisplay {
                     <ul>
             `;
             
-            // アクションを追加（クリックでチェック機能付き）
+            // アクションを追加（自動でチェックアニメーション）
             theme.actions.forEach((action, index) => {
-                htmlContent += `<li onclick="this.classList.toggle('checked')">${action}</li>`;
+                htmlContent += `<li class="action-item-${index}">${action}</li>`;
             });
             
             htmlContent += `
