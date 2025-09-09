@@ -7,13 +7,27 @@ let personalityAxesData = null;
 function replaceMonthPlaceholders(text) {
     if (!text) return text;
     
-    const now = new Date();
-    const currentMonth = now.getMonth() + 1; // 0-indexed to 1-indexed
-    const currentYear = now.getFullYear();
+    // 診断日を取得（URLパラメータ、localStorage、または現在日時の順で優先）
+    let diagnosisDate;
+    const urlParams = new URLSearchParams(window.location.search);
+    const diagnosisDateParam = urlParams.get('diagnosisDate');
+    
+    if (diagnosisDateParam) {
+        diagnosisDate = new Date(diagnosisDateParam);
+    } else if (localStorage.getItem('diagnosisDate')) {
+        diagnosisDate = new Date(localStorage.getItem('diagnosisDate'));
+    } else {
+        // 初回の場合は現在日時を使用し、保存する
+        diagnosisDate = new Date();
+        localStorage.setItem('diagnosisDate', diagnosisDate.toISOString());
+    }
+    
+    const currentMonth = diagnosisDate.getMonth() + 1; // 0-indexed to 1-indexed
+    const currentYear = diagnosisDate.getFullYear();
     
     // M（Xヶ月先）月 のパターンを置換
     text = text.replace(/M（(\d+)ヶ月先）月/g, (match, monthsAhead) => {
-        const targetDate = new Date(currentYear, now.getMonth() + parseInt(monthsAhead), 1);
+        const targetDate = new Date(currentYear, diagnosisDate.getMonth() + parseInt(monthsAhead), 1);
         return `${targetDate.getMonth() + 1}月`;
     });
     
