@@ -895,31 +895,10 @@
                     </h4>
                     <div class="content-locked-mini">
                         <div class="text-blur">
-                            <div class="calendar-wrapper" style="overflow-x: auto;">
-                                <!-- 1ヶ月目 -->
-                                <div style="margin-bottom: 30px;">
-                                    <div class="weekday-header">
-                                        <div class="weekday">日</div>
-                                        <div class="weekday">月</div>
-                                        <div class="weekday">火</div>
-                                        <div class="weekday">水</div>
-                                        <div class="weekday">木</div>
-                                        <div class="weekday">金</div>
-                                        <div class="weekday">土</div>
-                                    </div>
-                                    <div id="personalizedCalendar" class="calendar-grid">
-                                        <!-- JavaScriptで動的に生成（2ヶ月分） -->
-                                    </div>
-                                </div>
+                            <!-- シンプルなカレンダー表示エリア -->
+                            <div id="personalizedCalendar">
+                                <!-- JavaScriptで動的に生成 -->
                             </div>
-                            <div class="calendar-legend">
-                                <span class="legend-item"><span class="legend-dot lucky"></span>ラッキーデー</span>
-                                <span class="legend-item"><span class="legend-dot power"></span>パワーデー</span>
-                                <span class="legend-item"><span class="legend-dot caution"></span>注意日</span>
-                            </div>
-                            <p id="calendarMessage" style="color: #ffffff; text-align: center; margin-top: 20px; font-size: 16px; font-weight: 600; text-shadow: 1px 1px 3px rgba(0,0,0,0.5);">
-                                <!-- パターンごとのメッセージが動的に表示 -->
-                            </p>
                         </div>
                         <div class="lock-overlay-mini">
                             <button class="purchase-button-mini" onclick="scrollToPayment()">🔒 購入する</button>

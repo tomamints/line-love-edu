@@ -37,13 +37,9 @@ function getCalendarPattern(patternId) {
 // カレンダー生成関数（2ヶ月分）
 async function generatePersonalizedCalendar(providedPatternId) {
     const container = document.getElementById('personalizedCalendar');
-    const messageElement = document.getElementById('calendarMessage');
     const monthYearElement = document.getElementById('calendarMonthYear');
     
     console.log('[Calendar] Starting generation for pattern:', providedPatternId);
-    console.log('[Calendar] Container element:', container);
-    console.log('[Calendar] Message element:', messageElement);
-    console.log('[Calendar] MonthYear element:', monthYearElement);
     
     if (!container) {
         console.error('[Calendar] Container not found: personalizedCalendar');
@@ -77,28 +73,16 @@ async function generatePersonalizedCalendar(providedPatternId) {
     
     if (!patternData) {
         console.error('[Calendar] No calendar pattern found for pattern ID:', numericPatternId);
-        console.log('[Calendar] Available patterns:', calendarPatternsData ? Object.keys(calendarPatternsData) : 'none');
         return;
     }
     console.log('[Calendar] Pattern data found:', patternData);
-    console.log('[Calendar] Lucky days:', patternData.lucky_days);
-    console.log('[Calendar] Power days:', patternData.power_days);
-    console.log('[Calendar] Caution days:', patternData.caution_days);
-    
-    // メッセージを表示
-    if (messageElement) {
-        messageElement.textContent = patternData.monthly_message;
-        console.log('[Calendar] Message set:', patternData.monthly_message);
-    }
     
     // 現在の月の情報を取得
     const currentDate = new Date();
     const currentYear = currentDate.getFullYear();
     const currentMonth = currentDate.getMonth();
     
-    console.log('[Calendar] Current date:', currentYear, currentMonth + 1);
-    
-    // 2ヶ月分のカレンダーを生成
+    // 月の名前
     const monthNames = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'];
     
     // 月の範囲を表示
@@ -109,9 +93,215 @@ async function generatePersonalizedCalendar(providedPatternId) {
         monthYearElement.textContent = `${currentYear}年 ${monthNames[currentMonth]} - ${nextYear}年 ${monthNames[nextMonth]}`;
     }
     
-    // カレンダーコンテナの内容を完全に再構築
-    // 1ヶ月目のグリッド、2ヶ月目のヘッダー、2ヶ月目のグリッドという構造にする
-    let monthsHTML = [];
+    // カレンダーHTMLを構築
+    let calendarHTML = `
+        <style>
+            .calendar-container {
+                padding: 20px;
+                background: rgba(30, 25, 60, 0.95);
+                border-radius: 15px;
+                margin: 0 auto;
+                max-width: 100%;
+            }
+            
+            .calendar-message {
+                color: #ffd700;
+                text-align: center;
+                margin-bottom: 30px;
+                font-size: 18px;
+                font-weight: bold;
+                text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+            }
+            
+            .month-calendar {
+                margin-bottom: 40px;
+            }
+            
+            .month-header {
+                color: #ffd700;
+                font-size: 20px;
+                font-weight: bold;
+                text-align: center;
+                margin-bottom: 15px;
+                text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+            }
+            
+            .calendar-grid {
+                display: grid;
+                grid-template-columns: repeat(7, 1fr);
+                gap: 5px;
+                margin-bottom: 20px;
+            }
+            
+            .weekday {
+                text-align: center;
+                color: #ffd700;
+                font-size: 14px;
+                font-weight: bold;
+                padding: 10px 0;
+            }
+            
+            .weekday.sunday {
+                color: #ff9999;
+            }
+            
+            .weekday.saturday {
+                color: #9999ff;
+            }
+            
+            .calendar-day {
+                aspect-ratio: 1;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                background: rgba(138, 97, 250, 0.1);
+                border: 1px solid rgba(138, 97, 250, 0.3);
+                border-radius: 10px;
+                padding: 5px;
+                position: relative;
+                transition: all 0.3s;
+                min-height: 60px;
+            }
+            
+            .calendar-day:hover {
+                background: rgba(255, 215, 0, 0.2);
+                transform: scale(1.05);
+            }
+            
+            .calendar-day.empty {
+                background: transparent;
+                border: none;
+            }
+            
+            .calendar-day.empty:hover {
+                transform: none;
+                background: transparent;
+            }
+            
+            .calendar-day.lucky {
+                background: linear-gradient(135deg, rgba(255, 215, 0, 0.3), rgba(255, 215, 0, 0.2));
+                border: 2px solid #ffd700;
+            }
+            
+            .calendar-day.power {
+                background: linear-gradient(135deg, rgba(147, 112, 219, 0.3), rgba(147, 112, 219, 0.2));
+                border: 2px solid #9370DB;
+            }
+            
+            .calendar-day.caution {
+                background: rgba(255, 100, 100, 0.2);
+                border: 2px solid rgba(255, 100, 100, 0.5);
+            }
+            
+            .calendar-day.today {
+                background: rgba(138, 97, 250, 0.4);
+                border: 3px solid #8a61fa;
+                box-shadow: 0 0 10px rgba(138, 97, 250, 0.5);
+            }
+            
+            .day-number {
+                color: #ffffff;
+                font-size: 16px;
+                font-weight: bold;
+                margin-bottom: 2px;
+            }
+            
+            .moon-phase {
+                font-size: 20px;
+            }
+            
+            .special-mark {
+                position: absolute;
+                top: 2px;
+                right: 2px;
+                font-size: 12px;
+            }
+            
+            .special-tooltip {
+                position: absolute;
+                bottom: -25px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: rgba(0, 0, 0, 0.9);
+                color: #ffd700;
+                padding: 5px 10px;
+                border-radius: 5px;
+                font-size: 11px;
+                white-space: nowrap;
+                z-index: 10;
+                display: none;
+            }
+            
+            .calendar-day:hover .special-tooltip {
+                display: block;
+            }
+            
+            .calendar-legend {
+                display: flex;
+                justify-content: center;
+                gap: 30px;
+                margin-top: 20px;
+                flex-wrap: wrap;
+            }
+            
+            .legend-item {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                color: #ffffff;
+                font-size: 14px;
+            }
+            
+            .legend-dot {
+                width: 16px;
+                height: 16px;
+                border-radius: 50%;
+                display: inline-block;
+            }
+            
+            .legend-dot.lucky {
+                background: #ffd700;
+            }
+            
+            .legend-dot.power {
+                background: #9370DB;
+            }
+            
+            .legend-dot.caution {
+                background: rgba(255, 100, 100, 0.8);
+            }
+            
+            @media (max-width: 768px) {
+                .calendar-grid {
+                    gap: 2px;
+                }
+                
+                .calendar-day {
+                    min-height: 50px;
+                }
+                
+                .day-number {
+                    font-size: 14px;
+                }
+                
+                .moon-phase {
+                    font-size: 16px;
+                }
+                
+                .weekday {
+                    font-size: 12px;
+                    padding: 5px 0;
+                }
+            }
+        </style>
+        <div class="calendar-container">
+    `;
+    
+    // メッセージを追加
+    if (patternData.monthly_message) {
+        calendarHTML += `<div class="calendar-message">${patternData.monthly_message}</div>`;
+    }
     
     // 2ヶ月分のカレンダーを生成
     for (let monthOffset = 0; monthOffset < 2; monthOffset++) {
@@ -120,11 +310,22 @@ async function generatePersonalizedCalendar(providedPatternId) {
         const daysInMonth = new Date(targetYear, targetMonth + 1, 0).getDate();
         const firstDayOfMonth = new Date(targetYear, targetMonth, 1).getDay();
         
-        let monthHTML = '';
+        calendarHTML += `<div class="month-calendar">`;
+        calendarHTML += `<div class="month-header">${targetYear}年 ${monthNames[targetMonth]}</div>`;
+        calendarHTML += `<div class="calendar-grid">`;
+        
+        // 曜日ヘッダー
+        const weekdays = ['日', '月', '火', '水', '木', '金', '土'];
+        for (let i = 0; i < 7; i++) {
+            let weekdayClass = 'weekday';
+            if (i === 0) weekdayClass += ' sunday';
+            if (i === 6) weekdayClass += ' saturday';
+            calendarHTML += `<div class="${weekdayClass}">${weekdays[i]}</div>`;
+        }
         
         // 月初めまでの空白
         for (let i = 0; i < firstDayOfMonth; i++) {
-            monthHTML += '<div class="day-cell empty"></div>';
+            calendarHTML += '<div class="calendar-day empty"></div>';
         }
         
         // 各日付
@@ -133,22 +334,26 @@ async function generatePersonalizedCalendar(providedPatternId) {
             const moonAge = calculateMoonAge(date);
             const moonEmoji = getMoonEmoji(moonAge);
             
-            let dayClass = 'day-cell';
+            let dayClass = 'calendar-day';
+            let specialMark = '';
             let specialTooltip = '';
             
             // ラッキーデーをチェック
             if (patternData.lucky_days && patternData.lucky_days.includes(day)) {
                 dayClass += ' lucky';
+                specialMark = '✨';
             }
             
             // パワーデーをチェック
             if (patternData.power_days && patternData.power_days.includes(day)) {
                 dayClass += ' power';
+                specialMark = '💫';
             }
             
             // 注意日をチェック
             if (patternData.caution_days && patternData.caution_days.includes(day)) {
                 dayClass += ' caution';
+                specialMark = '⚠️';
             }
             
             // 特別な日のマークとメッセージ
@@ -162,10 +367,11 @@ async function generatePersonalizedCalendar(providedPatternId) {
                 dayClass += ' today';
             }
             
-            monthHTML += `
-                <div class="${dayClass}" data-day="${day}" data-month="${targetMonth}" data-year="${targetYear}">
+            calendarHTML += `
+                <div class="${dayClass}">
                     <div class="day-number">${day}</div>
                     <div class="moon-phase">${moonEmoji}</div>
+                    ${specialMark ? `<div class="special-mark">${specialMark}</div>` : ''}
                     ${specialTooltip}
                 </div>
             `;
@@ -176,80 +382,37 @@ async function generatePersonalizedCalendar(providedPatternId) {
         const remainingCells = 7 - (totalCells % 7);
         if (remainingCells < 7) {
             for (let i = 0; i < remainingCells; i++) {
-                monthHTML += '<div class="day-cell empty"></div>';
+                calendarHTML += '<div class="calendar-day empty"></div>';
             }
         }
         
-        monthsHTML.push({
-            year: targetYear,
-            month: targetMonth,
-            monthName: monthNames[targetMonth],
-            html: monthHTML
-        });
-    }
-    
-    // 全体のHTMLを構築
-    let fullHTML = '<div class="moon-calendar-container">';
-    
-    // カレンダーメッセージ
-    if (patternData.monthly_message) {
-        fullHTML += `<div class="calendar-message">${patternData.monthly_message}</div>`;
-    }
-    
-    // 各月のカレンダーを生成
-    for (let i = 0; i < monthsHTML.length; i++) {
-        const monthData = monthsHTML[i];
-        
-        fullHTML += '<div class="month-calendar">';
-        
-        // 月ヘッダー
-        fullHTML += `<div class="month-header">${monthData.year}年 ${monthData.monthName}</div>`;
-        
-        // 曜日行
-        fullHTML += `
-            <div class="weekdays">
-                <div class="weekday sunday">日</div>
-                <div class="weekday">月</div>
-                <div class="weekday">火</div>
-                <div class="weekday">水</div>
-                <div class="weekday">木</div>
-                <div class="weekday">金</div>
-                <div class="weekday saturday">土</div>
-            </div>
-        `;
-        
-        // 日付グリッド
-        fullHTML += '<div class="days-grid">';
-        fullHTML += monthData.html;
-        fullHTML += '</div>';
-        
-        fullHTML += '</div>'; // month-calendar を閉じる
+        calendarHTML += '</div>'; // calendar-grid
+        calendarHTML += '</div>'; // month-calendar
     }
     
     // 凡例を追加
-    fullHTML += `
+    calendarHTML += `
         <div class="calendar-legend">
             <div class="legend-item">
-                <div class="legend-dot lucky"></div>
+                <span class="legend-dot lucky"></span>
                 <span>ラッキーデー</span>
             </div>
             <div class="legend-item">
-                <div class="legend-dot power"></div>
+                <span class="legend-dot power"></span>
                 <span>パワーデー</span>
             </div>
             <div class="legend-item">
-                <div class="legend-dot caution"></div>
+                <span class="legend-dot caution"></span>
                 <span>注意日</span>
             </div>
         </div>
     `;
     
-    fullHTML += '</div>'; // moon-calendar-container を閉じる
+    calendarHTML += '</div>'; // calendar-container
     
-    // カレンダーのセルのみを更新
-    container.innerHTML = fullHTML;
-    console.log('[Calendar] Calendar HTML inserted, length:', fullHTML.length);
-    console.log('[Calendar] Container now has children:', container.children.length);
+    // カレンダーを挿入
+    container.innerHTML = calendarHTML;
+    console.log('[Calendar] Calendar generated successfully');
 }
 
 // 月齢から月の絵文字を取得

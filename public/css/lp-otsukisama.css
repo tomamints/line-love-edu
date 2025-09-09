@@ -1383,6 +1383,20 @@
             border-radius: 15px;
             padding: 20px;
             margin-top: 20px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .calendar-container {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            min-width: 320px;
+        }
+        
+        .month-calendar {
+            display: flex;
+            flex-direction: column;
         }
         
         .month-header {
@@ -2217,24 +2231,38 @@
             
             .calendar-wrapper {
                 padding: 10px;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+            
+            .calendar-container {
+                min-width: 280px;
+            }
+            
+            .month-calendar {
+                margin-bottom: 20px;
             }
             
             .weekday-header {
-                gap: 5px;
+                gap: 2px;
+                grid-template-columns: repeat(7, minmax(35px, 1fr));
             }
             
             .weekday {
-                font-size: 12px;
+                font-size: 11px;
+                padding: 4px 2px;
             }
             
             .calendar-grid {
-                gap: 5px;
+                gap: 2px;
+                grid-template-columns: repeat(7, minmax(35px, 1fr));
             }
             
             .calendar-day {
-                font-size: 11px;
-                padding: 5px;
-                min-width: 0;
+                font-size: 10px;
+                padding: 4px 2px;
+                min-width: 35px;
+                min-height: 35px;
             }
             
             .day-number {
