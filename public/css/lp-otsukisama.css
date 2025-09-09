@@ -2578,40 +2578,36 @@
             border-color: #ffd700;
         }
         
-        /* 番号の装飾 */
+        /* 番号の装飾 - 丸で囲まれた番号 */
         #fortune-money-lucky li::before {
+            counter-increment: lucky-action;
+            content: counter(lucky-action);
             position: absolute;
             left: 15px;
             top: 50%;
             transform: translateY(-50%);
-            font-size: 20px;
-            color: #ffd700;
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            color: #fff;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
             font-weight: bold;
-        }
-        
-        #fortune-money-lucky li:nth-child(1)::before {
-            content: "①";
-        }
-        
-        #fortune-money-lucky li:nth-child(2)::before {
-            content: "②";
-        }
-        
-        #fortune-money-lucky li:nth-child(3)::before {
-            content: "③";
-        }
-        
-        #fortune-money-lucky li:nth-child(4)::before {
-            content: "④";
-        }
-        
-        #fortune-money-lucky li:nth-child(5)::before {
-            content: "⑤";
+            box-shadow: 0 2px 4px rgba(255,200,0,0.3);
         }
         
         /* ホバー時の色変更 */
         #fortune-money-lucky li:hover::before {
-            color: #ff9500;
+            background: linear-gradient(135deg, #ff9500, #ffa500);
+            transform: translateY(-50%) scale(1.1);
+        }
+        
+        /* カウンターのリセット */
+        #fortune-money-lucky ul {
+            counter-reset: lucky-action;
         }
         
         
