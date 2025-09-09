@@ -138,11 +138,13 @@ class FortuneDisplay {
         // 証拠セクション
         htmlContent += '<div class="recent-events-section">';
         htmlContent += '<img src="/images/banner/inqur/yellow-recently-experienced-this.png" alt="最近こんなこと、ありませんでしたか？" class="inquiry-banner" />';
-        htmlContent += '<ul class="recent-events-list">';
+        htmlContent += '<div class="feelings-section pattern1">';
+        htmlContent += '<ul>';
         if (mainText.evidence1) htmlContent += `<li>${this.processText(mainText.evidence1, userName)}</li>`;
         if (mainText.evidence2) htmlContent += `<li>${this.processText(mainText.evidence2, userName)}</li>`;
         if (mainText.evidence3) htmlContent += `<li>${this.processText(mainText.evidence3, userName)}</li>`;
         htmlContent += '</ul>';
+        htmlContent += '</div>';
         if (mainText.evidence4) htmlContent += `<p class="conclusion-text">${this.processText(mainText.evidence4, userName)}</p>`;
         htmlContent += '</div>';
         
@@ -151,11 +153,13 @@ class FortuneDisplay {
         if (mainText.advice1) htmlContent += `<p>${this.processText(mainText.advice1, userName)}</p>`;
         const displayName = userName || 'あなた';
         htmlContent += `<p class="action-list-title">そのためにできることを、今の${displayName}さんに合わせて、3つご紹介しますね。</p>`;
+        htmlContent += '<div class="feelings-section pattern1">';
         htmlContent += '<ul>';
         if (mainText.advice2) htmlContent += `<li>${this.processText(mainText.advice2, userName)}</li>`;
         if (mainText.advice3) htmlContent += `<li>${this.processText(mainText.advice3, userName)}</li>`;
         if (mainText.advice4) htmlContent += `<li>${this.processText(mainText.advice4, userName)}</li>`;
         htmlContent += '</ul>';
+        htmlContent += '</div>';
         if (mainText.advice5) htmlContent += `<div class="conclusion-box"><p>${this.processText(mainText.advice5, userName)}</p></div>`;
         htmlContent += '</div>';
 
