@@ -6,6 +6,52 @@
     <title>おつきさま診断 - 月が導くあなたの運命</title>
     <link rel="stylesheet" href="css/lp-otsukisama.css">
     <link rel="stylesheet" href="css/calendar-new.css">
+    <script>
+        // WebP対応チェックとフォールバック機能
+        function supportsWebP() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 1;
+            canvas.height = 1;
+            return canvas.toDataURL('image/webp').indexOf('image/webp') === 0;
+        }
+        
+        function getImagePath(originalPath) {
+            if (!supportsWebP()) {
+                return originalPath;
+            }
+            
+            // WebP版が存在する可能性のある画像形式の場合、WebP版を返す
+            if (originalPath.match(/\.(jpg|jpeg|png)$/i)) {
+                return originalPath.replace(/\.(jpg|jpeg|png)$/i, '.webp');
+            }
+            
+            return originalPath;
+        }
+        
+        // ページ読み込み後に全ての画像を処理
+        document.addEventListener('DOMContentLoaded', function() {
+            if (supportsWebP()) {
+                // すべてのimg要素のsrcを更新
+                document.querySelectorAll('img').forEach(img => {
+                    const originalSrc = img.src || img.getAttribute('src');
+                    if (originalSrc && originalSrc.match(/\.(jpg|jpeg|png)$/i)) {
+                        const webpSrc = originalSrc.replace(/\.(jpg|jpeg|png)$/i, '.webp');
+                        
+                        // WebP画像の存在を確認
+                        const testImg = new Image();
+                        testImg.onload = function() {
+                            img.src = webpSrc;
+                        };
+                        testImg.onerror = function() {
+                            // WebP版が存在しない場合は元の画像を使用
+                            console.log('WebP not found, using original:', originalSrc);
+                        };
+                        testImg.src = webpSrc;
+                    }
+                });
+            }
+        });
+    </script>
     <style>
         /* プレビュー専用のスタイル */
         .preview-mode .form-section {
