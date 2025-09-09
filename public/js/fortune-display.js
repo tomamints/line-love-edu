@@ -137,7 +137,7 @@ class FortuneDisplay {
         
         // 証拠セクション
         htmlContent += '<div class="recent-events-section">';
-        htmlContent += '<p class="recent-events-title">最近こんなこと、ありませんでしたか？</p>';
+        htmlContent += '<img src="/images/banner/inqur/yellow-recently-experienced-this.png" alt="最近こんなこと、ありませんでしたか？" class="inquiry-banner" />';
         htmlContent += '<ul class="recent-events-list">';
         if (mainText.evidence1) htmlContent += `<li>${this.processText(mainText.evidence1, userName)}</li>`;
         if (mainText.evidence2) htmlContent += `<li>${this.processText(mainText.evidence2, userName)}</li>`;
@@ -294,7 +294,7 @@ class FortuneDisplay {
         // 感情セクション
         htmlContent += '<div class="feelings-section">';
         htmlContent += '<div class="recent-events-section">';
-        htmlContent += '<p class="recent-events-title">最近こんな気持ちになったことはありませんか？</p>';
+        htmlContent += '<img src="/images/banner/inqur/yellow-have-you-felt-like-this.png" alt="最近こんな気持ちになったことはありませんか？" class="inquiry-banner" />';
         htmlContent += '<ul class="recent-events-list">';
         if (mainText.feeling1) htmlContent += `<li>${this.processText(mainText.feeling1, userName)}</li>`;
         if (mainText.feeling2) htmlContent += `<li>${this.processText(mainText.feeling2, userName)}</li>`;
@@ -417,7 +417,7 @@ class FortuneDisplay {
         
         // 感情セクション
         htmlContent += '<div class="feelings-section">';
-        htmlContent += '<p>最近こんなことはありませんか？</p>';
+        htmlContent += '<img src="/images/banner/inqur/white-recently-experienced-this.png" alt="最近こんなことはありませんか？" class="inquiry-banner" />',
         htmlContent += '<ul>';
         if (mainText.feeling1) htmlContent += `<li>${this.processText(mainText.feeling1, userName)}</li>`;
         if (mainText.feeling2) htmlContent += `<li>${this.processText(mainText.feeling2, userName)}</li>`;
@@ -434,7 +434,7 @@ class FortuneDisplay {
         
         // 証拠セクション
         htmlContent += '<div class="evidence-section">';
-        htmlContent += '<p>その証拠にこんなことがあったはず、、、、</p>';
+        htmlContent += '<img src="/images/banner/inqur/white-evidence-these-things-happened.png" alt="その証拠にこんなことがあったはず" class="inquiry-banner" />';
         htmlContent += '<ul>';
         if (mainText.evidence1) htmlContent += `<li>${this.processText(mainText.evidence1, userName)}</li>`;
         if (mainText.evidence2) htmlContent += `<li>${this.processText(mainText.evidence2, userName)}</li>`;
@@ -535,7 +535,7 @@ class FortuneDisplay {
         
         // 感情セクション
         htmlContent += '<div class="feelings-section">';
-        htmlContent += '<p>最近こんなことはありませんでしたか？</p>';
+        htmlContent += '<img src="/images/banner/inqur/white-recently-experienced-this.png" alt="最近こんなことはありませんでしたか？" class="inquiry-banner" />';
         htmlContent += '<ul>';
         if (mainText.feeling1) htmlContent += `<li>${this.processText(mainText.feeling1, userName)}</li>`;
         if (mainText.feeling2) htmlContent += `<li>${this.processText(mainText.feeling2, userName)}</li>`;
