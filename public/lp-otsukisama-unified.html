@@ -1874,5 +1874,84 @@
             </div>
         </div>
     </footer>
+    <!-- スクロールアニメーション用JavaScript -->
+    <script>
+    (function() {
+        // アニメーション対象の要素を取得
+        const animateElements = [
+            '.moon-phase-card',
+            '#hidden-phase-card',
+            '.fortune-section',
+            '.monthly-fortune',
+            '.tsukuyomi-section',
+            '.three-powers',
+            '.six-elements',
+            '#important-message-section',
+            '#moonCalendarSection',
+            '#fortune-graph',
+            '.banner-image',
+            '.feelings-section ul li',
+            '.evidence-section ul li',
+            '.important-actions-list li'
+        ];
+
+        // Intersection Observer の設定
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.1 // 要素の10%が見えたらアニメーション開始
+        };
+
+        // アニメーションクラスを追加
+        const animationClasses = {
+            '.moon-phase-card': 'animate-bounce-in',
+            '#hidden-phase-card': 'animate-bounce-in',
+            '.fortune-section': 'animate-fade-up',
+            '.monthly-fortune': 'animate-fade-up',
+            '.tsukuyomi-section': 'animate-fade-up',
+            '.three-powers': 'animate-diagonal-in',
+            '.six-elements': 'animate-rotate-in',
+            '#important-message-section': 'animate-fade-up',
+            '#moonCalendarSection': 'animate-fade-up',
+            '#fortune-graph': 'animate-slide-right',
+            '.banner-image': 'animate-fade-in',
+            '.feelings-section ul li': 'animate-slide-left',
+            '.evidence-section ul li': 'animate-slide-right',
+            '.important-actions-list li': 'animate-diagonal-in'
+        };
+
+        // Observer コールバック
+        const observerCallback = (entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const element = entry.target;
+                    const selector = Object.keys(animationClasses).find(key => 
+                        element.matches(key)
+                    );
+                    
+                    if (selector) {
+                        element.classList.add(animationClasses[selector]);
+                        observer.unobserve(element); // 一度アニメーションしたら監視を解除
+                    }
+                }
+            });
+        };
+
+        // Observer を作成
+        const observer = new IntersectionObserver(observerCallback, observerOptions);
+
+        // ページ読み込み後に要素を監視開始
+        document.addEventListener('DOMContentLoaded', () => {
+            animateElements.forEach(selector => {
+                const elements = document.querySelectorAll(selector);
+                elements.forEach(element => {
+                    // 初期状態で非表示
+                    element.style.opacity = '0';
+                    observer.observe(element);
+                });
+            });
+        });
+    })();
+    </script>
 </body>
 </html>
