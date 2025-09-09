@@ -149,7 +149,8 @@ class FortuneDisplay {
         // アドバイスセクション
         htmlContent += '<div class="action-list">';
         if (mainText.advice1) htmlContent += `<p>${this.processText(mainText.advice1, userName)}</p>`;
-        htmlContent += '<p class="action-list-title">そのためにできることを、今の〇〇さんに合わせて、3つご紹介しますね。</p>';
+        const displayName = userName || 'あなた';
+        htmlContent += `<p class="action-list-title">そのためにできることを、今の${displayName}さんに合わせて、3つご紹介しますね。</p>`;
         htmlContent += '<ul>';
         if (mainText.advice2) htmlContent += `<li>${this.processText(mainText.advice2, userName)}</li>`;
         if (mainText.advice3) htmlContent += `<li>${this.processText(mainText.advice3, userName)}</li>`;
@@ -181,7 +182,7 @@ class FortuneDisplay {
         if (!data) return;
         
         let htmlContent = '';
-        htmlContent += `<h3>① 運命の新しい出会い</h3>`;
+        // h3タグは画像バナーで表示されるため削除
         htmlContent += `<p>${this.processText(data.declaration, userName)}</p>`;
         htmlContent += `<p>${this.processText(data.details, userName)}</p>`;
         htmlContent += `<p>${this.processText(data.condition, userName)}</p>`;
@@ -200,7 +201,7 @@ class FortuneDisplay {
         if (!data) return;
         
         let htmlContent = '';
-        htmlContent += `<h3>② 今後3ヶ月、あなたに恋の矢を向けているお相手はこんな人</h3>`;
+        // h3タグは画像バナーで表示されるため削除
         htmlContent += `<p>${this.processText(data.declaration, userName)}</p>`;
         htmlContent += `<p>${this.processText(data.characteristics, userName)}</p>`;
         
@@ -240,7 +241,7 @@ class FortuneDisplay {
         if (!data) return;
         
         let htmlContent = '';
-        htmlContent += `<h3>③ 危険な恋の罠？この3ヶ月、あなたが出会うと危険な異性のタイプ</h3>`;
+        // h3タグは画像バナーで表示されるため削除
         htmlContent += `<p>${this.processText(data.warning, userName)}</p>`;
         
         if (data.introduction) {
@@ -365,7 +366,8 @@ class FortuneDisplay {
         
         if (!pattern) return;
         
-        let htmlContent = '<h3>① すでに繋がってる？あなたが気づいていない新しい人間関係</h3>';
+        // h3タグは画像バナーで表示されるため削除
+        let htmlContent = '';
         htmlContent += `<p>${this.processText(pattern, userName)}</p>`;
         
         const element = document.getElementById('fortune-relationship-new-connections');
@@ -386,7 +388,8 @@ class FortuneDisplay {
         
         if (!pattern) return;
         
-        let htmlContent = '<h3>② これから3ヶ月で、あなたが克服すべき人間関係の課題</h3>';
+        // h3タグは画像バナーで表示されるため削除
+        let htmlContent = '';
         htmlContent += `<p>${this.processText(pattern, userName)}</p>`;
         
         const element = document.getElementById('fortune-relationship-challenges');
@@ -481,7 +484,8 @@ class FortuneDisplay {
         
         if (!pattern) return;
         
-        let htmlContent = '<h3>① あなたがまだ気づいていない新しい才能の芽生え</h3>';
+        // h3タグは画像バナーで表示されるため削除
+        let htmlContent = '';
         htmlContent += `<p>${this.processText(pattern, userName)}</p>`;
         
         const element = document.getElementById('fortune-work-new-talent');
@@ -502,7 +506,8 @@ class FortuneDisplay {
         
         if (!pattern) return;
         
-        let htmlContent = '<h3>② この3ヶ月で訪れる、あなたのキャリアを動かす転機</h3>';
+        // h3タグは画像バナーで表示されるため削除
+        let htmlContent = '';
         htmlContent += `<p>${this.processText(pattern, userName)}</p>`;
         
         const element = document.getElementById('fortune-work-turning-point');
