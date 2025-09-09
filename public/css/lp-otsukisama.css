@@ -1592,6 +1592,11 @@
         }
 
         /* パターン2: Glassmorphismカード（人間関係運・安心できる人） - 2025トレンド */
+        .evidence-section ul {
+            padding: 0 45px; /* チェックボックス用の余白を追加 */
+            margin: 20px 0;
+        }
+        
         .evidence-section ul li {
             padding: 22px 25px;
             margin-bottom: 15px;
@@ -1617,18 +1622,41 @@
         }
         
         .evidence-section li::before {
-            content: "✅";
+            content: "";
+            position: absolute;
+            left: -40px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 24px;
+            height: 24px;
+            border: 2px solid #87ceeb;
+            border-radius: 4px;
+            background: linear-gradient(135deg, rgba(135, 206, 250, 0.2), rgba(135, 206, 250, 0.1));
+            animation: pulse-check 2s ease-in-out infinite;
+        }
+        
+        .evidence-section li::after {
+            content: "";
             position: absolute;
             left: -35px;
             top: 50%;
-            transform: translateY(-50%);
-            font-size: 20px;
-            animation: pulse-check 2s ease-in-out infinite;
+            transform: translateY(-50%) rotate(45deg);
+            width: 7px;
+            height: 14px;
+            border: solid #87ceeb;
+            border-width: 0 3px 3px 0;
+            opacity: 0;
+            animation: check-appear 2s ease-in-out infinite;
         }
         
         @keyframes pulse-check {
             0%, 100% { transform: translateY(-50%) scale(1); opacity: 0.8; }
-            50% { transform: translateY(-50%) scale(1.1); opacity: 1; }
+            50% { transform: translateY(-50%) scale(1.05); opacity: 1; }
+        }
+        
+        @keyframes check-appear {
+            0%, 30% { opacity: 0; transform: translateY(-50%) rotate(45deg) scale(0.8); }
+            50%, 100% { opacity: 1; transform: translateY(-50%) rotate(45deg) scale(1); }
         }
 
         /* 重要メッセージのアクションリスト - シンプル化 */
