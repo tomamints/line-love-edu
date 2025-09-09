@@ -1902,22 +1902,22 @@
             threshold: 0.1 // 要素の10%が見えたらアニメーション開始
         };
 
-        // アニメーションクラスを追加
+        // アニメーションクラスを追加 - 全てフェードインに統一
         const animationClasses = {
-            '.moon-phase-card': 'animate-bounce-in',
-            '#hidden-phase-card': 'animate-bounce-in',
-            '.fortune-section': 'animate-fade-up',
-            '.monthly-fortune': 'animate-fade-up',
-            '.tsukuyomi-section': 'animate-fade-up',
-            '.three-powers': 'animate-diagonal-in',
-            '.six-elements': 'animate-rotate-in',
-            '#important-message-section': 'animate-fade-up',
-            '#moonCalendarSection': 'animate-fade-up',
-            '#fortune-graph': 'animate-slide-right',
+            '.moon-phase-card': 'animate-fade-in',
+            '#hidden-phase-card': 'animate-fade-in',
+            '.fortune-section': 'animate-fade-in',
+            '.monthly-fortune': 'animate-fade-in',
+            '.tsukuyomi-section': 'animate-fade-in',
+            '.three-powers': 'animate-fade-in',
+            '.six-elements': 'animate-fade-in',
+            '#important-message-section': 'animate-fade-in',
+            '#moonCalendarSection': 'animate-fade-in',
+            '#fortune-graph': 'animate-fade-in',
             '.banner-image': 'animate-fade-in',
-            '.feelings-section ul li': 'animate-slide-left',
-            '.evidence-section ul li': 'animate-slide-right',
-            '.important-actions-list li': 'animate-diagonal-in'
+            '.feelings-section ul li': 'animate-fade-in',
+            '.evidence-section ul li': 'animate-fade-in',
+            '.important-actions-list li': 'animate-fade-in'
         };
 
         // Observer コールバック
