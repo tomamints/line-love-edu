@@ -156,7 +156,18 @@ async function generatePersonalizedCalendar(providedPatternId) {
             .calendar-table {
                 width: 100%;
                 border-collapse: separate;
-                border-spacing: 2px;
+                border-spacing: 0;
+            }
+            
+            .calendar-table thead {
+                display: table-header-group;
+            }
+            
+            .calendar-table thead tr {
+                display: grid;
+                grid-template-columns: repeat(7, 1fr);
+                gap: 2px;
+                margin-bottom: 2px;
             }
             
             .calendar-table thead th {
@@ -166,6 +177,9 @@ async function generatePersonalizedCalendar(providedPatternId) {
                 text-align: center;
                 padding: 8px 0;
                 background: rgba(138, 97, 250, 0.1);
+                display: flex;
+                align-items: center;
+                justify-content: center;
             }
             
             .calendar-table thead th.sunday {
@@ -176,15 +190,16 @@ async function generatePersonalizedCalendar(providedPatternId) {
                 color: #9999ff;
             }
             
-            /* CSS Grid レイアウト */
+            /* カレンダー本体のグリッドレイアウト */
             .calendar-body {
-                display: grid;
-                grid-template-columns: repeat(7, 1fr);
-                gap: 2px;
+                display: block;
             }
             
             .calendar-body tr {
-                display: contents;
+                display: grid;
+                grid-template-columns: repeat(7, 1fr);
+                gap: 2px;
+                margin-bottom: 2px;
             }
             
             .calendar-cell {
