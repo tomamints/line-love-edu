@@ -2502,20 +2502,23 @@
             }
         }
         
-        /* テキストセクションのスタイル - シンプルなテキスト表示 */
+        /* テキストセクションのスタイル - バナーの下に吊り下がるデザイン */
         .hanging-text {
-            margin-top: 10px;
-            padding: 20px 15px;
-            background: transparent;
+            margin-top: -20px;
+            padding: 35px 30px 25px;
+            background: #ffffff;
+            border-radius: 0 0 20px 20px;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-top: none;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
             position: relative;
             z-index: 0;
         }
         
         .hanging-text p {
-            color: #ffffff;
-            line-height: 1.9;
+            color: #333333;
+            line-height: 1.8;
             margin: 0;
-            font-size: 16px;
         }
         
         /* メインバナーと解説の吊り下げデザイン用ラッパー */
@@ -2558,10 +2561,7 @@
         .relationship-new-section.hanging-text,
         .money-new-section.hanging-text,
         .work-new-section.hanging-text {
-            margin: 15px 0 30px 0;
-            background: transparent;
-            border: none;
-            box-shadow: none;
+            margin: 0 0 40px 0;
         }
         
         .love-new-section h3,
@@ -2580,27 +2580,27 @@
         .work-new-section p,
         .fortune-work-new-talent,
         .fortune-work-turning-point {
-            color: #ffffff;
-            line-height: 1.9;
-            font-size: 16px;
-            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+            color: #000000;
+            line-height: 1.8;
+            font-size: 18px;
+            text-shadow: none;
             margin: 0;
             font-weight: 400;
         }
         
-        /* ラッキーアクションも白文字に統一 */
+        /* ラッキーアクションも黒文字に統一 */
         #fortune-money-lucky p {
-            color: #ffffff !important;
+            color: #000000 !important;
         }
         
-        /* ラッキーアクションのリスト要素も白文字に */
+        /* ラッキーアクションのリスト要素も黒文字に */
         .money-new-section ul,
         .money-new-section ol,
         .money-new-section li,
         #fortune-money-lucky ul,
         #fortune-money-lucky ol,
         #fortune-money-lucky li {
-            color: #ffffff !important;
+            color: #000000 !important;
         }
         
         /* ラッキーアクションのチェックリスト風デザイン */
