@@ -1944,8 +1944,8 @@
         // Intersection Observer の設定
         const observerOptions = {
             root: null,
-            rootMargin: '0px',
-            threshold: 0.1 // 要素の10%が見えたらアニメーション開始
+            rootMargin: '100px 0px', // 100px手前からアニメーション開始
+            threshold: 0.01 // 要素の1%が見えたらアニメーション開始
         };
 
         // アニメーションクラスを追加 - 全てフェードインに統一
@@ -1953,6 +1953,7 @@
             '.moon-phase-card': 'animate-fade-in',
             '#hidden-phase-card': 'animate-fade-in',
             '.fortune-section': 'animate-fade-in',
+            '.fortune-section.love': 'animate-fade-in', // 恋愛運専用
             '.monthly-fortune': 'animate-fade-in',
             '.tsukuyomi-section': 'animate-fade-in',
             '.three-powers': 'animate-fade-in',
