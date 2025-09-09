@@ -2534,6 +2534,11 @@
             margin: 0;
             font-weight: 400;
         }
+        
+        /* ラッキーアクションも黒文字に統一 */
+        #fortune-money-lucky p {
+            color: #000000 !important;
+        }
 
         /* ========================================
            モバイル最適化改善 (2025年1月)
@@ -3030,6 +3035,19 @@
             text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
             display: inline-block;
             padding: 0 2px;
+        }
+        
+        /* 白背景セクション用の強調表示（恋愛、人間関係、仕事、金運） */
+        .love-new-section .moon-characteristic,
+        .relationship-new-section .moon-characteristic,
+        .work-new-section .moon-characteristic,
+        .money-new-section .moon-characteristic {
+            color: #e91e63;  /* ピンク系の色 */
+            font-weight: bold;
+            text-shadow: none;
+            background: linear-gradient(135deg, rgba(233,30,99,0.1) 0%, rgba(233,30,99,0.05) 100%);
+            padding: 2px 4px;
+            border-radius: 3px;
         }
         
         /* より目立たせたい場合のバリエーション */
