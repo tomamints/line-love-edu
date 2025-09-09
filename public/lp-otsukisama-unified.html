@@ -1231,10 +1231,17 @@
                     console.log('取得したデータ:', data);
 
                     if (data.success && data.diagnosis) {
-                        // 診断日を診断IDに紐づけて保存（created_atがある場合はそれを使用）
-                        if (data.diagnosis.created_at && diagnosisId) {
-                            localStorage.setItem(`diagnosisDate_${diagnosisId}`, data.diagnosis.created_at);
-                            // URLパラメータにも追加（ページリロード時のため）
+                        // 診断日をグローバル変数に設定（データベースから取得したcreated_atを使用）
+                        if (data.diagnosis.created_at) {
+                            // グローバル変数に設定（lp-otsukisama-display.jsで使用）
+                            if (typeof globalDiagnosisDate !== 'undefined') {
+                                globalDiagnosisDate = data.diagnosis.created_at;
+                            } else {
+                                window.globalDiagnosisDate = data.diagnosis.created_at;
+                            }
+                            console.log('診断日を設定:', data.diagnosis.created_at);
+                            
+                            // URLパラメータにも追加（フォールバック用）
                             if (!urlParams.has('diagnosisDate')) {
                                 urlParams.set('diagnosisDate', data.diagnosis.created_at);
                                 const newUrl = window.location.pathname + '?' + urlParams.toString();
@@ -1717,10 +1724,17 @@
                     if (data.success && data.diagnosis) {
                         console.log('診断データ取得成功:', data.diagnosis);
                         
-                        // 診断日を診断IDに紐づけて保存（created_atがある場合はそれを使用）
-                        if (data.diagnosis.created_at && diagnosisId) {
-                            localStorage.setItem(`diagnosisDate_${diagnosisId}`, data.diagnosis.created_at);
-                            // URLパラメータにも追加
+                        // 診断日をグローバル変数に設定（データベースから取得したcreated_atを使用）
+                        if (data.diagnosis.created_at) {
+                            // グローバル変数に設定
+                            if (typeof globalDiagnosisDate !== 'undefined') {
+                                globalDiagnosisDate = data.diagnosis.created_at;
+                            } else {
+                                window.globalDiagnosisDate = data.diagnosis.created_at;
+                            }
+                            console.log('診断日を設定:', data.diagnosis.created_at);
+                            
+                            // URLパラメータにも追加（フォールバック用）
                             const urlParams = new URLSearchParams(window.location.search);
                             if (!urlParams.has('diagnosisDate')) {
                                 urlParams.set('diagnosisDate', data.diagnosis.created_at);

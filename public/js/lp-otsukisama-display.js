@@ -3,27 +3,30 @@
 // personality-axes-descriptions.jsonのデータを格納
 let personalityAxesData = null;
 
+// 診断日をグローバルに保存（データベースから取得した値を使用）
+let globalDiagnosisDate = null;
+
 // 動的な月表示を置換する関数
 function replaceMonthPlaceholders(text) {
     if (!text) return text;
     
-    // 診断日を取得（診断IDに紐づけて管理）
+    // グローバル診断日を優先的に使用（データベースから取得した値）
     let diagnosisDate;
-    const urlParams = new URLSearchParams(window.location.search);
-    const diagnosisId = urlParams.get('id');
-    const diagnosisDateParam = urlParams.get('diagnosisDate');
     
-    if (diagnosisDateParam) {
-        // URLパラメータに診断日がある場合はそれを使用
-        diagnosisDate = new Date(diagnosisDateParam);
-    } else if (diagnosisId && localStorage.getItem(`diagnosisDate_${diagnosisId}`)) {
-        // 診断IDに紐づく診断日がlocalStorageにある場合はそれを使用
-        diagnosisDate = new Date(localStorage.getItem(`diagnosisDate_${diagnosisId}`));
+    if (globalDiagnosisDate) {
+        // データベースから取得した診断日がある場合はそれを使用
+        diagnosisDate = new Date(globalDiagnosisDate);
     } else {
-        // どちらもない場合は現在日時を使用（診断IDがある場合は保存）
-        diagnosisDate = new Date();
-        if (diagnosisId) {
-            localStorage.setItem(`diagnosisDate_${diagnosisId}`, diagnosisDate.toISOString());
+        // フォールバック：URLパラメータから取得
+        const urlParams = new URLSearchParams(window.location.search);
+        const diagnosisDateParam = urlParams.get('diagnosisDate');
+        
+        if (diagnosisDateParam) {
+            diagnosisDate = new Date(diagnosisDateParam);
+        } else {
+            // 最終フォールバック：現在日時を使用
+            console.warn('診断日が設定されていません。現在日時を使用します。');
+            diagnosisDate = new Date();
         }
     }
     
