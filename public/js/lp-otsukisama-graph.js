@@ -166,14 +166,24 @@ function extractThreeMonthsData(fortuneData) {
     const relationship = [];
     const money = [];
     
-    // 現在の週を起点として12週間分のデータを作成
-    const currentWeek = Math.floor(new Date().getDate() / 7);
+    // 現在の日付を起点として12週間分のデータを作成
+    const currentDate = new Date();
+    const currentWeek = Math.floor(currentDate.getDate() / 7);
     
-    for (let i = 1; i <= 12; i++) {
-        labels.push(`第${i}週`);
+    for (let i = 0; i < 12; i++) {
+        // i週間後の日付を計算
+        const futureDate = new Date(currentDate);
+        futureDate.setDate(currentDate.getDate() + (i * 7));
+        
+        // 月と日を取得
+        const month = futureDate.getMonth() + 1; // 0-indexedなので+1
+        const day = futureDate.getDate();
+        
+        // ラベルを「M月D日」形式で作成
+        labels.push(`${month}月${day}日`);
         
         // 週ごとのデータインデックス（0-11の循環）
-        const weekIndex = (currentWeek + i - 1) % 12;
+        const weekIndex = (currentWeek + i) % 12;
         
         // 各運勢のデータを取得（1-5の値）
         overall.push(fortuneData.overall[weekIndex]);

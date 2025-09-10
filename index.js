@@ -1,6 +1,7 @@
 // index.js
 
-require('dotenv').config();
+require('dotenv').config({ path: '.env' });
+require('dotenv').config({ path: '.env.local' });
 const express = require('express');
 const path    = require('path');
 const fs      = require('fs');
@@ -3383,6 +3384,11 @@ app.get('/api/download-report', async (req, res) => {
 app.get('/api/view-report', async (req, res) => {
   const viewReport = require('./api/view-report');
   await viewReport(req, res);
+});
+
+app.post('/api/payjp-create-charge', express.json(), async (req, res) => {
+  const payjpCreateCharge = require('./api/payjp-create-charge');
+  await payjpCreateCharge(req, res);
 });
 
 // ── ⑩ 起動

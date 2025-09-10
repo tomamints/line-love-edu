@@ -538,28 +538,17 @@
                     }
                     
                 } else if (method === 'payjp') {
-                    // PAY.JP クレジットカード決済（テスト環境）
+                    // PAY.JP クレジットカード決済
                     // ローディングメッセージを更新
                     const loadingText = document.querySelector('.loading-text');
                     if (loadingText) {
                         loadingText.textContent = 'カード決済画面を準備中...';
                     }
                     
-                    // テスト環境の確認
-                    const isTest = window.location.hostname === 'localhost' || 
-                                  window.location.hostname === '127.0.0.1' ||
-                                  urlParams.get('test') === 'true';
-                    
-                    if (isTest) {
-                        // テスト環境：テスト決済ページへリダイレクト
-                        setTimeout(() => {
-                            window.location.href = `/payjp-checkout.html?id=${diagnosisId}&userId=${userId || ''}`;
-                        }, 500);
-                    } else {
-                        // 本番環境：まだ準備中
-                        alert('クレジットカード決済は準備中です。\n現在はPayPayをご利用ください。');
-                        document.getElementById('loadingOverlay').style.display = 'none';
-                    }
+                    // PAY.JP決済ページへリダイレクト
+                    setTimeout(() => {
+                        window.location.href = `/payjp-payment.html?id=${diagnosisId}&userId=${userId || ''}`;
+                    }, 500);
                     return;
                 }
                 

@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>カード決済 | おつきさま診断</title>
+    <script src="https://js.pay.jp/v2/pay.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #1a0033 0%, #2d1b69 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding-top: 40px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .header h1 {
+            font-size: 24px;
+            color: #ffd700;
+            margin-bottom: 10px;
+        }
+        
+        .price-display {
+            font-size: 32px;
+            font-weight: bold;
+            color: #ffd700;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .payment-form {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            color: #333;
+        }
+        
+        .card-brands {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .card-brand {
+            padding: 5px 10px;
+            background: #f5f5f5;
+            border-radius: 5px;
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .card-brand.active {
+            background: #4CAF50;
+            color: white;
+        }
+        
+        #payjp-element {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            background: white;
+            min-height: 200px;
+        }
+        
+        .error-message {
+            color: #f44336;
+            font-size: 14px;
+            margin-top: 10px;
+            display: none;
+        }
+        
+        .submit-button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .submit-button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(76, 175, 80, 0.3);
+        }
+        
+        .submit-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .security-notice {
+            background: rgba(76, 175, 80, 0.1);
+            border: 1px solid #4CAF50;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+            text-align: center;
+        }
+        
+        .security-notice p {
+            font-size: 12px;
+            color: #4CAF50;
+            line-height: 1.6;
+        }
+        
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .loading-content {
+            text-align: center;
+        }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top-color: #ffd700;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .loading-text {
+            color: white;
+            font-size: 16px;
+        }
+
+        .test-mode-notice {
+            background: rgba(255, 165, 0, 0.2);
+            border: 2px solid #ffa500;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .test-mode-notice h3 {
+            color: #ffa500;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+        
+        .test-mode-notice p {
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        .test-cards-info {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+            font-size: 12px;
+        }
+
+        .test-cards-info h4 {
+            color: #ffd700;
+            margin-bottom: 10px;
+        }
+
+        .test-card-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 5px;
+            margin-bottom: 8px;
+        }
+
+        .test-card-number {
+            font-family: monospace;
+            color: #fff;
+        }
+
+        .test-card-type {
+            color: #4CAF50;
+            font-size: 11px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>クレジットカード決済</h1>
+        </div>
+        
+        <div class="price-display">¥2,980</div>
+        
+        <!-- テストモード表示 -->
+        <div class="test-mode-notice" id="testModeNotice" style="display: none;">
+            <h3>🧪 テストモード</h3>
+            <p>現在テストモードで動作しています。<br>下記のテストカード番号をご利用ください。</p>
+        </div>
+        
+        <div class="payment-form">
+            <div class="card-brands">
+                <div class="card-brand active">Visa</div>
+                <div class="card-brand active">Mastercard</div>
+                <div class="card-brand active">JCB</div>
+                <div class="card-brand active">AMEX</div>
+                <div class="card-brand active">Diners</div>
+                <div class="card-brand active">Discover</div>
+            </div>
+            
+            <!-- PAY.JP Elements用のコンテナ -->
+            <div id="payjp-element"></div>
+            
+            <div class="error-message" id="errorMessage"></div>
+            
+            <button type="button" class="submit-button" id="submitButton">
+                ¥2,980 を支払う
+            </button>
+            
+            <div class="security-notice">
+                <p>
+                    🔒 カード情報は安全に暗号化されます<br>
+                    PAY.JPの安全な決済システムを使用しています
+                </p>
+            </div>
+        </div>
+
+        <!-- テストカード情報（テストモード時のみ表示） -->
+        <div class="test-cards-info" id="testCardsInfo" style="display: none;">
+            <h4>📋 テストカード番号</h4>
+            <div class="test-card-item">
+                <span class="test-card-number">4242 4242 4242 4242</span>
+                <span class="test-card-type">成功（Visa）</span>
+            </div>
+            <div class="test-card-item">
+                <span class="test-card-number">5555 5555 5555 4444</span>
+                <span class="test-card-type">成功（Mastercard）</span>
+            </div>
+            <div class="test-card-item">
+                <span class="test-card-number">3530 1113 3330 0000</span>
+                <span class="test-card-type">成功（JCB）</span>
+            </div>
+            <div class="test-card-item">
+                <span class="test-card-number">4000 0000 0000 0002</span>
+                <span class="test-card-type">失敗（拒否）</span>
+            </div>
+            <p style="margin-top: 10px; color: #999;">
+                有効期限: 任意の未来の日付<br>
+                CVC: 任意の3桁（AMEXは4桁）
+            </p>
+        </div>
+    </div>
+    
+    <!-- ローディング表示 -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-content">
+            <div class="spinner"></div>
+            <div class="loading-text">決済処理中...</div>
+        </div>
+    </div>
+    
+    <script>
+        // URLパラメータを取得
+        const urlParams = new URLSearchParams(window.location.search);
+        const diagnosisId = urlParams.get('id');
+        const userId = urlParams.get('userId');
+        
+        // PAY.JP公開鍵（環境変数から取得する必要があります）
+        const PAYJP_PUBLIC_KEY = 'pk_test_16ae008c6fe3b2a1059efc6f';
+        
+        // テストモードかどうかを確認
+        const isTestMode = PAYJP_PUBLIC_KEY.includes('test');
+        if (isTestMode) {
+            document.getElementById('testModeNotice').style.display = 'block';
+            document.getElementById('testCardsInfo').style.display = 'block';
+        }
+        
+        // PAY.JP初期化
+        const payjp = Payjp(PAYJP_PUBLIC_KEY);
+        const elements = payjp.elements();
+        
+        // カード入力要素を作成
+        const cardElement = elements.create('card', {
+            style: {
+                base: {
+                    fontSize: '16px',
+                    color: '#32325d',
+                    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+                    '::placeholder': {
+                        color: '#aab7c4'
+                    }
+                },
+                invalid: {
+                    color: '#fa755a',
+                    iconColor: '#fa755a'
+                }
+            }
+        });
+        
+        // 要素をマウント
+        cardElement.mount('#payjp-element');
+        
+        // エラー表示
+        cardElement.on('change', function(event) {
+            const errorElement = document.getElementById('errorMessage');
+            if (event.error) {
+                errorElement.textContent = event.error.message;
+                errorElement.style.display = 'block';
+            } else {
+                errorElement.textContent = '';
+                errorElement.style.display = 'none';
+            }
+        });
+        
+        // 決済処理
+        document.getElementById('submitButton').addEventListener('click', async function() {
+            const button = this;
+            const errorElement = document.getElementById('errorMessage');
+            
+            // ボタンを無効化
+            button.disabled = true;
+            document.getElementById('loadingOverlay').style.display = 'flex';
+            
+            try {
+                // トークンを作成
+                const { error, token } = await payjp.createToken(cardElement);
+                
+                if (error) {
+                    // エラー表示
+                    errorElement.textContent = error.message;
+                    errorElement.style.display = 'block';
+                    button.disabled = false;
+                    document.getElementById('loadingOverlay').style.display = 'none';
+                    return;
+                }
+                
+                // 決済処理APIを呼び出し
+                const response = await fetch('/api/payjp-create-charge', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        token: token.id,
+                        diagnosisId: diagnosisId,
+                        userId: userId,
+                        amount: 2980
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    // 決済成功
+                    window.location.href = `/payment-success.html?id=${diagnosisId}&userId=${userId || ''}&paymentCompleted=true&chargeId=${result.chargeId}`;
+                } else {
+                    // エラー表示
+                    errorElement.textContent = result.error || '決済に失敗しました';
+                    errorElement.style.display = 'block';
+                    button.disabled = false;
+                    document.getElementById('loadingOverlay').style.display = 'none';
+                }
+                
+            } catch (error) {
+                console.error('Payment error:', error);
+                errorElement.textContent = 'ネットワークエラーが発生しました';
+                errorElement.style.display = 'block';
+                button.disabled = false;
+                document.getElementById('loadingOverlay').style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

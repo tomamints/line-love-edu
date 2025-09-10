@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>決済方法を選択 | おつきさま診断</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #1a0033 0%, #2d1b69 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding-top: 40px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            color: #ffd700;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+        
+        .price-info {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+        }
+        
+        .price {
+            font-size: 36px;
+            font-weight: bold;
+            color: #ffd700;
+            margin-bottom: 10px;
+        }
+        
+        .price-note {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+        
+        .payment-section {
+            margin-bottom: 40px;
+        }
+        
+        .section-title {
+            font-size: 18px;
+            color: #ffd700;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 215, 0, 0.3);
+        }
+        
+        .payment-options {
+            display: grid;
+            gap: 15px;
+        }
+        
+        .payment-option {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            position: relative;
+        }
+        
+        .payment-option:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border-color: #ffd700;
+        }
+        
+        .payment-option.recommended {
+            border-color: #ffd700;
+        }
+        
+        .recommended-badge {
+            position: absolute;
+            top: -12px;
+            right: 20px;
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            color: #1a0033;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+        
+        .payment-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+        
+        .payment-main {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .payment-logo {
+            width: 60px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            border-radius: 8px;
+            font-size: 12px;
+        }
+        
+        .paypay-logo {
+            background: #FF0033;
+            color: white;
+        }
+        
+        .credit-logo {
+            background: linear-gradient(135deg, #1e88e5, #1565c0);
+            color: white;
+        }
+        
+        .checkout-logo {
+            background: linear-gradient(135deg, #673ab7, #512da8);
+            color: white;
+        }
+        
+        .elements-logo {
+            background: linear-gradient(135deg, #00897b, #00695c);
+            color: white;
+        }
+        
+        .payment-info {
+            flex-grow: 1;
+        }
+        
+        .payment-name {
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .payment-desc {
+            font-size: 12px;
+            color: #666;
+            line-height: 1.4;
+        }
+        
+        .payment-type {
+            padding: 3px 8px;
+            background: #e3f2fd;
+            color: #1976d2;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: bold;
+        }
+        
+        .payment-features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        
+        .feature-tag {
+            background: #f0f0f0;
+            color: #666;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+        }
+        
+        .feature-tag.highlight {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+        
+        .comparison-table {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 30px;
+        }
+        
+        .comparison-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .comparison-table th,
+        .comparison-table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .comparison-table th {
+            color: #ffd700;
+            font-size: 12px;
+            font-weight: normal;
+        }
+        
+        .comparison-table td {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+        
+        .check {
+            color: #4CAF50;
+        }
+        
+        .cross {
+            color: #f44336;
+        }
+        
+        .back-link {
+            display: inline-block;
+            margin-top: 30px;
+            color: #ffd700;
+            text-decoration: none;
+            font-size: 14px;
+            transition: opacity 0.3s;
+        }
+        
+        .back-link:hover {
+            opacity: 0.7;
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                padding-top: 20px;
+            }
+            
+            .header h1 {
+                font-size: 24px;
+            }
+            
+            .price {
+                font-size: 32px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>決済方法を選択</h1>
+            <p>お好みの決済方法をお選びください</p>
+        </div>
+        
+        <div class="price-info">
+            <div class="price">¥2,980</div>
+            <div class="price-note">おつきさま診断 完全版</div>
+        </div>
+        
+        <!-- クイック決済 -->
+        <div class="payment-section">
+            <h2 class="section-title">📱 クイック決済</h2>
+            <div class="payment-options">
+                <div class="payment-option recommended" onclick="selectPayment('paypay')">
+                    <div class="recommended-badge">おすすめ</div>
+                    <div class="payment-header">
+                        <div class="payment-main">
+                            <div class="payment-logo paypay-logo">PayPay</div>
+                            <div class="payment-info">
+                                <div class="payment-name">PayPay</div>
+                                <div class="payment-desc">アプリで即座に決済完了</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="payment-features">
+                        <span class="feature-tag highlight">🚀 最速決済</span>
+                        <span class="feature-tag">📱 アプリ連携</span>
+                        <span class="feature-tag">🎁 ポイント還元</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- クレジットカード決済 -->
+        <div class="payment-section">
+            <h2 class="section-title">💳 クレジットカード決済</h2>
+            <div class="payment-options">
+                <!-- PAY.JP Checkout（ホスト型） -->
+                <div class="payment-option" onclick="selectPayment('payjp-checkout')">
+                    <div class="payment-header">
+                        <div class="payment-main">
+                            <div class="payment-logo checkout-logo">Checkout</div>
+                            <div class="payment-info">
+                                <div class="payment-name">PAY.JP Checkout</div>
+                                <div class="payment-desc">PAY.JPの安全な決済画面で入力</div>
+                            </div>
+                        </div>
+                        <div class="payment-type">ホスト型</div>
+                    </div>
+                    <div class="payment-features">
+                        <span class="feature-tag highlight">🔒 最高セキュリティ</span>
+                        <span class="feature-tag">✨ シンプル</span>
+                        <span class="feature-tag">🌐 別画面</span>
+                    </div>
+                </div>
+                
+                <!-- PAY.JP Elements（埋め込み型） -->
+                <div class="payment-option" onclick="selectPayment('payjp-elements')">
+                    <div class="payment-header">
+                        <div class="payment-main">
+                            <div class="payment-logo elements-logo">Elements</div>
+                            <div class="payment-info">
+                                <div class="payment-name">PAY.JP Elements</div>
+                                <div class="payment-desc">このサイト内で直接カード入力</div>
+                            </div>
+                        </div>
+                        <div class="payment-type">埋め込み型</div>
+                    </div>
+                    <div class="payment-features">
+                        <span class="feature-tag highlight">⚡ スムーズ</span>
+                        <span class="feature-tag">🎨 デザイン統一</span>
+                        <span class="feature-tag">📍 同一画面</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 比較表 -->
+        <div class="comparison-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>決済方法</th>
+                        <th>速度</th>
+                        <th>セキュリティ</th>
+                        <th>特徴</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>PayPay</td>
+                        <td><span class="check">⚡ 最速</span></td>
+                        <td><span class="check">✓ 高</span></td>
+                        <td>アプリ連携・ポイント還元</td>
+                    </tr>
+                    <tr>
+                        <td>Checkout</td>
+                        <td>普通</td>
+                        <td><span class="check">✓ 最高</span></td>
+                        <td>PAY.JP管理・別画面</td>
+                    </tr>
+                    <tr>
+                        <td>Elements</td>
+                        <td><span class="check">✓ 速い</span></td>
+                        <td><span class="check">✓ 高</span></td>
+                        <td>同一画面・スムーズ</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div style="text-align: center;">
+            <a href="javascript:history.back()" class="back-link">← 前のページへ戻る</a>
+        </div>
+    </div>
+    
+    <script>
+        // URLパラメータを取得
+        const urlParams = new URLSearchParams(window.location.search);
+        const diagnosisId = urlParams.get('id');
+        const userId = urlParams.get('userId');
+        
+        function selectPayment(method) {
+            if (!diagnosisId) {
+                alert('診断IDが見つかりません');
+                return;
+            }
+            
+            let redirectUrl = '';
+            
+            switch(method) {
+                case 'paypay':
+                    // PayPay決済（既存のフロー）
+                    window.location.href = `/payment-select.html?id=${diagnosisId}&userId=${userId || ''}`;
+                    return;
+                    
+                case 'payjp-checkout':
+                    // PAY.JP Checkout（ホスト型）
+                    redirectUrl = `/payjp-checkout.html?id=${diagnosisId}&userId=${userId || ''}`;
+                    break;
+                    
+                case 'payjp-elements':
+                    // PAY.JP Elements（埋め込み型）
+                    redirectUrl = `/payjp-payment.html?id=${diagnosisId}&userId=${userId || ''}`;
+                    break;
+                    
+                default:
+                    alert('不明な決済方法です');
+                    return;
+            }
+            
+            window.location.href = redirectUrl;
+        }
+    </script>
+</body>
+</html>
