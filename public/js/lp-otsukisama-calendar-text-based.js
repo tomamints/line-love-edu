@@ -61,7 +61,7 @@ function calculateMoonAge(date) {
 }
 
 // 診断文章から日付を抽出してカレンダーを生成
-async function generateTextBasedCalendar(patternId) {
+async function generateTextBasedCalendar(patternId, fortuneData) {
     const container = document.getElementById('moonCalendarSection');
     
     if (!container) {
@@ -89,8 +89,14 @@ async function generateTextBasedCalendar(patternId) {
     // 日付抽出器を初期化
     const dateExtractor = new window.FortuneDateExtractor();
     
-    // 現在表示されている診断テキストから日付を抽出
-    const fortuneTexts = {
+    // fortuneDataが渡された場合はそれを使用、なければDOMから取得
+    const fortuneTexts = fortuneData ? {
+        overall: fortuneData.overall?.text || '',
+        love: fortuneData.love?.text || '',
+        relationship: fortuneData.relationship?.text || '',
+        career: fortuneData.career?.text || '',
+        money: fortuneData.money?.text || ''
+    } : {
         overall: document.getElementById('fortune-overall-text')?.innerText || '',
         love: document.getElementById('fortune-love-text')?.innerText || '',
         relationship: document.getElementById('fortune-relationship-text')?.innerText || '',
