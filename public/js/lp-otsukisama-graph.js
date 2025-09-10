@@ -119,7 +119,7 @@ async function updateFortuneGraph(patternId) {
                         display: false
                     },
                     ticks: {
-                        color: '#666',
+                        color: '#ffd700',  // 日付を黄色に
                         font: {
                             size: 12
                         }
@@ -130,9 +130,23 @@ async function updateFortuneGraph(patternId) {
                     max: 6,
                     ticks: {
                         stepSize: 1,
-                        color: '#666',
+                        color: function(context) {
+                            // 縦軸の文字をグラデーション色に
+                            const value = context.tick.value;
+                            const colors = [
+                                '',           // 0
+                                '#ff6b6b',    // 1: 充電期 - 赤系
+                                '#ff9f43',    // 2: 準備期 - オレンジ系
+                                '#ffd700',    // 3: 上昇期 - 黄色
+                                '#4ecdc4',    // 4: 好調期 - 青緑系
+                                '#48b884',    // 5: 絶好調 - 緑系
+                                ''            // 6
+                            ];
+                            return colors[value] || '#ffd700';
+                        },
                         font: {
-                            size: 12
+                            size: 12,
+                            weight: 'bold'
                         },
                         callback: function(value) {
                             // 1-5の値を運勢レベルとして表示
@@ -154,6 +168,15 @@ async function updateFortuneGraph(patternId) {
     
     // グラフの特徴を表示
     updateFortuneCharacteristics(graphData);
+    
+    // グローバルに運勢データを保存（カレンダーで使用）
+    window.currentFortuneData = {
+        overall: monthlyData.overall,
+        love: monthlyData.love,
+        career: monthlyData.career,
+        relationship: monthlyData.relationship,
+        money: monthlyData.money
+    };
 }
 
 // 12週間分のデータを抽出

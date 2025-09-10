@@ -1114,6 +1114,7 @@
     <script src="js/lp-otsukisama-display.js?v=20250107001"></script>
     <script src="js/lp-otsukisama-display-line.js?v=20250901001"></script>
     <script src="js/lp-otsukisama-calendar-new.js?v=20250109002"></script>
+    <script src="js/lp-otsukisama-calendar-integrated.js?v=20250111001"></script>
     <script src="js/lp-otsukisama-graph.js?v=20250901001"></script>
     <script src="js/fortune-date-calculator.js?v=20250109001"></script>
     <script src="js/fortune-display.js?v=20250109001"></script>
@@ -1362,13 +1363,25 @@
                             }
                         }, 100);
 
-                        // カレンダーを初期化（常に表示） - 少し遅延を入れて確実に実行
+                        // カレンダーを初期化（統合版を使用） - 少し遅延を入れて確実に実行
                         setTimeout(async () => {
-                            if (typeof generatePersonalizedCalendar === 'function') {
-                                console.log('Initializing calendar for pattern:', currentPatternId);
+                            // 運勢データを取得
+                            const fortuneData = window.currentFortuneData || {
+                                overall: [3, 3, 4, 4, 5, 5, 4, 4, 3, 3, 4, 5],
+                                love: [3, 4, 4, 5, 5, 4, 3, 3, 4, 4, 5, 5],
+                                career: [4, 4, 3, 3, 4, 5, 5, 4, 4, 3, 3, 4],
+                                relationship: [3, 3, 4, 5, 5, 4, 4, 3, 3, 4, 4, 5],
+                                money: [4, 3, 3, 4, 4, 5, 5, 4, 3, 3, 4, 4]
+                            };
+                            
+                            if (typeof generateIntegratedCalendar === 'function') {
+                                console.log('Initializing integrated calendar for pattern:', currentPatternId);
+                                await generateIntegratedCalendar(currentPatternId, fortuneData);
+                            } else if (typeof generatePersonalizedCalendar === 'function') {
+                                console.log('Falling back to original calendar for pattern:', currentPatternId);
                                 await generatePersonalizedCalendar(currentPatternId);
                             } else {
-                                console.error('generatePersonalizedCalendar function not found');
+                                console.error('Calendar generation function not found');
                             }
                         }, 200);
 

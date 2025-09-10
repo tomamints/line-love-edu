@@ -367,14 +367,14 @@
                 </div>
             </div>
             
-            <!-- Apple Pay (審査中) -->
-            <div class="payment-option" style="opacity: 0.7; cursor: not-allowed;" onclick="showPendingMessage('Apple Pay')">
+            <!-- Apple Pay (テスト環境) -->
+            <div class="payment-option" onclick="selectPayment('apple-pay')">
                 <div class="payment-header">
                     <div class="payment-logo apple-pay-logo">
                         <span style="font-size: 16px;"></span> Pay
                     </div>
                     <div class="payment-title">
-                        <div class="payment-name">Apple Pay <span class="status-badge">審査中</span></div>
+                        <div class="payment-name">Apple Pay <span class="status-badge">テスト</span></div>
                         <div class="payment-desc">Touch ID・Face IDで簡単決済</div>
                     </div>
                 </div>
@@ -538,7 +538,7 @@
                     }
                     
                 } else if (method === 'payjp') {
-                    // PAY.JP クレジットカード決済
+                    // PAY.JP クレジットカード決済（Elements）
                     // ローディングメッセージを更新
                     const loadingText = document.querySelector('.loading-text');
                     if (loadingText) {
@@ -548,6 +548,19 @@
                     // PAY.JP決済ページへリダイレクト
                     setTimeout(() => {
                         window.location.href = `/payjp-payment.html?id=${diagnosisId}&userId=${userId || ''}`;
+                    }, 500);
+                    return;
+                    
+                } else if (method === 'apple-pay') {
+                    // Apple Pay (テスト環境ではPAY.JP Checkoutを使用)
+                    const loadingText = document.querySelector('.loading-text');
+                    if (loadingText) {
+                        loadingText.textContent = 'Apple Pay準備中...';
+                    }
+                    
+                    // テスト環境ではPAY.JP Checkoutを使用
+                    setTimeout(() => {
+                        window.location.href = `/payjp-checkout.html?id=${diagnosisId}&userId=${userId || ''}&method=apple-pay`;
                     }, 500);
                     return;
                 }
