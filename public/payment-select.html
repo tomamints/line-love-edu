@@ -125,6 +125,53 @@
             font-size: 12px;
         }
         
+        .apple-pay-logo {
+            background: #000000;
+            color: white;
+            border-radius: 8px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .status-badge {
+            background: #ff9800;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 10px;
+            margin-left: 4px;
+        }
+        
+        .card-brands {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+        
+        .card-brand {
+            padding: 4px 8px;
+            background: #f5f5f5;
+            border-radius: 4px;
+            font-size: 11px;
+            color: #666;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .card-brand.available {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+        
+        .card-brand.pending {
+            background: #fff3e0;
+            color: #e65100;
+        }
+        
         .payment-title {
             flex-grow: 1;
         }
@@ -284,29 +331,59 @@
                 </div>
             </div>
             
-            <!-- クレジットカード・その他（Stripe削除のため一時的に無効化） -->
-            <!-- 
-            <div class="payment-option" onclick="selectPayment('square')">
+            <!-- クレジットカード (PAY.JP) -->
+            <div class="payment-option" onclick="selectPayment('payjp')">
                 <div class="payment-header">
                     <div class="payment-logo credit-logo">カード決済</div>
                     <div class="payment-title">
-                        <div class="payment-name">クレジットカード・その他</div>
-                        <div class="payment-desc">各種カード・デジタルウォレット対応</div>
+                        <div class="payment-name">クレジットカード</div>
+                        <div class="payment-desc">各種クレジットカードでお支払い</div>
                     </div>
                 </div>
                 <div class="payment-features">
-                    <span class="feature-tag">💳 全カード対応</span>
-                    <span class="feature-tag">🍎 Apple Pay</span>
-                    <span class="feature-tag">🤖 Google Pay</span>
+                    <span class="feature-tag">💳 カード決済</span>
+                    <span class="feature-tag">🔒 安心・安全</span>
+                    <span class="feature-tag">✨ 簡単入力</span>
                 </div>
-                <div class="payment-methods">
-                    <div class="method-icon">VISA</div>
-                    <div class="method-icon">Master</div>
-                    <div class="method-icon">JCB</div>
-                    <div class="method-icon">AMEX</div>
+                <div class="card-brands">
+                    <div class="card-brand available">
+                        <span>✓</span> Visa
+                    </div>
+                    <div class="card-brand available">
+                        <span>✓</span> Mastercard
+                    </div>
+                    <div class="card-brand pending">
+                        JCB <span class="status-badge">審査中</span>
+                    </div>
+                    <div class="card-brand pending">
+                        AMEX <span class="status-badge">審査中</span>
+                    </div>
+                    <div class="card-brand pending">
+                        Diners <span class="status-badge">審査中</span>
+                    </div>
+                    <div class="card-brand pending">
+                        Discover <span class="status-badge">審査中</span>
+                    </div>
                 </div>
             </div>
-            -->
+            
+            <!-- Apple Pay (審査中) -->
+            <div class="payment-option" style="opacity: 0.7; cursor: not-allowed;" onclick="showPendingMessage('Apple Pay')">
+                <div class="payment-header">
+                    <div class="payment-logo apple-pay-logo">
+                        <span style="font-size: 16px;"></span> Pay
+                    </div>
+                    <div class="payment-title">
+                        <div class="payment-name">Apple Pay <span class="status-badge">審査中</span></div>
+                        <div class="payment-desc">Touch ID・Face IDで簡単決済</div>
+                    </div>
+                </div>
+                <div class="payment-features">
+                    <span class="feature-tag">🔐 Touch/Face ID</span>
+                    <span class="feature-tag">⚡ 高速決済</span>
+                    <span class="feature-tag">🍎 Appleデバイス</span>
+                </div>
+            </div>
         </div>
         
         <div class="security-note">
@@ -422,6 +499,11 @@
             pollingInterval = setInterval(checkPaymentStatus, 500);
         }
         
+        // 審査中のメッセージを表示
+        function showPendingMessage(paymentMethod) {
+            alert(`${paymentMethod}は現在審査中です。\n近日中にご利用いただけるようになります。`);
+        }
+        
         async function selectPayment(method) {
             if (!diagnosisId) {
                 alert('診断IDが見つかりません');
@@ -455,9 +537,38 @@
                         throw new Error(data.error || 'PayPay決済の開始に失敗しました');
                     }
                     
-                } else if (method === 'square') {
-                    // Square決済は現在準備中
-                    alert('クレジットカード決済は現在準備中です。PayPayをご利用ください。');
+                } else if (method === 'payjp') {
+                    // PAY.JP クレジットカード決済
+                    // ローディングメッセージを更新
+                    const loadingText = document.querySelector('.loading-text');
+                    if (loadingText) {
+                        loadingText.textContent = 'カード決済画面を準備中...';
+                    }
+                    
+                    // PAY.JP決済ページへリダイレクト
+                    // TODO: PAY.JP APIエンドポイントを実装後、以下のコメントを解除
+                    /*
+                    const response = await fetch('/api/create-payjp-session', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            diagnosisId: diagnosisId,
+                            userId: userId || ''
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (data.success && data.redirectUrl) {
+                        window.location.href = data.redirectUrl;
+                    } else {
+                        throw new Error(data.message || 'カード決済の開始に失敗しました');
+                    }
+                    */
+                    
+                    // 暫定: 準備中メッセージ
+                    alert('クレジットカード決済（PAY.JP）は準備中です。\n現在はPayPayをご利用ください。');
+                    document.getElementById('loadingOverlay').style.display = 'none';
                     return;
                 }
                 
