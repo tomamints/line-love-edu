@@ -485,46 +485,79 @@ async function generateTextBasedCalendar(patternId) {
         `;
     }
     
-    // 凡例を追加
     calendarHTML += `
-        <div class="legend-container">
-            <div class="legend-title">アイコンの意味</div>
-            <div class="legend-items">
-                <div class="legend-item">
-                    <span>💫</span>
-                    <span>パワーDAY（絶好調）</span>
+    </div>
+    
+    <!-- 月齢カレンダーの説明文 -->
+    <div class="moon-calendar-description" style="
+        margin-top: 40px;
+        padding: 30px;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 15px;
+        border: 1px solid rgba(255, 215, 0, 0.3);
+    ">
+        <h3 style="
+            color: #ffd700;
+            font-size: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        ">月齢カレンダー</h3>
+        
+        <p style="
+            color: rgba(255, 255, 255, 0.9);
+            line-height: 1.8;
+            margin-bottom: 20px;
+        ">
+            ${userName || 'あなた'}さんの運気が高まる日は、カレンダーに書いてある『パワーDAY』です。<br>
+            その日には新しい挑戦をしたり、<br>
+            大切な一歩を踏み出すのがおすすめです。
+        </p>
+        
+        <div style="
+            background: rgba(255, 255, 255, 0.03);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        ">
+            <p style="
+                color: #ffd700;
+                font-weight: bold;
+                margin-bottom: 15px;
+            ">例えば</p>
+            
+            <div style="color: rgba(255, 255, 255, 0.9); line-height: 2;">
+                <div style="margin-bottom: 10px;">
+                    <span style="color: #ff69b4;">恋愛</span> → 好きな人にLINEを送ってみる／気になる人と会う予定を入れる
                 </div>
-                <div class="legend-item">
-                    <span>💕</span>
-                    <span>恋愛運アップ</span>
+                <div style="margin-bottom: 10px;">
+                    <span style="color: #87ceeb;">人間関係</span> → しばらく会ってない友達に連絡する／お世話になっている方に感謝の気持ちを一言伝える
                 </div>
-                <div class="legend-item">
-                    <span>👥</span>
-                    <span>人間関係運アップ</span>
+                <div style="margin-bottom: 10px;">
+                    <span style="color: #98fb98;">仕事</span> → やりたかった企画を上司に相談する／資格や勉強を始める
                 </div>
-                <div class="legend-item">
-                    <span>💼</span>
-                    <span>仕事運アップ</span>
+                <div style="margin-bottom: 10px;">
+                    <span style="color: #ffd700;">お金</span> → 新しい貯金方法を始める／使っていないサブスクを解約する
                 </div>
-                <div class="legend-item">
-                    <span>💰</span>
-                    <span>金運アップ</span>
-                </div>
-                <div class="legend-item">
-                    <span>🌕</span>
-                    <span>満月（月齢表示）</span>
+                <div>
+                    <span style="color: #dda0dd;">自分磨き</span> → 美容室やジムを予約する／あなたの好きな時間をとってみる
                 </div>
             </div>
         </div>
         
-        <div class="action-guide">
-            <div style="margin-bottom: 8px;"><strong>運気を最大限に活かす行動例</strong></div>
-            <div style="margin-bottom: 6px;">💕 <strong>恋愛</strong> → 好きな人にLINEを送る、デートに誘う、告白する</div>
-            <div style="margin-bottom: 6px;">👥 <strong>人間関係</strong> → 友達と会う、感謝を伝える、仲直りする</div>
-            <div style="margin-bottom: 6px;">💼 <strong>仕事</strong> → 企画を提案する、面接を受ける、新しいことを始める</div>
-            <div style="margin-bottom: 6px;">💰 <strong>お金</strong> → 投資を始める、副業を探す、不要なものを売る</div>
-            <div style="margin-bottom: 10px;">✨ <strong>自分磨き</strong> → 美容室の予約、ジムに入会、習い事を始める</div>
-            <strong>📱 このカレンダーをスクショして、スマホに保存しておきましょう！</strong>
+        <!-- パターンごとの月齢カレンダーメッセージ -->
+        <div class="moon-calendar-message" style="
+            margin-top: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, rgba(147, 112, 219, 0.1) 0%, rgba(255, 215, 0, 0.1) 100%);
+            border-radius: 10px;
+            border-left: 3px solid #ffd700;
+        ">
+            <p style="
+                color: rgba(255, 255, 255, 0.9);
+                line-height: 1.8;
+            " id="moon-calendar-pattern-message">
+                ${calendarMessage || '月のリズムに合わせて、あなただけの特別な日を活用していきましょう。'}
+            </p>
         </div>
     </div>
     `;
