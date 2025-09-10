@@ -1,0 +1,28 @@
+# Vercelでビルドから除外するファイル
+
+# 無効化されたAPIファイル
+api/disabled/
+
+# 開発用ファイル
+*.log
+.env.local
+.env.development
+
+# テストファイル
+**/*.test.js
+**/*.spec.js
+
+# バックアップファイル
+**/*.backup
+**/*.bak
+*.backup.*
+
+# エディタ設定
+.vscode/
+.idea/
+
+# macOS
+.DS_Store
+
+# Node modules (これは自動的に除外されるが念のため)
+node_modules/
