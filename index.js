@@ -3392,6 +3392,7 @@ app.post('/api/payjp-create-charge', express.json(), async (req, res) => {
 });
 
 // ── ⑩ 起動
+console.log('VERCEL環境変数:', process.env.VERCEL);
 if (process.env.VERCEL !== '1') {
   // ローカル環境でのみサーバーを起動
   const port = process.env.PORT || 3000;
@@ -3401,6 +3402,8 @@ if (process.env.VERCEL !== '1') {
     logger.log(`💳 決済成功URL: http://localhost:${port}/payment/success`);
     logger.log('✨ 準備完了！トーク履歴を送信してください');
   });
+} else {
+  console.log('Vercel環境のため、サーバーを起動しません');
 }
 
 module.exports = app;
