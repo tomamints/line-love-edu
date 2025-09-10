@@ -2,7 +2,6 @@
 
 # 無効化されたAPIファイル
 api/disabled/
-api/diagnoses/
 
 # 開発用ファイル
 *.log
