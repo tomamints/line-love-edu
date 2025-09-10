@@ -538,37 +538,28 @@
                     }
                     
                 } else if (method === 'payjp') {
-                    // PAY.JP クレジットカード決済
+                    // PAY.JP クレジットカード決済（テスト環境）
                     // ローディングメッセージを更新
                     const loadingText = document.querySelector('.loading-text');
                     if (loadingText) {
                         loadingText.textContent = 'カード決済画面を準備中...';
                     }
                     
-                    // PAY.JP決済ページへリダイレクト
-                    // TODO: PAY.JP APIエンドポイントを実装後、以下のコメントを解除
-                    /*
-                    const response = await fetch('/api/create-payjp-session', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            diagnosisId: diagnosisId,
-                            userId: userId || ''
-                        })
-                    });
+                    // テスト環境の確認
+                    const isTest = window.location.hostname === 'localhost' || 
+                                  window.location.hostname === '127.0.0.1' ||
+                                  urlParams.get('test') === 'true';
                     
-                    const data = await response.json();
-                    
-                    if (data.success && data.redirectUrl) {
-                        window.location.href = data.redirectUrl;
+                    if (isTest) {
+                        // テスト環境：テスト決済ページへリダイレクト
+                        setTimeout(() => {
+                            window.location.href = `/payjp-checkout.html?id=${diagnosisId}&userId=${userId || ''}`;
+                        }, 500);
                     } else {
-                        throw new Error(data.message || 'カード決済の開始に失敗しました');
+                        // 本番環境：まだ準備中
+                        alert('クレジットカード決済は準備中です。\n現在はPayPayをご利用ください。');
+                        document.getElementById('loadingOverlay').style.display = 'none';
                     }
-                    */
-                    
-                    // 暫定: 準備中メッセージ
-                    alert('クレジットカード決済（PAY.JP）は準備中です。\n現在はPayPayをご利用ください。');
-                    document.getElementById('loadingOverlay').style.display = 'none';
                     return;
                 }
                 

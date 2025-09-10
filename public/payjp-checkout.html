@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>カード決済（テスト環境） | おつきさま診断</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #1a0033 0%, #2d1b69 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding-top: 40px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .header h1 {
+            font-size: 24px;
+            color: #ffd700;
+            margin-bottom: 10px;
+        }
+        
+        .test-notice {
+            background: rgba(255, 165, 0, 0.2);
+            border: 2px solid #ffa500;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .test-notice h2 {
+            color: #ffa500;
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+        
+        .test-notice p {
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        
+        .payment-form {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            color: #333;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #4CAF50;
+        }
+        
+        .card-brands {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            justify-content: center;
+        }
+        
+        .card-brand {
+            padding: 5px 10px;
+            background: #f5f5f5;
+            border-radius: 5px;
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .card-brand.active {
+            background: #4CAF50;
+            color: white;
+        }
+        
+        .submit-button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .submit-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(76, 175, 80, 0.3);
+        }
+        
+        .submit-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .test-cards {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 30px;
+        }
+        
+        .test-cards h3 {
+            color: #ffd700;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+        
+        .test-card-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 5px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .test-card-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .test-card-number {
+            font-family: monospace;
+            font-size: 14px;
+        }
+        
+        .test-card-type {
+            color: #4CAF50;
+            font-size: 12px;
+        }
+        
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .loading-content {
+            text-align: center;
+        }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top-color: #ffd700;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .loading-text {
+            color: white;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>クレジットカード決済</h1>
+        </div>
+        
+        <div class="test-notice">
+            <h2>🧪 テスト環境</h2>
+            <p>
+                これはテスト環境です。実際の決済は行われません。<br>
+                下記のテストカード番号をご利用ください。
+            </p>
+        </div>
+        
+        <div class="payment-form">
+            <div class="card-brands">
+                <div class="card-brand active">Visa</div>
+                <div class="card-brand active">Mastercard</div>
+                <div class="card-brand">JCB</div>
+                <div class="card-brand">AMEX</div>
+            </div>
+            
+            <form id="paymentForm">
+                <div class="form-group">
+                    <label for="cardNumber">カード番号</label>
+                    <input type="text" id="cardNumber" placeholder="4242 4242 4242 4242" maxlength="19">
+                </div>
+                
+                <div class="form-group">
+                    <label for="cardName">カード名義人</label>
+                    <input type="text" id="cardName" placeholder="TARO YAMADA">
+                </div>
+                
+                <div style="display: flex; gap: 20px;">
+                    <div class="form-group" style="flex: 1;">
+                        <label for="expiry">有効期限</label>
+                        <input type="text" id="expiry" placeholder="MM/YY" maxlength="5">
+                    </div>
+                    
+                    <div class="form-group" style="flex: 1;">
+                        <label for="cvc">セキュリティコード</label>
+                        <input type="text" id="cvc" placeholder="123" maxlength="4">
+                    </div>
+                </div>
+                
+                <button type="submit" class="submit-button">
+                    ¥2,980 を支払う
+                </button>
+            </form>
+        </div>
+        
+        <div class="test-cards">
+            <h3>📋 テストカード番号（クリックでコピー）</h3>
+            
+            <div class="test-card-item" onclick="fillTestCard('4242424242424242')">
+                <span class="test-card-number">4242 4242 4242 4242</span>
+                <span class="test-card-type">成功（Visa）</span>
+            </div>
+            
+            <div class="test-card-item" onclick="fillTestCard('5555555555554444')">
+                <span class="test-card-number">5555 5555 5555 4444</span>
+                <span class="test-card-type">成功（Mastercard）</span>
+            </div>
+            
+            <div class="test-card-item" onclick="fillTestCard('4000000000000002')">
+                <span class="test-card-number">4000 0000 0000 0002</span>
+                <span class="test-card-type">失敗（カード拒否）</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- ローディング表示 -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-content">
+            <div class="spinner"></div>
+            <div class="loading-text">決済処理中...</div>
+        </div>
+    </div>
+    
+    <script>
+        // URLパラメータを取得
+        const urlParams = new URLSearchParams(window.location.search);
+        const diagnosisId = urlParams.get('id');
+        const userId = urlParams.get('userId');
+        
+        // カード番号のフォーマット
+        document.getElementById('cardNumber').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\s/g, '');
+            let formattedValue = value.match(/.{1,4}/g)?.join(' ') || value;
+            e.target.value = formattedValue;
+        });
+        
+        // 有効期限のフォーマット
+        document.getElementById('expiry').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length >= 2) {
+                value = value.slice(0, 2) + '/' + value.slice(2, 4);
+            }
+            e.target.value = value;
+        });
+        
+        // テストカードを自動入力
+        function fillTestCard(cardNumber) {
+            document.getElementById('cardNumber').value = cardNumber.match(/.{1,4}/g).join(' ');
+            document.getElementById('cardName').value = 'TEST USER';
+            document.getElementById('expiry').value = '12/30';
+            document.getElementById('cvc').value = '123';
+        }
+        
+        // フォーム送信処理
+        document.getElementById('paymentForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const cardNumber = document.getElementById('cardNumber').value.replace(/\s/g, '');
+            const cardName = document.getElementById('cardName').value;
+            const expiry = document.getElementById('expiry').value;
+            const cvc = document.getElementById('cvc').value;
+            
+            // バリデーション
+            if (!cardNumber || !cardName || !expiry || !cvc) {
+                alert('すべての項目を入力してください');
+                return;
+            }
+            
+            // ローディング表示
+            document.getElementById('loadingOverlay').style.display = 'flex';
+            
+            // テスト決済処理
+            setTimeout(async () => {
+                // 成功カードかチェック
+                const isSuccess = cardNumber === '4242424242424242' || 
+                                 cardNumber === '5555555555554444';
+                
+                if (isSuccess) {
+                    // テスト決済成功処理
+                    try {
+                        // 決済成功をAPIに通知（テスト用）
+                        const response = await fetch('/api/test-payment-complete', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                diagnosisId: diagnosisId,
+                                userId: userId,
+                                paymentMethod: 'credit_card_test',
+                                amount: 2980
+                            })
+                        });
+                        
+                        // 成功ページへリダイレクト
+                        window.location.href = `/payment-success.html?id=${diagnosisId}&userId=${userId || ''}&paymentCompleted=true&test=true`;
+                    } catch (error) {
+                        console.error('API Error:', error);
+                        // APIエラーでも成功ページへ（テスト環境なので）
+                        window.location.href = `/payment-success.html?id=${diagnosisId}&userId=${userId || ''}&paymentCompleted=true&test=true`;
+                    }
+                } else {
+                    // 決済失敗
+                    document.getElementById('loadingOverlay').style.display = 'none';
+                    alert('決済に失敗しました。\nカード番号をご確認ください。\n\nテスト成功カード:\n4242 4242 4242 4242 (Visa)\n5555 5555 5555 4444 (Mastercard)');
+                }
+            }, 2000); // 2秒後に処理（リアルな決済処理をシミュレート）
+        });
+        
+        // 初期表示でテストカードを自動入力
+        window.addEventListener('load', function() {
+            // デモ用に最初のテストカードを自動入力
+            fillTestCard('4242424242424242');
+        });
+    </script>
+</body>
+</html>
