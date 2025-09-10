@@ -6,33 +6,31 @@ let personalityAxesData = null;
 // 診断日をグローバルに保存（データベースから取得した値を使用）
 let globalDiagnosisDate = null;
 
-// 動的な月表示を置換する関数（DateUtilsを使用）
+// 動的な月表示を置換する関数
 function replaceMonthPlaceholders(text) {
-    // DateUtilsが利用可能な場合はそれを使用
-    if (window.DateUtils) {
-        return window.DateUtils.replaceMonthPlaceholders(text);
-    }
-    
-    // DateUtilsがまだ読み込まれていない場合のフォールバック
     if (!text) return text;
     
-    // グローバル診断日を優先的に使用
+    // グローバル診断日を優先的に使用（データベースから取得した値）
     let diagnosisDate;
     
     if (window.globalDiagnosisDate) {
+        // データベースから取得した診断日がある場合はそれを使用
         diagnosisDate = new Date(window.globalDiagnosisDate);
     } else {
+        // フォールバック：URLパラメータから取得
         const urlParams = new URLSearchParams(window.location.search);
         const diagnosisDateParam = urlParams.get('diagnosisDate');
         
         if (diagnosisDateParam) {
             diagnosisDate = new Date(diagnosisDateParam);
         } else {
+            // 最終フォールバック：現在日時を使用
+            // console.warn('診断日が設定されていません。現在日時を使用します。');
             diagnosisDate = new Date();
         }
     }
     
-    const currentMonth = diagnosisDate.getMonth() + 1;
+    const currentMonth = diagnosisDate.getMonth() + 1; // 0-indexed to 1-indexed
     const currentYear = diagnosisDate.getFullYear();
     
     // M（Xヶ月先）月 のパターンを置換

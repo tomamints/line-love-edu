@@ -713,20 +713,20 @@ class FortuneDisplay {
             
             // メッセージ全体のHTMLを構築
             let htmlContent = `
-                <p class="fortune-message-paragraph">
+                <p style="margin-bottom: 20px;">
                     ${userName}さん、この3ヶ月においておつきさまが伝えているテーマは<br>
-                    <strong class="fortune-theme-title">「${theme.theme}」</strong><br>
+                    <strong style="color: #ffd700; font-size: 1.2em;">「${theme.theme}」</strong><br>
                     です。
                 </p>
-                <p class="fortune-message-paragraph">
+                <p style="margin-bottom: 20px;">
                     恋愛でも仕事でも人間関係でも、「もっと頑張らなきゃ」と焦る気持ちが強くなるかもしれません。<br>
                     でもその気持ちは、決して弱さではなく、未来を真剣に考えている証拠です。
                 </p>
-                <p class="fortune-message-paragraph">
+                <p style="margin-bottom: 20px;">
                     おつきさまはこう語りかけています──<br>
-                    <span class="fortune-quote">「${theme.message}」</span>
+                    <span style="color: #ffd700; font-style: italic;">「${theme.message}」</span>
                 </p>
-                <p class="fortune-message-paragraph">
+                <p style="margin-bottom: 20px;">
                     行動の指針はとてもシンプル。
                 </p>
                 <div class="important-actions-list">
@@ -741,7 +741,7 @@ class FortuneDisplay {
             htmlContent += `
                     </ul>
                 </div>
-                <p class="fortune-message-paragraph">
+                <p style="margin-bottom: 20px;">
                     こうした小さな積み重ねが、やがて大きな自信となり、<span class='moon-characteristic'>${this.getMonthAfter(3)}月</span>ごろには「私らしい幸せ」をつかむ力へと変わっていきます。
                 </p>
                 <p>
@@ -768,12 +768,6 @@ class FortuneDisplay {
      * 現在から指定月数後の月を取得
      */
     getMonthAfter(months) {
-        // DateUtilsが利用可能な場合はそれを使用
-        if (window.DateUtils) {
-            return window.DateUtils.getMonthAfter(months);
-        }
-        
-        // フォールバック: 従来の実装
         const currentDate = new Date();
         const futureDate = new Date(currentDate.setMonth(currentDate.getMonth() + months));
         return futureDate.getMonth() + 1;
