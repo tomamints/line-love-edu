@@ -26,14 +26,19 @@ class FortuneDateExtractor {
         const currentYear = new Date().getFullYear();
         
         // 日付パターンのマッチング
-        // パターン1: "1月15日〜1月22日"
-        const rangePattern = /(\d{1,2})月(\d{1,2})日[〜～~ー－](\d{1,2})月(\d{1,2})日/g;
-        // パターン2: "1月15日頃" または "1月15日ごろ"
-        const singlePattern = /(\d{1,2})月(\d{1,2})日[頃ごろ]/g;
+        // パターン1: "1月15日〜1月22日" または "10月の25日〜28日"
+        const rangePattern = /(\d{1,2})月(?:の)?(\d{1,2})日[〜～~ー－](?:(\d{1,2})月(?:の)?)?(\d{1,2})日/g;
+        // パターン2: "1月15日頃" または "1月15日ごろ" または "10月の25日〜28日ごろ"  
+        const singlePattern = /(\d{1,2})月(?:の)?(\d{1,2})日(?:[〜～~ー－](\d{1,2})日)?[頃ごろ]/g;
         // パターン3: "1月中旬"
         const periodPattern = /(\d{1,2})月(上旬|中旬|下旬)/g;
         // パターン4: "今月末" "来月初め"
         const relativePattern = /(今月|来月|再来月)(初め|中頃|末)/g;
+        // パターン5: "12月末まで" "12月までに"
+        const monthEndPattern = /(\d{1,2})月(末)?まで(?:に)?/g;
+        
+        // パターン6: 単純な日付範囲 "14日〜16日" (月が省略されている場合)
+        const simpleDayRangePattern = /(\d{1,2})日[〜～~ー－](\d{1,2})日/g;
         
         let match;
         
@@ -41,7 +46,8 @@ class FortuneDateExtractor {
         while ((match = rangePattern.exec(text)) !== null) {
             const startMonth = parseInt(match[1]);
             const startDay = parseInt(match[2]);
-            const endMonth = parseInt(match[3]);
+            // 終了月が省略されている場合は開始月と同じ
+            const endMonth = match[3] ? parseInt(match[3]) : startMonth;
             const endDay = parseInt(match[4]);
             
             dates.push({
@@ -57,24 +63,37 @@ class FortuneDateExtractor {
         // 単一の日付を抽出（頃）
         while ((match = singlePattern.exec(text)) !== null) {
             const month = parseInt(match[1]);
-            const day = parseInt(match[2]);
+            const startDay = parseInt(match[2]);
+            const endDay = match[3] ? parseInt(match[3]) : null;
             
-            // "頃"の場合は前後3日の範囲とする
-            const centerDate = this.createDate(month, day);
-            const startDate = new Date(centerDate);
-            startDate.setDate(startDate.getDate() - 3);
-            const endDate = new Date(centerDate);
-            endDate.setDate(endDate.getDate() + 3);
-            
-            dates.push({
-                type: 'around',
-                center: centerDate,
-                start: startDate,
-                end: endDate,
-                category: category,
-                text: match[0],
-                importance: this.detectImportance(text, match.index)
-            });
+            if (endDay) {
+                // "25日〜28日ごろ"のパターン
+                dates.push({
+                    type: 'range',
+                    start: this.createDate(month, startDay),
+                    end: this.createDate(month, endDay),
+                    category: category,
+                    text: match[0],
+                    importance: this.detectImportance(text, match.index)
+                });
+            } else {
+                // "15日頃"のパターン
+                const centerDate = this.createDate(month, startDay);
+                const startDate = new Date(centerDate);
+                startDate.setDate(startDate.getDate() - 3);
+                const endDate = new Date(centerDate);
+                endDate.setDate(endDate.getDate() + 3);
+                
+                dates.push({
+                    type: 'around',
+                    center: centerDate,
+                    start: startDate,
+                    end: endDate,
+                    category: category,
+                    text: match[0],
+                    importance: this.detectImportance(text, match.index)
+                });
+            }
         }
         
         // 期間の日付を抽出（上旬・中旬・下旬）
@@ -106,6 +125,34 @@ class FortuneDateExtractor {
                 text: match[0],
                 importance: this.detectImportance(text, match.index)
             });
+        }
+        
+        // 月末パターンを抽出
+        while ((match = monthEndPattern.exec(text)) !== null) {
+            const month = parseInt(match[1]);
+            const isMonthEnd = match[2] === '末';
+            
+            if (isMonthEnd) {
+                const lastDay = this.getLastDayOfMonth(month);
+                dates.push({
+                    type: 'deadline',
+                    start: this.createDate(month, lastDay - 5),
+                    end: this.createDate(month, lastDay),
+                    category: category,
+                    text: match[0],
+                    importance: this.detectImportance(text, match.index)
+                });
+            } else {
+                // "○月までに"の場合は月全体
+                dates.push({
+                    type: 'deadline',
+                    start: this.createDate(month, 1),
+                    end: this.createDate(month, this.getLastDayOfMonth(month)),
+                    category: category,
+                    text: match[0],
+                    importance: this.detectImportance(text, match.index)
+                });
+            }
         }
         
         // 相対的な日付を抽出
