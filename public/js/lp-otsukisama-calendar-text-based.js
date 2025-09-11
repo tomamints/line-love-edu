@@ -90,6 +90,9 @@ async function generateTextBasedCalendar(patternId, fortuneData) {
         return;
     }
     
+    // カレンダーメッセージを取得
+    const calendarMessage = patternData.calendarMessage || '月のリズムに合わせて、あなただけの特別な日を活用していきましょう。';
+    
     // 日付抽出器を初期化
     const dateExtractor = new window.FortuneDateExtractor();
     
