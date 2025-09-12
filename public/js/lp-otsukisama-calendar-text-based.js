@@ -548,20 +548,9 @@ async function generateTextBasedCalendar(patternId, fortuneData) {
             </div>
         </div>
 
-        <!-- パターンごとの月齢カレンダーメッセージ -->
-        <div class="moon-calendar-message" style="
-            margin-top: 30px;
-            padding: 20px;
-            background: linear-gradient(135deg, rgba(147, 112, 219, 0.1) 0%, rgba(255, 215, 0, 0.1) 100%);
-            border-radius: 10px;
-            border-left: 3px solid #ffd700;
-        ">
-            <p style="
-                color: rgba(255, 255, 255, 0.9);
-                line-height: 1.8;
-            " id="moon-calendar-pattern-message">
-                ${calendarMessage || '月のリズムに合わせて、あなただけの特別な日を活用していきましょう。'}
-            </p>
+        <!-- カレンダーメモリマインダーバナー -->
+        <div style="margin-top: 30px; text-align: center;">
+            <img src="/images/banner/calendar-memo-reminder.png" alt="カレンダーメモリマインダー" style="max-width: 100%; height: auto;">
         </div>
     </div>
     `;
