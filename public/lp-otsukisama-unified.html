@@ -1335,16 +1335,18 @@
                             }
                         }, 100);
 
-                        // カレンダーを初期化（統合版を使用） - 少し遅延を入れて確実に実行
+                        // カレンダーを初期化（統合版を使用） - 運勢テキストが表示された後に実行
                         setTimeout(async () => {
                             // 診断テキストデータを取得（カレンダー用）
                             const fortuneTextData = {
-                                overall: { text: document.getElementById('fortune-overall-text')?.innerText || '' },
-                                love: { text: document.getElementById('fortune-love-text')?.innerText || '' },
-                                career: { text: document.getElementById('fortune-career-text')?.innerText || '' },
-                                relationship: { text: document.getElementById('fortune-relationship-text')?.innerText || '' },
-                                money: { text: document.getElementById('fortune-money-text')?.innerText || '' }
+                                overall: { text: document.getElementById('fortune-overall-text')?.textContent || document.getElementById('fortune-overall-text')?.innerText || '' },
+                                love: { text: document.getElementById('fortune-love-text')?.textContent || document.getElementById('fortune-love-text')?.innerText || '' },
+                                career: { text: document.getElementById('fortune-career-text')?.textContent || document.getElementById('fortune-career-text')?.innerText || '' },
+                                relationship: { text: document.getElementById('fortune-relationship-text')?.textContent || document.getElementById('fortune-relationship-text')?.innerText || '' },
+                                money: { text: document.getElementById('fortune-money-text')?.textContent || document.getElementById('fortune-money-text')?.innerText || '' }
                             };
+                            
+                            console.log('[Main] Fortune text data for calendar:', fortuneTextData);
 
                             if (typeof generateTextBasedCalendar === 'function') {
                                 console.log('Initializing text-based calendar for pattern:', currentPatternId);
@@ -1358,7 +1360,7 @@
                             } else {
                                 console.error('Calendar generation function not found');
                             }
-                        }, 200);
+                        }, 500); // 運勢テキストが確実に表示された後に実行
 
                         console.log('データ表示完了');
                     } else {
