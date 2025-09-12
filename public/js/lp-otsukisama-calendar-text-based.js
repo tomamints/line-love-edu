@@ -376,9 +376,9 @@ async function generateTextBasedCalendar(patternId, fortuneData) {
         </style>
 
         <div class="moon-calendar-container">
-            <h4 class="calendar-header">
-                あなただけの3ヶ月運勢カレンダー
-            </h4>
+            <div style="text-align: center; margin-bottom: 20px;">
+                <img src="/images/banner/next-section.png" alt="あなただけの3ヶ月運勢カレンダー" style="max-width: 100%; height: auto;">
+            </div>
     `;
 
     // パターン固有のメッセージを追加
