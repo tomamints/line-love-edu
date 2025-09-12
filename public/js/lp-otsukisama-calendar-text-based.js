@@ -138,11 +138,14 @@ async function generateTextBasedCalendar(patternId, fortuneData) {
 
     // カレンダーHTMLを構築
     let calendarHTML = `
+        <!-- バナーを最外側に配置 -->
+        <img src="/images/banner/next-section.png" alt="あなただけの3ヶ月運勢カレンダー" style="width: 100%; height: auto; display: block; margin-bottom: -10px; border-radius: 12px 12px 0 0;">
+        
         <style>
             .moon-calendar-container {
                 padding: 16px;
                 background: rgba(30, 25, 60, 0.95);
-                border-radius: 12px;
+                border-radius: 0 0 12px 12px;
                 margin: 0 auto;
                 max-width: 100%;
             }
@@ -376,8 +379,6 @@ async function generateTextBasedCalendar(patternId, fortuneData) {
         </style>
 
         <div class="moon-calendar-container">
-            <!-- バナーを枠内の上部に配置 -->
-            <img src="/images/banner/next-section.png" alt="あなただけの3ヶ月運勢カレンダー" style="width: calc(100% + 32px); height: auto; display: block; margin: -16px -16px 20px -16px; border-radius: 12px 12px 0 0;">
     `;
 
     // パターン固有のメッセージを追加
