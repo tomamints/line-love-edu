@@ -376,10 +376,7 @@
         <div class="header">
             <div class="main-moon"></div>
             <img src="/images/banner/1-title.png" alt="おつきさま診断" class="responsive-image">
-            <p class="subtitle" id="pageSubtitle">診断結果（プレビュー版）</p>
-            <p class="sub-description" id="pageDescription">
-                一部の内容のみ表示されています
-            </p>
+            <img src="/images/banner/moon-guides-destiny.png" alt="月が導くあなたの運命" class="responsive-image" style="margin-top: 20px;">
         </div>
 
         <!-- 結果セクション -->
@@ -397,8 +394,6 @@
                 </div>
             </div>
 
-            <!-- タイプ診断タイトル -->
-            <img src="/images/banner/moon-guides-destiny.png" alt="おつきさま診断で読み解くあなた" class="full-width-banner">
 
             <!-- 月詠による診断説明 -->
             <div class="tsukuyomi-section right">
@@ -1152,13 +1147,7 @@
         // 表示モードを設定（APIレスポンスに基づいて動的に決定）
         function setDisplayMode(isPaid) {
             const pageBody = document.getElementById('pageBody');
-            const pageSubtitle = document.getElementById('pageSubtitle');
-            const pageDescription = document.getElementById('pageDescription');
             const loadingText = document.querySelector('.loading-text');
-
-            // タイトルとサブタイトルは常に同じ文言を表示
-            if (pageSubtitle) pageSubtitle.textContent = '月が導くあなたの運命';
-            if (pageDescription) pageDescription.textContent = '生まれた日の月相から読み解く、あなただけの特別な運勢メッセージ';
             
             if (isPaid) {
                 // 完全版モード
