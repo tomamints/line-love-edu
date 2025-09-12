@@ -520,15 +520,9 @@ async function generateTextBasedCalendar(patternId, fortuneData) {
             text-align: center;
         ">月齢カレンダー</h3>
         
-        <p style="
-            color: rgba(255, 255, 255, 0.9);
-            line-height: 1.8;
-            margin-bottom: 20px;
-        ">
-            ${userName || 'あなた'}さんの運気が高まる日は、カレンダーに書いてある『パワーDAY』です。<br>
-            その日には新しい挑戦をしたり、<br>
-            大切な一歩を踏み出すのがおすすめです。
-        </p>
+        <div style="margin: 20px 0; text-align: center;">
+            <img src="/images/banner/calendar-explanation.png" alt="パワーDAY説明" style="max-width: 100%; height: auto;">
+        </div>
         
         <div style="
             background: rgba(255, 255, 255, 0.03);
