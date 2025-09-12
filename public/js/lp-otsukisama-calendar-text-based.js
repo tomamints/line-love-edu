@@ -207,13 +207,15 @@ async function generateTextBasedCalendar(patternId, fortuneData) {
                 width: 100%;
                 border-collapse: separate;
                 border-spacing: 0;
+                border: 1px solid rgba(138, 97, 250, 0.4);
+                background: rgba(138, 97, 250, 0.05);
             }
 
             .calendar-table thead tr {
                 display: grid;
                 grid-template-columns: repeat(7, 1fr);
-                gap: 2px;
-                margin-bottom: 2px;
+                gap: 0;
+                border-bottom: 1px solid rgba(138, 97, 250, 0.4);
             }
 
             .calendar-table thead th {
@@ -222,10 +224,15 @@ async function generateTextBasedCalendar(patternId, fortuneData) {
                 font-weight: bold;
                 text-align: center;
                 padding: 8px 0;
-                background: rgba(138, 97, 250, 0.1);
+                background: rgba(138, 97, 250, 0.2);
                 display: flex;
                 align-items: center;
                 justify-content: center;
+                border-right: 1px solid rgba(138, 97, 250, 0.3);
+            }
+
+            .calendar-table thead th:last-child {
+                border-right: none;
             }
 
             .calendar-table thead th.sunday {
@@ -239,8 +246,7 @@ async function generateTextBasedCalendar(patternId, fortuneData) {
             .calendar-body tr {
                 display: grid;
                 grid-template-columns: repeat(7, 1fr);
-                gap: 2px;
-                margin-bottom: 2px;
+                gap: 0;
             }
 
             .calendar-cell {
@@ -250,41 +256,43 @@ async function generateTextBasedCalendar(patternId, fortuneData) {
                 justify-content: center;
                 min-height: 48px;
                 padding: 4px;
-                background: rgba(138, 97, 250, 0.1);
-                border: 1px solid rgba(138, 97, 250, 0.3);
-                border-radius: 6px;
+                background: rgba(30, 25, 60, 0.5);
+                border-right: 1px solid rgba(138, 97, 250, 0.3);
+                border-bottom: 1px solid rgba(138, 97, 250, 0.3);
                 position: relative;
                 cursor: pointer;
                 transition: all 0.3s;
             }
 
+            .calendar-cell:last-child {
+                border-right: none;
+            }
+
             .calendar-cell:hover {
                 background: rgba(255, 215, 0, 0.2);
-                transform: scale(1.05);
+                z-index: 1;
             }
 
             .calendar-cell.empty {
                 background: transparent;
-                border: none;
                 cursor: default;
             }
 
             .calendar-cell.today {
                 background: rgba(138, 97, 250, 0.4);
-                border: 2px solid #8a61fa;
-                box-shadow: 0 0 8px rgba(138, 97, 250, 0.5);
+                box-shadow: inset 0 0 0 2px #8a61fa;
+                z-index: 1;
             }
 
             .calendar-cell.lucky {
                 background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(138, 97, 250, 0.2));
-                border: 1px solid rgba(255, 215, 0, 0.5);
             }
 
             .calendar-cell.power-day {
                 background: linear-gradient(135deg, rgba(255, 215, 0, 0.4), rgba(255, 105, 180, 0.3));
-                border: 2px solid #ffd700;
-                box-shadow: 0 0 10px rgba(255, 215, 0, 0.4);
+                box-shadow: inset 0 0 0 2px #ffd700;
                 animation: pulse 2s infinite;
+                z-index: 1;
             }
 
             @keyframes pulse {
