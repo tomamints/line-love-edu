@@ -3265,14 +3265,22 @@
         
         /* 問いかけバナー画像のスタイル - 全開で大きく表示、囲いなし */
         .inquiry-banner {
-            width: 100%;
-            max-width: 100%;  /* 全幅表示 */
+            width: calc(100% + 60px);  /* 親要素のpadding分を拡張 */
+            max-width: none;  
             height: auto;
-            margin: 30px 0;  /* 左右マージンを削除 */
+            margin: 30px -30px;  /* 左右に負のマージンで親要素のpaddingを相殺 */
             display: block;
             border-radius: 0;  /* 角丸を削除 */
             box-shadow: none;  /* 影を削除 */
             animation: fadeInScale 0.8s ease-out;
+        }
+        
+        /* モバイル表示での調整 */
+        @media (max-width: 768px) {
+            .inquiry-banner {
+                width: calc(100% + 40px);  /* モバイルでの親要素padding分 */
+                margin: 30px -20px;  /* モバイルでの負のマージン */
+            }
         }
         
         @keyframes fadeInScale {
