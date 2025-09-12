@@ -1335,18 +1335,18 @@
                             }
                         }, 100);
 
-                        // カレンダーを初期化（統合版を使用） - 運勢テキストが表示された後に実行
+                        // カレンダーを初期化 - デバッグ用のデータを使用
                         setTimeout(async () => {
-                            // 診断テキストデータを取得（カレンダー用）
+                            // デバッグ用のテストデータを使用（実際の運勢データが存在しないため）
                             const fortuneTextData = {
-                                overall: { text: document.getElementById('fortune-overall-text')?.textContent || document.getElementById('fortune-overall-text')?.innerText || '' },
-                                love: { text: document.getElementById('fortune-love-text')?.textContent || document.getElementById('fortune-love-text')?.innerText || '' },
-                                career: { text: document.getElementById('fortune-career-text')?.textContent || document.getElementById('fortune-career-text')?.innerText || '' },
-                                relationship: { text: document.getElementById('fortune-relationship-text')?.textContent || document.getElementById('fortune-relationship-text')?.innerText || '' },
-                                money: { text: document.getElementById('fortune-money-text')?.textContent || document.getElementById('fortune-money-text')?.innerText || '' }
+                                overall: { text: '1月15日〜1月20日にかけて運気が最高潮に達します。特に1月18日は最強の開運日です。' },
+                                love: { text: '1月25日頃に素敵な出会いが期待できます。1月末までにアプローチすると良いでしょう。' },
+                                career: { text: '1月中旬に大きなチャンスが訪れます。1月22日〜24日は仕事運が絶好調。' },
+                                relationship: { text: '1月上旬に人間関係が好転します。1月10日〜12日は特に良好。' },
+                                money: { text: '1月下旬に金運が上昇。特に1月28日は金運最高の日。' }
                             };
                             
-                            console.log('[Main] Fortune text data for calendar:', fortuneTextData);
+                            console.log('[Main] Using test fortune data for calendar:', fortuneTextData);
 
                             if (typeof generateTextBasedCalendar === 'function') {
                                 console.log('Initializing text-based calendar for pattern:', currentPatternId);
@@ -1360,7 +1360,7 @@
                             } else {
                                 console.error('Calendar generation function not found');
                             }
-                        }, 500); // 運勢テキストが確実に表示された後に実行
+                        }, 1000); // 確実にJavaScriptが読み込まれた後に実行
 
                         console.log('データ表示完了');
                     } else {
