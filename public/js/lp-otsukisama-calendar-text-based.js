@@ -514,7 +514,7 @@ async function generateTextBasedCalendar(patternId, fortuneData) {
         border: 1px solid rgba(255, 215, 0, 0.3);
     ">
         <div style="margin: 20px 0; text-align: center;">
-            <img src="/images/banner/calendar-explanation.png" alt="パワーDAY説明" style="max-width: 150%; height: auto;">
+            <img src="/images/banner/calendar-explanation.png" alt="パワーDAY説明" style="max-width: 110%; height: auto; margin-left: -5%; margin-right: -5%;">
         </div>
 
         <div style="
