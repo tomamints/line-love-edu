@@ -957,18 +957,13 @@
                         </p>
                     </div>
                 </div>
-                
+
                 <!-- 月齢カレンダー -->
-                <div style="padding: 20px 0 10px; text-align: center;">
-                    <img src="/images/banner/calendar-explanation.png" alt="パワーDAY" style="max-width: 100%; height: auto; margin-bottom: 10px;">
-                </div>
                 <div class="monthly-fortune">
                     <div id="moonCalendarSection">
                         <!-- カレンダーはJavaScriptで動的に生成 -->
                     </div>
                 </div>
-
-
 
                 <!-- 月詠による最終メッセージへの導入 -->
                 <div class="tsukuyomi-section right">
@@ -1161,12 +1156,14 @@
             const pageDescription = document.getElementById('pageDescription');
             const loadingText = document.querySelector('.loading-text');
 
+            // タイトルとサブタイトルは常に同じ文言を表示
+            if (pageSubtitle) pageSubtitle.textContent = '月が導くあなたの運命';
+            if (pageDescription) pageDescription.textContent = '生まれた日の月相から読み解く、あなただけの特別な運勢メッセージ';
+            
             if (isPaid) {
                 // 完全版モード
                 document.body.className = 'complete-mode';
                 if (pageBody) pageBody.className = 'complete-mode';
-                if (pageSubtitle) pageSubtitle.textContent = '月が導くあなたの運命';
-                if (pageDescription) pageDescription.textContent = '生まれた日の月相から読み解く、あなただけの特別な運勢メッセージ';
                 if (loadingText) {
                     loadingText.textContent = '診断結果を準備しています...';
                 }
@@ -1177,8 +1174,6 @@
                 // プレビューモード
                 document.body.className = 'preview-mode';
                 if (pageBody) pageBody.className = 'preview-mode';
-                if (pageSubtitle) pageSubtitle.textContent = '診断結果（プレビュー版）';
-                if (pageDescription) pageDescription.textContent = '一部の内容のみ表示されています';
                 if (loadingText) {
                     loadingText.textContent = '診断結果を読み込んでいます...';
                 }
