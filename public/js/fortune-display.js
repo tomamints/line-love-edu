@@ -310,7 +310,7 @@ class FortuneDisplay {
         // 感情セクション
         htmlContent += '<div class="feelings-section">';
         htmlContent += '<div class="recent-events-section">';
-        htmlContent += '<img src="/images/banner/inqur/white-have-you-felt-like-this.png" alt="最近こんな気持ちになったことはありませんか？" class="inquiry-banner" />';
+        htmlContent += '<img src="/images/banner/inqur/white-evidence-these-things-happened.png" alt="その証拠に、こんなことがあったはず" class="inquiry-banner" />';
         htmlContent += '<ul class="recent-events-list">';
         if (mainText.feeling1) htmlContent += `<li>${this.processText(mainText.feeling1, userName)}</li>`;
         if (mainText.feeling2) htmlContent += `<li>${this.processText(mainText.feeling2, userName)}</li>`;
@@ -333,7 +333,7 @@ class FortuneDisplay {
         htmlContent += '<div class="recent-events-section">';
 
         // バナー画像を表示（テキストの代わりに）
-        htmlContent += `<img src="/images/banner/inqur/white-recently-experienced-this.png" alt="最近、こんなことはありませんでしたか？" class="inquiry-banner">`;
+        htmlContent += `<img src="/images/banner/inqur/yellow-recently-experienced-this.png" alt="最近、こんなことはありませんでしたか？" class="inquiry-banner">`;
 
         htmlContent += '<ul class="recent-events-list">';
         if (mainText.evidence1) htmlContent += `<li>${this.processText(mainText.evidence1, userName)}</li>`;
@@ -453,7 +453,7 @@ class FortuneDisplay {
 
         // 証拠セクション
         htmlContent += '<div class="evidence-section">';
-        htmlContent += '<img src="/images/banner/inqur/white-evidence-these-things-happened.png" alt="その証拠にこんなことがあったはず" class="inquiry-banner" />';
+        htmlContent += '<img src="/images/banner/inqur/white-experiences-fate-signal.png" alt="こんな経験は、あなたが動き出す合図です" class="inquiry-banner" />';
         htmlContent += '<ul>';
         if (mainText.evidence1) htmlContent += `<li>${this.processText(mainText.evidence1, userName)}</li>`;
         if (mainText.evidence2) htmlContent += `<li>${this.processText(mainText.evidence2, userName)}</li>`;
@@ -554,7 +554,7 @@ class FortuneDisplay {
 
         // 感情セクション
         htmlContent += '<div class="feelings-section">';
-        htmlContent += '<img src="/images/banner/inqur/white-recently-experienced-this.png" alt="最近こんなことはありませんでしたか？" class="inquiry-banner" />';
+        htmlContent += '<img src="/images/banner/inqur/yellow-do-you-recognize-these.png" alt="これらに思い当たることはありませんか？" class="inquiry-banner" />';
         htmlContent += '<ul>';
         if (mainText.feeling1) htmlContent += `<li>${this.processText(mainText.feeling1, userName)}</li>`;
         if (mainText.feeling2) htmlContent += `<li>${this.processText(mainText.feeling2, userName)}</li>`;
@@ -574,8 +574,7 @@ class FortuneDisplay {
         htmlContent += '<div class="recent-events-section">';
 
         // バナー画像を表示（テキストの代わりに）
-        const bannerColor = data.color === 'yellow' ? 'yellow' : 'white';
-        htmlContent += `<img src="/images/banner/inqur/${bannerColor}-recently-experienced-this.png" alt="最近、こんなことはありませんでしたか？" class="inquiry-banner">`;
+        htmlContent += `<img src="/images/banner/inqur/white-experiences-fate-signal.png" alt="最近、こんなことはありませんでしたか？" class="inquiry-banner">`;
 
         htmlContent += '<ul class="recent-events-list">';
         if (mainText.evidence1) htmlContent += `<li>${this.processText(mainText.evidence1, userName)}</li>`;
