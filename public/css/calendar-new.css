@@ -110,14 +110,15 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     background: rgba(255, 255, 255, 0.02);
     border-radius: 12px;
     position: relative;
     transition: all 0.3s ease;
     cursor: pointer;
     overflow: visible;
-    padding: 5px 2px;
+    padding: 8px 4px;
+    gap: 2px;
 }
 
 .day-cell:hover {
@@ -144,17 +145,14 @@
     font-size: 14px;
     font-weight: 600;
     color: rgba(255, 255, 255, 0.9);
-    margin-bottom: 2px;
-    position: relative;
-    z-index: 2;
+    line-height: 1.2;
 }
 
 /* 月の絵文字 */
 .moon-phase {
-    font-size: 18px;
+    font-size: 20px;
     line-height: 1;
     filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.5));
-    margin-bottom: 4px;
 }
 
 /* 今日の日付 */
@@ -368,31 +366,18 @@
 
 /* カレンダー内のアイコンサイズ調整 */
 .day-cell .fortune-icons {
-    min-height: 26px;
-    position: absolute;
-    bottom: 3px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 100%;
+    min-height: 20px;
+    margin-top: 2px;
 }
 
-.day-cell .fortune-icons i {
-    font-size: 12px;
-    width: 20px;
-    height: 20px;
-    line-height: 20px;
+.day-cell .fortune-icon {
+    font-size: 14px;
 }
 
 /* アイコンのホバー効果 */
-.day-cell:hover .fortune-icons i {
-    transform: scale(1.15);
-    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.4);
-}
-
-/* 高重要度アイコンの特別な効果 */
-.fortune-icons i.fa-crown {
-    background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
-    animation: glow 2s ease-in-out infinite;
+.day-cell:hover .fortune-icon {
+    transform: scale(1.2);
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.6));
 }
 
 @keyframes glow {
