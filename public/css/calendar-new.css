@@ -1,8 +1,8 @@
-/* 月齢カレンダー新デザイン */
+/* 月齢カレンダー新デザイン - モバイルファースト */
 .moon-calendar-section {
-    max-width: 800px;
+    max-width: 100%;
     margin: 0 auto;
-    padding: 40px 20px;
+    padding: 20px 10px;
     font-family: 'Noto Serif JP', 'YuMincho', 'Hiragino Mincho ProN', serif;
 }
 
@@ -12,17 +12,17 @@
     grid-template-columns: none !important;
 }
 
-/* カレンダー全体のコンテナ */
+/* カレンダー全体のコンテナ - モバイルファースト */
 .moon-calendar-container {
     background: linear-gradient(135deg, #1a1e3e 0%, #2d1b69 100%);
-    border-radius: 24px;
-    padding: 30px;
-    box-shadow: 0 20px 60px rgba(138, 97, 250, 0.3);
+    border-radius: 16px;
+    padding: 15px 10px;
+    box-shadow: 0 10px 30px rgba(138, 97, 250, 0.3);
     position: relative;
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    gap: 30px;
+    gap: 15px;
 }
 
 .moon-calendar-container::before {
@@ -41,13 +41,13 @@
     100% { transform: rotate(360deg); }
 }
 
-/* 月ごとのカレンダー */
+/* 月ごとのカレンダー - モバイルファースト */
 .month-calendar {
     background: rgba(255, 255, 255, 0.03);
     backdrop-filter: blur(10px);
-    border-radius: 20px;
-    padding: 25px;
-    margin-bottom: 30px;
+    border-radius: 12px;
+    padding: 12px 8px;
+    margin-bottom: 15px;
     border: 1px solid rgba(255, 215, 0, 0.2);
     position: relative;
     z-index: 1;
@@ -59,35 +59,35 @@
     margin-bottom: 0;
 }
 
-/* 月ヘッダー */
+/* 月ヘッダー - モバイルファースト */
 .month-header {
     text-align: center;
-    font-size: 22px;
+    font-size: 16px;
     font-weight: bold;
     color: #ffd700;
-    margin-bottom: 25px;
-    text-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
-    letter-spacing: 2px;
+    margin-bottom: 12px;
+    text-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
+    letter-spacing: 1px;
     font-family: 'Noto Serif JP', 'YuMincho', 'Hiragino Mincho ProN', serif;
 }
 
-/* 曜日ヘッダー */
+/* 曜日ヘッダー - モバイルファースト */
 .weekdays {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    gap: 8px;
-    margin-bottom: 15px;
-    padding-bottom: 15px;
-    border-bottom: 2px solid rgba(255, 215, 0, 0.2);
+    gap: 2px;
+    margin-bottom: 8px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(255, 215, 0, 0.2);
 }
 
 .weekday {
     text-align: center;
-    font-size: 13px;
+    font-size: 10px;
     font-weight: 600;
     color: rgba(255, 255, 255, 0.7);
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 0;
 }
 
 .weekday.sunday {
@@ -98,29 +98,29 @@
     color: #66d9ef;
 }
 
-/* カレンダーグリッド */
+/* カレンダーグリッド - モバイルファースト */
 .days-grid {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    gap: 8px;
+    gap: 2px;
 }
 
-/* 日付セル */
+/* 日付セル - モバイルファースト */
 .day-cell {
     aspect-ratio: 1;
-    min-height: 60px;
+    min-height: 45px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
     background: rgba(255, 255, 255, 0.02);
-    border-radius: 12px;
+    border-radius: 8px;
     position: relative;
     transition: all 0.3s ease;
     cursor: pointer;
     overflow: visible;
-    padding: 8px 4px;
-    gap: 2px;
+    padding: 3px 2px;
+    gap: 1px;
 }
 
 .day-cell:hover {
@@ -142,19 +142,19 @@
     box-shadow: none;
 }
 
-/* 日付番号 */
+/* 日付番号 - モバイルファースト */
 .day-number {
-    font-size: 14px;
+    font-size: 11px;
     font-weight: 600;
     color: rgba(255, 255, 255, 0.9);
-    line-height: 1.2;
+    line-height: 1;
 }
 
-/* 月の絵文字 */
+/* 月の絵文字 - モバイルファースト */
 .moon-phase {
-    font-size: 20px;
+    font-size: 14px;
     line-height: 1;
-    filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.5));
+    filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.5));
 }
 
 /* 今日の日付 */
@@ -289,106 +289,130 @@
     font-style: italic;
 }
 
-/* レスポンシブ対応 */
-@media (max-width: 640px) {
+/* デスクトップ用スタイル - モバイルファーストなので大画面用を定義 */
+@media (min-width: 768px) {
+    .moon-calendar-section {
+        max-width: 800px;
+        padding: 40px 20px;
+    }
+    
     .moon-calendar-container {
-        padding: 15px 10px;
+        border-radius: 24px;
+        padding: 30px;
+        gap: 30px;
+        box-shadow: 0 20px 60px rgba(138, 97, 250, 0.3);
     }
     
     .month-calendar {
-        padding: 15px 10px;
-        margin-bottom: 20px;
+        border-radius: 20px;
+        padding: 25px;
+        margin-bottom: 30px;
     }
     
     .month-header {
-        font-size: 16px;
-        margin-bottom: 15px;
-    }
-    
-    .days-grid {
-        gap: 3px;
+        font-size: 22px;
+        margin-bottom: 25px;
+        letter-spacing: 2px;
     }
     
     .weekdays {
-        gap: 3px;
-        margin-bottom: 10px;
-        padding-bottom: 10px;
-    }
-    
-    .day-cell {
-        min-height: 50px;
-        padding: 4px 2px;
-        border-radius: 8px;
-    }
-    
-    .day-number {
-        font-size: 11px;
-        font-weight: 500;
-    }
-    
-    .moon-phase {
-        font-size: 16px;
-        margin: 2px 0;
+        gap: 8px;
+        margin-bottom: 15px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid rgba(255, 215, 0, 0.2);
     }
     
     .weekday {
-        font-size: 10px;
-        letter-spacing: 0;
+        font-size: 13px;
+        letter-spacing: 1px;
+    }
+    
+    .days-grid {
+        gap: 8px;
+    }
+    
+    .day-cell {
+        min-height: 60px;
+        padding: 8px 4px;
+        border-radius: 12px;
+        gap: 2px;
+    }
+    
+    .day-number {
+        font-size: 14px;
+        line-height: 1.2;
+    }
+    
+    .moon-phase {
+        font-size: 20px;
+        filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.5));
     }
     
     .calendar-legend {
-        flex-wrap: wrap;
-        gap: 10px;
-        margin-top: 15px;
-        padding-top: 15px;
+        gap: 25px;
     }
     
     .legend-item {
-        font-size: 11px;
+        font-size: 13px;
     }
     
-    /* 運勢アイコンのサイズ調整 */
-    .day-cell .fortune-icon {
-        font-size: 12px;
+    .calendar-message {
+        font-size: 14px;
     }
     
-    .day-cell .fortune-icons {
-        gap: 1px;
-        margin-top: 1px;
-    }
-    
-    /* スペシャルツールチップの調整 */
-    .special-tooltip {
-        font-size: 10px;
-        padding: 4px 8px;
-        bottom: -30px;
-    }
-    
-    /* テーブル版のレスポンシブ対応 */
+    /* テーブル版 */
     .calendar-table {
-        border-spacing: 3px;
+        border-spacing: 8px;
     }
     
     .calendar-header {
-        font-size: 10px;
-        padding: 6px;
+        font-size: 14px;
+        padding: 10px;
     }
     
     .calendar-cell {
-        min-height: 50px;
-        padding: 4px 2px;
+        min-height: 60px;
+        padding: 8px 4px;
     }
     
     .calendar-cell .date-number {
-        font-size: 11px;
+        font-size: 14px;
     }
     
     .calendar-cell .moon-phase {
-        font-size: 16px;
+        font-size: 20px;
     }
     
     .calendar-cell .fortune-icon {
+        font-size: 14px;
+    }
+}
+
+/* さらに小さいスマホ用の調整 */
+@media (max-width: 360px) {
+    .moon-calendar-container {
+        padding: 12px 8px;
+    }
+    
+    .month-calendar {
+        padding: 10px 6px;
+    }
+    
+    .day-cell {
+        min-height: 40px;
+        padding: 2px 1px;
+    }
+    
+    .day-number {
+        font-size: 10px;
+    }
+    
+    .moon-phase {
         font-size: 12px;
+    }
+    
+    .day-cell .fortune-icon {
+        font-size: 10px;
     }
 }
 
