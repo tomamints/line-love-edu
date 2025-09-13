@@ -110,7 +110,7 @@ class FortuneDisplay {
      */
     displayLoveFortune(userName = '〇〇') {
         console.log('displayLoveFortune called with userName:', userName);
-        
+
         if (!this.fortuneData.love) {
             console.error('Love fortune data not loaded');
             return;
@@ -118,23 +118,23 @@ class FortuneDisplay {
 
         const data = this.fortuneData.love;
         console.log('Love fortune data:', data);
-        
+
         // メインテキストを構築
         const mainText = data.mainText;
         let htmlContent = '';
 
         // 結果を表示
         htmlContent += `<p>${this.processText(mainText.result, userName)}</p>`;
-        
+
         // 感情の承認
         htmlContent += `<p>${this.processText(mainText.feelingAcknowledgment, userName)}</p>`;
-        
+
         // 安心感を与える
         htmlContent += `<p>${this.processText(mainText.reassurance, userName)}</p>`;
-        
+
         // 理由
         htmlContent += `<p>${this.processText(mainText.reason, userName)}</p>`;
-        
+
         // 証拠セクション
         htmlContent += '<div class="recent-events-section">';
         htmlContent += '<img src="/images/banner/inqur/yellow-recently-experienced-this.png" alt="最近こんなこと、ありませんでしたか？" class="inquiry-banner" />';
@@ -147,7 +147,7 @@ class FortuneDisplay {
         htmlContent += '</div>';
         if (mainText.evidence4) htmlContent += `<p class="conclusion-text">${this.processText(mainText.evidence4, userName)}</p>`;
         htmlContent += '</div>';
-        
+
         // アドバイスセクション
         htmlContent += '<div class="action-list">';
         if (mainText.advice1) htmlContent += `<p>${this.processText(mainText.advice1, userName)}</p>`;
@@ -171,10 +171,10 @@ class FortuneDisplay {
 
         // 運命の出会いセクション
         this.displayDestinyMeeting(data.destinyMeeting, userName);
-        
+
         // 恋の矢を向けている人セクション
         this.displayAdmirerType(data.admirerType, userName);
-        
+
         // 危険な異性タイプセクション
         this.displayDangerousType(data.dangerousType, userName);
     }
@@ -184,14 +184,14 @@ class FortuneDisplay {
      */
     displayDestinyMeeting(data, userName) {
         if (!data) return;
-        
+
         let htmlContent = '';
         // h3タグは画像バナーで表示されるため削除
         htmlContent += `<p>${this.processText(data.declaration, userName)}</p>`;
         htmlContent += `<p>${this.processText(data.details, userName)}</p>`;
         htmlContent += `<p>${this.processText(data.condition, userName)}</p>`;
         htmlContent += `<p>${this.processText(data.action, userName)}</p>`;
-        
+
         const element = document.getElementById('fortune-love-destiny-meeting');
         if (element) {
             element.innerHTML = htmlContent;
@@ -203,12 +203,12 @@ class FortuneDisplay {
      */
     displayAdmirerType(data, userName) {
         if (!data) return;
-        
+
         let htmlContent = '';
         // h3タグは画像バナーで表示されるため削除
         htmlContent += `<p>${this.processText(data.declaration, userName)}</p>`;
         htmlContent += `<p>${this.processText(data.characteristics, userName)}</p>`;
-        
+
         // サインリスト
         htmlContent += '<div class="signs-section">';
         if (data.sign1_title) {
@@ -230,14 +230,14 @@ class FortuneDisplay {
             htmlContent += '</div>';
         }
         htmlContent += '</div>';
-        
+
         if (data.realization) {
             htmlContent += `<p>${this.processText(data.realization, userName)}</p>`;
         }
         if (data.condition) {
             htmlContent += `<p>${this.processText(data.condition, userName)}</p>`;
         }
-        
+
         const element = document.getElementById('fortune-love-admirer-type');
         if (element) {
             element.innerHTML = htmlContent;
@@ -249,15 +249,15 @@ class FortuneDisplay {
      */
     displayDangerousType(data, userName) {
         if (!data) return;
-        
+
         let htmlContent = '';
         // h3タグは画像バナーで表示されるため削除
         htmlContent += `<p>${this.processText(data.warning, userName)}</p>`;
-        
+
         if (data.introduction) {
             htmlContent += `<p>${this.processText(data.introduction, userName)}</p>`;
         }
-        
+
         // 特徴リスト
         htmlContent += '<div class="characteristics-section">';
         if (data.characteristic1_title) {
@@ -279,11 +279,11 @@ class FortuneDisplay {
             htmlContent += '</div>';
         }
         htmlContent += '</div>';
-        
+
         if (data.condition) {
             htmlContent += `<p>${this.processText(data.condition, userName)}</p>`;
         }
-        
+
         const element = document.getElementById('fortune-love-dangerous-type');
         if (element) {
             element.innerHTML = htmlContent;
@@ -301,16 +301,16 @@ class FortuneDisplay {
 
         const data = this.fortuneData.relationships;
         const mainText = data.mainText;
-        
+
         let htmlContent = '';
-        
+
         // 宣言
         htmlContent += `<p>${this.processText(mainText.declaration, userName)}</p>`;
-        
+
         // 感情セクション
         htmlContent += '<div class="feelings-section">';
         htmlContent += '<div class="recent-events-section">';
-        htmlContent += '<img src="/images/banner/inqur/yellow-have-you-felt-like-this.png" alt="最近こんな気持ちになったことはありませんか？" class="inquiry-banner" />';
+        htmlContent += '<img src="/images/banner/inqur/white-have-you-felt-like-this.png" alt="最近こんな気持ちになったことはありませんか？" class="inquiry-banner" />';
         htmlContent += '<ul class="recent-events-list">';
         if (mainText.feeling1) htmlContent += `<li>${this.processText(mainText.feeling1, userName)}</li>`;
         if (mainText.feeling2) htmlContent += `<li>${this.processText(mainText.feeling2, userName)}</li>`;
@@ -323,19 +323,18 @@ class FortuneDisplay {
         }
         htmlContent += '</div>';
         htmlContent += '</div>';
-        
+
         // 安心感と理由
         htmlContent += `<p>${this.processText(mainText.reassurance, userName)}</p>`;
         htmlContent += `<p>${this.processText(mainText.reason, userName)}</p>`;
-        
+
         // 証拠セクション - バナー画像を表示
         htmlContent += '<div class="evidence-section">';
         htmlContent += '<div class="recent-events-section">';
-        
+
         // バナー画像を表示（テキストの代わりに）
-        const bannerColor = data.color === 'yellow' ? 'yellow' : 'white';
-        htmlContent += `<img src="/images/banner/inqur/${bannerColor}-recently-experienced-this.png" alt="最近、こんなことはありませんでしたか？" class="inquiry-banner">`;
-        
+        htmlContent += `<img src="/images/banner/inqur/white-recently-experienced-this.png" alt="最近、こんなことはありませんでしたか？" class="inquiry-banner">`;
+
         htmlContent += '<ul class="recent-events-list">';
         if (mainText.evidence1) htmlContent += `<li>${this.processText(mainText.evidence1, userName)}</li>`;
         if (mainText.evidence2) htmlContent += `<li>${this.processText(mainText.evidence2, userName)}</li>`;
@@ -346,7 +345,7 @@ class FortuneDisplay {
         }
         htmlContent += '</div>';
         htmlContent += '</div>';
-        
+
         // アドバイスセクション
         htmlContent += '<div class="advice-section">';
         if (mainText.adviceIntro) {
@@ -361,7 +360,7 @@ class FortuneDisplay {
             htmlContent += `<p>${this.processText(mainText.adviceConclusion, userName)}</p>`;
         }
         htmlContent += '</div>';
-        
+
         const textElement = document.getElementById('fortune-relationship-text');
         if (textElement) {
             textElement.innerHTML = htmlContent;
@@ -369,7 +368,7 @@ class FortuneDisplay {
 
         // 新しい人間関係セクション
         this.displayNewConnections(data.newConnections, userName);
-        
+
         // 課題セクション
         this.displayRelationshipChallenges(data.challenges, userName);
     }
@@ -379,17 +378,17 @@ class FortuneDisplay {
      */
     displayNewConnections(data, userName) {
         if (!data) return;
-        
+
         const distribution = data.distribution;
         const patternIndex = distribution[this.patternId % distribution.length];
         const pattern = data.patterns[patternIndex];
-        
+
         if (!pattern) return;
-        
+
         // h3タグは画像バナーで表示されるため削除
         let htmlContent = '';
         htmlContent += `<p>${this.processText(pattern, userName)}</p>`;
-        
+
         const element = document.getElementById('fortune-relationship-new-connections');
         if (element) {
             element.innerHTML = htmlContent;
@@ -401,17 +400,17 @@ class FortuneDisplay {
      */
     displayRelationshipChallenges(data, userName) {
         if (!data) return;
-        
+
         const distribution = data.distribution;
         const patternIndex = distribution[this.patternId % distribution.length];
         const pattern = data.patterns[patternIndex];
-        
+
         if (!pattern) return;
-        
+
         // h3タグは画像バナーで表示されるため削除
         let htmlContent = '';
         htmlContent += `<p>${this.processText(pattern, userName)}</p>`;
-        
+
         const element = document.getElementById('fortune-relationship-challenges');
         if (element) {
             element.innerHTML = htmlContent;
@@ -429,15 +428,15 @@ class FortuneDisplay {
 
         const data = this.fortuneData.work;
         const mainText = data.mainText;
-        
+
         let htmlContent = '';
-        
+
         // 宣言
         htmlContent += `<p>${this.processText(mainText.declaration, userName)}</p>`;
-        
+
         // 感情セクション
         htmlContent += '<div class="feelings-section">';
-        htmlContent += '<img src="/images/banner/inqur/white-recently-experienced-this.png" alt="最近こんなことはありませんか？" class="inquiry-banner" />',
+        htmlContent += '<img src="/images/banner/inqur/yellow-recently-experienced-this.png" alt="最近こんなことはありませんか？" class="inquiry-banner" />',
         htmlContent += '<ul>';
         if (mainText.feeling1) htmlContent += `<li>${this.processText(mainText.feeling1, userName)}</li>`;
         if (mainText.feeling2) htmlContent += `<li>${this.processText(mainText.feeling2, userName)}</li>`;
@@ -447,11 +446,11 @@ class FortuneDisplay {
             htmlContent += `<p>${this.processText(mainText.feelingConclusion, userName)}</p>`;
         }
         htmlContent += '</div>';
-        
+
         // 安心感と理由
         htmlContent += `<p>${this.processText(mainText.reassurance, userName)}</p>`;
         htmlContent += `<p>${this.processText(mainText.reason, userName)}</p>`;
-        
+
         // 証拠セクション
         htmlContent += '<div class="evidence-section">';
         htmlContent += '<img src="/images/banner/inqur/white-evidence-these-things-happened.png" alt="その証拠にこんなことがあったはず" class="inquiry-banner" />';
@@ -464,7 +463,7 @@ class FortuneDisplay {
             htmlContent += `<p>${this.processText(mainText.evidenceConclusion, userName)}</p>`;
         }
         htmlContent += '</div>';
-        
+
         // アドバイスセクション
         htmlContent += '<div class="advice-section">';
         if (mainText.adviceIntro) {
@@ -479,7 +478,7 @@ class FortuneDisplay {
             htmlContent += `<p>${this.processText(mainText.adviceConclusion, userName)}</p>`;
         }
         htmlContent += '</div>';
-        
+
         const textElement = document.getElementById('fortune-work-text');
         if (textElement) {
             textElement.innerHTML = htmlContent;
@@ -487,7 +486,7 @@ class FortuneDisplay {
 
         // 新しい才能セクション
         this.displayNewTalents(data.newTalents, userName);
-        
+
         // 転機セクション
         this.displayTurningPoints(data.turningPoints, userName);
     }
@@ -497,17 +496,17 @@ class FortuneDisplay {
      */
     displayNewTalents(data, userName) {
         if (!data) return;
-        
+
         const distribution = data.distribution;
         const patternIndex = distribution[this.patternId % distribution.length];
         const pattern = data.patterns[patternIndex];
-        
+
         if (!pattern) return;
-        
+
         // h3タグは画像バナーで表示されるため削除
         let htmlContent = '';
         htmlContent += `<p>${this.processText(pattern, userName)}</p>`;
-        
+
         const element = document.getElementById('fortune-work-new-talent');
         if (element) {
             element.innerHTML = htmlContent;
@@ -519,17 +518,17 @@ class FortuneDisplay {
      */
     displayTurningPoints(data, userName) {
         if (!data) return;
-        
+
         const distribution = data.distribution;
         const patternIndex = distribution[this.patternId % distribution.length];
         const pattern = data.patterns[patternIndex];
-        
+
         if (!pattern) return;
-        
+
         // h3タグは画像バナーで表示されるため削除
         let htmlContent = '';
         htmlContent += `<p>${this.processText(pattern, userName)}</p>`;
-        
+
         const element = document.getElementById('fortune-work-turning-point');
         if (element) {
             element.innerHTML = htmlContent;
@@ -547,12 +546,12 @@ class FortuneDisplay {
 
         const data = this.fortuneData.money;
         const mainText = data.mainText;
-        
+
         let htmlContent = '';
-        
+
         // 宣言
         htmlContent += `<p>${this.processText(mainText.declaration, userName)}</p>`;
-        
+
         // 感情セクション
         htmlContent += '<div class="feelings-section">';
         htmlContent += '<img src="/images/banner/inqur/white-recently-experienced-this.png" alt="最近こんなことはありませんでしたか？" class="inquiry-banner" />';
@@ -565,19 +564,19 @@ class FortuneDisplay {
             htmlContent += `<p>${this.processText(mainText.feelingConclusion, userName)}</p>`;
         }
         htmlContent += '</div>';
-        
+
         // 安心感と理由
         htmlContent += `<p>${this.processText(mainText.reassurance, userName)}</p>`;
         htmlContent += `<p>${this.processText(mainText.reason, userName)}</p>`;
-        
+
         // 証拠セクション - バナー画像を表示
         htmlContent += '<div class="evidence-section">';
         htmlContent += '<div class="recent-events-section">';
-        
+
         // バナー画像を表示（テキストの代わりに）
         const bannerColor = data.color === 'yellow' ? 'yellow' : 'white';
         htmlContent += `<img src="/images/banner/inqur/${bannerColor}-recently-experienced-this.png" alt="最近、こんなことはありませんでしたか？" class="inquiry-banner">`;
-        
+
         htmlContent += '<ul class="recent-events-list">';
         if (mainText.evidence1) htmlContent += `<li>${this.processText(mainText.evidence1, userName)}</li>`;
         if (mainText.evidence2) htmlContent += `<li>${this.processText(mainText.evidence2, userName)}</li>`;
@@ -588,7 +587,7 @@ class FortuneDisplay {
         }
         htmlContent += '</div>';
         htmlContent += '</div>';
-        
+
         const textElement = document.getElementById('fortune-money-text');
         if (textElement) {
             textElement.innerHTML = htmlContent;
@@ -596,7 +595,7 @@ class FortuneDisplay {
 
         // ラッキーアクションセクション
         this.displayLuckyActions(data.luckyActions, userName);
-        
+
         // お金のトラブル警告セクション
         this.displayMoneyTrouble(data.moneyTroubleWarning, userName);
     }
@@ -606,7 +605,7 @@ class FortuneDisplay {
      */
     displayLuckyActions(actions, userName) {
         if (!actions || actions.length === 0) return;
-        
+
         // ランダムに5つ選択
         const selectedActions = [];
         const actionsCopy = [...actions];
@@ -615,13 +614,13 @@ class FortuneDisplay {
             selectedActions.push(actionsCopy[index]);
             actionsCopy.splice(index, 1);
         }
-        
+
         let htmlContent = '<ul class="lucky-actions">';
         selectedActions.forEach(action => {
             htmlContent += `<li>${this.processText(action, userName)}</li>`;
         });
         htmlContent += '</ul>';
-        
+
         const element = document.getElementById('fortune-money-lucky');
         if (element) {
             element.innerHTML = htmlContent;
@@ -636,13 +635,13 @@ class FortuneDisplay {
      */
     displayMoneyTrouble(data, userName) {
         if (!data) return;
-        
+
         // dataは文字列として直接渡される
         const warningText = this.processText(data, userName);
-        
+
         // 改行をHTMLブレークタグに変換
         const formattedText = warningText.replace(/\n/g, '<br>');
-        
+
         const element = document.getElementById('fortune-money-trouble');
         if (element) {
             element.innerHTML = `<p>${formattedText}</p>`;
@@ -654,13 +653,13 @@ class FortuneDisplay {
      */
     processText(text, userName) {
         if (!text) return '';
-        
+
         // ユーザー名を置換
         let processed = text.replace(/〇〇/g, userName);
-        
+
         // 日付プレースホルダーを置換
         processed = this.dateCalculator.replaceDatePlaceholders(processed);
-        
+
         return processed;
     }
 
@@ -669,21 +668,21 @@ class FortuneDisplay {
      */
     async displayAllFortunes(patternId, userName = '〇〇') {
         this.setPatternId(patternId);
-        
+
         if (!this.isLoaded) {
             await this.loadFortuneData();
         }
-        
+
         // 各運勢を表示
         const graphType = this.displayOverallFortune(userName);
         this.displayLoveFortune(userName);
         this.displayRelationshipFortune(userName);
         this.displayWorkFortune(userName);
         this.displayMoneyFortune(userName);
-        
+
         // 月が教えてくれる最も重要なメッセージを表示
         await this.displayImportantMessage(userName);
-        
+
         console.log('All fortunes displayed for pattern:', patternId);
         return graphType;
     }
@@ -696,21 +695,21 @@ class FortuneDisplay {
             // メッセージデータを読み込み
             const response = await fetch('/data/moon-important-messages.json');
             const data = await response.json();
-            
+
             if (!data || !data.themes) {
                 console.error('Important messages data not found');
                 return;
             }
-            
+
             // パターンIDに基づいてテーマを選択（30パターン）
             const themeIndex = this.patternId % 30;
             const theme = data.themes[themeIndex];
-            
+
             if (!theme) {
                 console.error('Theme not found for index:', themeIndex);
                 return;
             }
-            
+
             // メッセージ全体のHTMLを構築
             let htmlContent = `
                 <p style="margin-bottom: 20px;">
@@ -732,12 +731,12 @@ class FortuneDisplay {
                 <div class="important-actions-list">
                     <ul>
             `;
-            
+
             // アクションを追加（自動でチェックアニメーション）
             theme.actions.forEach((action, index) => {
                 htmlContent += `<li class="action-item-${index}">${action}</li>`;
             });
-            
+
             htmlContent += `
                     </ul>
                 </div>
@@ -749,7 +748,7 @@ class FortuneDisplay {
                     おつきさまはいつも、${userName}さんの歩む道を優しく照らしています。
                 </p>
             `;
-            
+
             // HTMLに挿入
             const element = document.getElementById('fortune-important-message');
             if (element) {
@@ -758,7 +757,7 @@ class FortuneDisplay {
             } else {
                 console.error('Element not found: fortune-important-message');
             }
-            
+
         } catch (error) {
             console.error('Error loading important messages:', error);
         }
