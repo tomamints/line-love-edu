@@ -386,3 +386,94 @@
     0%, 100% { box-shadow: 0 2px 8px rgba(255, 215, 0, 0.6); }
     50% { box-shadow: 0 2px 16px rgba(255, 215, 0, 0.9); }
 }
+
+/* テーブルベースのカレンダー用スタイル */
+.calendar-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 8px;
+}
+
+.calendar-header {
+    background: rgba(138, 97, 250, 0.2);
+    padding: 10px;
+    text-align: center;
+    font-weight: bold;
+    color: #ffd700;
+    font-size: 14px;
+    border-radius: 8px;
+}
+
+/* calendar-cellクラスの定義（テーブル版） */
+.calendar-cell {
+    padding: 8px 4px;
+    text-align: center;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 12px;
+    position: relative;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    min-height: 60px;
+    vertical-align: top;
+}
+
+.calendar-cell:hover {
+    transform: translateY(-3px);
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 5px 20px rgba(138, 97, 250, 0.4);
+    z-index: 10;
+}
+
+.calendar-cell.empty {
+    background: transparent;
+    cursor: default;
+}
+
+.calendar-cell.empty:hover {
+    transform: none;
+    background: transparent;
+    box-shadow: none;
+}
+
+.calendar-cell.today {
+    background: linear-gradient(135deg, rgba(138, 97, 250, 0.4) 0%, rgba(199, 125, 255, 0.3) 100%);
+    border: 2px solid #8a61fa;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+.calendar-cell.lucky {
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.2) 0%, rgba(255, 183, 77, 0.15) 100%);
+    border: 2px solid rgba(255, 215, 0, 0.6);
+}
+
+.calendar-cell.power-day {
+    background: linear-gradient(135deg, rgba(147, 112, 219, 0.25) 0%, rgba(138, 43, 226, 0.15) 100%);
+    border: 2px solid rgba(147, 112, 219, 0.6);
+}
+
+.calendar-cell .date-number {
+    font-size: 14px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.9);
+    line-height: 1.2;
+}
+
+.calendar-cell .moon-phase {
+    font-size: 20px;
+    line-height: 1;
+    margin: 4px 0;
+    filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.5));
+}
+
+.calendar-cell .fortune-icons {
+    display: flex;
+    gap: 3px;
+    justify-content: center;
+    flex-wrap: wrap;
+    min-height: 20px;
+    margin-top: 2px;
+}
+
+.calendar-cell .fortune-icon {
+    font-size: 14px;
+}
