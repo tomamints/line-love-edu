@@ -152,11 +152,12 @@ async function generateTextBasedCalendar(patternId, fortuneData) {
         
         <style>
             .moon-calendar-container {
-                padding: 16px;
+                padding: 10px;
                 background: rgba(30, 25, 60, 0.95);
                 border-radius: 0 0 12px 12px;
                 margin: 0 auto;
                 max-width: 100%;
+                overflow-x: auto;
             }
 
             .calendar-header {
@@ -214,10 +215,12 @@ async function generateTextBasedCalendar(patternId, fortuneData) {
 
             .calendar-table {
                 width: 100%;
+                max-width: 100%;
                 border-collapse: separate;
                 border-spacing: 0;
                 border: 1px solid rgba(138, 97, 250, 0.4);
                 background: rgba(138, 97, 250, 0.05);
+                table-layout: fixed;
             }
 
             .calendar-table thead tr {
@@ -229,10 +232,10 @@ async function generateTextBasedCalendar(patternId, fortuneData) {
 
             .calendar-table thead th {
                 color: #ffd700;
-                font-size: 12px;
+                font-size: 10px;
                 font-weight: bold;
                 text-align: center;
-                padding: 8px 0;
+                padding: 6px 0;
                 background: rgba(138, 97, 250, 0.2);
                 display: flex;
                 align-items: center;
@@ -263,8 +266,8 @@ async function generateTextBasedCalendar(patternId, fortuneData) {
                 flex-direction: column;
                 align-items: center;
                 justify-content: center;
-                min-height: 48px;
-                padding: 4px;
+                min-height: 40px;
+                padding: 2px;
                 background: rgba(30, 25, 60, 0.5);
                 border-right: 1px solid rgba(138, 97, 250, 0.3);
                 border-bottom: 1px solid rgba(138, 97, 250, 0.3);
@@ -310,21 +313,21 @@ async function generateTextBasedCalendar(patternId, fortuneData) {
             }
 
             .date-number {
-                font-size: 14px;
+                font-size: 11px;
                 color: #ffffff;
                 font-weight: bold;
             }
 
             .moon-phase {
-                font-size: 16px;
-                margin: 2px 0;
+                font-size: 14px;
+                margin: 1px 0;
             }
 
             .fortune-icons {
                 display: flex;
-                gap: 2px;
-                font-size: 12px;
-                margin-top: 2px;
+                gap: 1px;
+                font-size: 10px;
+                margin-top: 1px;
             }
 
             .legend-container {

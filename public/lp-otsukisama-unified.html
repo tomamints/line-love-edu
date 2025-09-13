@@ -677,8 +677,6 @@
                     </div>
 
                     <div class="fortune-content">
-                        <!-- overall-1.pngバナーと直下のテキストを削除 -->
-                        <!-- 1ヶ月目・2ヶ月目の展開と注意ポイントを削除 -->
                     </div>
                 </div>
 
@@ -916,14 +914,7 @@
                             <!-- 新規セクション：ラッキーアクション -->
                             <img src="images/banner/money-1.png" alt="あなたの金運を底上げする、とっておきのラッキーアクション" class="section-banner">
                             <div class="content-locked-mini love-section-box">
-                                <div class="text-blur">
-                                    <div class="money-new-section hanging-text">
-                                        <div id="fortune-money-lucky">
-                                            <p>
-                                                新月の日に財布を新調し、満月の夜に財布を月光浴させると金運UP。月が欠けていく時期は無駄遣いを控え、毎月の新月と満月に財布を整理することが大切。
-                                            </p>
-                                        </div>
-                                    </div>
+                                <div id="fortune-money-lucky">
                                 </div>
                                 <div class="lock-overlay-mini">
                                     <button class="purchase-button-mini" onclick="scrollToPayment()">🔒 購入する</button>
@@ -960,11 +951,9 @@
                 </div>
 
                 <!-- 月齢カレンダー -->
-                <div class="monthly-fortune">
-                    <div class="moon-calendar-section">
-                        <div id="personalizedCalendar" class="calendar-grid">
-                            <!-- カレンダーはJavaScriptで動的に生成 -->
-                        </div>
+                <div class="moon-calendar-section">
+                    <div id="personalizedCalendar" class="calendar-grid">
+                        <!-- カレンダーはJavaScriptで動的に生成 -->
                     </div>
                 </div>
 
@@ -1353,7 +1342,7 @@
                                 relationship: { text: '1月上旬に人間関係が好転します。1月10日〜12日は特に良好。' },
                                 money: { text: '1月下旬に金運が上昇。特に1月28日は金運最高の日。' }
                             };
-                            
+
                             console.log('[Main] Using test fortune data for calendar:', fortuneTextData);
 
                             if (typeof generateTextBasedCalendar === 'function') {
