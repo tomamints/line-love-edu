@@ -61,13 +61,17 @@ function calculateMoonAge(date) {
 }
 
 // 診断文章から日付を抽出してカレンダーを生成
-async function generateTextBasedCalendar(patternId, fortuneData) {
-    console.log('[Calendar] generateTextBasedCalendar called with:', { patternId, fortuneData });
+async function generateTextBasedCalendar(patternId, fortuneData, fortuneType = 'overall') {
+    console.log('[Calendar] generateTextBasedCalendar called with:', { patternId, fortuneData, fortuneType });
 
-    const container = document.getElementById('moonCalendarSection');
-
+    // Try both possible container IDs
+    let container = document.getElementById('moonCalendarSection');
     if (!container) {
-        console.error('[Calendar] Container not found: moonCalendarSection');
+        container = document.getElementById('personalizedCalendar');
+    }
+    
+    if (!container) {
+        console.error('[Calendar] Container not found: moonCalendarSection or personalizedCalendar');
         return;
     }
 
@@ -216,18 +220,71 @@ async function generateTextBasedCalendar(patternId, fortuneData) {
             .calendar-table {
                 width: 100%;
                 max-width: 100%;
-                border-collapse: separate;
-                border-spacing: 0;
-                border: 1px solid rgba(138, 97, 250, 0.4);
+                border-collapse: collapse;
+                border: 2px solid rgba(138, 97, 250, 0.8);
                 background: rgba(138, 97, 250, 0.05);
                 table-layout: fixed;
             }
+            
+            /* 運勢カテゴリーごとの色分け */
+            .fortune-love .calendar-table {
+                border-color: rgba(255, 182, 193, 0.8);
+                background: rgba(255, 182, 193, 0.05);
+            }
+            
+            .fortune-love .calendar-table thead th {
+                background: rgba(255, 182, 193, 0.3);
+                border-color: rgba(255, 182, 193, 0.8);
+            }
+            
+            .fortune-love .calendar-cell {
+                border-color: rgba(255, 182, 193, 0.8);
+            }
+            
+            .fortune-relationship .calendar-table {
+                border-color: rgba(100, 200, 255, 0.8);
+                background: rgba(100, 200, 255, 0.05);
+            }
+            
+            .fortune-relationship .calendar-table thead th {
+                background: rgba(100, 200, 255, 0.3);
+                border-color: rgba(100, 200, 255, 0.8);
+            }
+            
+            .fortune-relationship .calendar-cell {
+                border-color: rgba(100, 200, 255, 0.8);
+            }
+            
+            .fortune-career .calendar-table {
+                border-color: rgba(144, 238, 144, 0.8);
+                background: rgba(144, 238, 144, 0.05);
+            }
+            
+            .fortune-career .calendar-table thead th {
+                background: rgba(144, 238, 144, 0.3);
+                border-color: rgba(144, 238, 144, 0.8);
+            }
+            
+            .fortune-career .calendar-cell {
+                border-color: rgba(144, 238, 144, 0.8);
+            }
+            
+            .fortune-money .calendar-table {
+                border-color: rgba(255, 215, 0, 0.8);
+                background: rgba(255, 215, 0, 0.05);
+            }
+            
+            .fortune-money .calendar-table thead th {
+                background: rgba(255, 215, 0, 0.3);
+                border-color: rgba(255, 215, 0, 0.8);
+            }
+            
+            .fortune-money .calendar-cell {
+                border-color: rgba(255, 215, 0, 0.8);
+            }
 
             .calendar-table thead tr {
-                display: grid;
-                grid-template-columns: repeat(7, 1fr);
-                gap: 0;
-                border-bottom: 1px solid rgba(138, 97, 250, 0.4);
+                display: table-row;
             }
 
             .calendar-table thead th {
@@ -236,11 +293,10 @@ async function generateTextBasedCalendar(patternId, fortuneData) {
                 font-weight: bold;
                 text-align: center;
                 padding: 6px 0;
-                background: rgba(138, 97, 250, 0.2);
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                border-right: 1px solid rgba(138, 97, 250, 0.3);
+                background: rgba(138, 97, 250, 0.3);
+                border-right: 1px solid rgba(138, 97, 250, 0.8);
+                border-bottom: 2px solid rgba(138, 97, 250, 0.8);
+                width: 14.285%;
             }
 
             .calendar-table thead th:last-child {
@@ -256,24 +312,22 @@ async function generateTextBasedCalendar(patternId, fortuneData) {
             }
 
             .calendar-body tr {
-                display: grid;
-                grid-template-columns: repeat(7, 1fr);
-                gap: 0;
+                display: table-row;
             }
 
             .calendar-cell {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                min-height: 40px;
+                display: table-cell;
+                text-align: center;
+                vertical-align: middle;
+                height: 40px;
                 padding: 2px;
                 background: rgba(30, 25, 60, 0.5);
-                border-right: 1px solid rgba(138, 97, 250, 0.3);
-                border-bottom: 1px solid rgba(138, 97, 250, 0.3);
+                border-right: 1px solid rgba(138, 97, 250, 0.8);
+                border-bottom: 1px solid rgba(138, 97, 250, 0.8);
                 position: relative;
                 cursor: pointer;
                 transition: all 0.3s;
+                width: 14.285%;
             }
 
             .calendar-cell:last-child {
@@ -398,9 +452,26 @@ async function generateTextBasedCalendar(patternId, fortuneData) {
             }
         </style>
 
-        <div class="moon-calendar-container">
+        <div class="moon-calendar-container fortune-${fortuneType}">
     `;
 
+    // 運勢タイプのタイトルを追加
+    const fortuneTitles = {
+        overall: '🌙 総合運勢カレンダー',
+        love: '💕 恋愛運カレンダー',
+        relationship: '👥 人間関係運カレンダー',
+        career: '💼 仕事運カレンダー',
+        money: '💰 金運カレンダー'
+    };
+    
+    calendarHTML += `
+        <div style="text-align: center; margin-bottom: 20px;">
+            <h3 style="color: #ffd700; font-size: 20px; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">
+                ${fortuneTitles[fortuneType] || '🌙 運勢カレンダー'}
+            </h3>
+        </div>
+    `;
+    
     // パターン固有のメッセージを追加
     if (patternData.monthly_message) {
         calendarHTML += `
@@ -740,3 +811,20 @@ class TextBasedMoonCalendarGenerator {
 // グローバルに公開
 window.generateTextBasedCalendar = generateTextBasedCalendar;
 window.TextBasedMoonCalendarGenerator = TextBasedMoonCalendarGenerator;
+
+// 各運勢タイプのカレンダーを生成する便利な関数
+window.generateLoveCalendar = function(patternId, fortuneData) {
+    return generateTextBasedCalendar(patternId, fortuneData, 'love');
+};
+
+window.generateRelationshipCalendar = function(patternId, fortuneData) {
+    return generateTextBasedCalendar(patternId, fortuneData, 'relationship');
+};
+
+window.generateCareerCalendar = function(patternId, fortuneData) {
+    return generateTextBasedCalendar(patternId, fortuneData, 'career');
+};
+
+window.generateMoneyCalendar = function(patternId, fortuneData) {
+    return generateTextBasedCalendar(patternId, fortuneData, 'money');
+};
