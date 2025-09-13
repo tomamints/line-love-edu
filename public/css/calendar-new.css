@@ -3,6 +3,7 @@
     max-width: 800px;
     margin: 0 auto;
     padding: 40px 20px;
+    font-family: 'Noto Serif JP', 'YuMincho', 'Hiragino Mincho ProN', serif;
 }
 
 /* 既存のgridレイアウトを上書き */
@@ -67,6 +68,7 @@
     margin-bottom: 25px;
     text-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
     letter-spacing: 2px;
+    font-family: 'Noto Serif JP', 'YuMincho', 'Hiragino Mincho ProN', serif;
 }
 
 /* 曜日ヘッダー */
