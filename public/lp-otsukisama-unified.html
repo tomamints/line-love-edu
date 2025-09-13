@@ -6,6 +6,8 @@
     <title>おつきさま診断 - 月が導くあなたの運命</title>
     <link rel="stylesheet" href="css/lp-otsukisama.css">
     <link rel="stylesheet" href="css/calendar-new.css">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script>
         // WebP対応チェックとフォールバック機能
         function supportsWebP() {
@@ -955,8 +957,10 @@
 
                 <!-- 月齢カレンダー -->
                 <div class="monthly-fortune">
-                    <div id="moonCalendarSection">
-                        <!-- カレンダーはJavaScriptで動的に生成 -->
+                    <div class="moon-calendar-section">
+                        <div id="personalizedCalendar" class="calendar-grid">
+                            <!-- カレンダーはJavaScriptで動的に生成 -->
+                        </div>
                     </div>
                 </div>
 
@@ -1769,6 +1773,26 @@
                                 if (birthDate) {
                                     updateThreePowers(birthDate, moonPhase, userName);
                                 }
+                            }
+
+                            // カレンダーを初期化
+                            if (window.TextBasedMoonCalendarGenerator && window.FortuneDateExtractor) {
+                                // テスト用の運勢データを作成
+                                const testFortuneData = {
+                                    love: { text: "恋愛運は9月15日〜9月22日にかけて絶好調！特に9月18日ごろは運命的な出会いが期待できます。10月中旬も良い時期です。" },
+                                    relationship: { text: "人間関係運は9月25日〜28日に重要な転機が訪れます。10月上旬には新しい人脈が広がるでしょう。" },
+                                    career: { text: "仕事運は10月1日〜10月15日が最高潮。特に10月10日前後は大きなチャンスが。11月中旬も好調です。" },
+                                    money: { text: "金運は9月末から10月初めにかけて上昇。11月15日〜11月20日も金運が高まります。12月上旬も期待大。" },
+                                    overall: { text: "全体運は9月20日、10月5日、11月12日が特に幸運な日。これらの日は重要な決断に最適です。" }
+                                };
+
+                                // 日付を抽出
+                                const extractor = new FortuneDateExtractor();
+                                const extractedDates = extractor.extractAllDates(testFortuneData);
+
+                                // カレンダーを生成
+                                const generator = new TextBasedMoonCalendarGenerator();
+                                generator.initializeCalendar('personalizedCalendar', extractedDates, extractor);
                             }
 
                             // 6つの要素を更新（4つの軸データを含む）

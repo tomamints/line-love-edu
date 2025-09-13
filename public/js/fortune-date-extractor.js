@@ -338,20 +338,21 @@ class FortuneDateExtractor {
      * カレンダー用のアイコンを取得
      */
     getCalendarIcon(category, importance) {
+        // Unicodeシンボルを使用（Font Awesomeが表示されない問題を回避）
         const icons = {
-            love: '💕',
-            relationship: '👥', 
-            career: '💼',
-            money: '💰',
-            overall: '✨'
+            love: '<span class="fortune-icon" style="color: #ff69b4;">❤️</span>',
+            relationship: '<span class="fortune-icon" style="color: #4169e1;">👥</span>', 
+            career: '<span class="fortune-icon" style="color: #ff8c00;">💼</span>',
+            money: '<span class="fortune-icon" style="color: #ffd700;">💰</span>',
+            overall: '<span class="fortune-icon" style="color: #9370db;">⭐</span>'
         };
         
         // 重要度が高い場合は特別なアイコン
         if (importance === 'high') {
-            return '💫';
+            return '<span class="fortune-icon" style="color: #ffd700;">👑</span>';
         }
         
-        return icons[category] || '🌟';
+        return icons[category] || '<span class="fortune-icon" style="color: #ff69b4;">✨</span>';
     }
 }
 

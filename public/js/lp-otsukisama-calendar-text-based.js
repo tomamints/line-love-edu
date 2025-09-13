@@ -578,5 +578,162 @@ async function generateTextBasedCalendar(patternId, fortuneData) {
     console.log('[Calendar] Text-based calendar generated successfully');
 }
 
+// TextBasedMoonCalendarGeneratorクラス
+class TextBasedMoonCalendarGenerator {
+    constructor() {
+        this.extractedDates = null;
+        this.extractor = null;
+    }
+
+    initializeCalendar(elementId, extractedDates, extractor) {
+        const container = document.getElementById(elementId);
+        if (!container) {
+            console.error('Calendar container not found:', elementId);
+            return;
+        }
+
+        this.extractedDates = extractedDates;
+        this.extractor = extractor;
+
+        // カレンダーを生成
+        this.generateCalendar(container);
+    }
+
+    generateCalendar(container) {
+        const currentDate = new Date();
+        const currentMonth = currentDate.getMonth();
+        const currentYear = currentDate.getFullYear();
+
+        // 今月から3ヶ月分のカレンダーを生成
+        let calendarHTML = '<div class="moon-calendar-container">';
+        
+        // カレンダーメッセージ
+        calendarHTML += `
+            <div class="calendar-message">
+                あなたの運勢から抽出した特別な日をマークしています
+            </div>
+        `;
+
+        for (let monthOffset = 0; monthOffset < 3; monthOffset++) {
+            const targetMonth = currentMonth + monthOffset;
+            const targetYear = targetMonth > 11 ? currentYear + 1 : currentYear;
+            const displayMonth = targetMonth % 12;
+            
+            calendarHTML += this.generateMonthCalendar(targetYear, displayMonth);
+        }
+
+        // 凡例
+        calendarHTML += `
+            <div class="calendar-legend">
+                <div class="legend-item">
+                    <span class="legend-dot lucky"></span>
+                    <span>ラッキーデー</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-dot power"></span>
+                    <span>パワーデー</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-dot caution"></span>
+                    <span>注意日</span>
+                </div>
+            </div>
+        `;
+
+        calendarHTML += '</div>';
+        container.innerHTML = calendarHTML;
+    }
+
+    generateMonthCalendar(year, month) {
+        const monthNames = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'];
+        const dayNames = ['日', '月', '火', '水', '木', '金', '土'];
+        
+        const firstDay = new Date(year, month, 1).getDay();
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        const today = new Date();
+        
+        let html = '<div class="month-calendar">';
+        html += `<div class="month-header">${year}年${monthNames[month]}</div>`;
+        
+        // 曜日ヘッダー
+        html += '<div class="weekdays">';
+        for (let day of dayNames) {
+            const dayClass = day === '日' ? 'weekday sunday' : day === '土' ? 'weekday saturday' : 'weekday';
+            html += `<div class="${dayClass}">${day}</div>`;
+        }
+        html += '</div>';
+        
+        // 日付グリッド
+        html += '<div class="days-grid">';
+        
+        // 空のセル
+        for (let i = 0; i < firstDay; i++) {
+            html += '<div class="day-cell empty"></div>';
+        }
+        
+        // 各日付
+        for (let day = 1; day <= daysInMonth; day++) {
+            const date = new Date(year, month, day);
+            const isToday = date.toDateString() === today.toDateString();
+            const moonAge = this.calculateMoonAge(date);
+            const moonEmoji = getMoonEmoji(moonAge);
+            
+            // この日付の運勢情報を取得
+            const luckyInfo = this.extractor ? this.extractor.isLuckyDay(date) : null;
+            
+            let dayClass = 'day-cell';
+            if (isToday) dayClass += ' today';
+            
+            let fortuneIcons = '';
+            let tooltip = '';
+            
+            if (luckyInfo) {
+                // カテゴリーに基づいてクラスを設定
+                if (luckyInfo.importance === 'high') {
+                    dayClass += ' lucky';
+                } else if (luckyInfo.importance === 'medium') {
+                    dayClass += ' power';
+                }
+                
+                // アイコンを追加
+                fortuneIcons = '<div class="fortune-icons">';
+                const uniqueCategories = [...new Set(luckyInfo.categories)];
+                uniqueCategories.forEach(category => {
+                    fortuneIcons += this.extractor.getCalendarIcon(category, luckyInfo.importance);
+                });
+                fortuneIcons += '</div>';
+                
+                // ツールチップ
+                if (luckyInfo.descriptions.length > 0) {
+                    tooltip = `<div class="special-tooltip">${luckyInfo.descriptions[0].substring(0, 30)}...</div>`;
+                }
+            }
+            
+            html += `
+                <div class="${dayClass}">
+                    <div class="day-number">${day}</div>
+                    <div class="moon-phase">${moonEmoji}</div>
+                    ${fortuneIcons}
+                    ${tooltip}
+                </div>
+            `;
+        }
+        
+        html += '</div>';
+        html += '</div>';
+        
+        return html;
+    }
+
+    calculateMoonAge(date) {
+        // 簡易的な月齢計算
+        const baseNewMoon = new Date(2024, 0, 11); // 2024年1月11日の新月
+        const daysSince = Math.floor((date - baseNewMoon) / (1000 * 60 * 60 * 24));
+        const moonAge = daysSince % 29.53;
+        return Math.floor(moonAge);
+    }
+}
+
 // グローバルに公開
 window.generateTextBasedCalendar = generateTextBasedCalendar;
+window.TextBasedMoonCalendarGenerator = TextBasedMoonCalendarGenerator;
