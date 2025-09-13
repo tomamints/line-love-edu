@@ -292,40 +292,103 @@
 /* レスポンシブ対応 */
 @media (max-width: 640px) {
     .moon-calendar-container {
-        padding: 20px 15px;
+        padding: 15px 10px;
     }
     
     .month-calendar {
-        padding: 20px 15px;
+        padding: 15px 10px;
+        margin-bottom: 20px;
     }
     
     .month-header {
-        font-size: 18px;
+        font-size: 16px;
+        margin-bottom: 15px;
     }
     
     .days-grid {
-        gap: 5px;
+        gap: 3px;
+    }
+    
+    .weekdays {
+        gap: 3px;
+        margin-bottom: 10px;
+        padding-bottom: 10px;
     }
     
     .day-cell {
-        min-height: 45px;
+        min-height: 50px;
+        padding: 4px 2px;
+        border-radius: 8px;
     }
     
     .day-number {
-        font-size: 12px;
+        font-size: 11px;
+        font-weight: 500;
     }
     
     .moon-phase {
-        font-size: 18px;
+        font-size: 16px;
+        margin: 2px 0;
     }
     
     .weekday {
-        font-size: 11px;
+        font-size: 10px;
+        letter-spacing: 0;
     }
     
     .calendar-legend {
         flex-wrap: wrap;
-        gap: 15px;
+        gap: 10px;
+        margin-top: 15px;
+        padding-top: 15px;
+    }
+    
+    .legend-item {
+        font-size: 11px;
+    }
+    
+    /* 運勢アイコンのサイズ調整 */
+    .day-cell .fortune-icon {
+        font-size: 12px;
+    }
+    
+    .day-cell .fortune-icons {
+        gap: 1px;
+        margin-top: 1px;
+    }
+    
+    /* スペシャルツールチップの調整 */
+    .special-tooltip {
+        font-size: 10px;
+        padding: 4px 8px;
+        bottom: -30px;
+    }
+    
+    /* テーブル版のレスポンシブ対応 */
+    .calendar-table {
+        border-spacing: 3px;
+    }
+    
+    .calendar-header {
+        font-size: 10px;
+        padding: 6px;
+    }
+    
+    .calendar-cell {
+        min-height: 50px;
+        padding: 4px 2px;
+    }
+    
+    .calendar-cell .date-number {
+        font-size: 11px;
+    }
+    
+    .calendar-cell .moon-phase {
+        font-size: 16px;
+    }
+    
+    .calendar-cell .fortune-icon {
+        font-size: 12px;
     }
 }
 
