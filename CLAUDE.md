@@ -27,6 +27,8 @@
 - 存在しないファイルにWriteしようとしない
 - 既存ファイルの編集を優先し、新規ファイル作成は最小限に
 - プロジェクトの既存パターンに従う
+- **新規ファイルを作成する場合は、既存の同種ファイルを更新することを最優先で検討**
+- 未使用になったファイルは削除せず、必ず`disabled/`フォルダに移動
 
 ### 5. URLとリンクの正確性
 - **診断結果URLなど、重要なリンクは何度も確認**
@@ -111,6 +113,11 @@
 - `otsukisama-patterns-v3-backup.json` - バックアップ
 - `fortune_graph_all_64_patterns.json.backup` - バックアップ
 - `fortune_graph_all_64_patterns.json.bak` - バックアップ
+
+### 2025-01-13に移動したファイル
+`/public/js/disabled/`に以下のファイルを移動：
+- `lp-otsukisama-calendar-new.js` - 未使用のカレンダーJS
+- `lp-otsukisama-calendar-integrated.js` - 未使用のカレンダーJS
 
 ---
 
