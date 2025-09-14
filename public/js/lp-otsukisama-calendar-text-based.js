@@ -319,9 +319,7 @@ async function generateTextBasedCalendar(patternId, fortuneData, fortuneType = '
                 display: table-cell;
                 text-align: center;
                 vertical-align: middle;
-                height: 40px;
-                min-height: 40px;
-                max-height: 40px;
+                height: 52px !important; /* 完全固定、アイコンが見える高さに */
                 padding: 2px;
                 background: rgba(30, 25, 60, 0.5);
                 border-right: 1px solid rgba(138, 97, 250, 0.8);
@@ -331,7 +329,7 @@ async function generateTextBasedCalendar(patternId, fortuneData, fortuneType = '
                 cursor: pointer;
                 transition: all 0.3s;
                 width: 14.285%;
-                overflow: hidden;
+                overflow: visible; /* アイコンが切れないように */
             }
 
             /* 運勢タイプ別の左ボーダー色 */
@@ -409,14 +407,17 @@ async function generateTextBasedCalendar(patternId, fortuneData, fortuneType = '
             }
 
             .date-number {
-                font-size: 11px;
+                font-size: 10px;
                 color: #ffffff;
                 font-weight: bold;
+                line-height: 1;
+                margin-bottom: 1px;
             }
 
             .moon-phase {
-                font-size: 14px;
+                font-size: 12px;
                 margin: 1px 0;
+                line-height: 1;
             }
 
             .fortune-icons {
@@ -424,11 +425,15 @@ async function generateTextBasedCalendar(patternId, fortuneData, fortuneType = '
                 gap: 1px;
                 font-size: 10px;
                 margin-top: 1px;
-                min-height: 12px;
-                max-height: 12px;
-                overflow: hidden;
+                height: 14px; /* アイコン用の固定高さ */
                 justify-content: center;
                 align-items: center;
+            }
+            
+            .fortune-icons svg {
+                width: 12px !important;
+                height: 12px !important;
+                display: block;
             }
 
             .legend-container {
