@@ -579,50 +579,6 @@ async function generateTextBasedCalendar(patternId, fortuneData, fortuneType = '
     calendarHTML += `
     </div>
 
-    <!-- アイコンの凡例 -->
-    <div style="
-        margin-top: 30px;
-        padding: 20px;
-        background: rgba(138, 97, 250, 0.1);
-        border-radius: 10px;
-        border: 1px solid rgba(138, 97, 250, 0.3);
-    ">
-        <h4 style="
-            color: #ffd700;
-            font-size: 16px;
-            margin-bottom: 15px;
-            text-align: center;
-        ">運勢アイコンの説明</h4>
-        
-        <div style="
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 10px;
-            font-size: 14px;
-        ">
-            <div style="display: flex; align-items: center; gap: 8px;">
-                <span style="font-size: 18px;">❤️</span>
-                <span style="color: #ff69b4;">恋愛運</span>
-            </div>
-            <div style="display: flex; align-items: center; gap: 8px;">
-                <span style="font-size: 18px;">👥</span>
-                <span style="color: #4169e1;">人間関係運</span>
-            </div>
-            <div style="display: flex; align-items: center; gap: 8px;">
-                <span style="font-size: 18px;">💼</span>
-                <span style="color: #ff8c00;">仕事運</span>
-            </div>
-            <div style="display: flex; align-items: center; gap: 8px;">
-                <span style="font-size: 18px;">💰</span>
-                <span style="color: #ffd700;">金運</span>
-            </div>
-            <div style="display: flex; align-items: center; gap: 8px;">
-                <span style="font-size: 18px;">⭐</span>
-                <span style="color: #9370db;">総合運</span>
-            </div>
-        </div>
-    </div>
-
     <!-- 月齢カレンダーの説明文 -->
     <div class="moon-calendar-description" style="
         margin-top: 20px;
@@ -649,19 +605,19 @@ async function generateTextBasedCalendar(patternId, fortuneData, fortuneType = '
 
             <div style="color: rgba(255, 255, 255, 0.9); line-height: 2;">
                 <div style="margin-bottom: 10px;">
-                    <span style="color: #ff69b4;">❤️ 恋愛</span> → 好きな人にLINEを送ってみる／気になる人と会う予定を入れる
+                    <span style="background: #ff69b4; color: white; padding: 2px 6px; border-radius: 3px; font-weight: bold;">恋愛</span> → 好きな人にLINEを送ってみる／気になる人と会う予定を入れる
                 </div>
                 <div style="margin-bottom: 10px;">
-                    <span style="color: #4169e1;">👥 人間関係</span> → しばらく会ってない友達に連絡する／お世話になっている方に感謝の気持ちを一言伝える
+                    <span style="background: #4169e1; color: white; padding: 2px 6px; border-radius: 3px; font-weight: bold;">人間関係</span> → しばらく会ってない友達に連絡する／お世話になっている方に感謝の気持ちを一言伝える
                 </div>
                 <div style="margin-bottom: 10px;">
-                    <span style="color: #ff8c00;">💼 仕事</span> → やりたかった企画を上司に相談する／資格や勉強を始める
+                    <span style="background: #ff8c00; color: white; padding: 2px 6px; border-radius: 3px; font-weight: bold;">仕事</span> → やりたかった企画を上司に相談する／資格や勉強を始める
                 </div>
                 <div style="margin-bottom: 10px;">
-                    <span style="color: #ffd700;">💰 お金</span> → 新しい貯金方法を始める／使っていないサブスクを解約する
+                    <span style="background: #ffd700; color: #1a1a2e; padding: 2px 6px; border-radius: 3px; font-weight: bold;">お金</span> → 新しい貯金方法を始める／使っていないサブスクを解約する
                 </div>
                 <div>
-                    <span style="color: #9370db;">⭐ 総合運</span> → 新しいことにチャレンジする／大切な決断をする
+                    <span style="background: #9370db; color: white; padding: 2px 6px; border-radius: 3px; font-weight: bold;">総合運</span> → 新しいことにチャレンジする／大切な決断をする
                 </div>
             </div>
         </div>

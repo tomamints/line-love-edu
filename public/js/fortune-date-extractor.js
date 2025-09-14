@@ -374,16 +374,16 @@ class FortuneDateExtractor {
      * カレンダー用のアイコンを取得
      */
     getCalendarIcon(category, importance) {
-        // Unicodeシンボルを使用（Font Awesomeが表示されない問題を回避）
-        const icons = {
-            love: '<span class="fortune-icon" style="color: #ff69b4;">❤️</span>',
-            relationship: '<span class="fortune-icon" style="color: #4169e1;">👥</span>', 
-            career: '<span class="fortune-icon" style="color: #ff8c00;">💼</span>',
-            money: '<span class="fortune-icon" style="color: #ffd700;">💰</span>',
-            overall: '<span class="fortune-icon" style="color: #9370db;">⭐</span>'
+        // テキストベースのマーカーを使用
+        const markers = {
+            love: '<span class="fortune-marker" style="color: #ff69b4; font-weight: bold; font-size: 9px;">恋</span>',
+            relationship: '<span class="fortune-marker" style="color: #4169e1; font-weight: bold; font-size: 9px;">友</span>', 
+            career: '<span class="fortune-marker" style="color: #ff8c00; font-weight: bold; font-size: 9px;">仕</span>',
+            money: '<span class="fortune-marker" style="color: #ffd700; font-weight: bold; font-size: 9px;">金</span>',
+            overall: '<span class="fortune-marker" style="color: #9370db; font-weight: bold; font-size: 9px;">総</span>'
         };
         
-        return icons[category] || '<span class="fortune-icon" style="color: #ff69b4;">✨</span>';
+        return markers[category] || '<span class="fortune-marker" style="color: #ff69b4; font-weight: bold; font-size: 9px;">運</span>';
     }
 }
 
