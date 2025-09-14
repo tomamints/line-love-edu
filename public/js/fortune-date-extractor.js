@@ -374,23 +374,43 @@ class FortuneDateExtractor {
      * カレンダー用のアイコンを取得
      */
     getCalendarIcon(category, importance) {
-        // SVGアイコンを使用（TailwindCSSクラス - 小さめのサイズで統一）
+        // SVGアイコンを使用（背景円付き）
+        const colors = {
+            love: 'rgba(255, 105, 180, 0.3)', // ピンク
+            career: 'rgba(65, 105, 225, 0.3)', // 青
+            money: 'rgba(255, 215, 0, 0.3)', // ゴールド
+            relationship: 'rgba(50, 205, 50, 0.3)', // 緑
+            overall: 'rgba(147, 112, 219, 0.3)' // 紫
+        };
+        
+        const bgColor = colors[category] || 'rgba(138, 97, 250, 0.3)';
+        
         const icons = {
-            love: `<svg class="w-2.5 h-2.5 inline-block align-middle text-pink-500" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-            </svg>`,
-            relationship: `<svg class="w-2.5 h-2.5 inline-block align-middle text-blue-600" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
-            </svg>`,
-            career: `<svg class="w-2.5 h-2.5 inline-block align-middle text-orange-600" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M20 6h-4V4c0-1.11-.89-2-2-2h-4c-1.11 0-2 .89-2 2v2H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-6 0h-4V4h4v2z"/>
-            </svg>`,
-            money: `<svg class="w-2.5 h-2.5 inline-block align-middle text-yellow-500" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1.41 16.09V20h-2.67v-1.93c-1.71-.36-3.16-1.46-3.27-3.4h1.96c.1 1.05.82 1.87 2.65 1.87 1.96 0 2.4-.98 2.4-1.59 0-.83-.44-1.61-2.67-2.14-2.48-.6-4.18-1.62-4.18-3.67 0-1.72 1.39-2.84 3.11-3.21V4h2.67v1.95c1.86.45 2.79 1.86 2.85 3.39H14.3c-.05-1.11-.64-1.87-2.22-1.87-1.5 0-2.4.68-2.4 1.64 0 .84.65 1.39 2.67 1.91s4.18 1.39 4.18 3.91c-.01 1.83-1.38 2.83-3.12 3.16z"/>
-            </svg>`,
-            overall: `<svg class="w-2.5 h-2.5 inline-block align-middle text-purple-600" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-            </svg>`
+            love: `<div style="display: inline-flex; align-items: center; justify-content: center; width: 14px; height: 14px; background: ${bgColor}; border-radius: 50%; padding: 1px;">
+                <svg class="w-2.5 h-2.5 inline-block align-middle text-pink-500" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                </svg>
+            </div>`,
+            relationship: `<div style="display: inline-flex; align-items: center; justify-content: center; width: 14px; height: 14px; background: ${colors.relationship}; border-radius: 50%; padding: 1px;">
+                <svg class="w-2.5 h-2.5 inline-block align-middle text-green-600" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
+                </svg>
+            </div>`,
+            career: `<div style="display: inline-flex; align-items: center; justify-content: center; width: 14px; height: 14px; background: ${colors.career}; border-radius: 50%; padding: 1px;">
+                <svg class="w-2.5 h-2.5 inline-block align-middle text-blue-600" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M20 6h-4V4c0-1.11-.89-2-2-2h-4c-1.11 0-2 .89-2 2v2H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-6 0h-4V4h4v2z"/>
+                </svg>
+            </div>`,
+            money: `<div style="display: inline-flex; align-items: center; justify-content: center; width: 14px; height: 14px; background: ${colors.money}; border-radius: 50%; padding: 1px;">
+                <svg class="w-2.5 h-2.5 inline-block align-middle text-yellow-600" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1.41 16.09V20h-2.67v-1.93c-1.71-.36-3.16-1.46-3.27-3.4h1.96c.1 1.05.82 1.87 2.65 1.87 1.96 0 2.4-.98 2.4-1.59 0-.83-.44-1.61-2.67-2.14-2.48-.6-4.18-1.62-4.18-3.67 0-1.72 1.39-2.84 3.11-3.21V4h2.67v1.95c1.86.45 2.79 1.86 2.85 3.39H14.3c-.05-1.11-.64-1.87-2.22-1.87-1.5 0-2.4.68-2.4 1.64 0 .84.65 1.39 2.67 1.91s4.18 1.39 4.18 3.91c-.01 1.83-1.38 2.83-3.12 3.16z"/>
+                </svg>
+            </div>`,
+            overall: `<div style="display: inline-flex; align-items: center; justify-content: center; width: 14px; height: 14px; background: ${colors.overall}; border-radius: 50%; padding: 1px;">
+                <svg class="w-2.5 h-2.5 inline-block align-middle text-purple-600" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                </svg>
+            </div>`
         };
         
         return icons[category] || '<span class="w-4 h-4 inline-block align-middle text-center text-xs font-bold text-pink-500">●</span>';
