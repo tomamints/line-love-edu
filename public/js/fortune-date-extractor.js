@@ -383,11 +383,6 @@ class FortuneDateExtractor {
             overall: '<span class="fortune-icon" style="color: #9370db;">⭐</span>'
         };
         
-        // 重要度が高い場合は特別なアイコン
-        if (importance === 'high') {
-            return '<span class="fortune-icon" style="color: #ffd700;">👑</span>';
-        }
-        
         return icons[category] || '<span class="fortune-icon" style="color: #ff69b4;">✨</span>';
     }
 }
