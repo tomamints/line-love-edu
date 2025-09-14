@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>カレンダーデータ収集テスト</title>
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background: #1a1a2e;
+            color: #fff;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .calendar-container {
+            margin: 20px 0;
+            padding: 20px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 8px;
+        }
+        h2 {
+            color: #ffd700;
+            border-bottom: 2px solid #ffd700;
+            padding-bottom: 10px;
+        }
+        .debug-info {
+            background: rgba(0,0,0,0.5);
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-family: monospace;
+        }
+        button {
+            background: #8a61fa;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #9a71ff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>カレンダーデータ収集テスト</h1>
+        
+        <div class="debug-info">
+            <h3>テスト用の診断文章</h3>
+            <div id="test-texts">
+                <p><strong>全体運:</strong> <span id="overall-text">12月25日〜28日にかけて、運気が急上昇します。特に27日は最高の一日になるでしょう。</span></p>
+                <p><strong>恋愛運:</strong> <span id="love-text">1月15日〜20日は恋愛運が絶好調。特に18日は運命的な出会いの可能性があります。</span></p>
+                <p><strong>人間関係運:</strong> <span id="relationship-text">1月中旬に新しい友人との出会いがありそうです。15日〜17日は特に良い時期です。</span></p>
+                <p><strong>仕事運:</strong> <span id="career-text">1月29日〜31日にかけて、仕事で大きなチャンスが訪れます。</span></p>
+                <p><strong>金運:</strong> <span id="money-text">1月10日と1月25日は金運が特に良い日です。投資や買い物に最適。</span></p>
+            </div>
+        </div>
+
+        <div class="button-group">
+            <button onclick="generateCalendar('overall')">総合運カレンダー生成</button>
+            <button onclick="generateCalendar('love')">恋愛運カレンダー生成</button>
+            <button onclick="generateCalendar('relationship')">人間関係運カレンダー生成</button>
+            <button onclick="generateCalendar('career')">仕事運カレンダー生成</button>
+            <button onclick="generateCalendar('money')">金運カレンダー生成</button>
+        </div>
+
+        <div id="personalizedCalendar" class="calendar-container"></div>
+
+        <div class="debug-info" id="debug-output">
+            <h3>デバッグ情報</h3>
+            <pre id="debug-content">カレンダーを生成するとここにデータ収集の詳細が表示されます</pre>
+        </div>
+    </div>
+
+    <!-- 必要なスクリプトを読み込み -->
+    <script src="/js/fortune-date-extractor.js"></script>
+    <script src="/js/lp-otsukisama-calendar-text-based.js"></script>
+    
+    <script>
+        // デバッグ用のコンソールログをキャプチャ
+        const originalLog = console.log;
+        const debugOutput = [];
+        
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            debugOutput.push(args.map(arg => 
+                typeof arg === 'object' ? JSON.stringify(arg, null, 2) : arg
+            ).join(' '));
+            updateDebugDisplay();
+        };
+
+        function updateDebugDisplay() {
+            const debugContent = document.getElementById('debug-content');
+            debugContent.textContent = debugOutput.slice(-20).join('\n');
+        }
+
+        async function generateCalendar(type) {
+            debugOutput.length = 0; // デバッグ出力をクリア
+            
+            // テスト用の運勢データを作成
+            const fortuneData = {
+                overall: { text: document.getElementById('overall-text').textContent },
+                love: { text: document.getElementById('love-text').textContent },
+                relationship: { text: document.getElementById('relationship-text').textContent },
+                career: { text: document.getElementById('career-text').textContent },
+                money: { text: document.getElementById('money-text').textContent }
+            };
+
+            console.log('=== カレンダー生成開始 ===');
+            console.log('運勢タイプ:', type);
+            console.log('運勢データ:', fortuneData);
+
+            // カレンダーを生成
+            await window.generateTextBasedCalendar(1, fortuneData, type);
+            
+            console.log('=== カレンダー生成完了 ===');
+        }
+
+        // ページロード時にカレンダーパターンを読み込み
+        window.addEventListener('DOMContentLoaded', async () => {
+            if (window.loadCalendarPatterns) {
+                await window.loadCalendarPatterns();
+                console.log('カレンダーパターンデータを読み込みました');
+            }
+        });
+    </script>
+</body>
+</html>

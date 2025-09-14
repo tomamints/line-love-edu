@@ -455,23 +455,6 @@ async function generateTextBasedCalendar(patternId, fortuneData, fortuneType = '
         <div class="moon-calendar-container fortune-${fortuneType}">
     `;
 
-    // 運勢タイプのタイトルを追加
-    const fortuneTitles = {
-        overall: '🌙 総合運勢カレンダー',
-        love: '💕 恋愛運カレンダー',
-        relationship: '👥 人間関係運カレンダー',
-        career: '💼 仕事運カレンダー',
-        money: '💰 金運カレンダー'
-    };
-    
-    calendarHTML += `
-        <div style="text-align: center; margin-bottom: 20px;">
-            <h3 style="color: #ffd700; font-size: 20px; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">
-                ${fortuneTitles[fortuneType] || '🌙 運勢カレンダー'}
-            </h3>
-        </div>
-    `;
-    
     // パターン固有のメッセージを追加
     if (patternData.monthly_message) {
         calendarHTML += `

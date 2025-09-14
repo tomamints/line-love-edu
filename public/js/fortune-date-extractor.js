@@ -40,6 +40,9 @@ class FortuneDateExtractor {
         // パターン6: 単純な日付範囲 "14日〜16日" (月が省略されている場合)
         const simpleDayRangePattern = /(\d{1,2})日[〜～~ー－](\d{1,2})日/g;
         
+        // パターン7: 単一の日付 "1月10日と1月25日"
+        const singleDatePattern = /(\d{1,2})月(\d{1,2})日/g;
+        
         let match;
         
         // 範囲の日付を抽出
@@ -148,6 +151,39 @@ class FortuneDateExtractor {
                     type: 'deadline',
                     start: this.createDate(month, 1),
                     end: this.createDate(month, this.getLastDayOfMonth(month)),
+                    category: category,
+                    text: match[0],
+                    importance: this.detectImportance(text, match.index)
+                });
+            }
+        }
+        
+        // 単一の日付を抽出（"と"で区切られた複数の日付も含む）
+        const processedSingleDates = new Set(); // 既に処理した日付を記録
+        while ((match = singleDatePattern.exec(text)) !== null) {
+            const month = parseInt(match[1]);
+            const day = parseInt(match[2]);
+            const dateKey = `${month}-${day}`;
+            
+            // 既に範囲で処理済みの日付はスキップ
+            let alreadyInRange = false;
+            for (const existingDate of dates) {
+                if (existingDate.type === 'range' && 
+                    existingDate.start.getMonth() + 1 === month &&
+                    existingDate.start.getDate() <= day && 
+                    existingDate.end.getDate() >= day) {
+                    alreadyInRange = true;
+                    break;
+                }
+            }
+            
+            if (!alreadyInRange && !processedSingleDates.has(dateKey)) {
+                processedSingleDates.add(dateKey);
+                const date = this.createDate(month, day);
+                dates.push({
+                    type: 'single',
+                    start: date,
+                    end: date,
                     category: category,
                     text: match[0],
                     importance: this.detectImportance(text, match.index)
