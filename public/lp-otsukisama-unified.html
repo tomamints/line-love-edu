@@ -1334,13 +1334,19 @@
 
                         // カレンダーを初期化 - デバッグ用のデータを使用
                         setTimeout(async () => {
-                            // デバッグ用のテストデータを使用（実際の運勢データが存在しないため）
+                            // 診断日から適切な月を計算してテストデータを生成
+                            const diagDate = new Date(window.diagnosisDate || new Date());
+                            const currentMonth = diagDate.getMonth() + 1;
+                            const nextMonth = currentMonth === 12 ? 1 : currentMonth + 1;
+                            const monthAfterNext = nextMonth === 12 ? 1 : nextMonth + 1;
+                            
+                            // デバッグ用のテストデータを動的に生成
                             const fortuneTextData = {
-                                overall: { text: '1月15日〜1月20日にかけて運気が最高潮に達します。特に1月18日は最強の開運日です。' },
-                                love: { text: '1月25日頃に素敵な出会いが期待できます。1月末までにアプローチすると良いでしょう。' },
-                                career: { text: '1月中旬に大きなチャンスが訪れます。1月22日〜24日は仕事運が絶好調。' },
-                                relationship: { text: '1月上旬に人間関係が好転します。1月10日〜12日は特に良好。' },
-                                money: { text: '1月下旬に金運が上昇。特に1月28日は金運最高の日。' }
+                                overall: { text: `${nextMonth}月25日〜28日にかけて、運気が急上昇します。特に27日は最高の一日になるでしょう。` },
+                                love: { text: `${monthAfterNext}月15日〜20日は恋愛運が絶好調。特に18日は運命的な出会いの可能性があります。` },
+                                career: { text: `${currentMonth}月29日〜30日にかけて、仕事で大きなチャンスが訪れます。` },
+                                relationship: { text: `${monthAfterNext}月中旬に新しい友人との出会いがありそうです。15日〜17日は特に良い時期です。` },
+                                money: { text: `${currentMonth}月10日と${currentMonth}月25日は金運が特に良い日です。投資や買い物に最適。` }
                             };
 
                             console.log('[Main] Using test fortune data for calendar:', fortuneTextData);
