@@ -320,14 +320,56 @@ async function generateTextBasedCalendar(patternId, fortuneData, fortuneType = '
                 text-align: center;
                 vertical-align: middle;
                 height: 40px;
+                min-height: 40px;
+                max-height: 40px;
                 padding: 2px;
                 background: rgba(30, 25, 60, 0.5);
                 border-right: 1px solid rgba(138, 97, 250, 0.8);
                 border-bottom: 1px solid rgba(138, 97, 250, 0.8);
+                border-left: 2px solid transparent;
                 position: relative;
                 cursor: pointer;
                 transition: all 0.3s;
                 width: 14.285%;
+                overflow: hidden;
+            }
+
+            /* 運勢タイプ別の左ボーダー色 */
+            .calendar-cell.has-love {
+                border-left-color: #ff69b4;
+            }
+
+            .calendar-cell.has-career {
+                border-left-color: #4169e1;
+            }
+
+            .calendar-cell.has-money {
+                border-left-color: #ffd700;
+            }
+
+            .calendar-cell.has-relationship {
+                border-left-color: #32cd32;
+            }
+
+            .calendar-cell.has-overall {
+                border-left-color: #9370db;
+            }
+
+            /* 重要な日（複数の運勢タイプ） */
+            .calendar-cell.important-day {
+                background: linear-gradient(135deg, rgba(255, 105, 180, 0.15), rgba(147, 112, 219, 0.15));
+                border-left-width: 3px;
+                box-shadow: inset 0 0 15px rgba(255, 215, 0, 0.2);
+                animation: pulse-glow 3s infinite;
+            }
+
+            @keyframes pulse-glow {
+                0%, 100% {
+                    box-shadow: inset 0 0 15px rgba(255, 215, 0, 0.2);
+                }
+                50% {
+                    box-shadow: inset 0 0 25px rgba(255, 215, 0, 0.3);
+                }
             }
 
             .calendar-cell:last-child {
@@ -382,6 +424,11 @@ async function generateTextBasedCalendar(patternId, fortuneData, fortuneType = '
                 gap: 1px;
                 font-size: 10px;
                 margin-top: 1px;
+                min-height: 12px;
+                max-height: 12px;
+                overflow: hidden;
+                justify-content: center;
+                align-items: center;
             }
 
             .legend-container {
@@ -533,20 +580,32 @@ async function generateTextBasedCalendar(patternId, fortuneData, fortuneType = '
             const tooltipText = luckyInfo && luckyInfo.descriptions.length > 0 ?
                 `title="${luckyInfo.descriptions.join(' / ')}"` : '';
 
+            // 運勢タイプに基づいてクラスを追加
+            let fortuneClasses = '';
+            if (luckyInfo && luckyInfo.categories.length > 0) {
+                // 運勢タイプごとのクラスを追加
+                luckyInfo.categories.forEach(cat => {
+                    fortuneClasses += ` has-${cat}`;
+                });
+                // 複数の運勢がある場合は重要な日
+                if (luckyInfo.categories.length >= 2) {
+                    fortuneClasses += ' important-day';
+                }
+            }
+
             calendarHTML += `
-                <td class="${cellClass}" role="gridcell" ${tooltipText}>
+                <td class="${cellClass}${fortuneClasses}" role="gridcell" ${tooltipText}>
                     <div class="date-number">${day}</div>
                     <div class="moon-phase">${moonEmoji}</div>
             `;
 
-            // 運勢アイコンを表示
+            // 運勢アイコンを表示（重要な日は1つのアイコンのみ）
             if (luckyInfo && luckyInfo.categories.length > 0) {
-                const icons = luckyInfo.categories.map(cat =>
-                    dateExtractor.getCalendarIcon(cat, luckyInfo.importance)
-                );
+                const primaryCategory = luckyInfo.categories[0]; // 最初のカテゴリを代表として使用
+                const icon = dateExtractor.getCalendarIcon(primaryCategory, luckyInfo.importance);
                 calendarHTML += `
                     <div class="fortune-icons">
-                        ${icons.slice(0, 2).join('')}
+                        ${icon}
                     </div>
                 `;
             }

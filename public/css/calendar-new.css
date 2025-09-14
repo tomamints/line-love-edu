@@ -109,6 +109,8 @@
 .day-cell {
     aspect-ratio: 1;
     min-height: 45px;
+    height: 45px; /* 固定高さを追加 */
+    max-height: 45px; /* 最大高さも制限 */
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -118,9 +120,10 @@
     position: relative;
     transition: all 0.3s ease;
     cursor: pointer;
-    overflow: visible;
+    overflow: hidden; /* overflowをhiddenに変更 */
     padding: 3px 2px;
     gap: 1px;
+    border: 2px solid transparent; /* デフォルトの透明ボーダー */
 }
 
 .day-cell:hover {
@@ -128,6 +131,43 @@
     background: rgba(255, 255, 255, 0.08);
     box-shadow: 0 5px 20px rgba(138, 97, 250, 0.4);
     z-index: 10;
+}
+
+/* 運勢タイプ別のボーダー色 */
+.day-cell.has-love {
+    border-color: #ff69b4;
+}
+
+.day-cell.has-career {
+    border-color: #4169e1;
+}
+
+.day-cell.has-money {
+    border-color: #ffd700;
+}
+
+.day-cell.has-relationship {
+    border-color: #32cd32;
+}
+
+.day-cell.has-overall {
+    border-color: #9370db;
+}
+
+/* 複数の運勢タイプがある場合（重要な日） */
+.day-cell.important-day {
+    background: linear-gradient(135deg, rgba(255, 105, 180, 0.1), rgba(147, 112, 219, 0.1));
+    border-width: 3px;
+    animation: pulse-glow 2s infinite;
+}
+
+@keyframes pulse-glow {
+    0%, 100% {
+        box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+    }
+    50% {
+        box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+    }
 }
 
 /* 空のセル */
