@@ -1332,28 +1332,57 @@
                             }
                         }, 100);
 
-                        // カレンダーを初期化 - デバッグ用のデータを使用
+                        // カレンダーを初期化 - 実際の運勢テキストから日付を抽出
                         setTimeout(async () => {
-                            // 診断日から適切な月を計算してテストデータを生成
-                            const diagDate = new Date(window.diagnosisDate || new Date());
-                            const currentMonth = diagDate.getMonth() + 1;
-                            const nextMonth = currentMonth === 12 ? 1 : currentMonth + 1;
-                            const monthAfterNext = nextMonth === 12 ? 1 : nextMonth + 1;
-                            
-                            // デバッグ用のテストデータを動的に生成
-                            const fortuneTextData = {
-                                overall: { text: `${nextMonth}月25日〜28日にかけて、運気が急上昇します。特に27日は最高の一日になるでしょう。` },
-                                love: { text: `${monthAfterNext}月15日〜20日は恋愛運が絶好調。特に18日は運命的な出会いの可能性があります。` },
-                                career: { text: `${currentMonth}月29日〜30日にかけて、仕事で大きなチャンスが訪れます。` },
-                                relationship: { text: `${monthAfterNext}月中旬に新しい友人との出会いがありそうです。15日〜17日は特に良い時期です。` },
-                                money: { text: `${currentMonth}月10日と${currentMonth}月25日は金運が特に良い日です。投資や買い物に最適。` }
+                            // 実際の運勢テキストをDOM要素から取得
+                            const getFortuneText = (category) => {
+                                const elements = {
+                                    love: [
+                                        'fortune-love-destiny-meeting',
+                                        'fortune-love-admirer-type', 
+                                        'fortune-love-dangerous-type'
+                                    ],
+                                    relationship: [
+                                        'fortune-relationship-new-connections',
+                                        'fortune-relationship-challenges'
+                                    ],
+                                    career: [
+                                        'fortune-work-new-talent',
+                                        'fortune-work-turning-point'
+                                    ],
+                                    money: [
+                                        'fortune-money-text',
+                                        'fortune-money-trouble'
+                                    ],
+                                    overall: ['fortune-overall-text']
+                                };
+
+                                let texts = [];
+                                if (elements[category]) {
+                                    elements[category].forEach(id => {
+                                        const elem = document.getElementById(id);
+                                        if (elem && elem.textContent) {
+                                            texts.push(elem.textContent);
+                                        }
+                                    });
+                                }
+                                return texts.join(' ');
                             };
 
-                            console.log('[Main] Using test fortune data for calendar:', fortuneTextData);
+                            // 実際のDOM要素から運勢テキストを収集
+                            const actualFortuneData = {
+                                love: { text: getFortuneText('love') },
+                                relationship: { text: getFortuneText('relationship') },
+                                career: { text: getFortuneText('career') },
+                                money: { text: getFortuneText('money') },
+                                overall: { text: getFortuneText('overall') }
+                            };
+
+                            console.log('[Main Calendar] 実際の運勢テキストから日付を抽出:', actualFortuneData);
 
                             if (typeof generateTextBasedCalendar === 'function') {
                                 console.log('Initializing text-based calendar for pattern:', currentPatternId);
-                                await generateTextBasedCalendar(currentPatternId, fortuneTextData);
+                                await generateTextBasedCalendar(currentPatternId, actualFortuneData);
                             } else if (typeof generateIntegratedCalendar === 'function') {
                                 console.log('Falling back to integrated calendar for pattern:', currentPatternId);
                                 await generateIntegratedCalendar(currentPatternId, fortuneData);
@@ -1363,7 +1392,7 @@
                             } else {
                                 console.error('Calendar generation function not found');
                             }
-                        }, 1000); // 確実にJavaScriptが読み込まれた後に実行
+                        }, 1500); // updateMoonPhaseContentが完了するのを待つ
 
                         console.log('データ表示完了');
                     } else {
@@ -1774,25 +1803,64 @@
                                 }
                             }
 
-                            // カレンダーを初期化
-                            if (window.TextBasedMoonCalendarGenerator && window.FortuneDateExtractor) {
-                                // テスト用の運勢データを作成
-                                const testFortuneData = {
-                                    love: { text: "恋愛運は9月15日〜9月22日にかけて絶好調！特に9月18日ごろは運命的な出会いが期待できます。10月中旬も良い時期です。" },
-                                    relationship: { text: "人間関係運は9月25日〜28日に重要な転機が訪れます。10月上旬には新しい人脈が広がるでしょう。" },
-                                    career: { text: "仕事運は10月1日〜10月15日が最高潮。特に10月10日前後は大きなチャンスが。11月中旬も好調です。" },
-                                    money: { text: "金運は9月末から10月初めにかけて上昇。11月15日〜11月20日も金運が高まります。12月上旬も期待大。" },
-                                    overall: { text: "全体運は9月20日、10月5日、11月12日が特に幸運な日。これらの日は重要な決断に最適です。" }
-                                };
+                            // カレンダーを初期化（DOM要素から実際の運勢テキストを取得）
+                            setTimeout(() => {
+                                if (window.TextBasedMoonCalendarGenerator && window.FortuneDateExtractor) {
+                                    // 実際の運勢テキストをDOM要素から取得
+                                    const getFortuneText = (category) => {
+                                        const elements = {
+                                            love: [
+                                                'fortune-love-destiny-meeting',
+                                                'fortune-love-admirer-type', 
+                                                'fortune-love-dangerous-type'
+                                            ],
+                                            relationship: [
+                                                'fortune-relationship-new-connections',
+                                                'fortune-relationship-challenges'
+                                            ],
+                                            career: [
+                                                'fortune-work-new-talent',
+                                                'fortune-work-turning-point'
+                                            ],
+                                            money: [
+                                                'fortune-money-text',
+                                                'fortune-money-trouble'
+                                            ],
+                                            overall: ['fortune-overall-text']
+                                        };
 
-                                // 日付を抽出
-                                const extractor = new FortuneDateExtractor();
-                                const extractedDates = extractor.extractAllDates(testFortuneData);
+                                        let texts = [];
+                                        if (elements[category]) {
+                                            elements[category].forEach(id => {
+                                                const elem = document.getElementById(id);
+                                                if (elem && elem.textContent) {
+                                                    texts.push(elem.textContent);
+                                                }
+                                            });
+                                        }
+                                        return texts.join(' ');
+                                    };
 
-                                // カレンダーを生成
-                                const generator = new TextBasedMoonCalendarGenerator();
-                                generator.initializeCalendar('personalizedCalendar', extractedDates, extractor);
-                            }
+                                    // 実際のDOM要素から運勢テキストを収集
+                                    const actualFortuneData = {
+                                        love: { text: getFortuneText('love') },
+                                        relationship: { text: getFortuneText('relationship') },
+                                        career: { text: getFortuneText('career') },
+                                        money: { text: getFortuneText('money') },
+                                        overall: { text: getFortuneText('overall') }
+                                    };
+
+                                    console.log('[Calendar] 実際の運勢テキストから日付を抽出:', actualFortuneData);
+
+                                    // 日付を抽出
+                                    const extractor = new FortuneDateExtractor();
+                                    const extractedDates = extractor.extractAllDates(actualFortuneData);
+
+                                    // カレンダーを生成
+                                    const generator = new TextBasedMoonCalendarGenerator();
+                                    generator.initializeCalendar('personalizedCalendar', extractedDates, extractor);
+                                }
+                            }, 500); // updateMoonPhaseContentが完了するのを待つ
 
                             // 6つの要素を更新（4つの軸データを含む）
                             if (typeof updateSixElements === 'function') {
