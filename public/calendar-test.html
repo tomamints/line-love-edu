@@ -50,24 +50,20 @@
 <body>
     <div class="container">
         <h1>カレンダーデータ収集テスト</h1>
-        
+
         <div class="debug-info">
             <h3>テスト用の診断文章</h3>
             <div id="test-texts">
-                <p><strong>全体運:</strong> <span id="overall-text">12月25日〜28日にかけて、運気が急上昇します。特に27日は最高の一日になるでしょう。</span></p>
-                <p><strong>恋愛運:</strong> <span id="love-text">1月15日〜20日は恋愛運が絶好調。特に18日は運命的な出会いの可能性があります。</span></p>
-                <p><strong>人間関係運:</strong> <span id="relationship-text">1月中旬に新しい友人との出会いがありそうです。15日〜17日は特に良い時期です。</span></p>
-                <p><strong>仕事運:</strong> <span id="career-text">1月29日〜31日にかけて、仕事で大きなチャンスが訪れます。</span></p>
-                <p><strong>金運:</strong> <span id="money-text">1月10日と1月25日は金運が特に良い日です。投資や買い物に最適。</span></p>
+                <p><strong>全体運:</strong> <span id="overall-text">10月25日〜28日にかけて、運気が急上昇します。特に27日は最高の一日になるでしょう。</span></p>
+                <p><strong>恋愛運:</strong> <span id="love-text">11月15日〜20日は恋愛運が絶好調。特に18日は運命的な出会いの可能性があります。</span></p>
+                <p><strong>人間関係運:</strong> <span id="relationship-text">11月中旬に新しい友人との出会いがありそうです。15日〜17日は特に良い時期です。</span></p>
+                <p><strong>仕事運:</strong> <span id="career-text">9月29日〜31日にかけて、仕事で大きなチャンスが訪れます。</span></p>
+                <p><strong>金運:</strong> <span id="money-text">9月10日と9月25日は金運が特に良い日です。投資や買い物に最適。</span></p>
             </div>
         </div>
 
         <div class="button-group">
-            <button onclick="generateCalendar('overall')">総合運カレンダー生成</button>
-            <button onclick="generateCalendar('love')">恋愛運カレンダー生成</button>
-            <button onclick="generateCalendar('relationship')">人間関係運カレンダー生成</button>
-            <button onclick="generateCalendar('career')">仕事運カレンダー生成</button>
-            <button onclick="generateCalendar('money')">金運カレンダー生成</button>
+            <button onclick="generateCalendar('all')">総合カレンダー生成</button>
         </div>
 
         <div id="personalizedCalendar" class="calendar-container"></div>
@@ -81,15 +77,15 @@
     <!-- 必要なスクリプトを読み込み -->
     <script src="/js/fortune-date-extractor.js"></script>
     <script src="/js/lp-otsukisama-calendar-text-based.js"></script>
-    
+
     <script>
         // デバッグ用のコンソールログをキャプチャ
         const originalLog = console.log;
         const debugOutput = [];
-        
+
         console.log = function(...args) {
             originalLog.apply(console, args);
-            debugOutput.push(args.map(arg => 
+            debugOutput.push(args.map(arg =>
                 typeof arg === 'object' ? JSON.stringify(arg, null, 2) : arg
             ).join(' '));
             updateDebugDisplay();
@@ -102,7 +98,7 @@
 
         async function generateCalendar(type) {
             debugOutput.length = 0; // デバッグ出力をクリア
-            
+
             // テスト用の運勢データを作成
             const fortuneData = {
                 overall: { text: document.getElementById('overall-text').textContent },
@@ -118,7 +114,7 @@
 
             // カレンダーを生成
             await window.generateTextBasedCalendar(1, fortuneData, type);
-            
+
             console.log('=== カレンダー生成完了 ===');
         }
 

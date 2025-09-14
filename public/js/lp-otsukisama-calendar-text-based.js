@@ -61,7 +61,7 @@ function calculateMoonAge(date) {
 }
 
 // 診断文章から日付を抽出してカレンダーを生成
-async function generateTextBasedCalendar(patternId, fortuneData, fortuneType = 'overall') {
+async function generateTextBasedCalendar(patternId, fortuneData, fortuneType = 'all') {
     console.log('[Calendar] generateTextBasedCalendar called with:', { patternId, fortuneData, fortuneType });
 
     // Try both possible container IDs
@@ -452,7 +452,7 @@ async function generateTextBasedCalendar(patternId, fortuneData, fortuneType = '
             }
         </style>
 
-        <div class="moon-calendar-container fortune-${fortuneType}">
+        <div class="moon-calendar-container">
     `;
 
     // パターン固有のメッセージを追加
