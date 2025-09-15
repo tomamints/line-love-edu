@@ -3393,14 +3393,25 @@ app.post('/api/payjp-create-charge', express.json(), async (req, res) => {
 
 // ── ⑩ 起動
 console.log('VERCEL環境変数:', process.env.VERCEL);
-if (process.env.VERCEL !== '1') {
+console.log('サーバー起動を試みます...');
+if (!process.env.VERCEL || process.env.VERCEL !== '1') {
   // ローカル環境でのみサーバーを起動
   const port = process.env.PORT || 3000;
-  app.listen(port, () => {
+  console.log(`ポート ${port} でサーバー起動中...`);
+  
+  const server = app.listen(port, () => {
+    console.log(`サーバー起動成功！`);
     logger.log(`🔮 恋愛お告げボット起動: http://localhost:${port}`);
     logger.log('📡 Webhook URL: /webhook');
     logger.log(`💳 決済成功URL: http://localhost:${port}/payment/success`);
     logger.log('✨ 準備完了！トーク履歴を送信してください');
+  });
+  
+  server.on('error', (err) => {
+    console.error('サーバー起動エラー:', err);
+    if (err.code === 'EADDRINUSE') {
+      console.error(`ポート ${port} は既に使用中です`);
+    }
   });
 } else {
   console.log('Vercel環境のため、サーバーを起動しません');

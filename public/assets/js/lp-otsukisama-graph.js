@@ -8,7 +8,7 @@ let fortuneGraphData = null;
 // 運勢グラフデータを読み込む
 async function loadFortuneGraphData() {
     try {
-        const response = await fetch('../data/fortune_graph_all_64_patterns.json');
+        const response = await fetch('/assets/data/fortune_graph_all_64_patterns.json');
         const data = await response.json();
         fortuneGraphData = data.patterns;
         console.log('Fortune graph data loaded:', fortuneGraphData.length, 'patterns');
