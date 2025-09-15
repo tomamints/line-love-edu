@@ -9,7 +9,7 @@ let calendarPatternsData = null;
 // カレンダーパターンデータを読み込む
 async function loadCalendarPatterns() {
     try {
-        const response = await fetch('data/moon-calendar-patterns-complete.json');
+        const response = await fetch('../data/moon-calendar-patterns-complete.json');
         const data = await response.json();
         calendarPatternsData = data.patterns;
         console.log('Calendar patterns loaded:', Object.keys(calendarPatternsData).length, 'patterns');
@@ -152,7 +152,7 @@ async function generateTextBasedCalendar(patternId, fortuneData, fortuneType = '
     // カレンダーHTMLを構築
     let calendarHTML = `
         <!-- バナーを最外側に配置 -->
-        <img src="/images/banner/next-section.png" alt="あなただけの3ヶ月運勢カレンダー" style="width: 100%; height: auto; display: block; margin-bottom: -10px; border-radius: 12px 12px 0 0;">
+        <img src="/assets/images/banner/next-section.png" alt="あなただけの3ヶ月運勢カレンダー" style="width: 100%; height: auto; display: block; margin-bottom: -10px; border-radius: 12px 12px 0 0;">
         
         <style>
             .moon-calendar-container {
@@ -652,7 +652,7 @@ async function generateTextBasedCalendar(patternId, fortuneData, fortuneType = '
         border: 1px solid rgba(255, 215, 0, 0.3);
     ">
         <div style="margin: 20px 0; text-align: center;">
-            <img src="/images/banner/calendar-explanation.png" alt="パワーDAY説明" style="max-width: 110%; height: auto; margin-left: -5%; margin-right: -5%;">
+            <img src="/assets/images/banner/calendar-explanation.png" alt="パワーDAY説明" style="max-width: 110%; height: auto; margin-left: -5%; margin-right: -5%;">
         </div>
 
         <div style="
@@ -688,7 +688,7 @@ async function generateTextBasedCalendar(patternId, fortuneData, fortuneType = '
 
         <!-- カレンダーメモリマインダーバナー -->
         <div style="margin-top: 30px; text-align: center;">
-            <img src="/images/banner/calendar-memo-reminder.png" alt="カレンダーメモリマインダー" style="max-width: 100%; height: auto;">
+            <img src="/assets/images/banner/calendar-memo-reminder.png" alt="カレンダーメモリマインダー" style="max-width: 100%; height: auto;">
         </div>
     </div>
     `;

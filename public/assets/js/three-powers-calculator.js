@@ -8,7 +8,7 @@ let threePowersData = null;
 // データを読み込む
 async function loadThreePowersData() {
     try {
-        const response = await fetch('/data/three-powers-calculated.json');
+        const response = await fetch('/assets/data/three-powers-calculated.json');
         threePowersData = await response.json();
         console.log('Three powers data loaded');
         return true;

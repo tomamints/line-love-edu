@@ -15,7 +15,27 @@
     },
     {
       "source": "/lp/otsukisama",
-      "destination": "/lp-otsukisama.html"
+      "destination": "/pages/lp-otsukisama.html"
+    },
+    {
+      "source": "/lp-otsukisama-unified.html",
+      "destination": "/pages/lp-otsukisama-unified.html"
+    },
+    {
+      "source": "/payment-method-select.html",
+      "destination": "/pages/payment-method-select.html"
+    },
+    {
+      "source": "/payment-success.html",
+      "destination": "/pages/payment-success.html"
+    },
+    {
+      "source": "/payjp-payment.html",
+      "destination": "/pages/payjp-payment.html"
+    },
+    {
+      "source": "/index.html",
+      "destination": "/pages/index.html"
     }
   ],
   "functions": {

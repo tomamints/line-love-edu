@@ -24,12 +24,12 @@ class FortuneDisplay {
                 moneyData,
                 moonMessagesData
             ] = await Promise.all([
-                fetch('/data/fortune-overall.json').then(r => r.json()),
-                fetch('/data/fortune-love.json').then(r => r.json()),
-                fetch('/data/fortune-relationships.json').then(r => r.json()),
-                fetch('/data/fortune-work.json').then(r => r.json()),
-                fetch('/data/fortune-money.json').then(r => r.json()),
-                fetch('/data/moon-messages.json').then(r => r.json())
+                fetch('/assets/data/fortune-overall.json').then(r => r.json()),
+                fetch('/assets/data/fortune-love.json').then(r => r.json()),
+                fetch('/assets/data/fortune-relationships.json').then(r => r.json()),
+                fetch('/assets/data/fortune-work.json').then(r => r.json()),
+                fetch('/assets/data/fortune-money.json').then(r => r.json()),
+                fetch('/assets/data/moon-messages.json').then(r => r.json())
             ]);
 
             this.fortuneData = {
@@ -137,7 +137,7 @@ class FortuneDisplay {
 
         // 証拠セクション
         htmlContent += '<div class="recent-events-section">';
-        htmlContent += '<img src="/images/banner/inqur/yellow-recently-experienced-this.webp" alt="最近こんなこと、ありませんでしたか？" class="inquiry-banner" />';
+        htmlContent += '<img src="/assets/images/banner/inqur/yellow-recently-experienced-this.webp" alt="最近こんなこと、ありませんでしたか？" class="inquiry-banner" />';
         htmlContent += '<div class="feelings-section pattern1">';
         htmlContent += '<ul>';
         if (mainText.evidence1) htmlContent += `<li>${this.processText(mainText.evidence1, userName)}</li>`;
@@ -310,7 +310,7 @@ class FortuneDisplay {
         // 感情セクション
         htmlContent += '<div class="feelings-section">';
         htmlContent += '<div class="recent-events-section">';
-        htmlContent += '<img src="/images/banner/inqur/white-evidence-these-things-happened.webp" alt="その証拠に、こんなことがあったはず" class="inquiry-banner" />';
+        htmlContent += '<img src="/assets/images/banner/inqur/white-evidence-these-things-happened.webp" alt="その証拠に、こんなことがあったはず" class="inquiry-banner" />';
         htmlContent += '<ul class="recent-events-list">';
         if (mainText.feeling1) htmlContent += `<li>${this.processText(mainText.feeling1, userName)}</li>`;
         if (mainText.feeling2) htmlContent += `<li>${this.processText(mainText.feeling2, userName)}</li>`;
@@ -333,7 +333,7 @@ class FortuneDisplay {
         htmlContent += '<div class="recent-events-section">';
 
         // バナー画像を表示（テキストの代わりに）
-        htmlContent += `<img src="/images/banner/inqur/yellow-recently-experienced-this.webp" alt="最近、こんなことはありませんでしたか？" class="inquiry-banner">`;
+        htmlContent += `<img src="/assets/images/banner/inqur/yellow-recently-experienced-this.webp" alt="最近、こんなことはありませんでしたか？" class="inquiry-banner">`;
 
         htmlContent += '<ul class="recent-events-list">';
         if (mainText.evidence1) htmlContent += `<li>${this.processText(mainText.evidence1, userName)}</li>`;
@@ -436,7 +436,7 @@ class FortuneDisplay {
 
         // 感情セクション
         htmlContent += '<div class="feelings-section">';
-        htmlContent += '<img src="/images/banner/inqur/yellow-recently-experienced-this.webp" alt="最近こんなことはありませんか？" class="inquiry-banner" />',
+        htmlContent += '<img src="/assets/images/banner/inqur/yellow-recently-experienced-this.webp" alt="最近こんなことはありませんか？" class="inquiry-banner" />',
         htmlContent += '<ul>';
         if (mainText.feeling1) htmlContent += `<li>${this.processText(mainText.feeling1, userName)}</li>`;
         if (mainText.feeling2) htmlContent += `<li>${this.processText(mainText.feeling2, userName)}</li>`;
@@ -453,7 +453,7 @@ class FortuneDisplay {
 
         // 証拠セクション
         htmlContent += '<div class="evidence-section">';
-        htmlContent += '<img src="/images/banner/inqur/white-experiences-fate-signal.webp" alt="こんな経験は、あなたが動き出す合図です" class="inquiry-banner" />';
+        htmlContent += '<img src="/assets/images/banner/inqur/white-experiences-fate-signal.webp" alt="こんな経験は、あなたが動き出す合図です" class="inquiry-banner" />';
         htmlContent += '<ul>';
         if (mainText.evidence1) htmlContent += `<li>${this.processText(mainText.evidence1, userName)}</li>`;
         if (mainText.evidence2) htmlContent += `<li>${this.processText(mainText.evidence2, userName)}</li>`;
@@ -554,7 +554,7 @@ class FortuneDisplay {
 
         // 感情セクション
         htmlContent += '<div class="feelings-section">';
-        htmlContent += '<img src="/images/banner/inqur/yellow-do-you-recognize-these.webp" alt="これらに思い当たることはありませんか？" class="inquiry-banner" />';
+        htmlContent += '<img src="/assets/images/banner/inqur/yellow-do-you-recognize-these.webp" alt="これらに思い当たることはありませんか？" class="inquiry-banner" />';
         htmlContent += '<ul>';
         if (mainText.feeling1) htmlContent += `<li>${this.processText(mainText.feeling1, userName)}</li>`;
         if (mainText.feeling2) htmlContent += `<li>${this.processText(mainText.feeling2, userName)}</li>`;
@@ -574,7 +574,7 @@ class FortuneDisplay {
         htmlContent += '<div class="recent-events-section">';
 
         // バナー画像を表示（テキストの代わりに）
-        htmlContent += `<img src="/images/banner/inqur/white-experiences-fate-signal.webp" alt="最近、こんなことはありませんでしたか？" class="inquiry-banner">`;
+        htmlContent += `<img src="/assets/images/banner/inqur/white-experiences-fate-signal.webp" alt="最近、こんなことはありませんでしたか？" class="inquiry-banner">`;
 
         htmlContent += '<ul class="recent-events-list">';
         if (mainText.evidence1) htmlContent += `<li>${this.processText(mainText.evidence1, userName)}</li>`;
@@ -692,7 +692,7 @@ class FortuneDisplay {
     async displayImportantMessage(userName) {
         try {
             // メッセージデータを読み込み
-            const response = await fetch('/data/moon-important-messages.json');
+            const response = await fetch('/assets/data/moon-important-messages.json');
             const data = await response.json();
 
             if (!data || !data.themes) {

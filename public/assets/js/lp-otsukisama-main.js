@@ -12,9 +12,9 @@ window.uiTexts = null;
 async function loadDataFiles() {
     try {
         const [moonPhases, hiddenPhases, texts] = await Promise.all([
-            fetch('/data/moon-phase-descriptions.json').then(r => r.json()),
-            fetch('/data/hidden-phase-descriptions.json').then(r => r.json()),
-            fetch('/data/ui-texts.json').then(r => r.json())
+            fetch('/assets/data/moon-phase-descriptions.json').then(r => r.json()),
+            fetch('/assets/data/hidden-phase-descriptions.json').then(r => r.json()),
+            fetch('/assets/data/ui-texts.json').then(r => r.json())
         ]);
         
         window.moonPhaseData = moonPhases;

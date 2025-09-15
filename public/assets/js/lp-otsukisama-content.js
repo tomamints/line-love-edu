@@ -13,7 +13,7 @@ const DIAGNOSIS_CONTENT = {
             html: (data) => `
                 <div class="tsukuyomi-section">
                     <div class="tsukuyomi-character">
-                        <img src="/images/tsukuyomi/2.png" alt="月詠">
+                        <img src="/assets/images/tsukuyomi/2.png" alt="月詠">
                     </div>
                     <div class="tsukuyomi-bubble">
                         <div class="tsukuyomi-name">月詠</div>
@@ -35,7 +35,7 @@ const DIAGNOSIS_CONTENT = {
             freePreview: true,
             order: 2,
             html: () => `
-                <img src="/images/banner/2-anata.png" alt="おつきさま診断で読み解くあなた" class="full-width-banner">
+                <img src="/assets/images/banner/2-anata.png" alt="おつきさま診断で読み解くあなた" class="full-width-banner">
             `
         },
 
@@ -55,7 +55,7 @@ const DIAGNOSIS_CONTENT = {
                         <!-- 表の月相 -->
                         <div class="moon-phase-card new-moon">
                             <div class="moon-phase-visual">
-                                <img src="/images/moon/omote-${data.moonPhaseIndex !== undefined ? data.moonPhaseIndex : 0}.png" alt="${data.moonPhase || '新月'}">
+                                <img src="/assets/images/moon/omote-${data.moonPhaseIndex !== undefined ? data.moonPhaseIndex : 0}.png" alt="${data.moonPhase || '新月'}">
                             </div>
                             <div class="moon-phase-info">
                                 <div class="phase-label">表の月相</div>
@@ -70,7 +70,7 @@ const DIAGNOSIS_CONTENT = {
                         <!-- 裏の月相 -->
                         <div class="moon-phase-card full-moon">
                             <div class="moon-phase-visual">
-                                <img src="/images/moon/ura-${data.hiddenPhaseIndex !== undefined ? data.hiddenPhaseIndex : 4}.png" alt="${data.hiddenPhase || '満月'}">
+                                <img src="/assets/images/moon/ura-${data.hiddenPhaseIndex !== undefined ? data.hiddenPhaseIndex : 4}.png" alt="${data.hiddenPhase || '満月'}">
                             </div>
                             <div class="moon-phase-info">
                                 <div class="phase-label">隠された月相</div>
@@ -103,12 +103,12 @@ const DIAGNOSIS_CONTENT = {
             order: 4,
             html: (data) => `
                 <div class="four-axes-diagnosis">
-                    <img src="/images/banner/5-2-tikara.png" alt="4つの軸からあなたを紐解く" class="section-banner">
+                    <img src="/assets/images/banner/5-2-tikara.png" alt="4つの軸からあなたを紐解く" class="section-banner">
                     
                     <div class="type-wheel-container">
                         
                         <div class="type-item top" data-type="emotional">
-                            <img src="/images/love-types/emotional/${data.emotionalImage || 'straight'}.png" alt="${data.emotionalType || '感情表現'}">
+                            <img src="/assets/images/love-types/emotional/${data.emotionalImage || 'straight'}.png" alt="${data.emotionalType || '感情表現'}">
                             <div class="type-label">
                                 <span>感情表現</span>
                                 <span>${data.emotionalType || 'ストレート告白型'}</span>
@@ -116,7 +116,7 @@ const DIAGNOSIS_CONTENT = {
                         </div>
                         
                         <div class="type-item right" data-type="distance">
-                            <img src="/images/love-types/distance/${data.distanceImage || 'moderate'}.png" alt="${data.distanceType || '距離感'}">
+                            <img src="/assets/images/love-types/distance/${data.distanceImage || 'moderate'}.png" alt="${data.distanceType || '距離感'}">
                             <div class="type-label">
                                 <span>距離感</span>
                                 <span>${data.distanceType || '安心セーフ型'}</span>
@@ -124,7 +124,7 @@ const DIAGNOSIS_CONTENT = {
                         </div>
                         
                         <div class="type-item bottom" data-type="values">
-                            <img src="/images/love-types/values/${data.valuesImage || 'romantic'}.png" alt="${data.valuesType || '価値観'}">
+                            <img src="/assets/images/love-types/values/${data.valuesImage || 'romantic'}.png" alt="${data.valuesType || '価値観'}">
                             <div class="type-label">
                                 <span>価値観</span>
                                 <span>${data.valuesType || 'ロマンチスト型'}</span>
@@ -132,7 +132,7 @@ const DIAGNOSIS_CONTENT = {
                         </div>
                         
                         <div class="type-item left" data-type="energy">
-                            <img src="/images/love-types/energy/${data.energyImage || 'intense'}.png" alt="${data.energyType || 'エネルギー'}">
+                            <img src="/assets/images/love-types/energy/${data.energyImage || 'intense'}.png" alt="${data.energyType || 'エネルギー'}">
                             <div class="type-label">
                                 <span>エネルギー</span>
                                 <span>${data.energyType || '燃え上がり型'}</span>
@@ -179,7 +179,7 @@ const DIAGNOSIS_CONTENT = {
             order: 6,
             html: (data) => `
                 <div class="overall-fortune">
-                    <img src="/images/banner/7-unmei.png" alt="直近3ヶ月の運命" class="section-banner">
+                    <img src="/assets/images/banner/7-unmei.png" alt="直近3ヶ月の運命" class="section-banner">
                     
                     <div class="fortune-content">
                         <h2>${data.overallTitle || '運命の転換期'}</h2>
@@ -221,7 +221,7 @@ const DIAGNOSIS_CONTENT = {
             order: 7,
             html: (data) => `
                 <div class="fortune-banner-wrapper">
-                    <img src="/images/banner/8-rennai.png" alt="あなたの恋愛運" class="fortune-main-banner">
+                    <img src="/assets/images/banner/8-rennai.png" alt="あなたの恋愛運" class="fortune-main-banner">
                     
                     <div class="fortune-section love">
                         <div class="fortune-content">
@@ -230,14 +230,14 @@ const DIAGNOSIS_CONTENT = {
                             </div>
                             
                             ${data.loveDestinyMeeting ? `
-                            <img src="/images/banner/love-1.png" alt="運命的な出会い" class="section-banner">
+                            <img src="/assets/images/banner/love-1.png" alt="運命的な出会い" class="section-banner">
                             <div class="hanging-text">
                                 <p>${data.loveDestinyMeeting}</p>
                             </div>
                             ` : ''}
                             
                             ${data.loveAdmirerType ? `
-                            <img src="/images/banner/love-2.png" alt="あなたに惹かれる人" class="section-banner">
+                            <img src="/assets/images/banner/love-2.png" alt="あなたに惹かれる人" class="section-banner">
                             <div class="hanging-text">
                                 <p>${data.loveAdmirerType}</p>
                             </div>
@@ -256,7 +256,7 @@ const DIAGNOSIS_CONTENT = {
             order: 8,
             html: (data) => `
                 <div class="fortune-banner-wrapper">
-                    <img src="/images/banner/9-ningenn.png" alt="人間関係運" class="fortune-main-banner">
+                    <img src="/assets/images/banner/9-ningenn.png" alt="人間関係運" class="fortune-main-banner">
                     
                     <div class="fortune-section relationship">
                         <div class="fortune-content">
@@ -265,7 +265,7 @@ const DIAGNOSIS_CONTENT = {
                             </div>
                             
                             ${data.relationshipNewConnections ? `
-                            <img src="/images/banner/relation-1.png" alt="新しい人間関係" class="section-banner">
+                            <img src="/assets/images/banner/relation-1.png" alt="新しい人間関係" class="section-banner">
                             <div class="hanging-text">
                                 <p>${data.relationshipNewConnections}</p>
                             </div>
@@ -284,7 +284,7 @@ const DIAGNOSIS_CONTENT = {
             order: 9,
             html: (data) => `
                 <div class="fortune-banner-wrapper">
-                    <img src="/images/banner/10-shigoto.png" alt="仕事運" class="fortune-main-banner">
+                    <img src="/assets/images/banner/10-shigoto.png" alt="仕事運" class="fortune-main-banner">
                     
                     <div class="fortune-section career">
                         <div class="fortune-content">
@@ -294,7 +294,7 @@ const DIAGNOSIS_CONTENT = {
                             </div>
                             
                             ${data.workNewTalent ? `
-                            <img src="/images/banner/work-1.png" alt="新たな才能" class="section-banner">
+                            <img src="/assets/images/banner/work-1.png" alt="新たな才能" class="section-banner">
                             <div class="hanging-text">
                                 <p>${data.workNewTalent}</p>
                             </div>
@@ -313,7 +313,7 @@ const DIAGNOSIS_CONTENT = {
             order: 10,
             html: (data) => `
                 <div class="fortune-banner-wrapper">
-                    <img src="/images/banner/11-kin.png" alt="金運" class="fortune-main-banner">
+                    <img src="/assets/images/banner/11-kin.png" alt="金運" class="fortune-main-banner">
                     
                     <div class="fortune-section money">
                         <div class="fortune-content">
@@ -322,7 +322,7 @@ const DIAGNOSIS_CONTENT = {
                             </div>
                             
                             ${data.moneyLuckyAction ? `
-                            <img src="/images/banner/money-1.png" alt="ラッキーアクション" class="section-banner">
+                            <img src="/assets/images/banner/money-1.png" alt="ラッキーアクション" class="section-banner">
                             <div class="hanging-text">
                                 <p>${data.moneyLuckyAction}</p>
                             </div>
@@ -341,10 +341,10 @@ const DIAGNOSIS_CONTENT = {
             order: 11,
             html: (data) => `
                 <div class="final-message">
-                    <img src="/images/banner/12-saigo.png" alt="月が教えてくれる5つの教え" class="full-width-banner">
+                    <img src="/assets/images/banner/12-saigo.png" alt="月が教えてくれる5つの教え" class="full-width-banner">
                     <p>${data.finalMessage || '最終メッセージがここに表示されます'}</p>
                     
-                    <img src="/images/banner/last.png" alt="月が教えてくれる最も重要なメッセージ" class="full-width-banner">
+                    <img src="/assets/images/banner/last.png" alt="月が教えてくれる最も重要なメッセージ" class="full-width-banner">
                     <p>${data.importantMessage || '重要なメッセージがここに表示されます'}</p>
                 </div>
             `

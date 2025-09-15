@@ -16,10 +16,10 @@ class OtsukisamaDataLoader {
     async loadAllData() {
         try {
             const [personalityAxes, moonPhases, hiddenPhases, uiTexts] = await Promise.all([
-                fetch('data/personality-axes-descriptions.json').then(r => r.json()),
-                fetch('data/moon-phase-descriptions.json').then(r => r.json()),
-                fetch('data/hidden-phase-descriptions.json').then(r => r.json()),
-                fetch('data/ui-texts.json').then(r => r.json())
+                fetch('../data/personality-axes-descriptions.json').then(r => r.json()),
+                fetch('../data/moon-phase-descriptions.json').then(r => r.json()),
+                fetch('../data/hidden-phase-descriptions.json').then(r => r.json()),
+                fetch('../data/ui-texts.json').then(r => r.json())
             ]);
 
             // 基本的なパターンデータを生成（月相の組み合わせのみ）

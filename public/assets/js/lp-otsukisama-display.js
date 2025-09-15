@@ -56,7 +56,7 @@ async function displayThreePowersFromKeys(keys, moonPhase) {
     await window.ThreePowersCalculator.load();
     
     // キーから3つの力のデータを取得
-    const threePowersData = await fetch('/data/three-powers-calculated.json').then(r => r.json());
+    const threePowersData = await fetch('/assets/data/three-powers-calculated.json').then(r => r.json());
     
     const powers = {
         action: threePowersData.action[keys.action],
@@ -84,7 +84,7 @@ async function displayThreePowersFromKeys(keys, moonPhase) {
 // personality-axes-descriptions.jsonを読み込む
 async function loadPersonalityAxesData() {
     try {
-        const response = await fetch('/data/personality-axes-descriptions.json');
+        const response = await fetch('/assets/data/personality-axes-descriptions.json');
         personalityAxesData = await response.json();
         console.log('Personality axes data loaded');
         return true;
@@ -130,14 +130,14 @@ async function updateMoonPhaseContent(patternId) {
         
         // 月相に応じた画像を設定
         const phaseImages = {
-            '新月': '/images/moon/omote-0.png',
-            '三日月': '/images/moon/omote-1.png',
-            '上弦の月': '/images/moon/omote-2.png',
-            '十三夜': '/images/moon/omote-3.png',
-            '満月': '/images/moon/omote-4.png',
-            '十六夜': '/images/moon/omote-5.png',
-            '下弦の月': '/images/moon/omote-6.png',
-            '暁': '/images/moon/omote-7.png'
+            '新月': '/assets/images/moon/omote-0.png',
+            '三日月': '/assets/images/moon/omote-1.png',
+            '上弦の月': '/assets/images/moon/omote-2.png',
+            '十三夜': '/assets/images/moon/omote-3.png',
+            '満月': '/assets/images/moon/omote-4.png',
+            '十六夜': '/assets/images/moon/omote-5.png',
+            '下弦の月': '/assets/images/moon/omote-6.png',
+            '暁': '/assets/images/moon/omote-7.png'
         };
         
         if (moonPhaseImg && phaseImages[pattern.moonPhase]) {
@@ -184,14 +184,14 @@ async function updateMoonPhaseContent(patternId) {
         
         // 裏月相に応じた画像を設定
         const hiddenPhaseImages = {
-            '新月': '/images/moon/ura-0.png',
-            '三日月': '/images/moon/ura-1.png',
-            '上弦の月': '/images/moon/ura-2.png',
-            '十三夜': '/images/moon/ura-3.png',
-            '満月': '/images/moon/ura-4.png',
-            '十六夜': '/images/moon/ura-5.png',
-            '下弦の月': '/images/moon/ura-6.png',
-            '暁': '/images/moon/ura-7.png'
+            '新月': '/assets/images/moon/ura-0.png',
+            '三日月': '/assets/images/moon/ura-1.png',
+            '上弦の月': '/assets/images/moon/ura-2.png',
+            '十三夜': '/assets/images/moon/ura-3.png',
+            '満月': '/assets/images/moon/ura-4.png',
+            '十六夜': '/assets/images/moon/ura-5.png',
+            '下弦の月': '/assets/images/moon/ura-6.png',
+            '暁': '/assets/images/moon/ura-7.png'
         };
         
         if (hiddenPhaseImg && hiddenPhaseImages[pattern.hiddenPhase]) {
@@ -298,7 +298,7 @@ async function updateMoonPhaseContent(patternId) {
             const englishKey = mapper ? mapper.getEnglishKey('emotionalExpression', profile.emotionalExpression) : profile.emotionalExpression;
             
             if (img) {
-                img.src = `/images/love-types/emotional/${englishKey}.png`;
+                img.src = `/assets/images/love-types/emotional/${englishKey}.png`;
                 img.alt = japaneseName;
             }
             if (label) {
@@ -321,7 +321,7 @@ async function updateMoonPhaseContent(patternId) {
             const englishKey = mapper ? mapper.getEnglishKey('distanceStyle', profile.distanceStyle) : profile.distanceStyle;
             
             if (img) {
-                img.src = `/images/love-types/distance/${englishKey}.png`;
+                img.src = `/assets/images/love-types/distance/${englishKey}.png`;
                 img.alt = japaneseName;
             }
             if (label) {
@@ -344,7 +344,7 @@ async function updateMoonPhaseContent(patternId) {
             const englishKey = mapper ? mapper.getEnglishKey('loveValues', profile.loveValues) : profile.loveValues;
             
             if (img) {
-                img.src = `/images/love-types/values/${englishKey}.png`;
+                img.src = `/assets/images/love-types/values/${englishKey}.png`;
                 img.alt = japaneseName;
             }
             if (label) {
@@ -367,7 +367,7 @@ async function updateMoonPhaseContent(patternId) {
             const englishKey = mapper ? mapper.getEnglishKey('energyType', profile.loveEnergy) : profile.loveEnergy;
             
             if (img) {
-                img.src = `/images/love-types/energy/${englishKey}.png`;
+                img.src = `/assets/images/love-types/energy/${englishKey}.png`;
                 img.alt = japaneseName;
             }
             if (label) {
@@ -413,14 +413,14 @@ async function updateSixElements(patternId, moonPhase, hiddenMoonPhase, profile 
         const moonImg = moonPhaseElement.querySelector('img');
         const moonLabel = moonPhaseElement.querySelectorAll('span')[1]; // bottom label
         const phaseImages = {
-            '新月': '/images/moon/omote-0.png',
-            '三日月': '/images/moon/omote-1.png',
-            '上弦の月': '/images/moon/omote-2.png',
-            '十三夜': '/images/moon/omote-3.png',
-            '満月': '/images/moon/omote-4.png',
-            '十六夜': '/images/moon/omote-5.png',
-            '下弦の月': '/images/moon/omote-6.png',
-            '暁': '/images/moon/omote-7.png'
+            '新月': '/assets/images/moon/omote-0.png',
+            '三日月': '/assets/images/moon/omote-1.png',
+            '上弦の月': '/assets/images/moon/omote-2.png',
+            '十三夜': '/assets/images/moon/omote-3.png',
+            '満月': '/assets/images/moon/omote-4.png',
+            '十六夜': '/assets/images/moon/omote-5.png',
+            '下弦の月': '/assets/images/moon/omote-6.png',
+            '暁': '/assets/images/moon/omote-7.png'
         };
         if (moonImg && phaseImages[displayMoonPhase]) {
             moonImg.src = phaseImages[displayMoonPhase];
@@ -437,14 +437,14 @@ async function updateSixElements(patternId, moonPhase, hiddenMoonPhase, profile 
         const hiddenImg = hiddenPhaseElement.querySelector('img');
         const hiddenLabel = hiddenPhaseElement.querySelectorAll('span')[1]; // bottom label
         const hiddenImages = {
-            '新月': '/images/moon/ura-0.png',
-            '三日月': '/images/moon/ura-1.png',
-            '上弦の月': '/images/moon/ura-2.png',
-            '十三夜': '/images/moon/ura-3.png',
-            '満月': '/images/moon/ura-4.png',
-            '十六夜': '/images/moon/ura-5.png',
-            '下弦の月': '/images/moon/ura-6.png',
-            '暁': '/images/moon/ura-7.png'
+            '新月': '/assets/images/moon/ura-0.png',
+            '三日月': '/assets/images/moon/ura-1.png',
+            '上弦の月': '/assets/images/moon/ura-2.png',
+            '十三夜': '/assets/images/moon/ura-3.png',
+            '満月': '/assets/images/moon/ura-4.png',
+            '十六夜': '/assets/images/moon/ura-5.png',
+            '下弦の月': '/assets/images/moon/ura-6.png',
+            '暁': '/assets/images/moon/ura-7.png'
         };
         if (hiddenImg && hiddenImages[displayHiddenPhase]) {
             hiddenImg.src = hiddenImages[displayHiddenPhase];
@@ -487,7 +487,7 @@ async function updateSixElements(patternId, moonPhase, hiddenMoonPhase, profile 
                 label.textContent = displayName;
             }
             if (img) {
-                img.src = `/images/love-types/emotional/${imageName}.png`;
+                img.src = `/assets/images/love-types/emotional/${imageName}.png`;
                 img.alt = displayName;
             }
         }
@@ -515,7 +515,7 @@ async function updateSixElements(patternId, moonPhase, hiddenMoonPhase, profile 
                 label.textContent = displayName;
             }
             if (img) {
-                img.src = `/images/love-types/distance/${imageName}.png`;
+                img.src = `/assets/images/love-types/distance/${imageName}.png`;
                 img.alt = displayName;
             }
         }
@@ -543,7 +543,7 @@ async function updateSixElements(patternId, moonPhase, hiddenMoonPhase, profile 
                 label.textContent = displayName;
             }
             if (img) {
-                img.src = `/images/love-types/values/${imageName}.png`;
+                img.src = `/assets/images/love-types/values/${imageName}.png`;
                 img.alt = displayName;
             }
         }
@@ -571,7 +571,7 @@ async function updateSixElements(patternId, moonPhase, hiddenMoonPhase, profile 
                 label.textContent = displayName;
             }
             if (img) {
-                img.src = `/images/love-types/energy/${imageName}.png`;
+                img.src = `/assets/images/love-types/energy/${imageName}.png`;
                 img.alt = displayName;
             }
         }
@@ -589,7 +589,7 @@ async function updateSixElements(patternId, moonPhase, hiddenMoonPhase, profile 
             const img = emotionalElement.querySelector('img');
             if (label) label.textContent = 'ストレート告白型';
             if (img) {
-                img.src = '/images/love-types/emotional/straight.png';
+                img.src = '/assets/images/love-types/emotional/straight.png';
                 img.alt = 'ストレート告白型';
             }
         }
@@ -600,7 +600,7 @@ async function updateSixElements(patternId, moonPhase, hiddenMoonPhase, profile 
             const img = distanceElement.querySelector('img');
             if (label) label.textContent = '安心セーフ型';
             if (img) {
-                img.src = '/images/love-types/distance/moderate.png';
+                img.src = '/assets/images/love-types/distance/moderate.png';
                 img.alt = '安心セーフ型';
             }
         }
@@ -611,7 +611,7 @@ async function updateSixElements(patternId, moonPhase, hiddenMoonPhase, profile 
             const img = valuesElement.querySelector('img');
             if (label) label.textContent = 'ロマンチスト型';
             if (img) {
-                img.src = '/images/love-types/values/romantic.png';
+                img.src = '/assets/images/love-types/values/romantic.png';
                 img.alt = 'ロマンチスト型';
             }
         }
@@ -622,7 +622,7 @@ async function updateSixElements(patternId, moonPhase, hiddenMoonPhase, profile 
             const img = energyElement.querySelector('img');
             if (label) label.textContent = '燃え上がり型';
             if (img) {
-                img.src = '/images/love-types/energy/intense.png';
+                img.src = '/assets/images/love-types/energy/intense.png';
                 img.alt = '燃え上がり型';
             }
         }
@@ -661,7 +661,7 @@ async function updatePersonalityDisplay(profile) {
         const emotionalImg = document.querySelector('.love-type-card:nth-child(1) img');
         if (emotionalImg) {
             const imageName = emotionalMapping[profile.emotionalExpression] ? profile.emotionalExpression : 'straight';
-            emotionalImg.src = `/images/love-types/emotional/${imageName}.png`;
+            emotionalImg.src = `/assets/images/love-types/emotional/${imageName}.png`;
         }
     }
     
@@ -684,7 +684,7 @@ async function updatePersonalityDisplay(profile) {
         const distanceImg = document.querySelector('.love-type-card:nth-child(2) img');
         if (distanceImg) {
             const imageName = distanceMapping[profile.distanceStyle] ? profile.distanceStyle : 'moderate';
-            distanceImg.src = `/images/love-types/distance/${imageName}.png`;
+            distanceImg.src = `/assets/images/love-types/distance/${imageName}.png`;
         }
     }
     
@@ -707,7 +707,7 @@ async function updatePersonalityDisplay(profile) {
         const valuesImg = document.querySelector('.love-type-card:nth-child(3) img');
         if (valuesImg) {
             const imageName = valuesMapping[profile.loveValues] ? profile.loveValues : 'romantic';
-            valuesImg.src = `/images/love-types/values/${imageName}.png`;
+            valuesImg.src = `/assets/images/love-types/values/${imageName}.png`;
         }
     }
     
@@ -730,7 +730,7 @@ async function updatePersonalityDisplay(profile) {
         const energyImg = document.querySelector('.love-type-card:nth-child(4) img');
         if (energyImg) {
             const imageName = energyMapping[profile.loveEnergy] ? profile.loveEnergy : 'intense';
-            energyImg.src = `/images/love-types/energy/${imageName}.png`;
+            energyImg.src = `/assets/images/love-types/energy/${imageName}.png`;
         }
     }
 }
