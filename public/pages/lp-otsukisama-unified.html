@@ -1433,10 +1433,10 @@
                 const purchaseButton = document.getElementById('purchaseButton');
                 if (purchaseButton) {
                     purchaseButton.addEventListener('click', async () => {
-                        // 決済選択画面へリダイレクト
+                        // PAY.JP Checkout画面へリダイレクト
                         const diagnosisId = urlParams.get('id');
                         const userId = urlParams.get('userId');
-                        window.location.href = `/payment-select.html?id=${diagnosisId}&userId=${userId || ''}`;
+                        window.location.href = `/pages/payment-checkout.html?id=${diagnosisId}&userId=${userId || ''}`;
                     });
                 }
 
@@ -1708,8 +1708,8 @@
             const diagnosisId = urlParams.get('id');
             const userId = window.currentUserId || 'anonymous';
 
-            // PayPay決済画面へリダイレクト
-            window.location.href = `/payment-select.html?id=${diagnosisId}&userId=${userId}`;
+            // PAY.JP Checkout画面へリダイレクト
+            window.location.href = `/pages/payment-checkout.html?id=${diagnosisId}&userId=${userId}`;
         }
 
         // DOMロード後に初期化

@@ -314,7 +314,8 @@
         </div>
         
         <div class="payment-options">
-            <!-- PayPay -->
+            <!-- PayPay（一時的に非表示） -->
+            <!-- 
             <div class="payment-option recommended" onclick="selectPayment('paypay')">
                 <div class="recommended-badge">おすすめ</div>
                 <div class="payment-header">
@@ -330,9 +331,11 @@
                     <span class="feature-tag">🎁 ポイント還元</span>
                 </div>
             </div>
+            -->
             
             <!-- クレジットカード (PAY.JP) -->
-            <div class="payment-option" onclick="selectPayment('payjp')">
+            <div class="payment-option recommended" onclick="selectPayment('payjp')">
+                <div class="recommended-badge">おすすめ</div>
                 <div class="payment-header">
                     <div class="payment-logo credit-logo">カード決済</div>
                     <div class="payment-title">
@@ -515,27 +518,10 @@
             
             try {
                 if (method === 'paypay') {
-                    // PayPay決済APIを呼び出し（最終版）
-                    const response = await fetch('/api/create-paypay-session-final', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            diagnosisId: diagnosisId,
-                            userId: userId || ''
-                        })
-                    });
-                    
-                    const data = await response.json();
-                    
-                    if (data.success && data.redirectUrl) {
-                        // 決済監視を開始
-                        startPaymentPolling();
-                        
-                        // PayPayページへリダイレクト
-                        window.location.href = data.redirectUrl;
-                    } else {
-                        throw new Error(data.error || 'PayPay決済の開始に失敗しました');
-                    }
+                    // PayPay決済は一時的に無効化
+                    alert('PayPay決済は現在メンテナンス中です。クレジットカード決済をご利用ください。');
+                    document.getElementById('loadingOverlay').style.display = 'none';
+                    return;
                     
                 } else if (method === 'payjp') {
                     // PAY.JP クレジットカード決済（Elements）

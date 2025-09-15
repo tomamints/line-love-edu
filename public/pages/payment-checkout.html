@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>お支払い | おつきさま診断</title>
+    
+    <!-- PAY.JP Checkout -->
+    <script src="https://checkout.pay.jp/"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #1a0033 0%, #2d1b69 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+        }
+        
+        .logo {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+        
+        .title {
+            font-size: 24px;
+            color: #ffd700;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 30px;
+        }
+        
+        .price-box {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .price-label {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 10px;
+        }
+        
+        .price {
+            font-size: 36px;
+            font-weight: bold;
+            color: #ffd700;
+            margin-bottom: 10px;
+        }
+        
+        .price-note {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .payment-button {
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            color: #1a0033;
+            border: none;
+            padding: 18px 40px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            max-width: 300px;
+        }
+        
+        .payment-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.3);
+        }
+        
+        .payment-button:disabled {
+            background: #666;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .features {
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .feature {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .feature-icon {
+            margin-right: 10px;
+            font-size: 18px;
+        }
+        
+        .back-link {
+            margin-top: 20px;
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.3s;
+        }
+        
+        .back-link:hover {
+            color: #ffd700;
+        }
+        
+        .loading {
+            display: none;
+            margin-top: 20px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+        
+        .error-message {
+            display: none;
+            background: rgba(255, 0, 0, 0.1);
+            border: 1px solid rgba(255, 0, 0, 0.3);
+            color: #ff6b6b;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+        
+        .success-message {
+            display: none;
+            background: rgba(0, 255, 0, 0.1);
+            border: 1px solid rgba(0, 255, 0, 0.3);
+            color: #51cf66;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">🌙</div>
+        <h1 class="title">おつきさま診断 完全版</h1>
+        <p class="subtitle">安全な決済でご購入いただけます</p>
+        
+        <div class="price-box">
+            <div class="price-label">お支払い金額</div>
+            <div class="price">¥2,980</div>
+            <div class="price-note">（税込）</div>
+        </div>
+        
+        <button id="checkout-button" class="payment-button">
+            クレジットカードで支払う
+        </button>
+        
+        <div class="loading" id="loading">
+            処理中です...
+        </div>
+        
+        <div class="error-message" id="error-message"></div>
+        <div class="success-message" id="success-message"></div>
+        
+        <div class="features">
+            <div class="feature">
+                <span class="feature-icon">🔒</span>
+                <span>SSL暗号化通信で安全</span>
+            </div>
+            <div class="feature">
+                <span class="feature-icon">💳</span>
+                <span>主要クレジットカード対応</span>
+            </div>
+            <div class="feature">
+                <span class="feature-icon">⚡</span>
+                <span>即時決済・すぐに結果確認</span>
+            </div>
+        </div>
+        
+        <a href="#" class="back-link" onclick="history.back(); return false;">
+            ← 前のページに戻る
+        </a>
+    </div>
+    
+    <script>
+        // URLパラメータを取得
+        const urlParams = new URLSearchParams(window.location.search);
+        const diagnosisId = urlParams.get('id');
+        const userId = urlParams.get('userId');
+        
+        // エラー表示
+        function showError(message) {
+            const errorEl = document.getElementById('error-message');
+            errorEl.textContent = message;
+            errorEl.style.display = 'block';
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('checkout-button').disabled = false;
+        }
+        
+        // 成功表示
+        function showSuccess(message) {
+            const successEl = document.getElementById('success-message');
+            successEl.textContent = message;
+            successEl.style.display = 'block';
+        }
+        
+        // 決済処理
+        async function processPayment(token) {
+            try {
+                document.getElementById('loading').style.display = 'block';
+                document.getElementById('checkout-button').disabled = true;
+                
+                // サーバーに決済リクエストを送信
+                const response = await fetch('/api/payjp-create-charge', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        token: token.id,
+                        diagnosisId: diagnosisId,
+                        userId: userId,
+                        amount: 2980
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showSuccess('決済が完了しました！診断結果ページへ戻ります...');
+                    
+                    // 3秒後に診断結果ページへリダイレクト
+                    setTimeout(() => {
+                        const redirectUrl = `/pages/lp-otsukisama-unified.html?id=${diagnosisId}&userId=${userId || ''}&paid=true`;
+                        window.location.href = redirectUrl;
+                    }, 2000);
+                } else {
+                    showError(result.error || '決済処理中にエラーが発生しました');
+                }
+            } catch (error) {
+                console.error('Payment error:', error);
+                showError('決済処理中にエラーが発生しました。もう一度お試しください。');
+            }
+        }
+        
+        // PAY.JP Checkout設定
+        document.getElementById('checkout-button').addEventListener('click', function() {
+            if (!diagnosisId) {
+                showError('診断IDが見つかりません。診断結果ページから再度お試しください。');
+                return;
+            }
+            
+            // PAY.JP公開鍵（テスト環境）
+            const publicKey = 'pk_test_0383a1b8f91e8a6e3ea0e2a9';
+            
+            // PAY.JP Checkoutを起動
+            const handler = Payjp(publicKey);
+            
+            handler.checkout({
+                tenant: 'otsukisama', // テナントID（オプション）
+                amount: 2980,
+                currency: 'jpy',
+                name: 'おつきさま診断 完全版',
+                description: `診断ID: ${diagnosisId}`,
+                email: '', // メールアドレス（オプション）
+                lang: 'ja',
+                submitText: '支払う',
+                errorLanguage: 'ja',
+                onCreated: function(token) {
+                    // トークン作成成功時の処理
+                    console.log('Token created:', token);
+                    processPayment(token);
+                },
+                onFailed: function(error) {
+                    // エラー時の処理
+                    console.error('Checkout failed:', error);
+                    showError('決済処理がキャンセルされました。');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
