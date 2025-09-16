@@ -275,10 +275,12 @@
             const publicKey = 'pk_test_0383a1b8f91e8a6e3ea0e2a9';
             
             // PAY.JP Checkoutを起動
-            const handler = Payjp(publicKey);
+            const payjpCheckout = Payjp.Checkout({
+                publicKey: publicKey,
+                tenant: 'otsukisama' // テナントID（オプション）
+            });
             
-            handler.checkout({
-                tenant: 'otsukisama', // テナントID（オプション）
+            payjpCheckout.open({
                 amount: 2980,
                 currency: 'jpy',
                 name: 'おつきさま診断 完全版',
@@ -287,6 +289,8 @@
                 lang: 'ja',
                 submitText: '支払う',
                 errorLanguage: 'ja',
+                applePay: true, // Apple Payを有効化
+                googlePay: true, // Google Payを有効化
                 onCreated: function(token) {
                     // トークン作成成功時の処理
                     console.log('Token created:', token);
