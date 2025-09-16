@@ -1217,11 +1217,27 @@
 
                         // テストモードの確認（test=trueパラメータがある場合は権限をバイパス）
                         const isTestMode = urlParams.get('test') === 'true';
+                        
+                        // 決済完了パラメータの確認（paid=trueの場合は完全版を表示）
+                        const hasPaidParam = urlParams.get('paid') === 'true';
+                        if (hasPaidParam) {
+                            console.log('✅ 決済完了: paid=trueパラメータを検出しました');
+                        }
 
-                        // アクセスレベルに基づいてモードを設定（テストモードの場合は常にfull）
-                        const isPaid = isTestMode ? true : (data.accessLevel === 'full');
+                        // アクセスレベルに基づいてモードを設定
+                        // 優先順位: 1. paid=true, 2. test=true, 3. APIのaccessLevel
+                        const isPaid = hasPaidParam || isTestMode || (data.accessLevel === 'full');
                         const mode = setDisplayMode(isPaid);
                         window.currentMode = mode;  // グローバルに保存
+
+                        // デバッグ情報
+                        console.log('表示モード決定:', {
+                            hasPaidParam,
+                            isTestMode,
+                            accessLevel: data.accessLevel,
+                            isPaid,
+                            mode
+                        });
 
                         // テストモードの場合は警告表示
                         if (isTestMode) {
