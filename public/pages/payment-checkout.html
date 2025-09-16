@@ -6,7 +6,6 @@
     <title>お支払い | おつきさま診断</title>
     
     <!-- PAY.JP Checkout -->
-    <script src="https://checkout.pay.jp/"></script>
     
     <style>
         * {
@@ -172,9 +171,22 @@
             <div class="price-note">（税込）</div>
         </div>
         
-        <button id="checkout-button" class="payment-button">
-            クレジットカードで支払う
-        </button>
+        <form action="#" method="POST">
+            <script
+                type="text/javascript"
+                src="https://checkout.pay.jp/"
+                class="payjp-button"
+                data-key="pk_test_0383a1b8f91e8a6e3ea0e2a9"
+                data-text="クレジットカードで支払う"
+                data-submit-text="支払う"
+                data-partial="true"
+                data-payjp-tenant="otsukisama"
+                data-payjp-amount="2980"
+                data-payjp-currency="jpy"
+                data-payjp-name="おつきさま診断 完全版"
+                data-payjp-lang="ja">
+            </script>
+        </form>
         
         <div class="loading" id="loading">
             処理中です...
@@ -264,45 +276,38 @@
             }
         }
         
-        // PAY.JP Checkout設定
-        document.getElementById('checkout-button').addEventListener('click', function() {
-            if (!diagnosisId) {
-                showError('診断IDが見つかりません。診断結果ページから再度お試しください。');
-                return;
-            }
-            
-            // PAY.JP公開鍵（テスト環境）
-            const publicKey = 'pk_test_0383a1b8f91e8a6e3ea0e2a9';
-            
-            // PAY.JP Checkoutを起動
-            const payjpCheckout = Payjp.Checkout({
-                publicKey: publicKey,
-                tenant: 'otsukisama' // テナントID（オプション）
-            });
-            
-            payjpCheckout.open({
-                amount: 2980,
-                currency: 'jpy',
-                name: 'おつきさま診断 完全版',
-                description: `診断ID: ${diagnosisId}`,
-                email: '', // メールアドレス（オプション）
-                lang: 'ja',
-                submitText: '支払う',
-                errorLanguage: 'ja',
-                applePay: true, // Apple Payを有効化
-                googlePay: true, // Google Payを有効化
-                onCreated: function(token) {
-                    // トークン作成成功時の処理
-                    console.log('Token created:', token);
-                    processPayment(token);
-                },
-                onFailed: function(error) {
-                    // エラー時の処理
-                    console.error('Checkout failed:', error);
-                    showError('決済処理がキャンセルされました。');
+        // PAY.JP Checkoutのコールバック設定
+        window.addEventListener('DOMContentLoaded', function() {
+            // スクリプトタグを動的に設定
+            const scripts = document.querySelectorAll('script.payjp-button');
+            if (scripts.length > 0) {
+                const script = scripts[0];
+                
+                // 診断IDを動的に設定
+                if (diagnosisId) {
+                    script.setAttribute('data-payjp-description', `診断ID: ${diagnosisId}`);
                 }
-            });
+                
+                // コールバック関数を設定
+                script.setAttribute('data-payjp-on-created', 'handlePayjpToken');
+                script.setAttribute('data-payjp-on-failed', 'handlePayjpError');
+            }
         });
+        
+        // トークン作成成功時の処理
+        window.handlePayjpToken = function(response) {
+            console.log('Token created:', response);
+            const token = {
+                id: response.id
+            };
+            processPayment(token);
+        };
+        
+        // エラー時の処理
+        window.handlePayjpError = function(error) {
+            console.error('Checkout failed:', error);
+            showError('決済処理がキャンセルされました。');
+        };
     </script>
 </body>
 </html>
