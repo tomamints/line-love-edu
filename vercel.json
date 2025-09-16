@@ -58,6 +58,10 @@
       "destination": "/pages/payment-method-choice.html"
     },
     {
+      "source": "/payment-applepay.html",
+      "destination": "/pages/payment-applepay.html"
+    },
+    {
       "source": "/payment-method-select.html",
       "destination": "/pages/payment-method-select.html"
     },

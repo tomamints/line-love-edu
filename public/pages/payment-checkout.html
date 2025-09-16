@@ -171,7 +171,7 @@
             <div class="price-note">（税込）</div>
         </div>
         
-        <form action="#" method="POST">
+        <form action="#" method="POST" id="paymentForm">
             <script
                 type="text/javascript"
                 src="https://checkout.pay.jp/"
@@ -278,6 +278,14 @@
         
         // PAY.JP Checkoutのコールバック設定
         window.addEventListener('DOMContentLoaded', function() {
+            // ページロード後、自動的にCheckoutボタンをクリック
+            setTimeout(function() {
+                const checkoutButton = document.querySelector('.payjp-button-inner');
+                if (checkoutButton) {
+                    checkoutButton.click();
+                }
+            }, 500);
+            
             // スクリプトタグを動的に設定
             const scripts = document.querySelectorAll('script.payjp-button');
             if (scripts.length > 0) {
