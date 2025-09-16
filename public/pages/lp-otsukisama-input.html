@@ -271,7 +271,7 @@
                     if (result.success && result.diagnosisId) {
                         // データベースに保存されたIDを使用してプレビューページへ
                         const userParam = userId ? `&userId=${userId}` : '';
-                        window.location.href = `/lp-otsukisama-unified.html?id=${result.diagnosisId}${userParam}`;
+                        window.location.href = `/pages/lp-otsukisama-unified.html?id=${result.diagnosisId}${userParam}`;
                         return;
                     } else {
                         // APIが失敗した場合のフォールバック
@@ -292,7 +292,7 @@
                 
                 // プレビューページへ遷移
                 const diagnosisId = `temp_${Date.now()}`;
-                window.location.href = `/lp-otsukisama-unified.html?id=${diagnosisId}`;
+                window.location.href = `/pages/lp-otsukisama-unified.html?id=${diagnosisId}`;
                 
             } catch (error) {
                 console.error('診断データの保存に失敗しました:', error);

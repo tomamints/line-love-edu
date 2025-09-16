@@ -89,7 +89,7 @@
             if (userId) {
                 // ユーザーIDがある場合はそれを使用してリダイレクト
                 console.log('ユーザーID検出:', userId);
-                window.location.href = `/moon-tarot.html?userId=${userId}`;
+                window.location.href = `/pages/moon-tarot.html?userId=${userId}`;
             } else if (isLineApp) {
                 // LINE内だがIDがない場合、説明メッセージを表示
                 document.querySelector('.message').innerHTML = `
@@ -103,7 +103,7 @@
                     <p>1. トップページから「おつきさま診断」を選択</p>
                     <p>2. 診断を完了すると設定が保存されます</p>
                     <p>3. 次回からこのメニューが使えるようになります</p>
-                    <a href="/" class="button">トップページへ</a>
+                    <a href="/pages/index.html" class="button">トップページへ</a>
                 `;
             } else {
                 // LINE外からのアクセス
