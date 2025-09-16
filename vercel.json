@@ -50,6 +50,10 @@
       "destination": "/pages/payment-select.html"
     },
     {
+      "source": "/payment-select-new.html",
+      "destination": "/pages/payment-select-new.html"
+    },
+    {
       "source": "/payment-method-select.html",
       "destination": "/pages/payment-method-select.html"
     },

@@ -1436,7 +1436,7 @@
                         // PAY.JP Checkout画面へリダイレクト
                         const diagnosisId = urlParams.get('id');
                         const userId = urlParams.get('userId');
-                        window.location.href = `/pages/payment-checkout.html?id=${diagnosisId}&userId=${userId || ''}`;
+                        window.location.href = `/pages/payment-select-new.html?id=${diagnosisId}&userId=${userId || ''}`;
                     });
                 }
 
@@ -1709,7 +1709,7 @@
             const userId = window.currentUserId || 'anonymous';
 
             // PAY.JP Checkout画面へリダイレクト
-            window.location.href = `/pages/payment-checkout.html?id=${diagnosisId}&userId=${userId}`;
+            window.location.href = `/pages/payment-select-new.html?id=${diagnosisId}&userId=${userId}`;
         }
 
         // DOMロード後に初期化
