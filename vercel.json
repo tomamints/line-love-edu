@@ -62,6 +62,14 @@
       "destination": "/pages/payment-applepay.html"
     },
     {
+      "source": "/moon-tarot-admin.html",
+      "destination": "/pages/moon-tarot-admin.html"
+    },
+    {
+      "source": "/moon-fortune-result.html",
+      "destination": "/pages/moon-fortune-result.html"
+    },
+    {
       "source": "/payment-method-select.html",
       "destination": "/pages/payment-method-select.html"
     },
