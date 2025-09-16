@@ -89,12 +89,22 @@
             display: block;
             text-decoration: none;
             color: inherit;
+            -webkit-tap-highlight-color: rgba(255, 215, 0, 0.3);
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
         }
         
         .payment-method:hover {
             background: rgba(255, 255, 255, 0.1);
             border-color: rgba(255, 215, 0, 0.5);
             transform: translateY(-2px);
+        }
+        
+        .payment-method:active {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 215, 0, 0.7);
+            transform: translateY(0);
         }
         
         .payment-method-header {
@@ -283,7 +293,7 @@
             </div>
             
             <!-- Credit Card -->
-            <div class="payment-method" id="creditCardMethod">
+            <div class="payment-method" id="creditCardMethod" style="cursor: pointer;">
                 <div class="payment-method-header">
                     <div class="payment-method-info">
                         <div class="payment-method-icon">💳</div>
@@ -481,16 +491,42 @@
         
         // クレジットカード決済の初期化
         function initializeCreditCard() {
-            // クレジットカードメソッドをクリックしたらCheckoutを表示
-            document.getElementById('creditCardMethod').addEventListener('click', function() {
-                // PAY.JP Checkoutボタンを自動クリック
+            const creditCardMethod = document.getElementById('creditCardMethod');
+            
+            // モバイル対応: clickとtouchendイベント両方に対応
+            function handleCreditCardClick(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                console.log('Credit card method clicked/touched');
+                
+                // PAY.JP Checkoutボタンを探して自動クリック
                 setTimeout(() => {
                     const checkoutButton = document.querySelector('.payjp-button-inner');
+                    console.log('Checkout button found:', checkoutButton);
+                    
                     if (checkoutButton) {
+                        // モバイル対応: TouchEventをシミュレート
+                        if ('ontouchstart' in window) {
+                            const touchEvent = new TouchEvent('touchend', {
+                                bubbles: true,
+                                cancelable: true,
+                                view: window
+                            });
+                            checkoutButton.dispatchEvent(touchEvent);
+                        }
                         checkoutButton.click();
+                        console.log('Checkout button clicked');
+                    } else {
+                        console.error('Checkout button not found');
+                        showError('決済ボタンの初期化に失敗しました。ページを再読み込みしてください。');
                     }
-                }, 100);
-            });
+                }, 300); // タイミング調整
+            }
+            
+            // クレジットカードメソッドにイベントリスナーを追加
+            creditCardMethod.addEventListener('click', handleCreditCardClick);
+            creditCardMethod.addEventListener('touchend', handleCreditCardClick);
             
             // トークン作成成功時の処理（グローバル関数として定義）
             window.payjpTokenHandler = async function(response) {
@@ -541,6 +577,10 @@
         
         // 初期化
         window.addEventListener('DOMContentLoaded', async function() {
+            console.log('Payment selection page loaded');
+            console.log('User agent:', navigator.userAgent);
+            console.log('Touch device:', 'ontouchstart' in window);
+            
             if (!diagnosisId) {
                 showError('診断IDが見つかりません。診断結果ページから再度お試しください。');
                 return;
@@ -549,8 +589,37 @@
             // Apple Payを初期化（Safari のみ）
             await initializeApplePay();
             
-            // クレジットカード決済を初期化
-            initializeCreditCard();
+            // PAY.JP Checkoutスクリプトが読み込まれるまで待機
+            let retries = 0;
+            const maxRetries = 10;
+            
+            function checkAndInitialize() {
+                const checkoutScript = document.querySelector('script.payjp-button');
+                const checkoutButton = document.querySelector('.payjp-button-inner');
+                
+                console.log('Checking PAY.JP Checkout:', {
+                    scriptFound: !!checkoutScript,
+                    buttonFound: !!checkoutButton,
+                    retry: retries
+                });
+                
+                if (checkoutButton || retries >= maxRetries) {
+                    // クレジットカード決済を初期化
+                    initializeCreditCard();
+                    
+                    if (!checkoutButton && retries >= maxRetries) {
+                        console.error('PAY.JP Checkout button not found after retries');
+                        // 代替処理: フォームを表示
+                        document.getElementById('checkoutForm').style.display = 'block';
+                    }
+                } else {
+                    retries++;
+                    setTimeout(checkAndInitialize, 500);
+                }
+            }
+            
+            // 少し待ってからチェック開始
+            setTimeout(checkAndInitialize, 500);
         });
     </script>
 </body>
