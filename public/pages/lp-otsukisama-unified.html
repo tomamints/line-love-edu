@@ -1428,26 +1428,38 @@
                 }
             }
 
-            // プレビューモードの場合、購入ボタンの設定
-            if (window.currentMode !== 'complete') {
-                const purchaseButton = document.getElementById('purchaseButton');
-                if (purchaseButton) {
-                    console.log('購入ボタンにイベントリスナーを設定');
-                    purchaseButton.addEventListener('click', async () => {
-                        console.log('購入ボタンがクリックされました');
-                        // 決済選択ページへリダイレクト
-                        const currentUrlParams = new URLSearchParams(window.location.search);
-                        const diagnosisId = currentUrlParams.get('id');
-                        const userId = currentUrlParams.get('userId');
-                        console.log('リダイレクト先:', `/pages/payment-selection.html?id=${diagnosisId}&userId=${userId || ''}`);
-                        window.location.href = `/pages/payment-selection.html?id=${diagnosisId}&userId=${userId || ''}`;
-                    });
+            // プレビューモードの場合、購入ボタンの設定を遅延実行
+            setTimeout(() => {
+                console.log('現在のモード:', window.currentMode);
+                if (window.currentMode !== 'complete') {
+                    const purchaseButton = document.getElementById('purchaseButton');
+                    console.log('購入ボタン要素:', purchaseButton);
+                    if (purchaseButton) {
+                        console.log('購入ボタンにイベントリスナーを設定');
+                        // 既存のイベントリスナーをクリア
+                        const newButton = purchaseButton.cloneNode(true);
+                        purchaseButton.parentNode.replaceChild(newButton, purchaseButton);
+                        
+                        // 新しいイベントリスナーを設定
+                        newButton.addEventListener('click', function(e) {
+                            e.preventDefault();
+                            console.log('購入ボタンがクリックされました');
+                            // 決済選択ページへリダイレクト
+                            const currentUrlParams = new URLSearchParams(window.location.search);
+                            const diagnosisId = currentUrlParams.get('id');
+                            const userId = currentUrlParams.get('userId');
+                            const redirectUrl = `/pages/payment-selection.html?id=${diagnosisId}&userId=${userId || ''}`;
+                            console.log('リダイレクト先:', redirectUrl);
+                            window.location.href = redirectUrl;
+                        });
+                        console.log('イベントリスナー設定完了');
+                    } else {
+                        console.log('購入ボタンが見つかりません');
+                    }
                 } else {
-                    console.log('購入ボタンが見つかりません');
+                    console.log('完全版モードのため、購入ボタンは設定されません');
                 }
-            } else {
-                console.log('完全版モードのため、購入ボタンは設定されません');
-            }
+            }, 2000); // ページの読み込みを待つ
         }
 
         // 購入処理を実行する関数
