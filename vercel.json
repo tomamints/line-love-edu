@@ -22,6 +22,34 @@
       "destination": "/pages/lp-otsukisama-unified.html"
     },
     {
+      "source": "/lp-otsukisama-input.html",
+      "destination": "/pages/lp-otsukisama-input.html"
+    },
+    {
+      "source": "/moon-tarot.html",
+      "destination": "/pages/moon-tarot.html"
+    },
+    {
+      "source": "/moon-fortune.html",
+      "destination": "/pages/moon-fortune.html"
+    },
+    {
+      "source": "/tarot-redirect.html",
+      "destination": "/pages/tarot-redirect.html"
+    },
+    {
+      "source": "/diagnosis-history.html",
+      "destination": "/pages/diagnosis-history.html"
+    },
+    {
+      "source": "/payment-checkout.html",
+      "destination": "/pages/payment-checkout.html"
+    },
+    {
+      "source": "/payment-select.html",
+      "destination": "/pages/payment-select.html"
+    },
+    {
       "source": "/payment-method-select.html",
       "destination": "/pages/payment-method-select.html"
     },
