@@ -1432,88 +1432,12 @@
             if (window.currentMode !== 'complete') {
                 const purchaseButton = document.getElementById('purchaseButton');
                 if (purchaseButton) {
-                    // 既存のボタンを隠す
-                    purchaseButton.style.display = 'none';
-                    
-                    // PAY.JP Checkoutボタンを作成
-                    const checkoutContainer = document.createElement('div');
-                    checkoutContainer.style.textAlign = 'center';
-                    checkoutContainer.style.marginTop = '20px';
-                    
-                    const form = document.createElement('form');
-                    form.action = '#';
-                    form.method = 'POST';
-                    
-                    const script = document.createElement('script');
-                    script.type = 'text/javascript';
-                    script.src = 'https://checkout.pay.jp/';
-                    script.className = 'payjp-button';
-                    script.setAttribute('data-key', 'pk_test_0383a1b8f91e8a6e3ea0e2a9');
-                    script.setAttribute('data-text', '完全版を購入する（¥2,980）');
-                    script.setAttribute('data-submit-text', '支払う');
-                    script.setAttribute('data-partial', 'true');
-                    script.setAttribute('data-payjp-amount', '2980');
-                    script.setAttribute('data-payjp-currency', 'jpy');
-                    script.setAttribute('data-payjp-name', 'おつきさま診断 完全版');
-                    script.setAttribute('data-payjp-lang', 'ja');
-                    
-                    form.appendChild(script);
-                    checkoutContainer.appendChild(form);
-                    
-                    // ボタンの後ろに挿入
-                    purchaseButton.parentNode.insertBefore(checkoutContainer, purchaseButton.nextSibling);
-                    
-                    // トークン作成成功時の処理
-                    window.handlePayjpToken = async function(response) {
-                        console.log('Token created:', response);
+                    purchaseButton.addEventListener('click', async () => {
+                        // 決済選択ページへリダイレクト
                         const diagnosisId = urlParams.get('id');
                         const userId = urlParams.get('userId');
-                        
-                        // 決済処理
-                        try {
-                            const chargeResponse = await fetch('/api/payjp-create-charge', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                },
-                                body: JSON.stringify({
-                                    token: response.id,
-                                    diagnosisId: diagnosisId,
-                                    userId: userId,
-                                    amount: 2980
-                                })
-                            });
-                            
-                            const result = await chargeResponse.json();
-                            
-                            if (result.success) {
-                                // 成功したらページをリロード（paid=trueパラメータ付き）
-                                window.location.href = `/pages/lp-otsukisama-unified.html?id=${diagnosisId}&userId=${userId || ''}&paid=true`;
-                            } else {
-                                alert('決済処理中にエラーが発生しました: ' + (result.error || '不明なエラー'));
-                            }
-                        } catch (error) {
-                            console.error('Payment error:', error);
-                            alert('決済処理中にエラーが発生しました。もう一度お試しください。');
-                        }
-                    };
-                    
-                    // エラー時の処理
-                    window.handlePayjpError = function(error) {
-                        console.error('Checkout failed:', error);
-                        if (error.message) {
-                            alert('決済がキャンセルされました。');
-                        }
-                    };
-                    
-                    // コールバック関数を設定
-                    setTimeout(() => {
-                        const scriptTag = document.querySelector('script.payjp-button');
-                        if (scriptTag) {
-                            scriptTag.setAttribute('data-payjp-on-created', 'handlePayjpToken');
-                            scriptTag.setAttribute('data-payjp-on-failed', 'handlePayjpError');
-                        }
-                    }, 100);
+                        window.location.href = `/pages/payment-selection.html?id=${diagnosisId}&userId=${userId || ''}`;
+                    });
                 }
             }
         }
@@ -1779,19 +1703,12 @@
         }
 
         async function scrollToPayment() {
-            // PAY.JP Checkoutボタンを自動的にクリック
-            const checkoutButton = document.querySelector('.payjp-button-inner');
-            if (checkoutButton) {
-                checkoutButton.click();
-            } else {
-                // フォールバック: もしボタンが見つからない場合
-                alert('決済ボタンをクリックしてください。');
-                // 購入セクションまでスクロール
-                const purchaseSection = document.querySelector('.cta-section');
-                if (purchaseSection) {
-                    purchaseSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }
-            }
+            const urlParams = new URLSearchParams(window.location.search);
+            const diagnosisId = urlParams.get('id');
+            const userId = window.currentUserId || 'anonymous';
+
+            // 決済選択ページへリダイレクト
+            window.location.href = `/pages/payment-selection.html?id=${diagnosisId}&userId=${userId}`;
         }
 
         // DOMロード後に初期化
