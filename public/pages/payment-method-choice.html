@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>お支払い方法を選択 | おつきさま診断</title>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #1a0033 0%, #2d1b69 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 450px;
+            width: 100%;
+            text-align: center;
+        }
+        
+        .logo {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+        
+        .title {
+            font-size: 24px;
+            color: #ffd700;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 30px;
+        }
+        
+        .price-box {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .price-label {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 10px;
+        }
+        
+        .price {
+            font-size: 36px;
+            font-weight: bold;
+            color: #ffd700;
+            margin-bottom: 5px;
+        }
+        
+        .price-note {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .payment-methods {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .payment-option {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            text-decoration: none;
+            color: white;
+        }
+        
+        .payment-option:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: #ffd700;
+            transform: translateY(-2px);
+        }
+        
+        .payment-option.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+        
+        .payment-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .payment-icon {
+            font-size: 28px;
+        }
+        
+        .payment-text {
+            text-align: left;
+        }
+        
+        .payment-name {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 3px;
+        }
+        
+        .payment-desc {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .payment-badge {
+            background: #ffd700;
+            color: #1a0033;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+        
+        .features {
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .feature {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .feature-icon {
+            margin-right: 10px;
+            font-size: 18px;
+        }
+        
+        .back-link {
+            margin-top: 20px;
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.3s;
+            display: inline-block;
+        }
+        
+        .back-link:hover {
+            color: #ffd700;
+        }
+        
+        .error-message {
+            display: none;
+            background: rgba(255, 0, 0, 0.1);
+            border: 1px solid rgba(255, 0, 0, 0.3);
+            color: #ff6b6b;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">🌙</div>
+        <h1 class="title">お支払い方法を選択</h1>
+        <p class="subtitle">安全な決済でご購入いただけます</p>
+        
+        <div class="error-message" id="error-message"></div>
+        
+        <div class="price-box">
+            <div class="price-label">お支払い金額</div>
+            <div class="price">¥2,980</div>
+            <div class="price-note">（税込・買い切り）</div>
+        </div>
+        
+        <div class="payment-methods">
+            <a href="#" class="payment-option" id="creditCardOption">
+                <div class="payment-info">
+                    <div class="payment-icon">💳</div>
+                    <div class="payment-text">
+                        <div class="payment-name">クレジットカード</div>
+                        <div class="payment-desc">Visa / Mastercard / JCB / Amex</div>
+                    </div>
+                </div>
+                <div class="payment-badge">推奨</div>
+            </a>
+            
+            <a href="#" class="payment-option" id="applePayOption" style="display: none;">
+                <div class="payment-info">
+                    <div class="payment-icon">🍎</div>
+                    <div class="payment-text">
+                        <div class="payment-name">Apple Pay</div>
+                        <div class="payment-desc">Touch ID / Face IDで簡単決済</div>
+                    </div>
+                </div>
+            </a>
+            
+            <div class="payment-option disabled">
+                <div class="payment-info">
+                    <div class="payment-icon">📱</div>
+                    <div class="payment-text">
+                        <div class="payment-name">Google Pay</div>
+                        <div class="payment-desc">準備中</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="features">
+            <div class="feature">
+                <span class="feature-icon">🔒</span>
+                <span>SSL暗号化通信で安全</span>
+            </div>
+            <div class="feature">
+                <span class="feature-icon">⚡</span>
+                <span>即時決済・すぐに結果確認</span>
+            </div>
+        </div>
+        
+        <a href="#" class="back-link" onclick="history.back(); return false;">
+            ← 前のページに戻る
+        </a>
+    </div>
+    
+    <script>
+        // URLパラメータを取得
+        const urlParams = new URLSearchParams(window.location.search);
+        const diagnosisId = urlParams.get('id');
+        const userId = urlParams.get('userId');
+        
+        // エラー表示
+        function showError(message) {
+            const errorEl = document.getElementById('error-message');
+            errorEl.textContent = message;
+            errorEl.style.display = 'block';
+        }
+        
+        // パラメータチェック
+        if (!diagnosisId) {
+            showError('診断IDが見つかりません。診断結果ページから再度お試しください。');
+        }
+        
+        // クレジットカードオプションのリンク設定
+        const creditCardOption = document.getElementById('creditCardOption');
+        if (creditCardOption && diagnosisId) {
+            creditCardOption.href = `/pages/payment-checkout.html?id=${diagnosisId}&userId=${userId || ''}`;
+        }
+        
+        // Apple Pay対応チェック
+        if (window.ApplePaySession && ApplePaySession.canMakePayments()) {
+            const applePayOption = document.getElementById('applePayOption');
+            if (applePayOption) {
+                applePayOption.style.display = 'flex';
+                // Apple Pay用の専用ページへのリンク
+                applePayOption.href = `/pages/payment-applepay.html?id=${diagnosisId}&userId=${userId || ''}`;
+            }
+        }
+    </script>
+</body>
+</html>
