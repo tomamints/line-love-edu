@@ -82,6 +82,10 @@
       "destination": "/pages/payjp-payment.html"
     },
     {
+      "source": "/payment-universal.html",
+      "destination": "/pages/payment-universal.html"
+    },
+    {
       "source": "/index.html",
       "destination": "/pages/index.html"
     }
