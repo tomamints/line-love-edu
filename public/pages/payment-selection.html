@@ -318,7 +318,9 @@
                     data-payjp-amount="2980"
                     data-payjp-currency="jpy"
                     data-payjp-name="おつきさま診断 完全版"
-                    data-payjp-lang="ja">
+                    data-payjp-lang="ja"
+                    data-payjp-partial="true"
+                    data-payjp-token-name="payjp-token">
                 </script>
             </form>
         </div>
@@ -358,6 +360,52 @@
         const urlParams = new URLSearchParams(window.location.search);
         const diagnosisId = urlParams.get('id');
         const userId = urlParams.get('userId');
+        
+        // グローバル関数として定義（PAY.JP Checkoutのコールバック用）
+        window.payjpTokenHandler = async function(response) {
+            console.log('Token created:', response);
+            document.getElementById('loading').style.display = 'block';
+            
+            try {
+                const chargeResponse = await fetch('/api/payjp-create-charge', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        token: response.id,
+                        diagnosisId: diagnosisId,
+                        userId: userId || 'anonymous',
+                        amount: 2980
+                    })
+                });
+                
+                const result = await chargeResponse.json();
+                
+                if (result.success) {
+                    // 成功したら即座にリダイレクト
+                    window.location.href = `/pages/lp-otsukisama-unified.html?id=${diagnosisId}&userId=${userId || ''}&paid=true`;
+                } else {
+                    document.getElementById('errorMessage').textContent = result.error || '決済処理中にエラーが発生しました';
+                    document.getElementById('errorMessage').style.display = 'block';
+                    document.getElementById('loading').style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Payment error:', error);
+                document.getElementById('errorMessage').textContent = '決済処理中にエラーが発生しました。';
+                document.getElementById('errorMessage').style.display = 'block';
+                document.getElementById('loading').style.display = 'none';
+            }
+        };
+        
+        // エラー時の処理
+        window.payjpErrorHandler = function(statusCode, error) {
+            console.error('Checkout failed:', statusCode, error);
+            if (statusCode !== 'canceled') {
+                document.getElementById('errorMessage').textContent = '決済処理がキャンセルされました。';
+                document.getElementById('errorMessage').style.display = 'block';
+            }
+        };
         
         // PAY.JP設定
         const publicKey = 'pk_test_0383a1b8f91e8a6e3ea0e2a9';
@@ -528,44 +576,7 @@
             creditCardMethod.addEventListener('click', handleCreditCardClick);
             creditCardMethod.addEventListener('touchend', handleCreditCardClick);
             
-            // トークン作成成功時の処理（グローバル関数として定義）
-            window.payjpTokenHandler = async function(response) {
-                console.log('Token created:', response);
-                showLoading();
-                
-                try {
-                    const chargeResponse = await fetch('/api/payjp-create-charge', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            token: response.id,
-                            diagnosisId: diagnosisId,
-                            userId: userId || 'anonymous',
-                            amount: 2980
-                        })
-                    });
-                    
-                    const result = await chargeResponse.json();
-                    
-                    if (result.success) {
-                        // 成功したら即座にリダイレクト（待機なし）
-                        window.location.href = `/pages/lp-otsukisama-unified.html?id=${diagnosisId}&userId=${userId || ''}&paid=true`;
-                    } else {
-                        showError(result.error || '決済処理中にエラーが発生しました');
-                    }
-                } catch (error) {
-                    console.error('Payment error:', error);
-                    showError('決済処理中にエラーが発生しました。');
-                }
-            };
-            
-            // エラー時の処理
-            window.payjpErrorHandler = function(error) {
-                console.error('Checkout failed:', error);
-                // キャンセルの場合はメッセージを表示しない
-            };
+            // 重要: コールバック関数はinitializeCreditCard外で定義する必要があります
             
             // PAY.JP Checkout設定
             const scriptTag = document.querySelector('script.payjp-button');
