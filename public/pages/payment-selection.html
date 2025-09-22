@@ -471,11 +471,24 @@
         
         // Apple Pay初期化
         async function initializeApplePay() {
-            // Safari チェック
-            const isSafari = /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent);
+            // LINE内ブラウザ検出
+            const isLineInApp = /Line/i.test(navigator.userAgent);
+            console.log('LINE内ブラウザ:', isLineInApp);
+            console.log('User Agent:', navigator.userAgent);
             
-            if (!isSafari || !window.ApplePaySession || !ApplePaySession.canMakePayments()) {
-                // Apple Pay利用不可を表示
+            // ApplePaySession APIの存在確認（Safari制限を削除）
+            if (!window.ApplePaySession) {
+                console.log('ApplePaySession APIが利用できません');
+                document.getElementById('applePayNotAvailable').style.display = 'block';
+                return;
+            }
+            
+            // Apple Payが利用可能か確認
+            const canMakePayments = ApplePaySession.canMakePayments();
+            console.log('Apple Pay canMakePayments:', canMakePayments);
+            
+            if (!canMakePayments) {
+                console.log('このデバイスではApple Payが利用できません');
                 document.getElementById('applePayNotAvailable').style.display = 'block';
                 return;
             }
@@ -483,17 +496,22 @@
             try {
                 // PAY.JP初期化
                 payjp = Payjp(publicKey);
+                console.log('PAY.JP初期化完了');
                 
-                // Apple Pay可用性チェック
+                // PAY.JPのApple Pay可用性チェック（より正確）
                 const isAvailable = await payjp.applePay.checkAvailability();
+                console.log('PAY.JP Apple Pay checkAvailability:', isAvailable);
                 
                 if (isAvailable) {
                     // Apple Payボタンを表示
                     document.getElementById('applePayMethod').style.display = 'block';
                     document.getElementById('applePayNotAvailable').style.display = 'none';
+                    console.log('Apple Payボタンを表示しました');
                     
                     // Apple Payボタンクリック
                     document.getElementById('applePayButton').addEventListener('click', function() {
+                        console.log('Apple Payボタンがクリックされました');
+                        
                         const paymentRequest = {
                             countryCode: 'JP',
                             currencyCode: 'JPY',
@@ -505,35 +523,46 @@
                             merchantCapabilities: ['supports3DS']
                         };
                         
+                        console.log('Payment Request:', paymentRequest);
+                        
                         try {
                             const session = payjp.applePay.buildSession(
                                 paymentRequest,
                                 async function(result) {
+                                    console.log('Apple Pay成功:', result);
                                     await processPayment(result.token);
                                     session.completePayment(ApplePaySession.STATUS_SUCCESS);
                                 },
                                 function(error) {
-                                    console.error('Apple Pay error:', error);
-                                    showError('Apple Payでの決済に失敗しました。');
+                                    console.error('Apple Payエラー詳細:', error);
+                                    showError('Apple Payでの決済に失敗しました: ' + (error.message || error));
                                     if (session) {
                                         session.completePayment(ApplePaySession.STATUS_FAILURE);
                                     }
                                 }
                             );
                             
+                            console.log('Apple Payセッションを開始します');
                             session.begin();
                         } catch (error) {
-                            console.error('Apple Pay session error:', error);
-                            showError('Apple Payセッションの作成に失敗しました。');
+                            console.error('Apple Payセッションエラー詳細:', error);
+                            showError('Apple Payセッションの作成に失敗しました: ' + error.message);
                         }
                     });
                 } else {
                     // Apple Pay利用不可
+                    console.log('PAY.JP checkAvailabilityがfalseを返しました');
                     document.getElementById('applePayNotAvailable').style.display = 'block';
                 }
             } catch (error) {
-                console.error('Apple Pay initialization error:', error);
+                console.error('Apple Pay初期化エラー詳細:', error);
+                console.error('エラースタック:', error.stack);
                 document.getElementById('applePayNotAvailable').style.display = 'block';
+                
+                // LINE内ブラウザの場合は特別なメッセージ
+                if (isLineInApp) {
+                    console.log('LINE内ブラウザでのApple Payエラー - Safariで開くことを推奨');
+                }
             }
         }
         
