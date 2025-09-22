@@ -476,6 +476,39 @@
             console.log('LINE内ブラウザ:', isLineInApp);
             console.log('User Agent:', navigator.userAgent);
             
+            // LINE内ブラウザの場合は特別な処理
+            if (isLineInApp) {
+                // LINE内ブラウザではApple Payボタンの代わりに案内を表示
+                const applePayNotAvailable = document.getElementById('applePayNotAvailable');
+                if (applePayNotAvailable) {
+                    applePayNotAvailable.innerHTML = `
+                        <div class="payment-method-header">
+                            <div class="payment-method-info">
+                                <div class="payment-method-icon">🍎</div>
+                                <div class="payment-method-text">
+                                    <div class="payment-method-title">Apple Pay</div>
+                                    <div class="payment-method-desc">Safariで開いてご利用ください</div>
+                                </div>
+                            </div>
+                            <button onclick="openInSafari()" style="
+                                background: #007AFF;
+                                color: white;
+                                border: none;
+                                padding: 8px 16px;
+                                border-radius: 20px;
+                                font-size: 14px;
+                                cursor: pointer;
+                            ">Safariで開く</button>
+                        </div>
+                    `;
+                    applePayNotAvailable.style.display = 'block';
+                    applePayNotAvailable.style.opacity = '1';
+                    applePayNotAvailable.style.cursor = 'pointer';
+                }
+                // LINE内ブラウザではこれ以上処理しない
+                return;
+            }
+            
             // ApplePaySession APIの存在確認（Safari制限を削除）
             if (!window.ApplePaySession) {
                 console.log('ApplePaySession APIが利用できません');
@@ -614,6 +647,27 @@
                 scriptTag.setAttribute('data-payjp-on-failed', 'payjpErrorHandler');
             }
         }
+        
+        // Safariで開く関数
+        function openInSafari() {
+            const currentUrl = window.location.href;
+            // LINE内ブラウザから外部ブラウザを開く
+            // iOSの場合
+            if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+                // LINE内ブラウザから外部ブラウザへ
+                window.location.href = `x-safari-https://${currentUrl.replace(/^https?:\/\//, '')}`;
+                // フォールバック
+                setTimeout(() => {
+                    window.open(currentUrl, '_blank');
+                }, 500);
+            } else {
+                // Androidや他のデバイス
+                window.open(currentUrl, '_blank');
+            }
+        }
+        
+        // グローバルに公開
+        window.openInSafari = openInSafari;
         
         // 初期化
         window.addEventListener('DOMContentLoaded', async function() {
