@@ -59,7 +59,7 @@ function displayCardResult() {
                 <div class="card-image-container" style="text-align: center; margin: 30px auto;">
                     <img src="../assets/images/tarot-cards0924/${currentCard.id}.png"
                          alt="${currentCard.name}"
-                         style="max-width: 300px; width: 100%; height: auto; border-radius: 10px; box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5); ${!isUpright ? 'transform: rotate(180deg);' : ''}">
+                         style="max-width: 200px; width: 100%; height: auto; border-radius: 10px; box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5); ${!isUpright ? 'transform: rotate(180deg);' : ''}">
                 </div>
 
                 <!-- 意味 -->
