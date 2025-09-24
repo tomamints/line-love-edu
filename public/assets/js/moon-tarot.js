@@ -45,52 +45,52 @@ function displayCardResult() {
 
     // 結果表示エリアの作成
     const resultHTML = `
-        <div class="tarot-result-container" style="text-align: center; max-width: 500px; margin: 0 auto; padding-top: 20px;">
+        <div class="tarot-result-container" style="text-align: center; max-width: 500px; margin: 0 auto; padding-top: 10px;">
             <!-- メインコンテンツ -->
             <div class="tarot-content" style="text-align: center; max-width: 400px; margin: 0 auto;">
                 <!-- カードタイトル -->
-                <div class="card-title" style="text-align: center; margin-bottom: 20px;">
-                    <h2 style="color: #FFFFFF; text-shadow: 0 0 20px #ceb27c, 0 0 40px #ceb27c; margin-bottom: 10px; font-size: 24px;">
+                <div class="card-title" style="text-align: center; margin-bottom: 15px;">
+                    <h2 style="color: #FFFFFF; text-shadow: 0 0 20px #ceb27c, 0 0 40px #ceb27c; margin-bottom: 0; font-size: 22px;">
                         ${currentCard.number} ${currentCard.name}（${positionText}）
                     </h2>
                 </div>
 
                 <!-- カード画像 -->
-                <div class="card-image-container" style="text-align: center; margin: 20px auto;">
+                <div class="card-image-container" style="text-align: center; margin: 15px auto;">
                     <img src="../assets/images/tarot-cards0924/${currentCard.id}.webp"
                          alt="${currentCard.name}"
-                         style="max-width: 160px; width: 100%; height: auto; border-radius: 10px; box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5); ${!isUpright ? 'transform: rotate(180deg);' : ''}"
+                         style="max-width: 150px; width: 100%; height: auto; border-radius: 10px; box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5); ${!isUpright ? 'transform: rotate(180deg);' : ''}"
                          onerror="this.src='../assets/images/tarot-cards0924/${currentCard.id}.png'">
                 </div>
 
                 <!-- 意味 -->
-                <div class="card-section" style="text-align: center; margin-bottom: 20px;">
-                    <h3 style="color: #FFFFFF; text-shadow: 0 0 15px #ceb27c; margin-bottom: 10px; font-size: 16px;">【${cardData.meaning}】</h3>
-                    <p style="color: #FFFFFF; text-shadow: 0 0 10px rgba(206, 178, 124, 0.6); line-height: 1.6; white-space: pre-wrap; font-size: 14px;">${cardData.description.replace(/。/g, '。\n')}</p>
+                <div class="card-section" style="text-align: center; margin-bottom: 15px;">
+                    <h3 style="color: #FFFFFF; text-shadow: 0 0 15px #ceb27c; margin-bottom: 5px; font-size: 15px;">【${cardData.meaning}】</h3>
+                    <p style="color: #FFFFFF; text-shadow: 0 0 10px rgba(206, 178, 124, 0.6); line-height: 1.4; font-size: 13px; margin: 0;">${cardData.description}</p>
                 </div>
 
                 <!-- 今日のあなたの恋愛 -->
-                <div class="card-section" style="text-align: center; margin-bottom: 20px;">
-                    <h3 style="color: #FFFFFF; text-shadow: 0 0 15px #ceb27c; margin-bottom: 10px; font-size: 16px;">【今日のあなたの恋愛】</h3>
-                    <p style="color: #FFFFFF; text-shadow: 0 0 10px rgba(206, 178, 124, 0.6); line-height: 1.6; white-space: pre-wrap; font-size: 14px;">${cardData.loveExample.replace(/。/g, '。\n')}</p>
+                <div class="card-section" style="text-align: center; margin-bottom: 15px;">
+                    <h3 style="color: #FFFFFF; text-shadow: 0 0 15px #ceb27c; margin-bottom: 5px; font-size: 15px;">【今日のあなたの恋愛】</h3>
+                    <p style="color: #FFFFFF; text-shadow: 0 0 10px rgba(206, 178, 124, 0.6); line-height: 1.4; font-size: 13px; margin: 0;">${cardData.loveExample}</p>
                 </div>
 
                 <!-- 今日の行動 -->
-                <div class="card-section" style="text-align: center; margin-bottom: 20px;">
-                    <h3 style="color: #FFFFFF; text-shadow: 0 0 15px #ceb27c; margin-bottom: 10px; font-size: 16px;">【今日の行動】</h3>
-                    <p style="color: #FFFFFF; text-shadow: 0 0 10px rgba(206, 178, 124, 0.6); line-height: 1.6; white-space: pre-wrap; font-size: 14px;">${cardData.todayAction.replace(/。/g, '。\n')}</p>
+                <div class="card-section" style="text-align: center; margin-bottom: 15px;">
+                    <h3 style="color: #FFFFFF; text-shadow: 0 0 15px #ceb27c; margin-bottom: 5px; font-size: 15px;">【今日の行動】</h3>
+                    <p style="color: #FFFFFF; text-shadow: 0 0 10px rgba(206, 178, 124, 0.6); line-height: 1.4; font-size: 13px; margin: 0;">${cardData.todayAction}</p>
                 </div>
 
                 <!-- ラッキーアイテム -->
-                <div class="card-section" style="text-align: center; margin-bottom: 20px;">
-                    <h3 style="color: #FFFFFF; text-shadow: 0 0 15px #ceb27c; margin-bottom: 10px; font-size: 16px;">【ラッキーアイテム】</h3>
-                    <p style="color: #FFFFFF; text-shadow: 0 0 10px rgba(206, 178, 124, 0.6); line-height: 1.6; white-space: pre-wrap; font-size: 14px;">${cardData.luckyItem.replace(/。/g, '。\n')}</p>
+                <div class="card-section" style="text-align: center; margin-bottom: 15px;">
+                    <h3 style="color: #FFFFFF; text-shadow: 0 0 15px #ceb27c; margin-bottom: 5px; font-size: 15px;">【ラッキーアイテム】</h3>
+                    <p style="color: #FFFFFF; text-shadow: 0 0 10px rgba(206, 178, 124, 0.6); line-height: 1.4; font-size: 13px; margin: 0;">${cardData.luckyItem}</p>
                 </div>
 
                 <!-- 気をつけること -->
-                <div class="card-section" style="text-align: center; margin-bottom: 20px;">
-                    <h3 style="color: #FFFFFF; text-shadow: 0 0 15px #ceb27c; margin-bottom: 10px; font-size: 16px;">【気をつけること】</h3>
-                    <p style="color: #FFFFFF; text-shadow: 0 0 10px rgba(206, 178, 124, 0.6); line-height: 1.6; white-space: pre-wrap; font-size: 14px;">${cardData.caution.replace(/。/g, '。\n')}</p>
+                <div class="card-section" style="text-align: center; margin-bottom: 15px;">
+                    <h3 style="color: #FFFFFF; text-shadow: 0 0 15px #ceb27c; margin-bottom: 5px; font-size: 15px;">【気をつけること】</h3>
+                    <p style="color: #FFFFFF; text-shadow: 0 0 10px rgba(206, 178, 124, 0.6); line-height: 1.4; font-size: 13px; margin: 0;">${cardData.caution}</p>
                 </div>
             </div>
         </div>
