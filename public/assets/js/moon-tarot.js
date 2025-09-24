@@ -43,54 +43,65 @@ function displayCardResult() {
     const cardData = currentCard[position];
     const positionText = isUpright ? '正位置' : '逆位置';
 
+    // ビューポートの高さを取得
+    const vh = window.innerHeight;
+    const isMobile = window.innerWidth <= 768;
+
     // 結果表示エリアの作成
     const resultHTML = `
-        <div class="tarot-result-container" style="text-align: center; max-width: 500px; margin: 0 auto; padding-top: 10px;">
+        <div class="tarot-result-container" style="text-align: center; max-width: 500px; margin: 0 auto; padding: 10px; position: fixed; top: 0; left: 0; right: 0; bottom: 0; overflow-y: auto; background: url('../assets/images/tarot-cards0924/tarot-back.png') center/cover, rgba(0,0,0,0.7); background-blend-mode: darken; z-index: 2000; display: flex; flex-direction: column; justify-content: center;">
             <!-- メインコンテンツ -->
-            <div class="tarot-content" style="text-align: center; max-width: 400px; margin: 0 auto;">
+            <div class="tarot-content" style="text-align: center; max-width: 400px; margin: 0 auto; width: 100%; background: rgba(0,0,0,0.5); padding: 20px; border-radius: 15px;">
                 <!-- カードタイトル -->
-                <div class="card-title" style="text-align: center; margin-bottom: 15px;">
-                    <h2 style="color: #FFFFFF; text-shadow: 0 0 20px #ceb27c, 0 0 40px #ceb27c; margin-bottom: 0; font-size: 22px;">
+                <div class="card-title" style="text-align: center; margin-bottom: ${isMobile ? '10px' : '15px'};">
+                    <h2 style="color: #FFFFFF; text-shadow: 0 0 20px #ceb27c, 0 0 40px #ceb27c; margin-bottom: 0; font-size: ${isMobile ? '18px' : '22px'};">
                         ${currentCard.number} ${currentCard.name}（${positionText}）
                     </h2>
                 </div>
 
                 <!-- カード画像 -->
-                <div class="card-image-container" style="text-align: center; margin: 15px auto;">
+                <div class="card-image-container" style="text-align: center; margin: ${isMobile ? '10px auto' : '15px auto'};">
                     <img src="../assets/images/tarot-cards0924/${currentCard.id}.webp"
                          alt="${currentCard.name}"
-                         style="max-width: 150px; width: 100%; height: auto; border-radius: 10px; box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5); ${!isUpright ? 'transform: rotate(180deg);' : ''}"
+                         style="max-width: ${isMobile ? '120px' : '150px'}; width: 100%; height: auto; border-radius: 10px; box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5); ${!isUpright ? 'transform: rotate(180deg);' : ''}"
                          onerror="this.src='../assets/images/tarot-cards0924/${currentCard.id}.png'">
                 </div>
 
                 <!-- 意味 -->
-                <div class="card-section" style="text-align: center; margin-bottom: 15px;">
-                    <h3 style="color: #FFFFFF; text-shadow: 0 0 15px #ceb27c; margin-bottom: 5px; font-size: 15px;">【${cardData.meaning}】</h3>
-                    <p style="color: #FFFFFF; text-shadow: 0 0 10px rgba(206, 178, 124, 0.6); line-height: 1.4; font-size: 13px; margin: 0;">${cardData.description}</p>
+                <div class="card-section" style="text-align: center; margin-bottom: ${isMobile ? '10px' : '15px'};">
+                    <h3 style="color: #FFFFFF; text-shadow: 0 0 15px #ceb27c; margin-bottom: 3px; font-size: ${isMobile ? '13px' : '15px'};">【${cardData.meaning}】</h3>
+                    <p style="color: #FFFFFF; text-shadow: 0 0 10px rgba(206, 178, 124, 0.6); line-height: 1.3; font-size: ${isMobile ? '11px' : '13px'}; margin: 0;">${cardData.description}</p>
                 </div>
 
                 <!-- 今日のあなたの恋愛 -->
-                <div class="card-section" style="text-align: center; margin-bottom: 15px;">
-                    <h3 style="color: #FFFFFF; text-shadow: 0 0 15px #ceb27c; margin-bottom: 5px; font-size: 15px;">【今日のあなたの恋愛】</h3>
-                    <p style="color: #FFFFFF; text-shadow: 0 0 10px rgba(206, 178, 124, 0.6); line-height: 1.4; font-size: 13px; margin: 0;">${cardData.loveExample}</p>
+                <div class="card-section" style="text-align: center; margin-bottom: ${isMobile ? '10px' : '15px'};">
+                    <h3 style="color: #FFFFFF; text-shadow: 0 0 15px #ceb27c; margin-bottom: 3px; font-size: ${isMobile ? '13px' : '15px'};">【今日のあなたの恋愛】</h3>
+                    <p style="color: #FFFFFF; text-shadow: 0 0 10px rgba(206, 178, 124, 0.6); line-height: 1.3; font-size: ${isMobile ? '11px' : '13px'}; margin: 0;">${cardData.loveExample}</p>
                 </div>
 
                 <!-- 今日の行動 -->
-                <div class="card-section" style="text-align: center; margin-bottom: 15px;">
-                    <h3 style="color: #FFFFFF; text-shadow: 0 0 15px #ceb27c; margin-bottom: 5px; font-size: 15px;">【今日の行動】</h3>
-                    <p style="color: #FFFFFF; text-shadow: 0 0 10px rgba(206, 178, 124, 0.6); line-height: 1.4; font-size: 13px; margin: 0;">${cardData.todayAction}</p>
+                <div class="card-section" style="text-align: center; margin-bottom: ${isMobile ? '10px' : '15px'};">
+                    <h3 style="color: #FFFFFF; text-shadow: 0 0 15px #ceb27c; margin-bottom: 3px; font-size: ${isMobile ? '13px' : '15px'};">【今日の行動】</h3>
+                    <p style="color: #FFFFFF; text-shadow: 0 0 10px rgba(206, 178, 124, 0.6); line-height: 1.3; font-size: ${isMobile ? '11px' : '13px'}; margin: 0;">${cardData.todayAction}</p>
                 </div>
 
                 <!-- ラッキーアイテム -->
-                <div class="card-section" style="text-align: center; margin-bottom: 15px;">
-                    <h3 style="color: #FFFFFF; text-shadow: 0 0 15px #ceb27c; margin-bottom: 5px; font-size: 15px;">【ラッキーアイテム】</h3>
-                    <p style="color: #FFFFFF; text-shadow: 0 0 10px rgba(206, 178, 124, 0.6); line-height: 1.4; font-size: 13px; margin: 0;">${cardData.luckyItem}</p>
+                <div class="card-section" style="text-align: center; margin-bottom: ${isMobile ? '10px' : '15px'};">
+                    <h3 style="color: #FFFFFF; text-shadow: 0 0 15px #ceb27c; margin-bottom: 3px; font-size: ${isMobile ? '13px' : '15px'};">【ラッキーアイテム】</h3>
+                    <p style="color: #FFFFFF; text-shadow: 0 0 10px rgba(206, 178, 124, 0.6); line-height: 1.3; font-size: ${isMobile ? '11px' : '13px'}; margin: 0;">${cardData.luckyItem}</p>
                 </div>
 
                 <!-- 気をつけること -->
-                <div class="card-section" style="text-align: center; margin-bottom: 15px;">
-                    <h3 style="color: #FFFFFF; text-shadow: 0 0 15px #ceb27c; margin-bottom: 5px; font-size: 15px;">【気をつけること】</h3>
-                    <p style="color: #FFFFFF; text-shadow: 0 0 10px rgba(206, 178, 124, 0.6); line-height: 1.4; font-size: 13px; margin: 0;">${cardData.caution}</p>
+                <div class="card-section" style="text-align: center; margin-bottom: ${isMobile ? '10px' : '15px'};">
+                    <h3 style="color: #FFFFFF; text-shadow: 0 0 15px #ceb27c; margin-bottom: 3px; font-size: ${isMobile ? '13px' : '15px'};">【気をつけること】</h3>
+                    <p style="color: #FFFFFF; text-shadow: 0 0 10px rgba(206, 178, 124, 0.6); line-height: 1.3; font-size: ${isMobile ? '11px' : '13px'}; margin: 0;">${cardData.caution}</p>
+                </div>
+
+                <!-- ボタンエリア -->
+                <div style="text-align: center; margin-top: ${isMobile ? '15px' : '20px'};">
+                    <button onclick="location.reload()" style="padding: 10px 30px; background: linear-gradient(135deg, #FFD700, #FFA500); border: none; border-radius: 25px; color: #1a0033; font-size: ${isMobile ? '14px' : '16px'}; font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);">
+                        もう一度占う
+                    </button>
                 </div>
             </div>
         </div>
@@ -115,11 +126,10 @@ function displayCardResult() {
         mainTitle.style.display = 'none';
     }
 
-    // drawボタンを「もう一度占う」に変更
-    const drawButton = document.getElementById('drawButton');
-    if (drawButton) {
-        drawButton.textContent = 'もう一度占う';
-    }
+    // bodyのスクロールを無効化
+    document.body.style.overflow = 'hidden';
+    document.body.style.position = 'fixed';
+    document.body.style.width = '100%';
 }
 
 // 新しいカードを引く
