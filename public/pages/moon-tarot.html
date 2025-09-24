@@ -145,17 +145,19 @@
         .main-title h1 {
             font-size: 48px;
             font-weight: 700;
-            color: #FFD700;
+            color: #FFFFFF;
             text-shadow:
-                2px 2px 4px rgba(0, 0, 0, 0.5),
-                0 0 30px rgba(255, 215, 0, 0.5);
+                0 0 20px #ceb27c,
+                0 0 40px #ceb27c,
+                2px 2px 4px rgba(206, 178, 124, 0.8);
             letter-spacing: 0.1em;
             margin-bottom: 15px;
         }
 
         .main-title .subtitle {
             font-size: 18px;
-            color: rgba(255, 255, 255, 0.9);
+            color: #FFFFFF;
+            text-shadow: 0 0 15px #ceb27c;
             letter-spacing: 0.05em;
         }
 
@@ -168,7 +170,8 @@
 
         .selection-title {
             font-size: 28px;
-            color: #FFD700;
+            color: #FFFFFF;
+            text-shadow: 0 0 20px #ceb27c, 0 0 30px #ceb27c;
             text-align: center;
             margin-bottom: 40px;
             letter-spacing: 0.1em;
@@ -218,37 +221,33 @@
             border-color: rgba(255, 215, 0, 0.6);
         }
 
-        /* 占うボタン */
-        .submit-button {
-            display: block;
-            margin: 0 auto;
-            padding: 18px 60px;
-            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
-            color: #1a0033;
-            border: none;
-            border-radius: 50px;
-            font-size: 20px;
-            font-weight: 700;
-            letter-spacing: 0.1em;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.3);
-        }
-
-        .submit-button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 40px rgba(255, 215, 0, 0.5);
-        }
-
-        .submit-button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
 
         /* 結果表示エリア */
         #tarot-result {
             width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
             animation: fadeIn 0.8s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #tarot-result h2 {
+            color: #FFFFFF;
+            text-shadow: 0 0 20px #ceb27c, 0 0 40px #ceb27c;
+            text-align: center;
+        }
+
+        #tarot-result h3 {
+            color: #FFFFFF;
+            text-shadow: 0 0 15px #ceb27c;
+        }
+
+        #tarot-result p {
+            color: #FFFFFF;
+            text-shadow: 0 0 10px rgba(206, 178, 124, 0.6);
         }
 
         /* アニメーション */
@@ -353,16 +352,13 @@
 
         <!-- カード選択エリア -->
         <div class="card-selection" id="cardSelection">
-            <h2 class="selection-title">カードに触れて占いを始める</h2>
+            <h2 class="selection-title">直感で選んでください</h2>
 
             <div class="cards-container">
-                <div class="tarot-card-back" onclick="selectCard(1)"></div>
-                <div class="tarot-card-back" onclick="selectCard(2)"></div>
+                <div class="tarot-card-back" onclick="drawCards()"></div>
+                <div class="tarot-card-back" onclick="drawCards()"></div>
             </div>
 
-            <button class="submit-button" onclick="drawCards()">
-                カードを引く
-            </button>
         </div>
 
         <!-- 結果表示エリア -->

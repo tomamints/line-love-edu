@@ -15,7 +15,7 @@ body {
 /* タロット結果コンテナ */
 .tarot-result-container {
     position: relative;
-    max-width: 800px;
+    max-width: 900px;
     margin: 0 auto;
     padding: 40px 20px;
     min-height: 100vh;
@@ -27,13 +27,7 @@ body {
 
 /* 背景画像 */
 .tarot-background {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: -2;
-    opacity: 0.3;
+    display: none;
 }
 
 .tarot-background img {
@@ -44,13 +38,7 @@ body {
 
 /* 縁装飾 */
 .tarot-corners {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    z-index: 10;
+    display: none;
 }
 
 .corner {
@@ -81,13 +69,7 @@ body {
 
 /* 上下装飾 */
 .tarot-borders {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    z-index: 9;
+    display: none;
 }
 
 .border-top, .border-bottom {
@@ -110,20 +92,17 @@ body {
 /* メインコンテンツ */
 .tarot-content {
     position: relative;
-    background: rgba(255, 255, 255, 0.95);
-    border-radius: 20px;
     padding: 40px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-    max-width: 600px;
+    max-width: 700px;
     width: 100%;
     z-index: 1;
+    text-align: center;
 }
 
 /* カードタイトル */
 .card-title {
     text-align: center;
     margin-bottom: 30px;
-    color: #2c1810;
 }
 
 .card-title h2 {
@@ -131,16 +110,20 @@ body {
     font-weight: 600;
     margin-bottom: 10px;
     letter-spacing: 0.1em;
+    color: #FFFFFF;
+    text-shadow: 0 0 20px #ceb27c, 0 0 40px #ceb27c;
 }
 
 .position-text {
     display: inline-block;
     padding: 5px 15px;
-    background: linear-gradient(135deg, #8B4513 0%, #A0522D 100%);
-    color: white;
+    background: transparent;
+    color: #FFFFFF;
+    text-shadow: 0 0 15px #ceb27c;
     border-radius: 20px;
     font-size: 14px;
     font-weight: 500;
+    border: 1px solid rgba(206, 178, 124, 0.5);
 }
 
 /* カード画像 */
@@ -166,14 +149,15 @@ body {
 .card-section {
     margin: 25px 0;
     padding: 20px;
-    background: linear-gradient(135deg, rgba(255, 248, 220, 0.3) 0%, rgba(255, 235, 205, 0.3) 100%);
+    background: transparent;
     border-radius: 15px;
-    border-left: 4px solid #8B4513;
+    border: 1px solid rgba(206, 178, 124, 0.3);
 }
 
 .card-section h3 {
     font-size: 18px;
-    color: #8B4513;
+    color: #FFFFFF;
+    text-shadow: 0 0 15px #ceb27c;
     margin-bottom: 10px;
     font-weight: 600;
 }
@@ -181,7 +165,8 @@ body {
 .card-section p {
     font-size: 16px;
     line-height: 1.8;
-    color: #4a3426;
+    color: #FFFFFF;
+    text-shadow: 0 0 10px rgba(206, 178, 124, 0.6);
     letter-spacing: 0.05em;
 }
 
@@ -190,15 +175,16 @@ body {
     display: block;
     margin: 40px auto 20px;
     padding: 15px 40px;
-    background: linear-gradient(135deg, #8B4513 0%, #A0522D 100%);
-    color: white;
-    border: none;
+    background: transparent;
+    color: #FFFFFF;
+    text-shadow: 0 0 15px #ceb27c;
+    border: 2px solid #ceb27c;
     border-radius: 30px;
     font-size: 18px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(139, 69, 19, 0.3);
+    box-shadow: 0 0 20px rgba(206, 178, 124, 0.3);
 }
 
 .retry-button:hover {
