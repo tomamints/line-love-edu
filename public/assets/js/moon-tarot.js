@@ -45,51 +45,52 @@ function displayCardResult() {
 
     // 結果表示エリアの作成
     const resultHTML = `
-        <div class="tarot-result-container" style="text-align: center; max-width: 600px; margin: 0 auto;">
+        <div class="tarot-result-container" style="text-align: center; max-width: 500px; margin: 0 auto; padding-top: 20px;">
             <!-- メインコンテンツ -->
-            <div class="tarot-content" style="text-align: center; max-width: 500px; margin: 0 auto;">
+            <div class="tarot-content" style="text-align: center; max-width: 400px; margin: 0 auto;">
                 <!-- カードタイトル -->
-                <div class="card-title" style="text-align: center; margin-bottom: 30px;">
-                    <h2 style="color: #FFFFFF; text-shadow: 0 0 20px #ceb27c, 0 0 40px #ceb27c; margin-bottom: 10px;">
+                <div class="card-title" style="text-align: center; margin-bottom: 20px;">
+                    <h2 style="color: #FFFFFF; text-shadow: 0 0 20px #ceb27c, 0 0 40px #ceb27c; margin-bottom: 10px; font-size: 24px;">
                         ${currentCard.number} ${currentCard.name}（${positionText}）
                     </h2>
                 </div>
 
                 <!-- カード画像 -->
-                <div class="card-image-container" style="text-align: center; margin: 30px auto;">
-                    <img src="../assets/images/tarot-cards0924/${currentCard.id}.png"
+                <div class="card-image-container" style="text-align: center; margin: 20px auto;">
+                    <img src="../assets/images/tarot-cards0924/${currentCard.id}.webp"
                          alt="${currentCard.name}"
-                         style="max-width: 200px; width: 100%; height: auto; border-radius: 10px; box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5); ${!isUpright ? 'transform: rotate(180deg);' : ''}">
+                         style="max-width: 160px; width: 100%; height: auto; border-radius: 10px; box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5); ${!isUpright ? 'transform: rotate(180deg);' : ''}"
+                         onerror="this.src='../assets/images/tarot-cards0924/${currentCard.id}.png'">
                 </div>
 
                 <!-- 意味 -->
-                <div class="card-section" style="text-align: center; margin-bottom: 25px;">
-                    <h3 style="color: #FFFFFF; text-shadow: 0 0 15px #ceb27c; margin-bottom: 15px;">【${cardData.meaning}】</h3>
-                    <p style="color: #FFFFFF; text-shadow: 0 0 10px rgba(206, 178, 124, 0.6); line-height: 1.8; white-space: pre-wrap;">${cardData.description.replace(/。/g, '。\n')}</p>
+                <div class="card-section" style="text-align: center; margin-bottom: 20px;">
+                    <h3 style="color: #FFFFFF; text-shadow: 0 0 15px #ceb27c; margin-bottom: 10px; font-size: 16px;">【${cardData.meaning}】</h3>
+                    <p style="color: #FFFFFF; text-shadow: 0 0 10px rgba(206, 178, 124, 0.6); line-height: 1.6; white-space: pre-wrap; font-size: 14px;">${cardData.description.replace(/。/g, '。\n')}</p>
                 </div>
 
                 <!-- 今日のあなたの恋愛 -->
-                <div class="card-section" style="text-align: center; margin-bottom: 25px;">
-                    <h3 style="color: #FFFFFF; text-shadow: 0 0 15px #ceb27c; margin-bottom: 15px;">【今日のあなたの恋愛】</h3>
-                    <p style="color: #FFFFFF; text-shadow: 0 0 10px rgba(206, 178, 124, 0.6); line-height: 1.8; white-space: pre-wrap;">${cardData.loveExample.replace(/。/g, '。\n')}</p>
+                <div class="card-section" style="text-align: center; margin-bottom: 20px;">
+                    <h3 style="color: #FFFFFF; text-shadow: 0 0 15px #ceb27c; margin-bottom: 10px; font-size: 16px;">【今日のあなたの恋愛】</h3>
+                    <p style="color: #FFFFFF; text-shadow: 0 0 10px rgba(206, 178, 124, 0.6); line-height: 1.6; white-space: pre-wrap; font-size: 14px;">${cardData.loveExample.replace(/。/g, '。\n')}</p>
                 </div>
 
                 <!-- 今日の行動 -->
-                <div class="card-section" style="text-align: center; margin-bottom: 25px;">
-                    <h3 style="color: #FFFFFF; text-shadow: 0 0 15px #ceb27c; margin-bottom: 15px;">【今日の行動】</h3>
-                    <p style="color: #FFFFFF; text-shadow: 0 0 10px rgba(206, 178, 124, 0.6); line-height: 1.8; white-space: pre-wrap;">${cardData.todayAction.replace(/。/g, '。\n')}</p>
+                <div class="card-section" style="text-align: center; margin-bottom: 20px;">
+                    <h3 style="color: #FFFFFF; text-shadow: 0 0 15px #ceb27c; margin-bottom: 10px; font-size: 16px;">【今日の行動】</h3>
+                    <p style="color: #FFFFFF; text-shadow: 0 0 10px rgba(206, 178, 124, 0.6); line-height: 1.6; white-space: pre-wrap; font-size: 14px;">${cardData.todayAction.replace(/。/g, '。\n')}</p>
                 </div>
 
                 <!-- ラッキーアイテム -->
-                <div class="card-section" style="text-align: center; margin-bottom: 25px;">
-                    <h3 style="color: #FFFFFF; text-shadow: 0 0 15px #ceb27c; margin-bottom: 15px;">【ラッキーアイテム】</h3>
-                    <p style="color: #FFFFFF; text-shadow: 0 0 10px rgba(206, 178, 124, 0.6); line-height: 1.8; white-space: pre-wrap;">${cardData.luckyItem.replace(/。/g, '。\n')}</p>
+                <div class="card-section" style="text-align: center; margin-bottom: 20px;">
+                    <h3 style="color: #FFFFFF; text-shadow: 0 0 15px #ceb27c; margin-bottom: 10px; font-size: 16px;">【ラッキーアイテム】</h3>
+                    <p style="color: #FFFFFF; text-shadow: 0 0 10px rgba(206, 178, 124, 0.6); line-height: 1.6; white-space: pre-wrap; font-size: 14px;">${cardData.luckyItem.replace(/。/g, '。\n')}</p>
                 </div>
 
                 <!-- 気をつけること -->
-                <div class="card-section" style="text-align: center; margin-bottom: 25px;">
-                    <h3 style="color: #FFFFFF; text-shadow: 0 0 15px #ceb27c; margin-bottom: 15px;">【気をつけること】</h3>
-                    <p style="color: #FFFFFF; text-shadow: 0 0 10px rgba(206, 178, 124, 0.6); line-height: 1.8; white-space: pre-wrap;">${cardData.caution.replace(/。/g, '。\n')}</p>
+                <div class="card-section" style="text-align: center; margin-bottom: 20px;">
+                    <h3 style="color: #FFFFFF; text-shadow: 0 0 15px #ceb27c; margin-bottom: 10px; font-size: 16px;">【気をつけること】</h3>
+                    <p style="color: #FFFFFF; text-shadow: 0 0 10px rgba(206, 178, 124, 0.6); line-height: 1.6; white-space: pre-wrap; font-size: 14px;">${cardData.caution.replace(/。/g, '。\n')}</p>
                 </div>
             </div>
         </div>
@@ -132,21 +133,36 @@ window.drawNewCard = drawNewCard;
 
 // 占いを開始
 async function startFortune() {
-    // ローディング表示
-    const submitButton = document.querySelector('.submit-button');
-    if (submitButton) {
-        submitButton.textContent = '占い中...';
-        submitButton.disabled = true;
+    // カード選択エリアにローディングアニメーション追加
+    const cardSelection = document.querySelector('.card-selection');
+    if (cardSelection) {
+        cardSelection.style.opacity = '0.5';
+        cardSelection.style.pointerEvents = 'none';
     }
+
+    // ローディング表示を追加
+    const container = document.querySelector('.container');
+    const loadingDiv = document.createElement('div');
+    loadingDiv.id = 'loading-animation';
+    loadingDiv.innerHTML = `
+        <div style="text-align: center; padding: 30px;">
+            <div style="color: #FFFFFF; font-size: 20px; text-shadow: 0 0 20px #ceb27c; animation: pulse 1.5s ease-in-out infinite;">
+                カードを読み取っています...
+            </div>
+        </div>
+    `;
+    loadingDiv.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1000;';
+    container.appendChild(loadingDiv);
 
     // データが読み込まれていない場合は読み込む
     if (!tarotCardsData) {
         const loaded = await loadTarotData();
         if (!loaded) {
             alert('タロットデータの読み込みに失敗しました。ページを再読み込みしてください。');
-            if (submitButton) {
-                submitButton.textContent = '占いをはじめる';
-                submitButton.disabled = false;
+            loadingDiv.remove();
+            if (cardSelection) {
+                cardSelection.style.opacity = '1';
+                cardSelection.style.pointerEvents = 'auto';
             }
             return;
         }
@@ -157,11 +173,14 @@ async function startFortune() {
 
     // アニメーション演出（少し待つ）
     setTimeout(() => {
+        loadingDiv.remove();
         displayCardResult();
-        if (submitButton) {
-            submitButton.textContent = '占いをはじめる';
-            submitButton.disabled = false;
-        }
+
+        // 結果を上部にスクロール
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
     }, 1500);
 }
 
