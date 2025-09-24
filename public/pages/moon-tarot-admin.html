@@ -138,17 +138,19 @@
         .main-title h1 {
             font-size: 48px;
             font-weight: 700;
-            color: #FFD700;
+            color: #FFFFFF;
             text-shadow:
-                2px 2px 4px rgba(0, 0, 0, 0.5),
-                0 0 30px rgba(255, 215, 0, 0.5);
+                0 0 20px #ceb27c,
+                0 0 40px #ceb27c,
+                2px 2px 4px rgba(206, 178, 124, 0.8);
             letter-spacing: 0.1em;
             margin-bottom: 15px;
         }
 
         .main-title .subtitle {
             font-size: 18px;
-            color: rgba(255, 255, 255, 0.9);
+            color: #FFFFFF;
+            text-shadow: 0 0 15px #ceb27c;
             letter-spacing: 0.05em;
         }
 
@@ -163,57 +165,23 @@
             letter-spacing: 0.1em;
         }
 
-        /* 占い方法選択 */
-        .spread-selection {
+        /* カード選択画面 */
+        .card-selection {
             width: 100%;
-            max-width: 900px;
-            margin-bottom: 40px;
+            max-width: 800px;
+            padding: 40px;
         }
 
-        .spread-options {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-        }
-
-        .spread-option {
-            padding: 30px;
-            cursor: pointer;
-            transition: all 0.3s ease;
+        .selection-title {
+            font-size: 28px;
+            color: #FFFFFF;
+            text-shadow: 0 0 20px #ceb27c, 0 0 30px #ceb27c;
             text-align: center;
+            margin-bottom: 40px;
+            letter-spacing: 0.1em;
         }
 
-        .spread-option:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 40px rgba(255, 215, 0, 0.3);
-            border-color: rgba(255, 215, 0, 0.6);
-        }
-
-        .spread-icon {
-            font-size: 48px;
-            margin-bottom: 15px;
-        }
-
-        .spread-name {
-            font-size: 20px;
-            color: #FFD700;
-            font-weight: 600;
-            margin-bottom: 10px;
-        }
-
-        .spread-description {
-            font-size: 14px;
-            color: rgba(255, 255, 255, 0.8);
-            line-height: 1.6;
-        }
-
-        /* カード表示エリア */
-        .card-area {
-            display: none;
-            width: 100%;
-            max-width: 900px;
-        }
-
+        /* カード裏面の表示 */
         .cards-container {
             display: flex;
             justify-content: center;
@@ -222,113 +190,61 @@
             flex-wrap: wrap;
         }
 
-        .tarot-card {
+        .tarot-card-back {
             width: 180px;
             height: 280px;
-            position: relative;
-            transform-style: preserve-3d;
-            transition: transform 0.6s;
-            cursor: pointer;
-        }
-
-        .tarot-card.flipped {
-            transform: rotateY(180deg);
-        }
-
-        .card-face {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            backface-visibility: hidden;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-        }
-
-        .card-back {
             border: 3px solid rgba(255, 215, 0, 0.4);
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
         }
 
-        .card-front {
-            transform: rotateY(180deg);
-            background-size: cover;
-            background-position: center;
-            border: 3px solid #FFD700;
+        .tarot-card-back:nth-child(1) {
+            background-image: url('../assets/images/tarot-cards0924/A.png');
         }
 
-        /* 占うボタン */
-        .draw-button {
-            display: block;
-            margin: 0 auto;
-            padding: 18px 60px;
-            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
-            color: #1a0033;
-            border: none;
-            border-radius: 50px;
-            font-size: 20px;
-            font-weight: 700;
-            letter-spacing: 0.1em;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.3);
+        .tarot-card-back:nth-child(2) {
+            background-image: url('../assets/images/tarot-cards0924/B.png');
         }
 
-        .draw-button:hover:not(:disabled) {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 40px rgba(255, 215, 0, 0.5);
-        }
-
-        .draw-button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
+        .tarot-card-back:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(255, 215, 0, 0.3);
+            border-color: rgba(255, 215, 0, 0.6);
         }
 
         /* 結果表示エリア */
-        #resultArea {
-            display: none;
+        #tarot-result {
             width: 100%;
             max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
             animation: fadeIn 0.8s ease;
-        }
-
-        .result-container {
-            padding: 40px;
-            margin-bottom: 30px;
-        }
-
-        .result-title {
-            font-size: 32px;
-            color: #FFD700;
-            text-align: center;
-            margin-bottom: 40px;
-            text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
-        }
-
-        /* ボタングループ */
-        .button-group {
             display: flex;
             flex-direction: column;
-            gap: 15px;
-            margin-top: 30px;
+            align-items: center;
         }
 
-        .reset-button {
-            padding: 15px 40px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 50px;
-            font-size: 18px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
+        #tarot-result h2 {
+            color: #FFFFFF;
+            text-shadow: 0 0 20px #ceb27c, 0 0 40px #ceb27c;
+            text-align: center;
         }
 
-        .reset-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        #tarot-result h3 {
+            color: #FFFFFF;
+            text-shadow: 0 0 15px #ceb27c;
+        }
+
+        #tarot-result p {
+            color: #FFFFFF;
+            text-shadow: 0 0 10px rgba(206, 178, 124, 0.6);
         }
 
         /* アニメーション */
@@ -348,10 +264,16 @@
             to { opacity: 1; }
         }
 
+        @keyframes pulse {
+            0% { opacity: 0.6; }
+            50% { opacity: 1; }
+            100% { opacity: 0.6; }
+        }
+
         /* レスポンシブ */
         @media (max-width: 768px) {
             .main-title h1 {
-                font-size: 32px;
+                font-size: 36px;
             }
 
             .corner-decoration {
@@ -369,11 +291,11 @@
                 height: 40px;
             }
 
-            .spread-options {
-                grid-template-columns: 1fr;
+            .card-selection {
+                padding: 30px 20px;
             }
 
-            .tarot-card {
+            .tarot-card-back {
                 width: 140px;
                 height: 220px;
             }
@@ -397,18 +319,9 @@
                 height: 60px;
             }
 
-            .tarot-card {
+            .tarot-card-back {
                 width: 120px;
                 height: 190px;
-            }
-
-            .draw-button {
-                padding: 15px 40px;
-                font-size: 18px;
-            }
-
-            .result-container {
-                padding: 25px 15px;
             }
         }
     </style>
@@ -436,72 +349,19 @@
             <span class="admin-badge">管理者モード - 無制限</span>
         </div>
 
-        <!-- 占い方法選択 -->
-        <div class="spread-selection" id="spreadSelection">
-            <div class="spread-options">
-                <div class="spread-option" onclick="selectSpread('daily')">
-                    <div class="spread-icon">🌙</div>
-                    <div class="spread-name">今日の月カード</div>
-                    <div class="spread-description">1枚のカードで今日の恋愛運を占います</div>
-                </div>
-                <div class="spread-option" onclick="selectSpread('three')">
-                    <div class="spread-icon">🌗</div>
-                    <div class="spread-name">月の三相占い</div>
-                    <div class="spread-description">過去・現在・未来の3枚で恋愛の流れを読みます</div>
-                </div>
-                <div class="spread-option" onclick="selectSpread('full')">
-                    <div class="spread-icon">🌕</div>
-                    <div class="spread-name">満月の恋愛占い</div>
-                    <div class="spread-description">3枚のカードで二人の関係を深く読み解きます</div>
-                </div>
-            </div>
-        </div>
+        <!-- カード選択エリア -->
+        <div class="card-selection" id="cardSelection">
+            <h2 class="selection-title">直感で選んでください</h2>
 
-        <!-- カード表示エリア -->
-        <div class="card-area" id="cardArea">
-            <div class="cards-container" id="cardContainer"></div>
-            <button class="draw-button" id="drawButton" onclick="drawCards()">カードを引く</button>
+            <div class="cards-container">
+                <div class="tarot-card-back" onclick="drawCards()"></div>
+                <div class="tarot-card-back" onclick="drawCards()"></div>
+            </div>
+
         </div>
 
         <!-- 結果表示エリア -->
-        <div id="resultArea">
-            <div class="result-container">
-                <h2 class="result-title" id="resultTitle"></h2>
-                <div id="resultCards"></div>
-            </div>
-
-            <div class="button-group">
-                <button class="reset-button" onclick="reset()">もう一度占う</button>
-
-                <!-- LINE公式アカウントへの誘導 -->
-                <div style="background: rgba(20, 20, 40, 0.9); border-radius: 20px; padding: 25px; text-align: center; border: 1px solid rgba(255, 215, 0, 0.2);">
-                    <div style="color: rgba(255, 255, 255, 0.9); margin-bottom: 15px;">
-                        <div style="font-size: 18px; margin-bottom: 10px; color: #FFD700;">
-                            月詠からの特別なメッセージをお届け
-                        </div>
-                        <div style="font-size: 14px; line-height: 1.6; color: rgba(255, 255, 255, 0.8);">
-                            あなたの恋愛運を毎日占い<br>
-                            月の導きで最高の恋を叶えましょう
-                        </div>
-                    </div>
-
-                    <a href="https://lin.ee/egmCXoG"
-                       target="_blank"
-                       style="display: inline-block; background: linear-gradient(135deg, #00b900 0%, #00a000 100%); color: white; padding: 12px 30px; border-radius: 25px; text-decoration: none; font-weight: 600; font-size: 15px; box-shadow: 0 4px 15px rgba(0,185,0,0.3);">
-                        🌙 LINE友だち追加
-                    </a>
-                </div>
-
-                <!-- シェアボタン -->
-                <button class="reset-button" style="background: linear-gradient(135deg, #1da1f2, #1a91da);" onclick="shareResult()">
-                    結果をシェア 📱
-                </button>
-
-                <a href="index.html" class="reset-button" style="background: linear-gradient(135deg, #4a4a6a, #3a3a5a); text-decoration: none; display: inline-block; text-align: center;">
-                    トップに戻る
-                </a>
-            </div>
-        </div>
+        <div id="tarot-result" style="display: none;"></div>
     </div>
 
     <!-- JavaScript -->

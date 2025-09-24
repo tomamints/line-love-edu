@@ -183,8 +183,46 @@ function saveFortuneResult() {
     }));
 }
 
+// LINEアプリからのアクセスかチェック
+function checkLineAccess() {
+    const ua = navigator.userAgent.toLowerCase();
+    // LINEアプリ内ブラウザの判定
+    return ua.includes('line');
+}
+
+// LINE誘導画面を表示
+function showLineRedirect() {
+    const resultHTML = `
+        <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: url('../assets/images/tarot-cards0924/tarot-back.png') center/cover; z-index: 2000; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px;">
+            <div style="background: rgba(0, 0, 0, 0.7); padding: 40px 30px; border-radius: 20px; max-width: 400px; text-align: center;">
+                <h2 style="color: #FFD700; font-size: 24px; margin-bottom: 20px; text-shadow: 0 0 20px #ceb27c;">
+                    月タロット占い
+                </h2>
+                <p style="color: #FFFFFF; font-size: 16px; line-height: 1.6; margin-bottom: 30px;">
+                    この占いはLINE公式アカウントから<br>
+                    ご利用いただけます。<br><br>
+                    下記のボタンから友だち追加して<br>
+                    毎日の恋愛運を占いましょう✨
+                </p>
+                <a href="https://lin.ee/egmCXoG"
+                   style="display: inline-block; background: linear-gradient(135deg, #00b900, #00a000); color: white; padding: 15px 40px; border-radius: 30px; text-decoration: none; font-weight: bold; font-size: 18px; box-shadow: 0 4px 15px rgba(0,185,0,0.3);">
+                    LINE友だち追加
+                </a>
+            </div>
+        </div>
+    `;
+
+    document.body.innerHTML = resultHTML;
+}
+
 // 占いを開始
 async function startFortune() {
+    // LINE以外からのアクセスをチェック
+    if (!checkLineAccess()) {
+        showLineRedirect();
+        return;
+    }
+
     // 1日1回制限チェック
     if (!checkDailyLimit()) {
         // すでに今日占い済みなので、保存された結果を表示
@@ -260,6 +298,12 @@ window.drawCards = async function() {
 // ページ読み込み時の初期化
 document.addEventListener('DOMContentLoaded', async function() {
     console.log('タロット占いシステム初期化中...');
+
+    // LINE以外からのアクセスを最初にチェック
+    if (!checkLineAccess()) {
+        showLineRedirect();
+        return;
+    }
 
     // データを事前読み込み
     await loadTarotData();
