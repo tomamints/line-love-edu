@@ -117,13 +117,6 @@ function displayCardResult() {
                     <h3 style="color: #FFFFFF; text-shadow: 0 0 15px #ceb27c; margin-bottom: 5px; font-size: ${isMobile ? '18px' : '20px'};">【気をつけること】</h3>
                     <p style="color: #FFFFFF; text-shadow: 0 0 10px rgba(206, 178, 124, 0.6); line-height: 1.4; font-size: ${isMobile ? '15px' : '17px'}; margin: 0;">${cardData.caution}</p>
                 </div>
-
-                <!-- もう一度占うボタン (管理者版のみ) -->
-                <div style="text-align: center; margin-top: ${isMobile ? '15px' : '20px'};">
-                    <button onclick="location.reload()" style="padding: 12px 35px; background: linear-gradient(135deg, #FFD700, #FFA500); border: none; border-radius: 25px; color: #1a0033; font-size: ${isMobile ? '16px' : '18px'}; font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);">
-                        もう一度占う
-                    </button>
-                </div>
             </div>
         </div>
     `;
