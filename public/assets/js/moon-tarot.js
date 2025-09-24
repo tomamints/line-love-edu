@@ -108,6 +108,12 @@ function displayCardResult() {
         cardSelection.style.display = 'none';
     }
 
+    // タイトルとサブタイトルを非表示
+    const mainTitle = document.querySelector('.main-title');
+    if (mainTitle) {
+        mainTitle.style.display = 'none';
+    }
+
     // drawボタンを「もう一度占う」に変更
     const drawButton = document.getElementById('drawButton');
     if (drawButton) {
@@ -117,27 +123,8 @@ function displayCardResult() {
 
 // 新しいカードを引く
 async function drawNewCard() {
-    // 結果エリアをクリア
-    const resultContainer = document.getElementById('tarot-result');
-    if (resultContainer) {
-        resultContainer.style.display = 'none';
-        resultContainer.innerHTML = '';
-    }
-
-    // カード選択エリアを表示
-    const cardSelection = document.querySelector('.card-selection');
-    if (cardSelection) {
-        cardSelection.style.display = 'block';
-    }
-
-    // drawボタンをリセット
-    const drawButton = document.getElementById('drawButton');
-    if (drawButton) {
-        drawButton.textContent = 'カードを引く';
-    }
-
-    // 新しいカードを引く
-    await startFortune();
+    // ページをリロード
+    location.reload();
 }
 
 // drawNewCardをグローバルに

@@ -5,7 +5,7 @@
       "number": "0",
       "name": "愚者",
       "nameEn": "The Fool",
-      "image": "/assets/images/tarot-cards0924/1.png",
+      "image": "/assets/images/tarot-cards0924/0.png",
       "upright": {
         "meaning": "自由・冒険・新しい始まり",
         "description": "無邪気に飛び出す姿。恋愛でも「始まり」を告げるカード。",
@@ -28,7 +28,7 @@
       "number": "I",
       "name": "魔術師",
       "nameEn": "The Magician",
-      "image": "/assets/images/tarot-cards0924/2.png",
+      "image": "/assets/images/tarot-cards0924/1.png",
       "upright": {
         "meaning": "創造・才能・自信",
         "description": "自分の力で未来を形づくるカード。恋愛でも「スタートのチャンス」を示す。",
@@ -51,7 +51,7 @@
       "number": "II",
       "name": "女教皇",
       "nameEn": "The High Priestess",
-      "image": "/assets/images/tarot-cards0924/3.png",
+      "image": "/assets/images/tarot-cards0924/2.png",
       "upright": {
         "meaning": "知性・冷静・判断力",
         "description": "静かに見極める姿。恋愛では冷静さで良い判断ができる時。",
@@ -74,7 +74,7 @@
       "number": "III",
       "name": "女帝",
       "nameEn": "The Empress",
-      "image": "/assets/images/tarot-cards0924/4.png",
+      "image": "/assets/images/tarot-cards0924/3.png",
       "upright": {
         "meaning": "愛情・満足・豊かさ",
         "description": "包み込むような優しさ。恋愛では「愛される喜び」を表す。",
@@ -97,7 +97,7 @@
       "number": "IV",
       "name": "皇帝",
       "nameEn": "The Emperor",
-      "image": "/assets/images/tarot-cards0924/5.png",
+      "image": "/assets/images/tarot-cards0924/4.png",
       "upright": {
         "meaning": "安定・成功・責任",
         "description": "努力が実を結び、信頼を得られるカード。恋愛では「頼れる関係」が築ける時。",
@@ -120,7 +120,7 @@
       "number": "V",
       "name": "教皇",
       "nameEn": "The Hierophant",
-      "image": "/assets/images/tarot-cards0924/6.png",
+      "image": "/assets/images/tarot-cards0924/5.png",
       "upright": {
         "meaning": "優しさ・慈悲・信頼",
         "description": "人に寄り添い、関係を育むカード。恋では「安心感のある絆」を示す。",
@@ -143,7 +143,7 @@
       "number": "VI",
       "name": "恋人",
       "nameEn": "The Lovers",
-      "image": "/assets/images/tarot-cards0924/7.png",
+      "image": "/assets/images/tarot-cards0924/6.png",
       "upright": {
         "meaning": "愛・ときめき・調和",
         "description": "天使に祝福された二人。恋の喜びやトキメキを象徴。",
@@ -166,7 +166,7 @@
       "number": "VII",
       "name": "戦車",
       "nameEn": "The Chariot",
-      "image": "/assets/images/tarot-cards0924/8.png",
+      "image": "/assets/images/tarot-cards0924/7.png",
       "upright": {
         "meaning": "実行力・勝利・意思の強さ",
         "description": "前に進む力。恋では「思い切った行動が実を結ぶ」暗示。",
@@ -189,7 +189,7 @@
       "number": "VIII",
       "name": "力",
       "nameEn": "Strength",
-      "image": "/assets/images/tarot-cards0924/9.png",
+      "image": "/assets/images/tarot-cards0924/8.png",
       "upright": {
         "meaning": "自制・不屈・理性",
         "description": "本能を理性でコントロールするカード。恋では「信頼で乗り越える強さ」。",
@@ -212,7 +212,7 @@
       "number": "IX",
       "name": "隠者",
       "nameEn": "The Hermit",
-      "image": "/assets/images/tarot-cards0924/10.png",
+      "image": "/assets/images/tarot-cards0924/9.png",
       "upright": {
         "meaning": "内観・思慮深さ・悟り",
         "description": "暗闇を照らす光は「心の声」。恋では「自分の気持ちを見つめ直す時」。",
@@ -235,7 +235,7 @@
       "number": "X",
       "name": "運命の輪",
       "nameEn": "Wheel of Fortune",
-      "image": "/assets/images/tarot-cards0924/11.png",
+      "image": "/assets/images/tarot-cards0924/10.png",
       "upright": {
         "meaning": "一時的な幸運・出会い・変化",
         "description": "チャンスの風が巡るとき。恋愛では「偶然の出会い」が起こりやすい。",
@@ -258,7 +258,7 @@
       "number": "XI",
       "name": "正義",
       "nameEn": "Justice",
-      "image": "/assets/images/tarot-cards0924/12.png",
+      "image": "/assets/images/tarot-cards0924/11.png",
       "upright": {
         "meaning": "公正・均衡・誠実さ",
         "description": "バランスを保つカード。恋愛では「誠実なやりとり」が信頼を築く。",
@@ -281,7 +281,7 @@
       "number": "XII",
       "name": "吊るされた男",
       "nameEn": "The Hanged Man",
-      "image": "/assets/images/tarot-cards0924/13.png",
+      "image": "/assets/images/tarot-cards0924/12.png",
       "upright": {
         "meaning": "努力・忍耐・試練",
         "description": "成長のための試練。恋愛では「待つこと」が愛を深める時期。",
@@ -304,7 +304,7 @@
       "number": "XIII",
       "name": "死神",
       "nameEn": "Death",
-      "image": "/assets/images/tarot-cards0924/14.png",
+      "image": "/assets/images/tarot-cards0924/13.png",
       "upright": {
         "meaning": "終焉・破局・停止",
         "description": "強制的な終わりを告げるカード。恋愛では「一区切り」を意味する。",
@@ -327,7 +327,7 @@
       "number": "XIV",
       "name": "節制",
       "nameEn": "Temperance",
-      "image": "/assets/images/tarot-cards0924/15.png",
+      "image": "/assets/images/tarot-cards0924/14.png",
       "upright": {
         "meaning": "調和・循環・順調",
         "description": "自然な流れで物事が整う。恋愛では「無理のない関係」を築ける。",
@@ -350,7 +350,7 @@
       "number": "XV",
       "name": "悪魔",
       "nameEn": "The Devil",
-      "image": "/assets/images/tarot-cards0924/16.png",
+      "image": "/assets/images/tarot-cards0924/15.png",
       "upright": {
         "meaning": "誘惑・依存・裏切り",
         "description": "甘い誘惑に縛られるカード。恋愛では「危険な関係」に陥りやすい。",
@@ -373,7 +373,7 @@
       "number": "XVI",
       "name": "塔",
       "nameEn": "The Tower",
-      "image": "/assets/images/tarot-cards0924/17.png",
+      "image": "/assets/images/tarot-cards0924/16.png",
       "upright": {
         "meaning": "崩壊・事故・ショック",
         "description": "突然のトラブルを示す。恋愛では「予期せぬ別れ」や「衝突」。",
@@ -396,7 +396,7 @@
       "number": "XVII",
       "name": "星",
       "nameEn": "The Star",
-      "image": "/assets/images/tarot-cards0924/18.png",
+      "image": "/assets/images/tarot-cards0924/17.png",
       "upright": {
         "meaning": "希望・憧れ・目標",
         "description": "直感や理想を象徴。恋愛では「夢見るような時間」を示す。",
@@ -419,7 +419,7 @@
       "number": "XVIII",
       "name": "月",
       "nameEn": "The Moon",
-      "image": "/assets/images/tarot-cards0924/19.png",
+      "image": "/assets/images/tarot-cards0924/18.png",
       "upright": {
         "meaning": "不安・誤解・迷い",
         "description": "心が揺れるカード。恋愛では「誤解や不安」が広がりやすい。",
@@ -442,7 +442,7 @@
       "number": "XIX",
       "name": "太陽",
       "nameEn": "The Sun",
-      "image": "/assets/images/tarot-cards0924/20.png",
+      "image": "/assets/images/tarot-cards0924/19.png",
       "upright": {
         "meaning": "喜び・成功・栄光",
         "description": "明るさと無邪気さ。恋愛では「素直な気持ち」が幸せを呼ぶ。",
@@ -465,7 +465,7 @@
       "number": "XX",
       "name": "審判",
       "nameEn": "Judgement",
-      "image": "/assets/images/tarot-cards0924/21.png",
+      "image": "/assets/images/tarot-cards0924/20.png",
       "upright": {
         "meaning": "復活・再生・再チャレンジ",
         "description": "新しいチャンスの到来。恋愛では「復縁」や「再会」の暗示。",
@@ -488,7 +488,7 @@
       "number": "XXI",
       "name": "世界",
       "nameEn": "The World",
-      "image": "/assets/images/tarot-cards0924/22.png",
+      "image": "/assets/images/tarot-cards0924/21.png",
       "upright": {
         "meaning": "成功・完成・理想郷",
         "description": "最良の結末を意味するカード。恋愛では「両想い」「結婚」の暗示。",
