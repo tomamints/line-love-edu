@@ -68,11 +68,11 @@ function displayCardResult() {
     const vh = window.innerHeight;
     const isMobile = window.innerWidth <= 768;
 
-    // 結果表示エリアの作成
+    // 結果表示エリアの作成（背景画像をそのまま使用、暗くしない）
     const resultHTML = `
-        <div class="tarot-result-container" style="text-align: center; max-width: 500px; margin: 0 auto; padding: 10px; position: fixed; top: 0; left: 0; right: 0; bottom: 0; overflow-y: auto; background: url('../assets/images/tarot-cards0924/tarot-back.png') center/cover; z-index: 2000; display: flex; flex-direction: column; justify-content: center; opacity: 0; animation: fadeIn 0.5s ease forwards;">
+        <div class="tarot-result-container" style="text-align: center; position: fixed; top: 0; left: 0; right: 0; bottom: 0; overflow-y: auto; z-index: 2000; display: flex; flex-direction: column; justify-content: center; opacity: 0; animation: fadeIn 0.5s ease forwards;">
             <!-- メインコンテンツ -->
-            <div class="tarot-content" style="text-align: center; max-width: 400px; margin: 0 auto; width: 100%; padding: 20px; animation: fadeInUp 0.6s ease 0.2s backwards;">
+            <div class="tarot-content" style="text-align: center; max-width: 400px; margin: 0 auto; width: 100%; padding: 20px;">
                 <!-- カードタイトル -->
                 <div class="card-title" style="text-align: center; margin-bottom: ${isMobile ? '10px' : '15px'};">
                     <h2 style="color: #FFFFFF; text-shadow: 0 0 20px #ceb27c, 0 0 40px #ceb27c; margin-bottom: 0; font-size: ${isMobile ? '18px' : '22px'};">
@@ -164,13 +164,6 @@ window.drawNewCard = drawNewCard;
 
 // 占いを開始
 async function startFortune() {
-    // カード選択エリアにローディングアニメーション追加
-    const cardSelection = document.querySelector('.card-selection');
-    if (cardSelection) {
-        cardSelection.style.opacity = '0.5';
-        cardSelection.style.pointerEvents = 'none';
-    }
-
     // ローディング表示を追加
     const container = document.querySelector('.container');
     const loadingDiv = document.createElement('div');
@@ -182,7 +175,7 @@ async function startFortune() {
             </div>
         </div>
     `;
-    loadingDiv.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1000;';
+    loadingDiv.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 3000;';
     container.appendChild(loadingDiv);
 
     // データが読み込まれていない場合は読み込む
@@ -191,10 +184,6 @@ async function startFortune() {
         if (!loaded) {
             alert('タロットデータの読み込みに失敗しました。ページを再読み込みしてください。');
             loadingDiv.remove();
-            if (cardSelection) {
-                cardSelection.style.opacity = '1';
-                cardSelection.style.pointerEvents = 'auto';
-            }
             return;
         }
     }
@@ -202,25 +191,35 @@ async function startFortune() {
     // カードを選択
     selectRandomCard();
 
-    // 画像を先に読み込む
+    // 画像を確実に読み込む
     const imageSrc = `../assets/images/tarot-cards0924/${currentCard.id}.webp`;
+    let imageLoaded = false;
+
     try {
         await preloadImage(imageSrc);
+        imageLoaded = true;
     } catch (error) {
-        console.log('画像のプリロードに失敗しました、PNGを使用します');
+        // WebPが失敗したらPNGを試す
+        const pngSrc = `../assets/images/tarot-cards0924/${currentCard.id}.png`;
+        try {
+            await preloadImage(pngSrc);
+            imageLoaded = true;
+        } catch (pngError) {
+            console.log('画像の読み込みに失敗しました');
+        }
     }
 
-    // 少し待ってから結果を表示
-    setTimeout(() => {
+    // 画像が読み込まれたら結果を表示
+    if (imageLoaded) {
+        // 少し待ってから表示
+        await new Promise(resolve => setTimeout(resolve, 1000));
         loadingDiv.remove();
         displayCardResult();
-
-        // 結果を上部にスクロール
-        window.scrollTo({
-            top: 0,
-            behavior: 'smooth'
-        });
-    }, 500);
+    } else {
+        // 画像読み込み失敗でも表示
+        loadingDiv.remove();
+        displayCardResult();
+    }
 }
 
 // drawCards関数をグローバルに定義（既存のボタンとの互換性のため）
