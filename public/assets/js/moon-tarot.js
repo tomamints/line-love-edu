@@ -35,8 +35,29 @@ function selectRandomCard() {
     return currentCard;
 }
 
+// 画像をプリロード
+async function preloadImage(src) {
+    return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => resolve(img);
+        img.onerror = () => {
+            // WebPが失敗したらPNGを試す
+            if (src.endsWith('.webp')) {
+                const pngSrc = src.replace('.webp', '.png');
+                const pngImg = new Image();
+                pngImg.onload = () => resolve(pngImg);
+                pngImg.onerror = reject;
+                pngImg.src = pngSrc;
+            } else {
+                reject();
+            }
+        };
+        img.src = src;
+    });
+}
+
 // カード結果を表示
-function displayCardResult() {
+async function displayCardResult() {
     if (!currentCard) return;
 
     const position = isUpright ? 'upright' : 'reversed';
@@ -47,11 +68,19 @@ function displayCardResult() {
     const vh = window.innerHeight;
     const isMobile = window.innerWidth <= 768;
 
+    // 画像をプリロード
+    const imageSrc = `../assets/images/tarot-cards0924/${currentCard.id}.webp`;
+    try {
+        await preloadImage(imageSrc);
+    } catch (error) {
+        console.log('画像のプリロードに失敗しました、PNGを使用します');
+    }
+
     // 結果表示エリアの作成
     const resultHTML = `
-        <div class="tarot-result-container" style="text-align: center; max-width: 500px; margin: 0 auto; padding: 10px; position: fixed; top: 0; left: 0; right: 0; bottom: 0; overflow-y: auto; background: url('../assets/images/tarot-cards0924/tarot-back.png') center/cover, rgba(0,0,0,0.7); background-blend-mode: darken; z-index: 2000; display: flex; flex-direction: column; justify-content: center;">
+        <div class="tarot-result-container" style="text-align: center; max-width: 500px; margin: 0 auto; padding: 10px; position: fixed; top: 0; left: 0; right: 0; bottom: 0; overflow-y: auto; background: url('../assets/images/tarot-cards0924/tarot-back.png') center/cover, rgba(0,0,0,0.7); background-blend-mode: darken; z-index: 2000; display: flex; flex-direction: column; justify-content: center; opacity: 0; animation: fadeIn 0.5s ease forwards;">
             <!-- メインコンテンツ -->
-            <div class="tarot-content" style="text-align: center; max-width: 400px; margin: 0 auto; width: 100%; background: rgba(0,0,0,0.5); padding: 20px; border-radius: 15px;">
+            <div class="tarot-content" style="text-align: center; max-width: 400px; margin: 0 auto; width: 100%; background: rgba(0,0,0,0.5); padding: 20px; border-radius: 15px; animation: fadeInUp 0.6s ease 0.2s backwards;">
                 <!-- カードタイトル -->
                 <div class="card-title" style="text-align: center; margin-bottom: ${isMobile ? '10px' : '15px'};">
                     <h2 style="color: #FFFFFF; text-shadow: 0 0 20px #ceb27c, 0 0 40px #ceb27c; margin-bottom: 0; font-size: ${isMobile ? '18px' : '22px'};">
@@ -182,9 +211,10 @@ async function startFortune() {
     selectRandomCard();
 
     // アニメーション演出（少し待つ）
-    setTimeout(() => {
+    setTimeout(async () => {
+        // 画像を事前読み込みしてから結果を表示
+        await displayCardResult();
         loadingDiv.remove();
-        displayCardResult();
 
         // 結果を上部にスクロール
         window.scrollTo({
