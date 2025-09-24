@@ -75,52 +75,52 @@ function displayCardResult() {
             <div class="tarot-content" style="text-align: center; max-width: 400px; margin: 0 auto; width: 100%; padding: 20px;">
                 <!-- カードタイトル -->
                 <div class="card-title" style="text-align: center; margin-bottom: ${isMobile ? '10px' : '15px'};">
-                    <h2 style="color: #FFFFFF; text-shadow: 0 0 20px #ceb27c, 0 0 40px #ceb27c; margin-bottom: 0; font-size: ${isMobile ? '18px' : '22px'};">
+                    <h2 style="color: #FFFFFF; text-shadow: 0 0 20px #ceb27c, 0 0 40px #ceb27c; margin-bottom: 0; font-size: ${isMobile ? '24px' : '28px'};">
                         ${currentCard.number} ${currentCard.name}（${positionText}）
                     </h2>
                 </div>
 
                 <!-- カード画像 -->
-                <div class="card-image-container" style="text-align: center; margin: ${isMobile ? '10px auto' : '15px auto'};">
+                <div class="card-image-container" style="text-align: center; margin: ${isMobile ? '15px auto' : '20px auto'};">
                     <img src="../assets/images/tarot-cards0924/${currentCard.id}.webp"
                          alt="${currentCard.name}"
-                         style="max-width: ${isMobile ? '120px' : '150px'}; width: 100%; height: auto; border-radius: 10px; box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5); ${!isUpright ? 'transform: rotate(180deg);' : ''}"
+                         style="max-width: ${isMobile ? '180px' : '220px'}; width: 100%; height: auto; border-radius: 10px; box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5); ${!isUpright ? 'transform: rotate(180deg);' : ''}"
                          onerror="this.src='../assets/images/tarot-cards0924/${currentCard.id}.png'">
                 </div>
 
                 <!-- 意味 -->
                 <div class="card-section" style="text-align: center; margin-bottom: ${isMobile ? '10px' : '15px'};">
-                    <h3 style="color: #FFFFFF; text-shadow: 0 0 15px #ceb27c; margin-bottom: 3px; font-size: ${isMobile ? '13px' : '15px'};">【${cardData.meaning}】</h3>
-                    <p style="color: #FFFFFF; text-shadow: 0 0 10px rgba(206, 178, 124, 0.6); line-height: 1.3; font-size: ${isMobile ? '11px' : '13px'}; margin: 0;">${cardData.description}</p>
+                    <h3 style="color: #FFFFFF; text-shadow: 0 0 15px #ceb27c; margin-bottom: 5px; font-size: ${isMobile ? '18px' : '20px'};">【${cardData.meaning}】</h3>
+                    <p style="color: #FFFFFF; text-shadow: 0 0 10px rgba(206, 178, 124, 0.6); line-height: 1.4; font-size: ${isMobile ? '15px' : '17px'}; margin: 0;">${cardData.description}</p>
                 </div>
 
                 <!-- 今日のあなたの恋愛 -->
                 <div class="card-section" style="text-align: center; margin-bottom: ${isMobile ? '10px' : '15px'};">
-                    <h3 style="color: #FFFFFF; text-shadow: 0 0 15px #ceb27c; margin-bottom: 3px; font-size: ${isMobile ? '13px' : '15px'};">【今日のあなたの恋愛】</h3>
-                    <p style="color: #FFFFFF; text-shadow: 0 0 10px rgba(206, 178, 124, 0.6); line-height: 1.3; font-size: ${isMobile ? '11px' : '13px'}; margin: 0;">${cardData.loveExample}</p>
+                    <h3 style="color: #FFFFFF; text-shadow: 0 0 15px #ceb27c; margin-bottom: 5px; font-size: ${isMobile ? '18px' : '20px'};">【今日のあなたの恋愛】</h3>
+                    <p style="color: #FFFFFF; text-shadow: 0 0 10px rgba(206, 178, 124, 0.6); line-height: 1.4; font-size: ${isMobile ? '15px' : '17px'}; margin: 0;">${cardData.loveExample}</p>
                 </div>
 
                 <!-- 今日の行動 -->
                 <div class="card-section" style="text-align: center; margin-bottom: ${isMobile ? '10px' : '15px'};">
-                    <h3 style="color: #FFFFFF; text-shadow: 0 0 15px #ceb27c; margin-bottom: 3px; font-size: ${isMobile ? '13px' : '15px'};">【今日の行動】</h3>
-                    <p style="color: #FFFFFF; text-shadow: 0 0 10px rgba(206, 178, 124, 0.6); line-height: 1.3; font-size: ${isMobile ? '11px' : '13px'}; margin: 0;">${cardData.todayAction}</p>
+                    <h3 style="color: #FFFFFF; text-shadow: 0 0 15px #ceb27c; margin-bottom: 5px; font-size: ${isMobile ? '18px' : '20px'};">【今日の行動】</h3>
+                    <p style="color: #FFFFFF; text-shadow: 0 0 10px rgba(206, 178, 124, 0.6); line-height: 1.4; font-size: ${isMobile ? '15px' : '17px'}; margin: 0;">${cardData.todayAction}</p>
                 </div>
 
                 <!-- ラッキーアイテム -->
                 <div class="card-section" style="text-align: center; margin-bottom: ${isMobile ? '10px' : '15px'};">
-                    <h3 style="color: #FFFFFF; text-shadow: 0 0 15px #ceb27c; margin-bottom: 3px; font-size: ${isMobile ? '13px' : '15px'};">【ラッキーアイテム】</h3>
-                    <p style="color: #FFFFFF; text-shadow: 0 0 10px rgba(206, 178, 124, 0.6); line-height: 1.3; font-size: ${isMobile ? '11px' : '13px'}; margin: 0;">${cardData.luckyItem}</p>
+                    <h3 style="color: #FFFFFF; text-shadow: 0 0 15px #ceb27c; margin-bottom: 5px; font-size: ${isMobile ? '18px' : '20px'};">【ラッキーアイテム】</h3>
+                    <p style="color: #FFFFFF; text-shadow: 0 0 10px rgba(206, 178, 124, 0.6); line-height: 1.4; font-size: ${isMobile ? '15px' : '17px'}; margin: 0;">${cardData.luckyItem}</p>
                 </div>
 
                 <!-- 気をつけること -->
                 <div class="card-section" style="text-align: center; margin-bottom: ${isMobile ? '10px' : '15px'};">
-                    <h3 style="color: #FFFFFF; text-shadow: 0 0 15px #ceb27c; margin-bottom: 3px; font-size: ${isMobile ? '13px' : '15px'};">【気をつけること】</h3>
-                    <p style="color: #FFFFFF; text-shadow: 0 0 10px rgba(206, 178, 124, 0.6); line-height: 1.3; font-size: ${isMobile ? '11px' : '13px'}; margin: 0;">${cardData.caution}</p>
+                    <h3 style="color: #FFFFFF; text-shadow: 0 0 15px #ceb27c; margin-bottom: 5px; font-size: ${isMobile ? '18px' : '20px'};">【気をつけること】</h3>
+                    <p style="color: #FFFFFF; text-shadow: 0 0 10px rgba(206, 178, 124, 0.6); line-height: 1.4; font-size: ${isMobile ? '15px' : '17px'}; margin: 0;">${cardData.caution}</p>
                 </div>
 
                 <!-- ボタンエリア -->
                 <div style="text-align: center; margin-top: ${isMobile ? '15px' : '20px'};">
-                    <button onclick="location.reload()" style="padding: 10px 30px; background: linear-gradient(135deg, #FFD700, #FFA500); border: none; border-radius: 25px; color: #1a0033; font-size: ${isMobile ? '14px' : '16px'}; font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);">
+                    <button onclick="location.reload()" style="padding: 12px 35px; background: linear-gradient(135deg, #FFD700, #FFA500); border: none; border-radius: 25px; color: #1a0033; font-size: ${isMobile ? '16px' : '18px'}; font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);">
                         もう一度占う
                     </button>
                 </div>
