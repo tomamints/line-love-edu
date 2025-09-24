@@ -45,71 +45,52 @@ function displayCardResult() {
 
     // 結果表示エリアの作成
     const resultHTML = `
-        <div class="tarot-result-container">
-            <!-- 背景画像 -->
-            <div class="tarot-background">
-                <img src="/assets/images/tarot-cards0924/tarot-back.png" alt="背景">
-            </div>
-
-            <!-- 縁装飾 -->
-            <div class="tarot-corners">
-                <img class="corner top-left" src="/assets/images/tarot-cards0924/縁_左上.png" alt="">
-                <img class="corner top-right" src="/assets/images/tarot-cards0924/縁_右上.png" alt="">
-                <img class="corner bottom-left" src="/assets/images/tarot-cards0924/縁_左下.png" alt="">
-                <img class="corner bottom-right" src="/assets/images/tarot-cards0924/縁_右下.png" alt="">
-            </div>
-
-            <!-- 上下装飾 -->
-            <div class="tarot-borders">
-                <img class="border-top" src="/assets/images/tarot-cards0924/縁上下.png" alt="">
-                <img class="border-bottom" src="/assets/images/tarot-cards0924/縁上下.png" alt="">
-            </div>
-
+        <div class="tarot-result-container" style="text-align: center;">
             <!-- メインコンテンツ -->
-            <div class="tarot-content">
+            <div class="tarot-content" style="text-align: center;">
                 <!-- カードタイトル -->
-                <div class="card-title">
-                    <h2>${currentCard.number} ${currentCard.name}</h2>
-                    <span class="position-text">${positionText}</span>
+                <div class="card-title" style="text-align: center; margin-bottom: 30px;">
+                    <h2 style="color: #FFFFFF; text-shadow: 0 0 20px #ceb27c, 0 0 40px #ceb27c; margin-bottom: 10px;">
+                        ${currentCard.number} ${currentCard.name}（${positionText}）
+                    </h2>
                 </div>
 
                 <!-- カード画像 -->
-                <div class="card-image-container">
-                    <img src="${currentCard.image}" alt="${currentCard.name}" class="${!isUpright ? 'reversed-card' : ''}">
+                <div class="card-image-container" style="text-align: center; margin: 30px auto;">
+                    <img src="../assets/images/tarot-cards0924/${currentCard.id}.png"
+                         alt="${currentCard.name}"
+                         style="max-width: 300px; width: 100%; height: auto; border-radius: 10px; box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5); ${!isUpright ? 'transform: rotate(180deg);' : ''}">
                 </div>
 
                 <!-- 意味 -->
-                <div class="card-section">
-                    <h3>【${cardData.meaning}】</h3>
-                    <p>${cardData.description}</p>
+                <div class="card-section" style="text-align: center;">
+                    <h3 style="color: #FFFFFF; text-shadow: 0 0 15px #ceb27c;">【${cardData.meaning}】</h3>
+                    <p style="color: #FFFFFF; text-shadow: 0 0 10px rgba(206, 178, 124, 0.6);">${cardData.description}</p>
                 </div>
 
                 <!-- 今日のあなたの恋愛 -->
-                <div class="card-section">
-                    <h3>【今日のあなたの恋愛】</h3>
-                    <p>${cardData.loveExample}</p>
+                <div class="card-section" style="text-align: center;">
+                    <h3 style="color: #FFFFFF; text-shadow: 0 0 15px #ceb27c;">【今日のあなたの恋愛】</h3>
+                    <p style="color: #FFFFFF; text-shadow: 0 0 10px rgba(206, 178, 124, 0.6);">${cardData.loveExample}</p>
                 </div>
 
                 <!-- 今日の行動 -->
-                <div class="card-section">
-                    <h3>【今日の行動】</h3>
-                    <p>${cardData.todayAction}</p>
+                <div class="card-section" style="text-align: center;">
+                    <h3 style="color: #FFFFFF; text-shadow: 0 0 15px #ceb27c;">【今日の行動】</h3>
+                    <p style="color: #FFFFFF; text-shadow: 0 0 10px rgba(206, 178, 124, 0.6);">${cardData.todayAction}</p>
                 </div>
 
                 <!-- ラッキーアイテム -->
-                <div class="card-section">
-                    <h3>【ラッキーアイテム】</h3>
-                    <p>${cardData.luckyItem}</p>
+                <div class="card-section" style="text-align: center;">
+                    <h3 style="color: #FFFFFF; text-shadow: 0 0 15px #ceb27c;">【ラッキーアイテム】</h3>
+                    <p style="color: #FFFFFF; text-shadow: 0 0 10px rgba(206, 178, 124, 0.6);">${cardData.luckyItem}</p>
                 </div>
 
                 <!-- 気をつけること -->
-                <div class="card-section">
-                    <h3>【気をつけること】</h3>
-                    <p>${cardData.caution}</p>
+                <div class="card-section" style="text-align: center;">
+                    <h3 style="color: #FFFFFF; text-shadow: 0 0 15px #ceb27c;">【気をつけること】</h3>
+                    <p style="color: #FFFFFF; text-shadow: 0 0 10px rgba(206, 178, 124, 0.6);">${cardData.caution}</p>
                 </div>
-
-                <!-- もう一度占うボタン -->
-                <button class="retry-button" onclick="drawNewCard()">もう一度占う</button>
             </div>
         </div>
     `;
@@ -121,10 +102,10 @@ function displayCardResult() {
         resultContainer.style.display = 'block';
     }
 
-    // 既存のカード表示エリアを非表示
-    const cardsContainer = document.querySelector('.cards-container');
-    if (cardsContainer) {
-        cardsContainer.style.display = 'none';
+    // カード選択エリアを非表示
+    const cardSelection = document.querySelector('.card-selection');
+    if (cardSelection) {
+        cardSelection.style.display = 'none';
     }
 
     // drawボタンを「もう一度占う」に変更
@@ -143,10 +124,10 @@ async function drawNewCard() {
         resultContainer.innerHTML = '';
     }
 
-    // カード表示エリアを表示
-    const cardsContainer = document.querySelector('.cards-container');
-    if (cardsContainer) {
-        cardsContainer.style.display = 'block';
+    // カード選択エリアを表示
+    const cardSelection = document.querySelector('.card-selection');
+    if (cardSelection) {
+        cardSelection.style.display = 'block';
     }
 
     // drawボタンをリセット
