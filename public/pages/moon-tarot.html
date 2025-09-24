@@ -5,23 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>月タロット占い - 月が導く恋愛の行方</title>
     <meta name="description" content="月の満ち欠けとタロットカードを組み合わせた神秘的な恋愛占い。今日のあなたの恋愛運を月のカードが教えます。">
-    
+
     <!-- OGP設定 -->
     <meta property="og:title" content="月タロット占い 🌙 月が導く恋愛の行方">
     <meta property="og:description" content="月の満ち欠けとタロットカードを組み合わせた神秘的な恋愛占い。今日のあなたの恋愛運を月のカードが教えます。">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://line-love-edu.vercel.app/moon-tarot.html">
     <meta property="og:image" content="https://line-love-edu.vercel.app/images/moon-tarot-ogp.png">
-    <meta property="og:image:secure_url" content="https://line-love-edu.vercel.app/images/moon-tarot-ogp.png">
-    <meta property="og:image:type" content="image/png">
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="630">
-    
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Kiwi+Maru:wght@300;400;500&family=Noto+Serif+JP:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../assets/css/moon-tarot-new.css">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+
     <style>
         * {
             margin: 0;
@@ -30,404 +25,258 @@
         }
 
         body {
-            font-family: 'Kiwi Maru', serif;
-            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            font-family: 'Noto Serif JP', serif;
             min-height: 100vh;
-            color: #fff;
             overflow-x: hidden;
+            position: relative;
         }
 
-        /* 星空の背景 */
-        .stars {
+        /* 背景画像 */
+        .main-background {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            pointer-events: none;
+            z-index: -1;
+            background-image: url('../assets/images/tarot-cards0924/tarot-back.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            opacity: 0.8;
         }
 
-        .star {
+        .main-background::after {
+            content: '';
             position: absolute;
-            background: white;
-            border-radius: 50%;
-            animation: twinkle 3s infinite;
-        }
-
-        @keyframes twinkle {
-            0%, 100% { opacity: 0.3; }
-            50% { opacity: 1; }
-        }
-
-        @keyframes pulse {
-            0%, 100% { 
-                opacity: 0.4;
-                transform: scale(1);
-            }
-            50% { 
-                opacity: 1;
-                transform: scale(1.2);
-            }
-        }
-
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 20px;
-            position: relative;
-            z-index: 1;
-        }
-
-        /* ヘッダー */
-        .header {
-            text-align: center;
-            padding: 40px 20px;
-            animation: fadeIn 1s ease-out;
-        }
-
-        .title {
-            font-size: 42px;
-            font-weight: 500;
-            margin-bottom: 10px;
-            background: linear-gradient(45deg, #ffd700, #fff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            text-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
-        }
-
-        .subtitle {
-            font-size: 16px;
-            color: rgba(255, 255, 255, 0.8);
-            letter-spacing: 1px;
-        }
-
-        /* 占い選択セクション */
-        .spread-selection {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 20px;
-            padding: 30px;
-            margin: 30px 0;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .spread-title {
-            font-size: 24px;
-            text-align: center;
-            margin-bottom: 30px;
-            color: #ffd700;
-        }
-
-        .spread-options {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-        }
-
-        .spread-option {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 15px;
-            padding: 25px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-align: center;
-        }
-
-        .spread-option:hover {
-            background: rgba(255, 255, 255, 0.1);
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-        }
-
-        .spread-icon {
-            font-size: 48px;
-            margin-bottom: 15px;
-        }
-
-        .spread-name {
-            font-size: 20px;
-            font-weight: 500;
-            margin-bottom: 10px;
-        }
-
-        .spread-description {
-            font-size: 14px;
-            color: rgba(255, 255, 255, 0.7);
-            line-height: 1.6;
-        }
-
-        /* カード表示エリア */
-        .card-area {
-            display: none;
-            margin: 40px 0;
-        }
-
-        .card-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 20px;
-            flex-wrap: wrap;
-            margin: 30px auto;
-            perspective: 1000px;
-            -webkit-perspective: 1000px;
-            width: 100%;
-        }
-
-        .card {
-            width: 150px;
-            height: 225px;  /* 2:3の比率 (150:225 = 1:1.5) */
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 15px;
-            position: relative;
-            cursor: pointer;
-            transition: transform 0.6s;
-            transform-style: preserve-3d;
-            -webkit-transform-style: preserve-3d;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-        }
-
-        /* 1枚引きの時は大きく表示 */
-        .single-card {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        .single-card .card {
-            width: 200px;
-            height: 300px;  /* 2:3の比率を維持 */
-        }
-
-        /* 3枚引きの時は標準サイズ */
-        .three-cards {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 20px;  /* PCでは隙間を確保 */
-        }
-        
-        .three-cards .card {
-            width: 150px;
-            height: 225px;
-        }
-
-        .card.flipped {
-            transform: rotateY(180deg);
-            -webkit-transform: rotateY(180deg);
-        }
-
-        .card-face {
-            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
-            backface-visibility: hidden;
-            -webkit-backface-visibility: hidden;
-            border-radius: 15px;
+            background: linear-gradient(
+                180deg,
+                rgba(15, 12, 41, 0.85) 0%,
+                rgba(48, 43, 99, 0.7) 50%,
+                rgba(36, 36, 62, 0.85) 100%
+            );
+        }
+
+        /* 装飾フレーム */
+        .decorative-frame {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        .corner-decoration {
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            opacity: 0.9;
+        }
+
+        .corner-top-left {
+            top: 20px;
+            left: 20px;
+            background-image: url('../assets/images/tarot-cards0924/縁_左上.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+        }
+
+        .corner-top-right {
+            top: 20px;
+            right: 20px;
+            background-image: url('../assets/images/tarot-cards0924/縁_右上.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+        }
+
+        .corner-bottom-left {
+            bottom: 20px;
+            left: 20px;
+            background-image: url('../assets/images/tarot-cards0924/縁_左下.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+        }
+
+        .corner-bottom-right {
+            bottom: 20px;
+            right: 20px;
+            background-image: url('../assets/images/tarot-cards0924/縁_右下.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+        }
+
+        .border-decoration {
+            position: absolute;
+            opacity: 0.7;
+        }
+
+        .border-top {
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 250px;
+            height: 60px;
+            background-image: url('../assets/images/tarot-cards0924/縁上下.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+
+        .border-bottom {
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%) rotate(180deg);
+            width: 250px;
+            height: 60px;
+            background-image: url('../assets/images/tarot-cards0924/縁上下.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+
+        /* メインコンテナ */
+        .container {
+            position: relative;
+            z-index: 10;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 60px 20px;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
-            justify-content: center;
             align-items: center;
-            padding: 20px;
         }
 
-        .card-back {
-            background: radial-gradient(circle at center, #2a1a5e 0%, #1a0033 100%);
-            background-image: 
-                radial-gradient(circle at 30% 30%, rgba(255, 215, 0, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 70% 70%, rgba(138, 43, 226, 0.1) 0%, transparent 50%),
-                linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        /* タイトル */
+        .main-title {
+            text-align: center;
+            margin-bottom: 50px;
+            animation: fadeInUp 1s ease;
+        }
+
+        .main-title h1 {
+            font-size: 48px;
+            font-weight: 700;
+            color: #FFD700;
+            text-shadow:
+                2px 2px 4px rgba(0, 0, 0, 0.5),
+                0 0 30px rgba(255, 215, 0, 0.5);
+            letter-spacing: 0.1em;
+            margin-bottom: 15px;
+        }
+
+        .main-title .subtitle {
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.9);
+            letter-spacing: 0.05em;
+        }
+
+        /* カード選択画面 */
+        .card-selection {
+            width: 100%;
+            max-width: 800px;
+            background: rgba(20, 20, 40, 0.85);
             border: 2px solid rgba(255, 215, 0, 0.3);
-            transform: rotateY(0deg);
-            -webkit-transform: rotateY(0deg);
+            border-radius: 20px;
+            padding: 40px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .selection-title {
+            font-size: 28px;
+            color: #FFD700;
+            text-align: center;
+            margin-bottom: 40px;
+            letter-spacing: 0.1em;
+        }
+
+        /* カード裏面の表示 */
+        .cards-container {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+
+        .tarot-card-back {
+            width: 180px;
+            height: 280px;
+            border: 3px solid rgba(255, 215, 0, 0.4);
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
-        }
-        
-        .card-back::before {
-            content: '🌙';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 80px;
-            opacity: 0.3;
-            animation: glow 3s infinite;
-        }
-        
-        @keyframes glow {
-            0%, 100% { opacity: 0.3; }
-            50% { opacity: 0.6; }
-        }
-
-        .card-back-text {
-            display: none; /* テキストも非表示（画像があるため） */
-        }
-
-        .card-front {
-            background: #1a1a2e;
-            transform: rotateY(180deg);
-            -webkit-transform: rotateY(180deg);
-            border: 2px solid rgba(255, 215, 0, 0.5);
-            background-size: cover;  /* 余白がトリミングされたのでcoverで十分 */
-            background-position: center center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            background-size: cover;
+            background-position: center;
             background-repeat: no-repeat;
-            overflow: hidden;
         }
 
-        .card-emoji {
-            font-size: 60px;
-            margin-bottom: 15px;
-            display: none; /* 画像を使うので絵文字は非表示 */
+        .tarot-card-back:nth-child(1) {
+            background-image: url('../assets/images/tarot-cards0924/A.png');
         }
 
-        .card-name {
-            display: none; /* カード名を非表示 */
+        .tarot-card-back:nth-child(2) {
+            background-image: url('../assets/images/tarot-cards0924/B.png');
+        }
+
+
+        @keyframes sparkle {
+            0%, 100% { opacity: 0.5; transform: translate(-50%, -50%) scale(1); }
+            50% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
+        }
+
+        .tarot-card-back:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(255, 215, 0, 0.3);
+            border-color: rgba(255, 215, 0, 0.6);
+        }
+
+        /* 占うボタン */
+        .submit-button {
+            display: block;
+            margin: 0 auto;
+            padding: 18px 60px;
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            color: #1a0033;
+            border: none;
+            border-radius: 50px;
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.3);
+        }
+
+        .submit-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(255, 215, 0, 0.5);
+        }
+
+        .submit-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
 
         /* 結果表示エリア */
-        .result-area {
-            display: none;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 20px;
-            padding: 30px;
-            margin: 30px 0;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            animation: fadeIn 0.5s ease-out;
-        }
-
-        .result-title {
-            font-size: 28px;
-            text-align: center;
-            margin-bottom: 30px;
-            color: #ffd700;
-        }
-
-        .result-cards {
-            display: grid;
-            gap: 30px;
-            margin-bottom: 30px;
-        }
-
-        .result-card {
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 15px;
-            padding: 25px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .result-card-header {
-            display: flex;
-            align-items: flex-start;  /* 上揃えに変更 */
-            gap: 20px;  /* 間隔を広げる */
-            margin-bottom: 25px;
-            position: relative;
-        }
-
-        .result-card-emoji {
-            font-size: 48px;
-            display: none; /* 画像を使うので絵文字は非表示 */
-        }
-        
-        .result-card-image-container {
-            width: 120px;
-            height: 176px;  /* 実際の画像比率1:1.47に合わせる */
-            position: relative;
-            flex-shrink: 0;  /* 画像サイズを固定 */
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 10px;
-            overflow: hidden;
-        }
-        
-        .result-card-image {
+        #tarot-result {
             width: 100%;
-            height: 100%;
-            object-fit: contain;  /* 画像全体を表示 */
-            object-position: center;
-            filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.3));  /* 画像に直接影を付ける */
-        }
-
-        .result-card-info {
-            flex: 1;
-            padding-top: 10px;  /* カード名の位置調整 */
-        }
-
-        .result-card-name {
-            font-size: 24px;  /* 少し大きく */
-            font-weight: 500;
-            color: #ffd700;
-            margin-bottom: 8px;
-        }
-
-        .result-card-meaning {
-            font-size: 16px;  /* 少し大きく */
-            color: rgba(255, 255, 255, 0.8);
-            margin-top: 5px;
-            line-height: 1.5;
-        }
-
-        .result-card-message {
-            font-size: 16px;
-            line-height: 1.8;
-            margin-bottom: 15px;
-        }
-
-        .result-card-advice {
-            background: rgba(255, 215, 0, 0.1);
-            border-left: 3px solid #ffd700;
-            padding: 15px;
-            border-radius: 5px;
-            font-size: 15px;
-            line-height: 1.6;
-        }
-
-        .result-keywords {
-            display: flex;
-            gap: 10px;
-            margin-top: 15px;
-            flex-wrap: wrap;
-        }
-
-        .keyword {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 13px;
-        }
-
-        /* ボタン */
-        .btn {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            border: none;
-            padding: 15px 40px;
-            border-radius: 30px;
-            font-size: 18px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin: 20px auto;
-            display: block;
-            font-family: 'Kiwi Maru', serif;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
-        }
-
-        .btn-draw {
-            margin-top: 30px;
+            animation: fadeIn 0.8s ease;
         }
 
         /* アニメーション */
-        @keyframes fadeIn {
+        @keyframes fadeInUp {
             from {
                 opacity: 0;
-                transform: translateY(20px);
+                transform: translateY(30px);
             }
             to {
                 opacity: 1;
@@ -435,472 +284,136 @@
             }
         }
 
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateX(-50px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
         /* レスポンシブ */
         @media (max-width: 768px) {
-            .title {
-                font-size: 32px;
+            .main-title h1 {
+                font-size: 36px;
             }
-            
-            .card {
+
+            .corner-decoration {
+                width: 80px;
+                height: 80px;
+            }
+
+            .corner-top-left { top: 10px; left: 10px; }
+            .corner-top-right { top: 10px; right: 10px; }
+            .corner-bottom-left { bottom: 10px; left: 10px; }
+            .corner-bottom-right { bottom: 10px; right: 10px; }
+
+            .border-top, .border-bottom {
+                width: 180px;
+                height: 40px;
+            }
+
+            .card-selection {
+                padding: 30px 20px;
+            }
+
+            .tarot-card-back {
                 width: 140px;
-                height: 210px;  /* 2:3の比率 (140:210 = 1:1.5) */
+                height: 220px;
             }
-            
-            /* 1枚引きの時はスマホでも大きく - より具体的なセレクタ */
-            .card-container.single-card .card {
-                width: 200px !important;
-                height: 300px !important;  /* 2:3の比率を維持 */
-            }
-            
-            /* 3枚引きの時は2段組で見やすく - より具体的なセレクタ */
-            .card-container.three-cards {
-                max-width: 350px;
-                margin: 0 auto;
-                gap: 15px !important;
-            }
-            
-            .card-container.three-cards .card {
-                width: 150px !important;
-                height: 225px !important;  /* 2:3の比率を維持 */
-            }
-            
-            .card-emoji {
-                font-size: 48px;
-            }
-            
-            /* スマホでも画像設定を維持 */
-            .card-front {
-                background-size: cover;
-            }
-            
-            .card-back {
-                background-size: cover;
-            }
-            
-            /* 結果表示の画像サイズ調整 - タブレットでも大きめに */
-            .result-card-image-container {
-                width: 100px;
-                height: 147px;  /* 実際の画像比率1:1.47に合わせる */
-            }
-            
-            .result-card-image {
-                width: 100%;
-                height: 100%;
-            }
-            
-            .result-card-name {
-                font-size: 20px;
-            }
-            
-            .result-card-meaning {
-                font-size: 14px;
+
+            .cards-container {
+                gap: 20px;
             }
         }
-        
+
         @media (max-width: 480px) {
-            /* より小さい画面用の調整 */
-            .card {
-                width: 120px;
-                height: 180px;  /* 2:3の比率を維持 */
+            .main-title h1 {
+                font-size: 28px;
             }
-            
-            /* コンテナの中央揃えを確実に */
-            .card-container {
-                display: flex !important;
-                justify-content: center !important;
-                align-items: center !important;
-                width: 100% !important;
-                padding: 0 10px;
-            }
-            
-            /* 1枚引きの時は画面幅いっぱいに大きく - 最優先 */
-            .card-container.single-card {
-                justify-content: center !important;
-            }
-            
-            .card-container.single-card .card {
-                width: 200px !important;
-                height: 300px !important;  /* 2:3の比率を維持 */
-                margin: 0 auto !important;
-            }
-            
-            /* 3枚引きの時は2-1の配置で見やすく - 最優先 */
-            .card-container.three-cards {
-                justify-content: center !important;
-                max-width: 280px !important;
-                margin: 0 auto !important;
-                gap: 12px !important;  /* 適度な隙間 */
-            }
-            
-            .card-container.three-cards .card {
-                width: 130px !important;
-                height: 195px !important;  /* 2:3の比率を維持 */
-            }
-            
-            .cards-container {
-                gap: 15px;  /* カード間の隙間を調整 */
-            }
-            
-            /* スマホの結果表示 - レイアウトを縦並びに */
-            .result-card-header {
-                flex-direction: column;
-                align-items: center;
-                text-align: center;
-            }
-            
-            .result-card-image-container {
-                width: 140px;
-                height: 206px;  /* 実際の画像比率1:1.47に合わせる */
-                margin-bottom: 15px;
-            }
-            
-            .result-card-info {
-                padding-top: 0;
-            }
-            
-            .result-card-name {
-                font-size: 20px;
-            }
-            
-            .result-card-meaning {
+
+            .main-title .subtitle {
                 font-size: 14px;
+            }
+
+            .corner-decoration {
+                width: 60px;
+                height: 60px;
+            }
+
+            .tarot-card-back {
+                width: 120px;
+                height: 190px;
+            }
+
+            .submit-button {
+                padding: 15px 40px;
+                font-size: 18px;
             }
         }
     </style>
 </head>
 <body>
-    <!-- 星空の背景 -->
-    <div class="stars" id="stars"></div>
+    <!-- 背景 -->
+    <div class="main-background"></div>
 
+    <!-- 装飾フレーム -->
+    <div class="decorative-frame">
+        <div class="corner-decoration corner-top-left"></div>
+        <div class="corner-decoration corner-top-right"></div>
+        <div class="corner-decoration corner-bottom-left"></div>
+        <div class="corner-decoration corner-bottom-right"></div>
+        <div class="border-decoration border-top"></div>
+        <div class="border-decoration border-bottom"></div>
+    </div>
+
+    <!-- メインコンテンツ -->
     <div class="container">
-        <!-- ヘッダー -->
-        <div class="header">
-            <h1 class="title">月タロット占い</h1>
-            <p class="subtitle">月の満ち欠けが導く、あなたの恋愛の行方</p>
+        <!-- タイトル -->
+        <div class="main-title">
+            <h1>月タロット占い</h1>
+            <p class="subtitle">～ 月の導きがあなたの恋愛を照らす ～</p>
         </div>
 
-        <!-- 占い選択 -->
-        <div class="spread-selection" id="spreadSelection">
-            <h2 class="spread-title">占い方を選んでください</h2>
-            <div class="spread-options">
-                <div class="spread-option" onclick="selectSpread('daily')">
-                    <div class="spread-icon">🌙</div>
-                    <div class="spread-name">今日の月カード</div>
-                    <div class="spread-description">1枚のカードで今日の恋愛運を占います</div>
-                </div>
-                <div class="spread-option" onclick="selectSpread('three')">
-                    <div class="spread-icon">🌗</div>
-                    <div class="spread-name">月の三相占い</div>
-                    <div class="spread-description">過去・現在・未来の3枚で恋愛の流れを読みます</div>
-                </div>
-                <div class="spread-option" onclick="selectSpread('full')">
-                    <div class="spread-icon">🌕</div>
-                    <div class="spread-name">満月の恋愛占い</div>
-                    <div class="spread-description">3枚のカードで二人の関係を深く読み解きます</div>
-                </div>
+        <!-- カード選択エリア -->
+        <div class="card-selection" id="cardSelection">
+            <h2 class="selection-title">カードに触れて占いを始める</h2>
+
+            <div class="cards-container">
+                <div class="tarot-card-back" onclick="selectCard(1)"></div>
+                <div class="tarot-card-back" onclick="selectCard(2)"></div>
             </div>
-        </div>
 
-        <!-- カード表示エリア -->
-        <div class="card-area" id="cardArea">
-            <div class="card-container" id="cardContainer"></div>
-            <button class="btn btn-draw" id="drawButton" onclick="drawCards()">カードを引く</button>
+            <button class="submit-button" onclick="drawCards()">
+                カードを引く
+            </button>
         </div>
 
         <!-- 結果表示エリア -->
-        <div class="result-area" id="resultArea">
-        <div id="tarot-result" style="display:none;"></div>
-            <h2 class="result-title" id="resultTitle"></h2>
-            <div class="result-cards" id="resultCards"></div>
-            
-            <!-- ボタンエリア -->
-            <div style="display: flex; flex-direction: column; gap: 15px; margin-top: 30px;">
-                <button class="btn" onclick="reset()">もう一度占う</button>
-                
-                <!-- LINE公式アカウントへの誘導 -->
-                <div style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); border-radius: 20px; padding: 25px; margin: 15px 0; text-align: center; border: 1px solid rgba(255, 255, 255, 0.1);">
-                    <div style="color: rgba(255, 255, 255, 0.9); margin-bottom: 15px;">
-                        <div style="font-size: 18px; margin-bottom: 10px; font-weight: normal; letter-spacing: 1px;">
-                            月詠からの特別なメッセージをお届け
-                        </div>
-                        <div style="font-size: 14px; line-height: 1.6; opacity: 0.85;">
-                            あなたの恋愛運を毎日占い<br>
-                            月の導きで最高の恋を叶えましょう
-                        </div>
-                    </div>
-                    
-                    <a href="https://lin.ee/egmCXoG" 
-                       target="_blank"
-                       style="display: inline-block; background: linear-gradient(135deg, #00b900 0%, #00a000 100%); color: white; padding: 12px 30px; border-radius: 25px; text-decoration: none; font-weight: normal; font-size: 15px; box-shadow: 0 4px 15px rgba(0,185,0,0.3); letter-spacing: 0.5px;">
-                        🌙 LINE友だち追加
-                    </a>
-                </div>
-                
-                <!-- シェアボタン -->
-                <button class="btn" style="background: linear-gradient(135deg, #1da1f2, #1a91da);" onclick="shareResult()">
-                    結果をシェア 📱
-                </button>
-                
-                <a href="index.html" class="btn" style="background: linear-gradient(135deg, #4a4a6a, #3a3a5a); text-decoration: none; display: inline-block; text-align: center;">
-                    トップに戻る
-                </a>
-            </div>
-        </div>
+        <div id="tarot-result" style="display: none;"></div>
     </div>
 
-    <!-- moon-tarot.js -->
-    <script src="/assets/js/moon-tarot.js"></script>
+    <!-- JavaScript -->
+    <script src="../assets/js/moon-tarot.js"></script>
     <script>
-        // ユーザーIDを保持
-        window.currentUserId = null;
-        window.isLiffUser = false;
-        
-        // ユーザーIDを取得する関数
-        function getUserId() {
-            // 1. URLパラメータから取得
-            const urlParams = new URLSearchParams(window.location.search);
-            const urlUserId = urlParams.get('userId');
-            if (urlUserId) {
-                console.log('URLパラメータからユーザーID取得:', urlUserId);
-                // LocalStorageに保存
-                localStorage.setItem('moon_tarot_line_user_id', urlUserId);
-                sessionStorage.setItem('moon_tarot_line_user_id', urlUserId);
-                return urlUserId;
-            }
-            
-            // 2. SessionStorageから取得（同じセッション内）
-            const sessionUserId = sessionStorage.getItem('moon_tarot_line_user_id');
-            if (sessionUserId) {
-                console.log('SessionStorageからユーザーID取得:', sessionUserId);
-                return sessionUserId;
-            }
-            
-            // 3. LocalStorageから取得（以前のアクセス）
-            const localUserId = localStorage.getItem('moon_tarot_line_user_id');
-            if (localUserId) {
-                console.log('LocalStorageからユーザーID取得:', localUserId);
-                sessionStorage.setItem('moon_tarot_line_user_id', localUserId);
-                return localUserId;
-            }
-            
-            return null;
-        }
-        
-        // LINE内ブラウザチェックとユーザー認証（LIFF不要版）
-        async function initializeLiff() {
-            console.log('認証チェック開始...');
-            
-            // デバッグモード: 認証をスキップ
-            const urlParams = new URLSearchParams(window.location.search);
-            const debugMode = urlParams.get('debug') === 'true';
-            
-            if (debugMode) {
-                console.log('デバッグモード: 認証をスキップ');
-                // デバッグモードでもuserIdがあればそれを使用
-                const userId = getUserId();
-                window.currentUserId = userId || 'debug_user';
-                window.isLiffUser = true;
-                return true;
-            }
-            
-            // ユーザーIDを取得
-            const userId = getUserId();
-            
-            // ユーザーIDがない場合はLINE登録画面へ誘導
-            if (!userId) {
-                console.log('ユーザーIDが取得できません');
-                showAuthRequired();
-                return false;
-            }
-            
-            // ユーザーIDが取得できた場合、データベースに存在するかチェック
-            try {
-                console.log('ユーザーID存在チェック中:', userId);
-                const checkResponse = await fetch(`/api/get-love-profile?userId=${userId}&checkOnly=true`);
-                const checkResult = await checkResponse.json();
-                
-                console.log('ユーザー存在チェック結果:', checkResult);
-                
-                if (!checkResult.exists) {
-                    // ユーザーIDが存在しない場合、LINE登録画面へ誘導
-                    console.log('無効なユーザーIDを検出:', userId);
-                    showAuthRequired();
-                    return false;
+        let selectedCard = null;
+
+        function selectCard(num) {
+            // 選択されたカードを記録
+            selectedCard = num;
+
+            // 全カードの選択状態をリセット
+            document.querySelectorAll('.tarot-card-back').forEach((card, index) => {
+                if (index + 1 === num) {
+                    card.style.border = '3px solid #FFD700';
+                    card.style.transform = 'scale(1.05)';
+                } else {
+                    card.style.border = '3px solid rgba(255, 215, 0, 0.4)';
+                    card.style.transform = 'scale(1)';
                 }
-                
-                // ユーザーが存在する場合、続行
-                window.currentUserId = userId;
-                window.isLiffUser = true;
-                console.log('認証成功:', userId);
-                return true;
-                
-            } catch (error) {
-                console.error('ユーザー確認エラー:', error);
-                // エラーの場合でも続行させる（サーバーエラーでブロックしない）
-                window.currentUserId = userId;
-                window.isLiffUser = true;
-                return true;
-            }
-        }
-        
-        // 認証必要画面を表示
-        function showAuthRequired() {
-            document.getElementById('spreadSelection').innerHTML = `
-                <div style="text-align: center; padding: 40px;">
-                    <div style="font-size: 48px; margin-bottom: 20px;">🔒</div>
-                    <h2 style="color: #ffd700; margin-bottom: 15px;">LINEからアクセスしてください</h2>
-                    <p style="color: rgba(255,255,255,0.8); margin-bottom: 30px;">
-                        この占いは1日1回限定の特別な占いです。<br>
-                        LINE公式アカウントからアクセスしてご利用ください。
-                    </p>
-                    <a href="https://lin.ee/egmCXoG" 
-                       target="_blank"
-                       style="display: inline-block; background: linear-gradient(135deg, #00b900 0%, #00a000 100%); 
-                              color: white; padding: 15px 40px; border-radius: 25px; text-decoration: none; 
-                              font-weight: bold; font-size: 16px; box-shadow: 0 4px 15px rgba(0,185,0,0.3);">
-                        LINE友だち追加して占う
-                    </a>
-                </div>
-            `;
-            document.getElementById('cardArea').style.display = 'none';
-            document.getElementById('resultArea').style.display = 'none';
-        }
-        
-        // 権限チェックのキャッシュ
-        window.permissionCache = {};
-        
-        // 占い選択時の権限チェック
-        const originalSelectSpread = window.selectSpread;
-        window.selectSpread = async function(type) {
-            if (!window.isLiffUser) {
-                showAuthRequired();
-                return;
-            }
-            
-            // ローディング表示
-            const spreadSelection = document.getElementById('spreadSelection');
-            const originalContent = spreadSelection.innerHTML;
-            spreadSelection.innerHTML = `
-                <div style="text-align: center; padding: 40px;">
-                    <div style="font-size: 48px; animation: pulse 1s infinite;">🌙</div>
-                    <p style="margin-top: 20px; color: rgba(255,255,255,0.8);">使用権限を確認中...</p>
-                </div>
-            `;
-            
-            try {
-                // 権限チェック（必ず先に実行）
-                const response = await fetch('/api/tarot-permission', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        action: 'check',
-                        userId: window.currentUserId,
-                        tarotType: type
-                    })
-                });
-                
-                const result = await response.json();
-                console.log('権限チェック結果:', result);
-                
-                if (!result.available) {
-                    // 使用済みの場合
-                    spreadSelection.innerHTML = `
-                        <div style="text-align: center; padding: 40px;">
-                            <div style="font-size: 48px;">🌑</div>
-                            <h3 style="color: #ffd700; margin: 20px 0;">本日分は使用済みです</h3>
-                            <p style="color: rgba(255,255,255,0.8); margin-bottom: 30px;">
-                                ${result.message || '本日分のタロット占いは既に使用済みです。<br>明日また挑戦してください！'}
-                            </p>
-                            <button onclick="location.reload()" 
-                                    style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                                           color: white; border: none; padding: 12px 30px; 
-                                           border-radius: 25px; font-size: 16px; cursor: pointer;">
-                                戻る
-                            </button>
-                        </div>
-                    `;
-                    return;
-                }
-                
-                // 権限がある場合のみ画面遷移
-                originalSelectSpread(type);
-                
-            } catch (error) {
-                console.error('権限チェックエラー:', error);
-                // エラーの場合は制限なしで進める
-                console.log('権限チェックエラーのため、制限なしで進めます');
-                originalSelectSpread(type);
-            }
-        };
-        
-        // カード引いた後の処理を拡張
-        const originalDrawCards = window.drawCards;
-        window.drawCards = async function() {
-            // 元の処理を実行
-            originalDrawCards();
-            
-            // 結果を取得して権限を消費
-            if (window.isLiffUser && window.currentSpread) {
-                setTimeout(async () => {
-                    try {
-                        await fetch('/api/tarot-permission', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                                action: 'use',
-                                userId: window.currentUserId,
-                                tarotType: window.currentSpread,
-                                cardData: {
-                                    name: window.drawnCards ? window.drawnCards[0]?.name : 'unknown',
-                                    position: 'upright',
-                                    result: {}
-                                }
-                            })
-                        });
-                        console.log('占い使用記録を保存しました');
-                    } catch (error) {
-                        console.error('使用記録エラー:', error);
-                    }
-                }, 1000);
-            }
-        };
-        
-        // 星空の生成
-        function createStars() {
-            const starsContainer = document.getElementById('stars');
-            for (let i = 0; i < 100; i++) {
-                const star = document.createElement('div');
-                star.className = 'star';
-                star.style.left = Math.random() * 100 + '%';
-                star.style.top = Math.random() * 100 + '%';
-                star.style.width = Math.random() * 3 + 'px';
-                star.style.height = star.style.width;
-                star.style.animationDelay = Math.random() * 3 + 's';
-                starsContainer.appendChild(star);
-            }
-        }
-        createStars();
-        
-        // ページ読み込み時の処理
-        window.addEventListener('load', async () => {
-            // LIFF初期化
-            await initializeLiff();
-            
-            // 画像プリロード
-            preloadImages().then(() => {
-                console.log('初期画像プリロード完了');
             });
+        }
+
+        // ページ読み込み時の初期化
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('月タロット占い初期化完了');
         });
     </script>
 </body>

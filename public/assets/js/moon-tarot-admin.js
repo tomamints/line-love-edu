@@ -49,12 +49,14 @@ function selectSpread(type) {
     // カードを生成
     for (let i = 0; i < cardCount; i++) {
         const card = document.createElement('div');
-        card.className = 'card';
+        card.className = 'tarot-card';
         card.id = `card-${i}`;
+
+        // A.pngとB.pngを交互に使用
+        const backImage = i % 2 === 0 ? '../assets/images/tarot-cards0924/A.png' : '../assets/images/tarot-cards0924/B.png';
+
         card.innerHTML = `
-            <div class="card-face card-back">
-                <div class="card-back-text">🌙</div>
-            </div>
+            <div class="card-face card-back" style="background-image: url('${backImage}');"></div>
             <div class="card-face card-front">
                 <div class="card-emoji">🃏</div>
                 <div class="card-name">準備中...</div>
