@@ -117,13 +117,6 @@ function displayCardResult() {
                     <h3 style="color: #FFFFFF; text-shadow: 0 0 15px #ceb27c; margin-bottom: 5px; font-size: ${isMobile ? '18px' : '20px'};">【気をつけること】</h3>
                     <p style="color: #FFFFFF; text-shadow: 0 0 10px rgba(206, 178, 124, 0.6); line-height: 1.4; font-size: ${isMobile ? '15px' : '17px'}; margin: 0;">${cardData.caution}</p>
                 </div>
-
-                <!-- ボタンエリア -->
-                <div style="text-align: center; margin-top: ${isMobile ? '15px' : '20px'};">
-                    <button onclick="location.reload()" style="padding: 12px 35px; background: linear-gradient(135deg, #FFD700, #FFA500); border: none; border-radius: 25px; color: #1a0033; font-size: ${isMobile ? '16px' : '18px'}; font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);">
-                        もう一度占う
-                    </button>
-                </div>
             </div>
         </div>
     `;
@@ -162,8 +155,43 @@ async function drawNewCard() {
 // drawNewCardをグローバルに
 window.drawNewCard = drawNewCard;
 
+// 1日1回制限をチェック
+function checkDailyLimit() {
+    const today = new Date().toDateString();
+    const lastFortuneDate = localStorage.getItem('moonTarotLastDate');
+
+    if (lastFortuneDate === today) {
+        // 今日すでに占い済み
+        const lastCardData = localStorage.getItem('moonTarotLastCard');
+        if (lastCardData) {
+            const cardInfo = JSON.parse(lastCardData);
+            currentCard = cardInfo.card;
+            isUpright = cardInfo.isUpright;
+            return false; // 新しい占いはできない
+        }
+    }
+    return true; // 新しい占いができる
+}
+
+// 占い結果を保存
+function saveFortuneResult() {
+    const today = new Date().toDateString();
+    localStorage.setItem('moonTarotLastDate', today);
+    localStorage.setItem('moonTarotLastCard', JSON.stringify({
+        card: currentCard,
+        isUpright: isUpright
+    }));
+}
+
 // 占いを開始
 async function startFortune() {
+    // 1日1回制限チェック
+    if (!checkDailyLimit()) {
+        // すでに今日占い済みなので、保存された結果を表示
+        displayCardResult();
+        return;
+    }
+
     // ローディング表示を追加
     const container = document.querySelector('.container');
     const loadingDiv = document.createElement('div');
@@ -214,10 +242,12 @@ async function startFortune() {
         // 少し待ってから表示
         await new Promise(resolve => setTimeout(resolve, 1000));
         loadingDiv.remove();
+        saveFortuneResult(); // 結果を保存
         displayCardResult();
     } else {
         // 画像読み込み失敗でも表示
         loadingDiv.remove();
+        saveFortuneResult(); // 結果を保存
         displayCardResult();
     }
 }
