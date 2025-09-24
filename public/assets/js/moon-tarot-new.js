@@ -121,16 +121,10 @@ function displayCardResult() {
         resultContainer.style.display = 'block';
     }
 
-    // 既存のカード表示エリアを非表示
-    const cardsContainer = document.querySelector('.cards-container');
-    if (cardsContainer) {
-        cardsContainer.style.display = 'none';
-    }
-
-    // drawボタンを「もう一度占う」に変更
-    const drawButton = document.getElementById('drawButton');
-    if (drawButton) {
-        drawButton.textContent = 'もう一度占う';
+    // 占いフォームを非表示
+    const formContainer = document.querySelector('.fortune-form');
+    if (formContainer) {
+        formContainer.style.display = 'none';
     }
 }
 
@@ -140,27 +134,14 @@ async function drawNewCard() {
     const resultContainer = document.getElementById('tarot-result');
     if (resultContainer) {
         resultContainer.style.display = 'none';
-        resultContainer.innerHTML = '';
     }
 
-    // カード表示エリアを表示
-    const cardsContainer = document.querySelector('.cards-container');
-    if (cardsContainer) {
-        cardsContainer.style.display = 'block';
+    // フォームを表示
+    const formContainer = document.querySelector('.fortune-form');
+    if (formContainer) {
+        formContainer.style.display = 'block';
     }
-
-    // drawボタンをリセット
-    const drawButton = document.getElementById('drawButton');
-    if (drawButton) {
-        drawButton.textContent = 'カードを引く';
-    }
-
-    // 新しいカードを引く
-    await startFortune();
 }
-
-// drawNewCardをグローバルに
-window.drawNewCard = drawNewCard;
 
 // 占いを開始
 async function startFortune() {
@@ -197,11 +178,6 @@ async function startFortune() {
     }, 1500);
 }
 
-// drawCards関数をグローバルに定義（既存のボタンとの互換性のため）
-window.drawCards = async function() {
-    await startFortune();
-}
-
 // ページ読み込み時の初期化
 document.addEventListener('DOMContentLoaded', async function() {
     console.log('タロット占いシステム初期化中...');
@@ -218,17 +194,9 @@ document.addEventListener('DOMContentLoaded', async function() {
         });
     }
 
-    // drawButtonのイベント設定
-    const drawButton = document.getElementById('drawButton');
-    if (drawButton) {
-        drawButton.onclick = function() {
-            startFortune();
-        };
-    }
-
     // Enterキーでも占いを開始
     document.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter' && !document.getElementById('tarot-result')?.style.display) {
+        if (e.key === 'Enter' && !document.getElementById('tarot-result').style.display) {
             e.preventDefault();
             startFortune();
         }

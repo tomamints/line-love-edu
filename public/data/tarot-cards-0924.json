@@ -1,0 +1,510 @@
+{
+  "cards": [
+    {
+      "id": 0,
+      "number": "0",
+      "name": "愚者",
+      "nameEn": "The Fool",
+      "image": "/assets/images/tarot-cards0924/1.png",
+      "upright": {
+        "meaning": "自由・冒険・新しい始まり",
+        "description": "無邪気に飛び出す姿。恋愛でも「始まり」を告げるカード。",
+        "loveExample": "勇気を出してLINEすると、思った以上に会話が弾む予感。",
+        "todayAction": "小さな誘いに「はい」と応じてみる",
+        "luckyItem": "白いスニーカー",
+        "caution": "考えすぎず、まずは一歩動くこと"
+      },
+      "reversed": {
+        "meaning": "無謀・現実逃避・未熟さ",
+        "description": "足元を見ずに進む危うさ。恋では軽率さが裏目に出やすい。",
+        "loveExample": "気分で既読スルーや曖昧な態度をすると誤解されるかも。",
+        "todayAction": "気持ちを整理してからメッセージを送る",
+        "luckyItem": "シンプルなノート",
+        "caution": "ノリや勢いだけで決めないこと"
+      }
+    },
+    {
+      "id": 1,
+      "number": "I",
+      "name": "魔術師",
+      "nameEn": "The Magician",
+      "image": "/assets/images/tarot-cards0924/2.png",
+      "upright": {
+        "meaning": "創造・才能・自信",
+        "description": "自分の力で未来を形づくるカード。恋愛でも「スタートのチャンス」を示す。",
+        "loveExample": "自分から話題を出すと、会話がぐっと楽しく広がりそう。",
+        "todayAction": "得意なことを話題にしてみる",
+        "luckyItem": "あなたのお気に入りのペン",
+        "caution": "タイミングを逃さないこと"
+      },
+      "reversed": {
+        "meaning": "未熟・自信喪失・消極的",
+        "description": "力を出し切れずに不安が勝つ状態。恋では遠慮しすぎて進展しにくい。",
+        "loveExample": "相手の反応や返信が遅くなりすぎて、相手を不安にさせてしまうかも。",
+        "todayAction": "短くてもいいから、思ったらすぐ返す",
+        "luckyItem": "腕時計",
+        "caution": "チャンスを逃す「後回し」"
+      }
+    },
+    {
+      "id": 2,
+      "number": "II",
+      "name": "女教皇",
+      "nameEn": "The High Priestess",
+      "image": "/assets/images/tarot-cards0924/3.png",
+      "upright": {
+        "meaning": "知性・冷静・判断力",
+        "description": "静かに見極める姿。恋愛では冷静さで良い判断ができる時。",
+        "loveExample": "気持ちが揺れても冷静に考えることで「本当に大切な人」が見える。",
+        "todayAction": "迷ったら紙に気持ちを書き出す",
+        "luckyItem": "青いアクセサリー",
+        "caution": "感情で即断しないこと"
+      },
+      "reversed": {
+        "meaning": "批判・冷徹・無神経",
+        "description": "冷静さが行きすぎて、冷たい印象に。恋では無関心さが出やすい。",
+        "loveExample": "相手の気遣いに気づかず、素っ気なく返してしまうかも。",
+        "todayAction": "相手の一言に「ありがとう」を添える",
+        "luckyItem": "鏡",
+        "caution": "表情や言葉が冷たくならないように、鏡で自分を見よう。"
+      }
+    },
+    {
+      "id": 3,
+      "number": "III",
+      "name": "女帝",
+      "nameEn": "The Empress",
+      "image": "/assets/images/tarot-cards0924/4.png",
+      "upright": {
+        "meaning": "愛情・満足・豊かさ",
+        "description": "包み込むような優しさ。恋愛では「愛される喜び」を表す。",
+        "loveExample": "相手からの小さな気遣いに、安心感や愛を感じられる日。",
+        "todayAction": "感謝をそのまま口に出す",
+        "luckyItem": "花柄の小物",
+        "caution": "受け取るだけでなく、愛を返す意識も"
+      },
+      "reversed": {
+        "meaning": "嫉妬・浪費・感情的",
+        "description": "豊かさが過剰になり、欲に振り回される状態。恋では「求めすぎ」に注意。",
+        "loveExample": "相手の既読タイミングばかり気にして、不安になるかも。",
+        "todayAction": "連絡を待つ間、自分の時間を楽しむ",
+        "luckyItem": "スイーツ",
+        "caution": "欲張りすぎないこと"
+      }
+    },
+    {
+      "id": 4,
+      "number": "IV",
+      "name": "皇帝",
+      "nameEn": "The Emperor",
+      "image": "/assets/images/tarot-cards0924/5.png",
+      "upright": {
+        "meaning": "安定・成功・責任",
+        "description": "努力が実を結び、信頼を得られるカード。恋愛では「頼れる関係」が築ける時。",
+        "loveExample": "相手があなたを「頼れる存在」として見てくれる瞬間がありそう。",
+        "todayAction": "一つの約束を必ず守る",
+        "luckyItem": "赤色の服",
+        "caution": "強がりすぎないこと"
+      },
+      "reversed": {
+        "meaning": "傲慢・孤立・独断",
+        "description": "自信が行きすぎて孤立を招く暗示。恋では「押しつけ」になりやすい。",
+        "loveExample": "自分の意見ばかり優先して、相手が疲れてしまうかも。",
+        "todayAction": "相手の話を最後まで聞く",
+        "luckyItem": "ブラックの小物",
+        "caution": "一方的にならないこと"
+      }
+    },
+    {
+      "id": 5,
+      "number": "V",
+      "name": "教皇",
+      "nameEn": "The Hierophant",
+      "image": "/assets/images/tarot-cards0924/6.png",
+      "upright": {
+        "meaning": "優しさ・慈悲・信頼",
+        "description": "人に寄り添い、関係を育むカード。恋では「安心感のある絆」を示す。",
+        "loveExample": "自然体で接することで、相手に「心地いい」と思われやすい日。",
+        "todayAction": "挨拶や小さな気遣いを忘れない",
+        "luckyItem": "シルバーアクセ",
+        "caution": "過度に飾らないこと"
+      },
+      "reversed": {
+        "meaning": "頑固・束縛・保守的",
+        "description": "柔軟さを欠く状態。恋では「相手を縛る」気持ちが出やすい。",
+        "loveExample": "「こうあるべき」と決めつけて、相手を苦しくさせるかも。",
+        "todayAction": "違いを受け入れる一言を添える",
+        "luckyItem": "イヤフォン",
+        "caution": "ルールに縛られすぎないこと"
+      }
+    },
+    {
+      "id": 6,
+      "number": "VI",
+      "name": "恋人",
+      "nameEn": "The Lovers",
+      "image": "/assets/images/tarot-cards0924/7.png",
+      "upright": {
+        "meaning": "愛・ときめき・調和",
+        "description": "天使に祝福された二人。恋の喜びやトキメキを象徴。",
+        "loveExample": "気になる人と偶然のやりとりが増え、胸が高鳴る瞬間がありそう。",
+        "todayAction": "素直に「嬉しい」と言葉にする",
+        "luckyItem": "ピンクの小物",
+        "caution": "感情を隠さないこと"
+      },
+      "reversed": {
+        "meaning": "誘惑・破綻・不誠実",
+        "description": "気持ちの揺れや軽率さでトラブルを招きやすい。",
+        "loveExample": "一時の気持ちで他の人に心が揺れて、信頼を失う可能性。",
+        "todayAction": "大切な相手に優先して時間を使う",
+        "luckyItem": "真紅のアクセサリー",
+        "caution": "浮ついた気持ち"
+      }
+    },
+    {
+      "id": 7,
+      "number": "VII",
+      "name": "戦車",
+      "nameEn": "The Chariot",
+      "image": "/assets/images/tarot-cards0924/8.png",
+      "upright": {
+        "meaning": "実行力・勝利・意思の強さ",
+        "description": "前に進む力。恋では「思い切った行動が実を結ぶ」暗示。",
+        "loveExample": "自分から連絡や誘いをすれば、相手に好印象を残せそう。",
+        "todayAction": "やりたいことを一つ即行動に移す",
+        "luckyItem": "キャラクターキーホルダー",
+        "caution": "途中で迷わないこと"
+      },
+      "reversed": {
+        "meaning": "無気力・失敗・焦り",
+        "description": "勢いが空回りしやすい。恋では「押しすぎ」や「任せすぎ」に注意。",
+        "loveExample": "返事を急かすと、逆に距離を取られる可能性。",
+        "todayAction": "返信を待つ間は自分の時間を楽しむ",
+        "luckyItem": "ベルト",
+        "caution": "焦りからの行動"
+      }
+    },
+    {
+      "id": 8,
+      "number": "VIII",
+      "name": "力",
+      "nameEn": "Strength",
+      "image": "/assets/images/tarot-cards0924/9.png",
+      "upright": {
+        "meaning": "自制・不屈・理性",
+        "description": "本能を理性でコントロールするカード。恋では「信頼で乗り越える強さ」。",
+        "loveExample": "会えなくても不安にならず、相手を信じることが愛を深める日。",
+        "todayAction": "深呼吸して気持ちを整える",
+        "luckyItem": "紅茶",
+        "caution": "感情をぶつけないこと"
+      },
+      "reversed": {
+        "meaning": "無力・諦め・落胆",
+        "description": "力を出し切れず心が折れやすい。恋では「信じきれない」不安が出やすい。",
+        "loveExample": "LINEの間隔に一喜一憂して、自分を追い込んでしまうかも。",
+        "todayAction": "不安を書き出して客観視する",
+        "luckyItem": "ホットドリンク",
+        "caution": "自分を否定しないこと"
+      }
+    },
+    {
+      "id": 9,
+      "number": "IX",
+      "name": "隠者",
+      "nameEn": "The Hermit",
+      "image": "/assets/images/tarot-cards0924/10.png",
+      "upright": {
+        "meaning": "内観・思慮深さ・悟り",
+        "description": "暗闇を照らす光は「心の声」。恋では「自分の気持ちを見つめ直す時」。",
+        "loveExample": "今の関係に迷っても、冷静に考えることで答えが見える。",
+        "todayAction": "一人で静かに考える時間を取る",
+        "luckyItem": "リュック",
+        "caution": "焦って答えを出さない"
+      },
+      "reversed": {
+        "meaning": "閉鎖・悲観・消極",
+        "description": "内向きになりすぎて、殻に閉じこもるサイン。恋では「関係を遮断」しがち。",
+        "loveExample": "連絡を避けてしまい、相手に誤解を与えるかも。",
+        "todayAction": "短くてもいいので一言返す",
+        "luckyItem": "キャンドル",
+        "caution": "一人で抱え込まないこと"
+      }
+    },
+    {
+      "id": 10,
+      "number": "X",
+      "name": "運命の輪",
+      "nameEn": "Wheel of Fortune",
+      "image": "/assets/images/tarot-cards0924/11.png",
+      "upright": {
+        "meaning": "一時的な幸運・出会い・変化",
+        "description": "チャンスの風が巡るとき。恋愛では「偶然の出会い」が起こりやすい。",
+        "loveExample": "電車やカフェで偶然隣になった人と、思いがけず会話が弾むかも。",
+        "todayAction": "予定外の誘いを受けてみる",
+        "luckyItem": "腕時計",
+        "caution": "チャンスを先延ばしにしない"
+      },
+      "reversed": {
+        "meaning": "アクシデント・急な悪化・すれ違い",
+        "description": "流れが一時的に逆行。恋愛では「タイミングのズレ」が生じやすい。",
+        "loveExample": "送ろうとしたLINEを間違えて別の人に送ってしまう…なんてことも。",
+        "todayAction": "連絡前に内容を見直す",
+        "luckyItem": "カレンダーアプリ",
+        "caution": "焦って行動しない"
+      }
+    },
+    {
+      "id": 11,
+      "number": "XI",
+      "name": "正義",
+      "nameEn": "Justice",
+      "image": "/assets/images/tarot-cards0924/12.png",
+      "upright": {
+        "meaning": "公正・均衡・誠実さ",
+        "description": "バランスを保つカード。恋愛では「誠実なやりとり」が信頼を築く。",
+        "loveExample": "相手に誤解されそうなとき、素直に本音を話せば信頼が深まる。",
+        "todayAction": "返事はシンプルに誠実に",
+        "luckyItem": "白いシャツ",
+        "caution": "駆け引き"
+      },
+      "reversed": {
+        "meaning": "不正・不均衡・嘘",
+        "description": "均衡が崩れるサイン。恋愛では「不誠実さ」が溝を作る。",
+        "loveExample": "気を引こうとして嘘をつくと、逆に信用を失うかも。",
+        "todayAction": "正直に話す",
+        "luckyItem": "シンプルなピアス",
+        "caution": "ごまかし"
+      }
+    },
+    {
+      "id": 12,
+      "number": "XII",
+      "name": "吊るされた男",
+      "nameEn": "The Hanged Man",
+      "image": "/assets/images/tarot-cards0924/13.png",
+      "upright": {
+        "meaning": "努力・忍耐・試練",
+        "description": "成長のための試練。恋愛では「待つこと」が愛を深める時期。",
+        "loveExample": "相手からの返事が遅くても、焦らずに待つことが信頼につながる。",
+        "todayAction": "返信を急かさない",
+        "luckyItem": "青いストール",
+        "caution": "焦りからの行動"
+      },
+      "reversed": {
+        "meaning": "徒労・報われない努力・投げやり",
+        "description": "努力が空回りする暗示。恋愛では「尽くしすぎ」に注意。",
+        "loveExample": "相手の反応がないのに、追いLINEばかりしてしまうかも。",
+        "todayAction": "一度立ち止まって深呼吸",
+        "luckyItem": "白いハンカチ",
+        "caution": "自己犠牲"
+      }
+    },
+    {
+      "id": 13,
+      "number": "XIII",
+      "name": "死神",
+      "nameEn": "Death",
+      "image": "/assets/images/tarot-cards0924/14.png",
+      "upright": {
+        "meaning": "終焉・破局・停止",
+        "description": "強制的な終わりを告げるカード。恋愛では「一区切り」を意味する。",
+        "loveExample": "今まで続けてきた関係にピリオドが打たれるサイン。",
+        "todayAction": "新しい出会いに目を向ける",
+        "luckyItem": "黒い帽子",
+        "caution": "過去への執着"
+      },
+      "reversed": {
+        "meaning": "再生・再スタート・新展開",
+        "description": "終わりの後の始まり。恋愛では「やり直し」や「再会」を示す。",
+        "loveExample": "疎遠になっていた相手から連絡が来る可能性も。",
+        "todayAction": "懐かしい人に一言連絡を入れる",
+        "luckyItem": "白い花",
+        "caution": "過去を責めない"
+      }
+    },
+    {
+      "id": 14,
+      "number": "XIV",
+      "name": "節制",
+      "nameEn": "Temperance",
+      "image": "/assets/images/tarot-cards0924/15.png",
+      "upright": {
+        "meaning": "調和・循環・順調",
+        "description": "自然な流れで物事が整う。恋愛では「無理のない関係」を築ける。",
+        "loveExample": "LINEが自然と続いて、心地よいテンポでやりとりできそう。",
+        "todayAction": "短い一言でも続ける",
+        "luckyItem": "ミネラルウォーター",
+        "caution": "極端な行動"
+      },
+      "reversed": {
+        "meaning": "不均衡・浪費・停滞",
+        "description": "流れが止まり、バランスが崩れるサイン。恋愛では「一方通行」に注意。",
+        "loveExample": "自分ばかり送っている気がして、不安が募りやすい。",
+        "todayAction": "少し連絡の頻度を落としてみる",
+        "luckyItem": "透明のグラス",
+        "caution": "焦りの連絡"
+      }
+    },
+    {
+      "id": 15,
+      "number": "XV",
+      "name": "悪魔",
+      "nameEn": "The Devil",
+      "image": "/assets/images/tarot-cards0924/16.png",
+      "upright": {
+        "meaning": "誘惑・依存・裏切り",
+        "description": "甘い誘惑に縛られるカード。恋愛では「危険な関係」に陥りやすい。",
+        "loveExample": "寂しさから関係を持ってしまい、後悔する可能性。",
+        "todayAction": "本当に必要かどうか立ち止まって考える",
+        "luckyItem": "黒いアクセサリー",
+        "caution": "依存心"
+      },
+      "reversed": {
+        "meaning": "解放・目覚め・再生",
+        "description": "執着を手放し、自由になるサイン。恋愛では「悪縁の解消」。",
+        "loveExample": "ズルズル続けていた関係をスッキリ終わらせられる。",
+        "todayAction": "思い切ってブロックや整理をする",
+        "luckyItem": "お香",
+        "caution": "未練"
+      }
+    },
+    {
+      "id": 16,
+      "number": "XVI",
+      "name": "塔",
+      "nameEn": "The Tower",
+      "image": "/assets/images/tarot-cards0924/17.png",
+      "upright": {
+        "meaning": "崩壊・事故・ショック",
+        "description": "突然のトラブルを示す。恋愛では「予期せぬ別れ」や「衝突」。",
+        "loveExample": "相手の言葉に強く傷つく場面があるかも。",
+        "todayAction": "深呼吸してから返事をする",
+        "luckyItem": "スマホケース",
+        "caution": "感情的な返信"
+      },
+      "reversed": {
+        "meaning": "緊迫・不安定・受難",
+        "description": "崩壊は免れるが、不安定な状況が続く。恋愛では「不安を抱えたままの関係」。",
+        "loveExample": "進展しそうでしない曖昧な関係にモヤモヤしやすい。",
+        "todayAction": "不安を書き出して客観視する",
+        "luckyItem": "小説",
+        "caution": "放置"
+      }
+    },
+    {
+      "id": 17,
+      "number": "XVII",
+      "name": "星",
+      "nameEn": "The Star",
+      "image": "/assets/images/tarot-cards0924/18.png",
+      "upright": {
+        "meaning": "希望・憧れ・目標",
+        "description": "直感や理想を象徴。恋愛では「夢見るような時間」を示す。",
+        "loveExample": "相手との未来を想像して、ワクワクできる瞬間が訪れる。",
+        "todayAction": "未来についてポジティブに話す",
+        "luckyItem": "星型のもの",
+        "caution": "現実を忘れすぎない"
+      },
+      "reversed": {
+        "meaning": "幻滅・失望・失意",
+        "description": "理想が高すぎるサイン。恋愛では「期待外れ」の出来事。",
+        "loveExample": "思っていた返信が来ず、がっかりするかも。",
+        "todayAction": "小さな嬉しいことを探す",
+        "luckyItem": "アロマキャンドル",
+        "caution": "理想を押しつける"
+      }
+    },
+    {
+      "id": 18,
+      "number": "XVIII",
+      "name": "月",
+      "nameEn": "The Moon",
+      "image": "/assets/images/tarot-cards0924/19.png",
+      "upright": {
+        "meaning": "不安・誤解・迷い",
+        "description": "心が揺れるカード。恋愛では「誤解や不安」が広がりやすい。",
+        "loveExample": "相手の反応を勘違いして、不安に飲まれやすい日。",
+        "todayAction": "本人に確かめる勇気を持つ",
+        "luckyItem": "月の形のもの",
+        "caution": "思い込み"
+      },
+      "reversed": {
+        "meaning": "明晰・脱却・回復",
+        "description": "霧が晴れるように不安が解ける。恋愛では「誤解の解消」。",
+        "loveExample": "気になっていたことを聞いたら、安心できる答えが返ってくる。",
+        "todayAction": "勇気を出して聞いてみる",
+        "luckyItem": "花",
+        "caution": "自分を疑いすぎること"
+      }
+    },
+    {
+      "id": 19,
+      "number": "XIX",
+      "name": "太陽",
+      "nameEn": "The Sun",
+      "image": "/assets/images/tarot-cards0924/20.png",
+      "upright": {
+        "meaning": "喜び・成功・栄光",
+        "description": "明るさと無邪気さ。恋愛では「素直な気持ち」が幸せを呼ぶ。",
+        "loveExample": "デートややりとりが、心から楽しい時間になりそう。",
+        "todayAction": "気持ちを素直に表す",
+        "luckyItem": "ひまわり",
+        "caution": "謙遜しすぎ"
+      },
+      "reversed": {
+        "meaning": "失望・悪化・不調",
+        "description": "光が弱まる暗示。恋愛では「気持ちのすれ違い」。",
+        "loveExample": "楽しみにしていた約束が延期になるかも。",
+        "todayAction": "気分転換を大事にする",
+        "luckyItem": "黄色のハンカチ",
+        "caution": "落ち込みすぎ"
+      }
+    },
+    {
+      "id": 20,
+      "number": "XX",
+      "name": "審判",
+      "nameEn": "Judgement",
+      "image": "/assets/images/tarot-cards0924/21.png",
+      "upright": {
+        "meaning": "復活・再生・再チャレンジ",
+        "description": "新しいチャンスの到来。恋愛では「復縁」や「再会」の暗示。",
+        "loveExample": "昔の相手から突然連絡が入るかも。",
+        "todayAction": "過去を責めずに受け入れる",
+        "luckyItem": "音楽プレイリスト",
+        "caution": "過去の失敗に囚われる"
+      },
+      "reversed": {
+        "meaning": "罰・暗闇・消滅",
+        "description": "清算のとき。恋愛では「終わらせる必要」がある関係。",
+        "loveExample": "曖昧な関係に区切りをつける時期。",
+        "todayAction": "自分の気持ちに正直になる",
+        "luckyItem": "白い紙",
+        "caution": "ズルズル続けない"
+      }
+    },
+    {
+      "id": 21,
+      "number": "XXI",
+      "name": "世界",
+      "nameEn": "The World",
+      "image": "/assets/images/tarot-cards0924/22.png",
+      "upright": {
+        "meaning": "成功・完成・理想郷",
+        "description": "最良の結末を意味するカード。恋愛では「両想い」「結婚」の暗示。",
+        "loveExample": "大切な人との関係が一段階深まる日。",
+        "todayAction": "心から「ありがとう」を伝える",
+        "luckyItem": "傘",
+        "caution": "満足して止まらないこと"
+      },
+      "reversed": {
+        "meaning": "未完成・惰性・低迷",
+        "description": "達成しきれない状態。恋愛では「物足りなさ」や「停滞」。",
+        "loveExample": "関係が進展せず、同じやりとりを繰り返してしまうかも。",
+        "todayAction": "新しい話題を一つ投げてみる",
+        "luckyItem": "エコバッグ",
+        "caution": "現状維持に甘えない"
+      }
+    }
+  ]
+}
