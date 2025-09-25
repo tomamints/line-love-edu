@@ -223,13 +223,6 @@ async function startFortune() {
         return;
     }
 
-    // 1日1回制限チェック
-    if (!checkDailyLimit()) {
-        // すでに今日占い済みなので、保存された結果を表示
-        displayCardResult();
-        return;
-    }
-
     // ローディング表示を追加
     const container = document.querySelector('.container');
     const loadingDiv = document.createElement('div');
@@ -307,6 +300,22 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     // データを事前読み込み
     await loadTarotData();
+
+    // 今日すでに占い済みかチェック
+    const today = new Date().toDateString();
+    const lastFortuneDate = localStorage.getItem('moonTarotLastDate');
+
+    if (lastFortuneDate === today) {
+        // 今日すでに占い済みの場合、保存された結果を直接表示
+        const lastCardData = localStorage.getItem('moonTarotLastCard');
+        if (lastCardData) {
+            const cardInfo = JSON.parse(lastCardData);
+            currentCard = cardInfo.card;
+            isUpright = cardInfo.isUpright;
+            displayCardResult();
+            return; // イベント設定をスキップ
+        }
+    }
 
     // 占いボタンのイベント設定
     const submitButton = document.querySelector('.submit-button');
