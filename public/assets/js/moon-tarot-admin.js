@@ -84,7 +84,7 @@ function displayCardResult() {
                 <div class="card-image-container" style="text-align: center; margin: ${isMobile ? '15px auto' : '20px auto'};">
                     <img src="../assets/images/tarot-cards0924/${currentCard.id}.webp"
                          alt="${currentCard.name}"
-                         style="max-width: ${isMobile ? '150px' : '190px'}; width: 100%; height: auto; border-radius: 10px; box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5); ${!isUpright ? 'transform: rotate(180deg);' : ''}"
+                         style="max-width: ${isMobile ? '120px' : '160px'}; width: 100%; height: auto; border-radius: 10px; box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5); ${!isUpright ? 'transform: rotate(180deg);' : ''}"
                          onerror="this.src='../assets/images/tarot-cards0924/${currentCard.id}.png'">
                 </div>
 
