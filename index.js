@@ -1058,7 +1058,7 @@ async function handleFollowEvent(event) {
     // プロフィール設定カードを送信
     const result = await client.replyMessage(event.replyToken, {
       type: 'flex',
-      altText: '🌙 おつきさま診断へようこそ！',
+      altText: '🌙 月タロット占いへようこそ！',
       contents: {
         type: 'bubble',
         size: 'mega',
@@ -1079,7 +1079,7 @@ async function handleFollowEvent(event) {
                 },
                 {
                   type: 'text',
-                  text: 'おつきさま診断へようこそ',
+                  text: '月タロット占いへようこそ',
                   size: 'xl',
                   color: '#ffffff',
                   align: 'center',
@@ -1111,7 +1111,7 @@ async function handleFollowEvent(event) {
             },
             {
               type: 'text',
-              text: 'あなたと大切な方の心に映る',
+              text: '月のカードがあなたの',
               size: 'md',
               wrap: true,
               align: 'center',
@@ -1119,7 +1119,7 @@ async function handleFollowEvent(event) {
             },
             {
               type: 'text',
-              text: '運命の相性',
+              text: '今日の恋愛運を導きます',
               size: 'md',
               wrap: true,
               align: 'center',
@@ -1127,7 +1127,7 @@ async function handleFollowEvent(event) {
             },
             {
               type: 'text',
-              text: '月の姿を視させていただきます',
+              text: '特別なメッセージをお伝えします',
               size: 'md',
               wrap: true,
               align: 'center',
@@ -1145,30 +1145,30 @@ async function handleFollowEvent(event) {
               contents: [
                 {
                   type: 'text',
-                  text: '✨ 月が告げる三つの導き',
+                  text: '✨ 月タロット占いの流れ',
                   weight: 'bold',
                   size: 'sm',
                   color: '#764ba2'
                 },
                 {
                   type: 'text',
-                  text: '一、あなたの生年月日をお聞かせください',
+                  text: '一、まずはあなたの情報を教えてください',
                   size: 'sm',
                   margin: 'sm'
                 },
                 {
                   type: 'text',
-                  text: '二、お相手の生年月日をお聞かせください',
+                  text: '二、月にメッセージを送ります',
                   size: 'sm'
                 },
                 {
                   type: 'text',
-                  text: '三、ふたりの月が織りなす物語を',
+                  text: '三、月のカードがあなたの運勢を占います',
                   size: 'sm'
                 },
                 {
                   type: 'text',
-                  text: '　　お伝えいたします',
+                  text: '　　特別なメッセージをお届けします',
                   size: 'sm'
                 }
               ]
@@ -1197,8 +1197,8 @@ async function handleFollowEvent(event) {
               height: 'md',
               action: {
                 type: 'message',
-                label: '診断結果を見る',
-                text: '診断結果'
+                label: '月タロット占いを受ける',
+                text: '月タロット占い'
               },
               color: '#667eea'
             }
@@ -1638,7 +1638,7 @@ async function handleTextMessage(event) {
       
       await client.replyMessage(event.replyToken, {
         type: 'flex',
-        altText: '🌙 おつきさま診断へようこそ！',
+        altText: '🌙 月タロット占いへようこそ！',
         contents: {
           type: 'bubble',
           size: 'mega',
@@ -1659,7 +1659,7 @@ async function handleTextMessage(event) {
                   },
                   {
                     type: 'text',
-                    text: 'おつきさま診断へようこそ',
+                    text: '月タロット占いへようこそ',
                     size: 'xl',
                     color: '#ffffff',
                     align: 'center',
@@ -1725,30 +1725,30 @@ async function handleTextMessage(event) {
                 contents: [
                   {
                     type: 'text',
-                    text: '✨ 月が告げる三つの導き',
+                    text: '✨ 月タロット占いの流れ',
                     weight: 'bold',
                     size: 'sm',
                     color: '#764ba2'
                   },
                   {
                     type: 'text',
-                    text: '一、あなたの生年月日をお聞かせください',
+                    text: '一、まずはあなたの情報を教えてください',
                     size: 'sm',
                     margin: 'sm'
                   },
                   {
                     type: 'text',
-                    text: '二、お相手の生年月日をお聞かせください',
+                    text: '二、月にメッセージを送ります',
                     size: 'sm'
                   },
                   {
                     type: 'text',
-                    text: '三、ふたりの月が織りなす物語を',
+                    text: '三、月のカードがあなたの運勢を占います',
                     size: 'sm'
                   },
                   {
                     type: 'text',
-                    text: '　　お伝えいたします',
+                    text: '　　特別なメッセージをお届けします',
                     size: 'sm'
                   }
                 ]
@@ -1815,11 +1815,191 @@ async function handleTextMessage(event) {
       return;
     }
     
-    // 診断結果コマンド
-    if (text === '診断結果' || text === '結果') {
-      // 既存のおつきさま診断結果送信を使用
-      await sendMoonFortuneResult(event.replyToken, userId);
+    // 月タロット占いコマンド
+    if (text === '月タロット占い' || text === 'タロット占い') {
+      // プロフィールが完成しているか確認
+      const hasComplete = await getProfileManager().hasCompleteProfile(userId);
+
+      if (!hasComplete) {
+        // 情報未入力の場合
+        const formUrl = `${process.env.BASE_URL || 'https://line-love-edu.vercel.app'}/api/profile-form?userId=${userId}`;
+        await client.replyMessage(event.replyToken, {
+          type: 'flex',
+          altText: '🌙 まずは情報を入力してください',
+          contents: {
+            type: 'bubble',
+            size: 'mega',
+            header: {
+              type: 'box',
+              layout: 'vertical',
+              backgroundColor: '#764ba2',
+              contents: [
+                {
+                  type: 'text',
+                  text: '🌙 まずは情報を入力してください',
+                  color: '#ffffff',
+                  size: 'lg',
+                  weight: 'bold',
+                  align: 'center'
+                }
+              ],
+              paddingAll: '20px'
+            },
+            body: {
+              type: 'box',
+              layout: 'vertical',
+              spacing: 'md',
+              contents: [
+                {
+                  type: 'text',
+                  text: '月タロット占いを受けるには',
+                  size: 'md',
+                  weight: 'bold',
+                  align: 'center'
+                },
+                {
+                  type: 'text',
+                  text: 'まずあなたの情報を',
+                  size: 'md',
+                  align: 'center'
+                },
+                {
+                  type: 'text',
+                  text: '月に伝える必要があります',
+                  size: 'md',
+                  align: 'center'
+                },
+                {
+                  type: 'separator',
+                  margin: 'lg'
+                },
+                {
+                  type: 'text',
+                  text: '下のボタンから',
+                  size: 'sm',
+                  color: '#666666',
+                  align: 'center',
+                  margin: 'lg'
+                },
+                {
+                  type: 'text',
+                  text: '情報を入力してください',
+                  size: 'sm',
+                  color: '#666666',
+                  align: 'center'
+                }
+              ]
+            },
+            footer: {
+              type: 'box',
+              layout: 'vertical',
+              spacing: 'sm',
+              contents: [
+                {
+                  type: 'button',
+                  style: 'primary',
+                  height: 'md',
+                  action: {
+                    type: 'uri',
+                    label: '🔮 情報を入力する',
+                    uri: formUrl
+                  },
+                  color: '#764ba2'
+                }
+              ]
+            }
+          }
+        });
+      } else {
+        // 情報入力済みの場合、タロット占いページに誘導
+        const tarotUrl = `${process.env.BASE_URL || 'https://line-love-edu.vercel.app'}/pages/moon-tarot.html?userId=${userId}`;
+        await client.replyMessage(event.replyToken, {
+          type: 'flex',
+          altText: '🌙 月タロット占い',
+          contents: {
+            type: 'bubble',
+            size: 'mega',
+            header: {
+              type: 'box',
+              layout: 'vertical',
+              backgroundColor: '#667eea',
+              contents: [
+                {
+                  type: 'text',
+                  text: '🔮 月タロット占い',
+                  color: '#ffffff',
+                  size: 'xl',
+                  weight: 'bold',
+                  align: 'center'
+                }
+              ],
+              paddingAll: '20px'
+            },
+            body: {
+              type: 'box',
+              layout: 'vertical',
+              spacing: 'md',
+              contents: [
+                {
+                  type: 'text',
+                  text: '月のカードが',
+                  size: 'md',
+                  align: 'center'
+                },
+                {
+                  type: 'text',
+                  text: 'あなたの今日の恋愛運を',
+                  size: 'md',
+                  align: 'center'
+                },
+                {
+                  type: 'text',
+                  text: '導きます',
+                  size: 'md',
+                  align: 'center'
+                },
+                {
+                  type: 'separator',
+                  margin: 'lg'
+                },
+                {
+                  type: 'text',
+                  text: '※1日1回まで占えます',
+                  size: 'xs',
+                  color: '#999999',
+                  align: 'center',
+                  margin: 'lg'
+                }
+              ]
+            },
+            footer: {
+              type: 'box',
+              layout: 'vertical',
+              spacing: 'sm',
+              contents: [
+                {
+                  type: 'button',
+                  style: 'primary',
+                  height: 'md',
+                  action: {
+                    type: 'uri',
+                    label: '🔮 占いを始める',
+                    uri: tarotUrl
+                  },
+                  color: '#667eea'
+                }
+              ]
+            }
+          }
+        });
+      }
       return;
+    }
+
+    // 診断結果コマンド（互換性のため残す）
+    if (text === '診断結果' || text === '結果') {
+      // 月タロット占いにリダイレクト
+      return handleTextMessage({ ...event, message: { ...event.message, text: '月タロット占い' } });
     }
     
     // リセットコマンド（互換性のため残す）
