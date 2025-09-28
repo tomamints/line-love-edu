@@ -6,7 +6,7 @@ let isUpright = true;
 // JSONデータを読み込む
 async function loadTarotData() {
     try {
-        const response = await fetch('/data/tarot-cards-0924.json');
+        const response = await fetch('/assets/data/tarot-cards-0924.json');
         const data = await response.json();
         tarotCardsData = data.cards;
         console.log('タロットデータを読み込みました:', tarotCardsData.length + '枚');
