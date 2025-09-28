@@ -74,8 +74,8 @@ function displayCardResult() {
             <!-- メインコンテンツ -->
             <div class="tarot-content" style="text-align: center; max-width: 400px; margin: 0 auto; width: 100%; padding: 20px;">
                 <!-- カードタイトル -->
-                <div class="card-title" style="text-align: center; margin-bottom: ${isMobile ? '10px' : '15px'};">
-                    <h2 style="color: #FFFFFF; text-shadow: 0 0 20px #ceb27c, 0 0 40px #ceb27c; margin-bottom: 0; font-size: ${isMobile ? '24px' : '28px'};">
+                <div class="card-title" style="text-align: center; margin-bottom: ${isMobile ? '8px' : '13px'};">
+                    <h2 style="color: #FFFFFF; text-shadow: 0 0 20px #ceb27c, 0 0 40px #ceb27c; margin-bottom: 0; font-size: ${isMobile ? '22px' : '26px'};">
                         ${currentCard.number} ${currentCard.name}（${positionText}）
                     </h2>
                 </div>
@@ -90,32 +90,32 @@ function displayCardResult() {
 
                 <!-- 意味 -->
                 <div class="card-section" style="text-align: center; margin-bottom: ${isMobile ? '10px' : '15px'};">
-                    <h3 style="color: #FFFFFF; text-shadow: 0 0 15px #ceb27c; margin-bottom: 5px; font-size: ${isMobile ? '18px' : '20px'};">【${cardData.meaning}】</h3>
-                    <p style="color: #FFFFFF; text-shadow: 0 0 10px rgba(206, 178, 124, 0.6); line-height: 1.4; font-size: ${isMobile ? '15px' : '17px'}; margin: 0;">${cardData.description}</p>
+                    <h3 style="color: #FFFFFF; text-shadow: 0 0 15px #ceb27c; margin-bottom: 5px; font-size: ${isMobile ? '16px' : '18px'};">【${cardData.meaning}】</h3>
+                    <p style="color: #FFFFFF; text-shadow: 0 0 10px rgba(206, 178, 124, 0.6); line-height: 1.4; font-size: ${isMobile ? '13px' : '15px'}; margin: 0;">${cardData.description}</p>
                 </div>
 
                 <!-- 今日のあなたの恋愛 -->
                 <div class="card-section" style="text-align: center; margin-bottom: ${isMobile ? '10px' : '15px'};">
-                    <h3 style="color: #FFFFFF; text-shadow: 0 0 15px #ceb27c; margin-bottom: 5px; font-size: ${isMobile ? '18px' : '20px'};">【今日のあなたの恋愛】</h3>
-                    <p style="color: #FFFFFF; text-shadow: 0 0 10px rgba(206, 178, 124, 0.6); line-height: 1.4; font-size: ${isMobile ? '15px' : '17px'}; margin: 0;">${cardData.loveExample}</p>
+                    <h3 style="color: #FFFFFF; text-shadow: 0 0 15px #ceb27c; margin-bottom: 5px; font-size: ${isMobile ? '16px' : '18px'};">【今日のあなたの恋愛】</h3>
+                    <p style="color: #FFFFFF; text-shadow: 0 0 10px rgba(206, 178, 124, 0.6); line-height: 1.4; font-size: ${isMobile ? '13px' : '15px'}; margin: 0;">${cardData.loveExample}</p>
                 </div>
 
                 <!-- 今日の行動 -->
                 <div class="card-section" style="text-align: center; margin-bottom: ${isMobile ? '10px' : '15px'};">
-                    <h3 style="color: #FFFFFF; text-shadow: 0 0 15px #ceb27c; margin-bottom: 5px; font-size: ${isMobile ? '18px' : '20px'};">【今日の行動】</h3>
-                    <p style="color: #FFFFFF; text-shadow: 0 0 10px rgba(206, 178, 124, 0.6); line-height: 1.4; font-size: ${isMobile ? '15px' : '17px'}; margin: 0;">${cardData.todayAction}</p>
+                    <h3 style="color: #FFFFFF; text-shadow: 0 0 15px #ceb27c; margin-bottom: 5px; font-size: ${isMobile ? '16px' : '18px'};">【今日の行動】</h3>
+                    <p style="color: #FFFFFF; text-shadow: 0 0 10px rgba(206, 178, 124, 0.6); line-height: 1.4; font-size: ${isMobile ? '13px' : '15px'}; margin: 0;">${cardData.todayAction}</p>
                 </div>
 
                 <!-- ラッキーアイテム -->
                 <div class="card-section" style="text-align: center; margin-bottom: ${isMobile ? '10px' : '15px'};">
-                    <h3 style="color: #FFFFFF; text-shadow: 0 0 15px #ceb27c; margin-bottom: 5px; font-size: ${isMobile ? '18px' : '20px'};">【ラッキーアイテム】</h3>
-                    <p style="color: #FFFFFF; text-shadow: 0 0 10px rgba(206, 178, 124, 0.6); line-height: 1.4; font-size: ${isMobile ? '15px' : '17px'}; margin: 0;">${cardData.luckyItem}</p>
+                    <h3 style="color: #FFFFFF; text-shadow: 0 0 15px #ceb27c; margin-bottom: 5px; font-size: ${isMobile ? '16px' : '18px'};">【ラッキーアイテム】</h3>
+                    <p style="color: #FFFFFF; text-shadow: 0 0 10px rgba(206, 178, 124, 0.6); line-height: 1.4; font-size: ${isMobile ? '13px' : '15px'}; margin: 0;">${cardData.luckyItem}</p>
                 </div>
 
                 <!-- 気をつけること -->
                 <div class="card-section" style="text-align: center; margin-bottom: ${isMobile ? '10px' : '15px'};">
-                    <h3 style="color: #FFFFFF; text-shadow: 0 0 15px #ceb27c; margin-bottom: 5px; font-size: ${isMobile ? '18px' : '20px'};">【気をつけること】</h3>
-                    <p style="color: #FFFFFF; text-shadow: 0 0 10px rgba(206, 178, 124, 0.6); line-height: 1.4; font-size: ${isMobile ? '15px' : '17px'}; margin: 0;">${cardData.caution}</p>
+                    <h3 style="color: #FFFFFF; text-shadow: 0 0 15px #ceb27c; margin-bottom: 5px; font-size: ${isMobile ? '16px' : '18px'};">【気をつけること】</h3>
+                    <p style="color: #FFFFFF; text-shadow: 0 0 10px rgba(206, 178, 124, 0.6); line-height: 1.4; font-size: ${isMobile ? '13px' : '15px'}; margin: 0;">${cardData.caution}</p>
                 </div>
             </div>
         </div>
