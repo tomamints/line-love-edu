@@ -1203,6 +1203,46 @@ module.exports = async (req, res) => {
         });
       });
     });
+
+    // フォーム送信をAJAX化
+    document.getElementById('profileForm').addEventListener('submit', async function(e) {
+      e.preventDefault(); // デフォルトの送信を防ぐ
+
+      // ローディング表示
+      document.getElementById('loading').classList.add('show');
+
+      try {
+        // FormDataを使用してデータを収集
+        const formData = new FormData(this);
+        const data = {};
+        for (let [key, value] of formData.entries()) {
+          data[key] = value;
+        }
+
+        // AJAXで送信
+        const response = await fetch('/api/profile-form', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data)
+        });
+
+        if (response.ok) {
+          // 成功したら直接ページ遷移（リダイレクトなし）
+          const userId = '${userId}';
+          window.location.href = '/pages/moon-message-sent.html?userId=' + userId;
+        } else {
+          // エラーハンドリング
+          alert('エラーが発生しました。もう一度お試しください。');
+          document.getElementById('loading').classList.remove('show');
+        }
+      } catch (error) {
+        console.error('送信エラー:', error);
+        alert('送信に失敗しました。もう一度お試しください。');
+        document.getElementById('loading').classList.remove('show');
+      }
+    });
   </script>
 </body>
 </html>
@@ -1534,7 +1574,17 @@ module.exports = async (req, res) => {
         // エラーがあっても保存は成功として扱う
       }
       
-      // 中間ページへ直接リダイレクト
+      // Content-Typeをチェックして適切なレスポンスを返す
+      const contentType = req.headers['content-type'] || '';
+      const isAjaxRequest = contentType.includes('application/json');
+
+      if (isAjaxRequest) {
+        // AJAXリクエストの場合はJSONレスポンスを返す
+        res.json({ success: true, userId: userId });
+        return;
+      }
+
+      // 通常のフォーム送信の場合はHTMLリダイレクトページを返す
       const redirectUrl = `/pages/moon-message-sent.html?userId=${userId}`;
       const successHtml = `
 <!DOCTYPE html>
