@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>おつきさま診断 - プロフィール入力</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Sans", "Noto Sans CJK JP", sans-serif;
+      background: linear-gradient(135deg, #1a0033 0%, #4a0e6b 100%);
+      min-height: 100vh;
+      padding: 20px;
+      color: #333;
+    }
+    
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    
+    .header {
+      text-align: center;
+      color: white;
+      margin-bottom: 30px;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      backdrop-filter: blur(10px);
+    }
+    
+    .header h1 {
+      font-size: 32px;
+      margin-bottom: 10px;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+    
+    .header p {
+      font-size: 16px;
+      opacity: 0.9;
+    }
+    
+    .form-container {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      overflow: hidden;
+    }
+    
+    form {
+      padding: 30px;
+    }
+    
+    .section {
+      margin-bottom: 30px;
+    }
+    
+    .section-title {
+      font-size: 20px;
+      color: #667eea;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #f0f0f0;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: #555;
+      font-size: 14px;
+      font-weight: 500;
+    }
+    
+    input[type="text"],
+    input[type="email"],
+    input[type="date"],
+    select {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      font-size: 16px;
+      transition: border-color 0.3s;
+      background: white;
+    }
+    
+    .radio-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    
+    .radio-option {
+      display: flex;
+      align-items: flex-start;
+      padding: 15px;
+      background: #f8f9fa;
+      border: 2px solid transparent;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .radio-option:hover {
+      background: #f0f4ff;
+      border-color: #d0d9ff;
+    }
+    
+    .radio-option.selected {
+      background: #e8eeff;
+      border-color: #667eea;
+    }
+    
+    .radio-option input[type="radio"] {
+      margin-right: 12px;
+      margin-top: 2px;
+    }
+    
+    .radio-label {
+      flex: 1;
+    }
+    
+    .radio-title {
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 4px;
+      font-size: 15px;
+    }
+    
+    .radio-description {
+      color: #666;
+      font-size: 13px;
+      line-height: 1.4;
+    }
+    
+    input:focus, select:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+    
+    .submit-btn {
+      width: 100%;
+      padding: 16px;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    
+    .submit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+    }
+    
+    .submit-btn:active {
+      transform: translateY(0);
+    }
+    
+    .loading {
+      display: none;
+      text-align: center;
+      padding: 20px;
+    }
+    
+    .loading.show {
+      display: block;
+    }
+    
+    .spinner {
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #667eea;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    .success-message {
+      display: none;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      padding: 40px 20px;
+      border-radius: 20px;
+      text-align: center;
+      margin: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+    
+    .success-message.show {
+      display: block;
+      animation: fadeIn 0.5s ease-in;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>おつきさま診断</h1>
+      <p>おつきさまにあなたとお相手のことを教えてください。</p>
+    </div>
+    
+    <div class="form-container">
+      <div class="success-message" id="successMessage">
+        <div style="font-size: 24px; margin-bottom: 20px;">🌙</div>
+        <div style="font-size: 20px; margin-bottom: 15px; font-weight: bold;">
+          おつきさまに伝えています
+        </div>
+        <div style="line-height: 1.8;">
+          あなたの想いを<br>
+          月の光に託しています<br><br>
+
+          まもなく月タロット占いへ<br>
+          ご案内いたします<br><br>
+          
+          <span style="font-size: 14px; opacity: 0.9;">
+            どうぞこのままお待ちください<br>
+            月の導きがあなたに届きますように
+          </span>
+        </div>
+      </div>
+      
+      <form id="profileForm" action="/api/profile-form" method="POST">
+        <input type="hidden" name="userId" id="userId" value="">
+        
+        <div class="section">
+          <h2 class="section-title">👤 あなたのこと</h2>
+          
+          <div class="form-group">
+            <label for="userBirthdate"><strong>生年月日</strong></label>
+            <div style="display: flex; gap: 5px;">
+              <select id="userYear" style="flex: 1;" required>
+                <option value="">年</option>
+              </select>
+              <select id="userMonth" style="flex: 1;" required>
+                <option value="">月</option>
+              </select>
+              <select id="userDay" style="flex: 1;" required>
+                <option value="">日</option>
+              </select>
+            </div>
+            <input type="hidden" id="userBirthdate" name="userBirthdate" value="" required>
+          </div>
+          
+          <input type="hidden" id="userAge" name="userAge" value="">
+          
+          <div class="form-group">
+            <label for="userGender"><strong>性別</strong></label>
+            <select id="userGender" name="userGender" required>
+              <option value="">選択してください</option>
+              <option value="male">男性</option>
+              <option value="female">女性</option>
+              <option value="other">その他</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="section">
+          <h2 class="section-title">💖 お相手のこと（任意）</h2>
+          <p style="font-size: 14px; color: #888; margin-bottom: 15px;">※相性占いをする場合のみ入力してください</p>
+
+          <div class="form-group">
+            <label for="partnerBirthdate"><strong>生年月日</strong></label>
+            <div style="display: flex; gap: 5px;">
+              <select id="partnerYear" style="flex: 1;">
+                <option value="">年</option>
+              </select>
+              <select id="partnerMonth" style="flex: 1;">
+                <option value="">月</option>
+              </select>
+              <select id="partnerDay" style="flex: 1;">
+                <option value="">日</option>
+              </select>
+            </div>
+            <input type="hidden" id="partnerBirthdate" name="partnerBirthdate" value="">
+          </div>
+
+          <input type="hidden" id="partnerAge" name="partnerAge" value="">
+
+          <div class="form-group">
+            <label for="partnerGender"><strong>性別</strong></label>
+            <select id="partnerGender" name="partnerGender">
+              <option value="">選択してください</option>
+              <option value="male">男性</option>
+              <option value="female">女性</option>
+              <option value="other">その他</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="section">
+          <h2 class="section-title">🌙 恋愛状況について</h2>
+          
+          <div class="form-group">
+            <label><strong>Q1：あなたの恋の状況は、どれに近いですか？</strong></label>
+            <div class="radio-group">
+              <label class="radio-option">
+                <input type="radio" name="loveSituation" value="beginning" required>
+                <div class="radio-label">
+                  <div class="radio-title">恋の始まり・相手との距離感</div>
+                  <div class="radio-description">片想い、気になる人、恋人未満、マッチングアプリでの出会いなど</div>
+                </div>
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="loveSituation" value="relationship" required>
+                <div class="radio-label">
+                  <div class="radio-title">交際中の相手とのこと</div>
+                  <div class="radio-description">現在の恋人との今後、結婚、マンネリ、すれ違いなど</div>
+                </div>
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="loveSituation" value="marriage" required>
+                <div class="radio-label">
+                  <div class="radio-title">夫婦関係</div>
+                  <div class="radio-description">喧嘩、すれ違い、意見の相違、結婚後のギャップ</div>
+                </div>
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="loveSituation" value="complicated" required>
+                <div class="radio-label">
+                  <div class="radio-title">複雑な事情を抱える恋</div>
+                  <div class="radio-description">禁断の恋、遠距離、障害のある恋、公にできない関係など</div>
+                </div>
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="loveSituation" value="ending" required>
+                <div class="radio-label">
+                  <div class="radio-title">復縁・終わった恋</div>
+                  <div class="radio-description">復縁したい、別れの危機、失恋を乗り越えたいなど</div>
+                </div>
+              </label>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label><strong>Q2：今、特に何を知りたいですか？</strong></label>
+            <div class="radio-group">
+              <label class="radio-option">
+                <input type="radio" name="wantToKnow" value="feelings" required>
+                <div class="radio-label" style="display: flex; align-items: center; min-height: 40px;">
+                  <div class="radio-title">相手が今、どんな気持ちなのか</div>
+                </div>
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="wantToKnow" value="action" required>
+                <div class="radio-label" style="display: flex; align-items: center; min-height: 40px;">
+                  <div class="radio-title">今、自分がどうしたらいいか</div>
+                </div>
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="wantToKnow" value="past" required>
+                <div class="radio-label" style="display: flex; align-items: center; min-height: 40px;">
+                  <div class="radio-title">過去（出来事）の意味や理由</div>
+                </div>
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="wantToKnow" value="future" required>
+                <div class="radio-label" style="display: flex; align-items: center; min-height: 40px;">
+                  <div class="radio-title">これからどうなっていくのか</div>
+                </div>
+              </label>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label><strong>Q3：想いを伝えるときのスタイルは？</strong></label>
+            <div class="radio-group">
+              <label class="radio-option">
+                <input type="radio" name="emotionalExpression" value="straight" required>
+                <div class="radio-label">
+                  <div class="radio-title">「好き！」と真っ直ぐ伝える</div>
+                </div>
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="emotionalExpression" value="physical" required>
+                <div class="radio-label">
+                  <div class="radio-title">手をつないだり会いに行く</div>
+                </div>
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="emotionalExpression" value="subtle" required>
+                <div class="radio-label">
+                  <div class="radio-title">プチプレゼントやメッセージで匂わせ</div>
+                </div>
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="emotionalExpression" value="shy" required>
+                <div class="radio-label">
+                  <div class="radio-title">気持ちはあるのになかなか伝えられない</div>
+                </div>
+              </label>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label><strong>Q4：ふたりにとって大切なものは？</strong></label>
+            <div class="radio-group">
+              <label class="radio-option">
+                <input type="radio" name="distanceStyle" value="close" required>
+                <div class="radio-label">
+                  <div class="radio-title">いつでも一緒！共有タイム</div>
+                </div>
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="distanceStyle" value="moderate" required>
+                <div class="radio-label">
+                  <div class="radio-title">適度な距離感でリラックス</div>
+                </div>
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="distanceStyle" value="independent" required>
+                <div class="radio-label">
+                  <div class="radio-title">お互いの時間も大切に</div>
+                </div>
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="distanceStyle" value="cautious" required>
+                <div class="radio-label">
+                  <div class="radio-title">じっくり時間をかけて</div>
+                </div>
+              </label>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label><strong>Q5：恋愛において重視することは？</strong></label>
+            <div class="radio-group">
+              <label class="radio-option">
+                <input type="radio" name="loveValues" value="romantic" required>
+                <div class="radio-label">
+                  <div class="radio-title">ときめきとロマンス</div>
+                </div>
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="loveValues" value="realistic" required>
+                <div class="radio-label">
+                  <div class="radio-title">現実的な安定感</div>
+                </div>
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="loveValues" value="excitement" required>
+                <div class="radio-label">
+                  <div class="radio-title">刺激的な日々</div>
+                </div>
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="loveValues" value="growth" required>
+                <div class="radio-label">
+                  <div class="radio-title">お互いの成長</div>
+                </div>
+              </label>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label><strong>Q6：恋のエネルギーはどんなタイプ？</strong></label>
+            <div class="radio-group">
+              <label class="radio-option">
+                <input type="radio" name="loveEnergy" value="intense" required>
+                <div class="radio-label">
+                  <div class="radio-title">情熱的に燃え上がる</div>
+                </div>
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="loveEnergy" value="stable" required>
+                <div class="radio-label">
+                  <div class="radio-title">穏やかに持続する</div>
+                </div>
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="loveEnergy" value="fluctuating" required>
+                <div class="radio-label">
+                  <div class="radio-title">波があるタイプ</div>
+                </div>
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="loveEnergy" value="cool" required>
+                <div class="radio-label">
+                  <div class="radio-title">クールに冷静に</div>
+                </div>
+              </label>
+            </div>
+          </div>
+        </div>
+        
+        <div class="loading" id="loadingDiv">
+          <div class="spinner"></div>
+          <p style="margin-top: 20px; color: #667eea;">診断中です...</p>
+        </div>
+        
+        <button type="submit" class="submit-btn" id="submitBtn">
+          🌙 月に聞いてみる
+        </button>
+      </form>
+    </div>
+  </div>
+  
+  <script>
+    // URLパラメータからuserIdを取得
+    const urlParams = new URLSearchParams(window.location.search);
+    const userId = urlParams.get('userId');
+    if (userId) {
+      document.getElementById('userId').value = userId;
+    }
+    
+    // 年月日選択肢の生成
+    function initDateSelects() {
+      const currentYear = new Date().getFullYear();
+      
+      // ユーザー生年月日
+      const userYear = document.getElementById('userYear');
+      for (let y = currentYear - 15; y >= 1950; y--) {
+        const option = document.createElement('option');
+        option.value = y;
+        option.textContent = y + '年';
+        userYear.appendChild(option);
+      }
+      
+      const userMonth = document.getElementById('userMonth');
+      for (let m = 1; m <= 12; m++) {
+        const option = document.createElement('option');
+        option.value = m;
+        option.textContent = m + '月';
+        userMonth.appendChild(option);
+      }
+      
+      const userDay = document.getElementById('userDay');
+      for (let d = 1; d <= 31; d++) {
+        const option = document.createElement('option');
+        option.value = d;
+        option.textContent = d + '日';
+        userDay.appendChild(option);
+      }
+      
+      // パートナー生年月日
+      const partnerYear = document.getElementById('partnerYear');
+      for (let y = currentYear - 15; y >= 1950; y--) {
+        const option = document.createElement('option');
+        option.value = y;
+        option.textContent = y + '年';
+        partnerYear.appendChild(option);
+      }
+      
+      const partnerMonth = document.getElementById('partnerMonth');
+      for (let m = 1; m <= 12; m++) {
+        const option = document.createElement('option');
+        option.value = m;
+        option.textContent = m + '月';
+        partnerMonth.appendChild(option);
+      }
+      
+      const partnerDay = document.getElementById('partnerDay');
+      for (let d = 1; d <= 31; d++) {
+        const option = document.createElement('option');
+        option.value = d;
+        option.textContent = d + '日';
+        partnerDay.appendChild(option);
+      }
+    }
+    
+    // 生年月日の変更を監視
+    function watchBirthdateChanges() {
+      ['userYear', 'userMonth', 'userDay'].forEach(id => {
+        document.getElementById(id).addEventListener('change', function() {
+          const year = document.getElementById('userYear').value;
+          const month = document.getElementById('userMonth').value;
+          const day = document.getElementById('userDay').value;
+          
+          if (year && month && day) {
+            const birthdate = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+            document.getElementById('userBirthdate').value = birthdate;
+            
+            // 年齢計算
+            const age = calculateAge(new Date(birthdate));
+            document.getElementById('userAge').value = age;
+          }
+        });
+      });
+      
+      ['partnerYear', 'partnerMonth', 'partnerDay'].forEach(id => {
+        document.getElementById(id).addEventListener('change', function() {
+          const year = document.getElementById('partnerYear').value;
+          const month = document.getElementById('partnerMonth').value;
+          const day = document.getElementById('partnerDay').value;
+          
+          if (year && month && day) {
+            const birthdate = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+            document.getElementById('partnerBirthdate').value = birthdate;
+            
+            // 年齢計算
+            const age = calculateAge(new Date(birthdate));
+            document.getElementById('partnerAge').value = age;
+          }
+        });
+      });
+    }
+    
+    // 年齢計算
+    function calculateAge(birthDate) {
+      const today = new Date();
+      let age = today.getFullYear() - birthDate.getFullYear();
+      const m = today.getMonth() - birthDate.getMonth();
+      if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+        age--;
+      }
+      return age;
+    }
+    
+    // ラジオボタンのスタイル制御
+    document.querySelectorAll('.radio-option').forEach(option => {
+      option.addEventListener('click', function() {
+        const radioGroup = this.parentElement;
+        radioGroup.querySelectorAll('.radio-option').forEach(opt => {
+          opt.classList.remove('selected');
+        });
+        this.classList.add('selected');
+        this.querySelector('input[type="radio"]').checked = true;
+      });
+    });
+    
+    // フォーム送信処理
+    document.getElementById('profileForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const submitBtn = document.getElementById('submitBtn');
+      const loadingDiv = document.getElementById('loadingDiv');
+      const successMessage = document.getElementById('successMessage');
+      
+      submitBtn.style.display = 'none';
+      loadingDiv.classList.add('show');
+      
+      const formData = new FormData(this);
+      const data = Object.fromEntries(formData);
+      
+      try {
+        const response = await fetch('/api/profile-form', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(data)
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+          loadingDiv.classList.remove('show');
+          successMessage.classList.add('show');
+          
+          // 3秒後に結果ページへ遷移
+          setTimeout(() => {
+            // userIdを含めて中間ページへ遷移
+            const redirectUrl = userId ?
+              `/pages/moon-message-sent.html?userId=${userId}` :
+              '/pages/moon-message-sent.html';
+            window.location.href = redirectUrl;
+          }, 2000);
+        } else {
+          alert('エラーが発生しました: ' + (result.error || '不明なエラー'));
+          submitBtn.style.display = 'block';
+          loadingDiv.classList.remove('show');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('エラーが発生しました。もう一度お試しください。');
+        submitBtn.style.display = 'block';
+        loadingDiv.classList.remove('show');
+      }
+    });
+    
+    // 初期化
+    document.addEventListener('DOMContentLoaded', function() {
+      initDateSelects();
+      watchBirthdateChanges();
+    });
+  </script>
+</body>
+</html>
