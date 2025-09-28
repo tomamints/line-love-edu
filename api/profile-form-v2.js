@@ -778,14 +778,14 @@ module.exports = async (req, res) => {
       <div class="success-message" id="successMessage">
         <div style="font-size: 24px; margin-bottom: 20px;">🌙</div>
         <div style="font-size: 20px; margin-bottom: 15px; font-weight: bold;">
-          月への祈りが届きました
+          おつきさまに伝えています
         </div>
         <div style="line-height: 1.8;">
-          あなたとお相手の月の姿を<br>
-          静かに視させていただいております<br><br>
-          
-          ふたりの月が織りなす物語を<br>
-          まもなくお伝えいたします<br><br>
+          あなたの想いを<br>
+          月の光に託しています<br><br>
+
+          まもなく月タロット占いへ<br>
+          ご案内いたします<br><br>
           
           <span style="font-size: 14px; opacity: 0.9;">
             どうぞこのままお待ちください<br>
@@ -855,12 +855,13 @@ module.exports = async (req, res) => {
         </div>
         
         <div class="section">
-          <h2 class="section-title">💖 お相手のこと</h2>
-          
+          <h2 class="section-title">💖 お相手のこと（任意）</h2>
+          <p style="font-size: 14px; color: #888; margin-bottom: 15px;">※相性占いをする場合のみ入力してください</p>
+
           <div class="form-group">
             <label for="partnerBirthdate"><strong>生年月日</strong></label>
             <div style="display: flex; gap: 5px;">
-              <select id="partnerYear" style="flex: 1;" required>
+              <select id="partnerYear" style="flex: 1;">
                 <option value="">年</option>
                 ${(() => {
                   let options = '';
@@ -872,7 +873,7 @@ module.exports = async (req, res) => {
                   return options;
                 })()}
               </select>
-              <select id="partnerMonth" style="flex: 1;" required>
+              <select id="partnerMonth" style="flex: 1;">
                 <option value="">月</option>
                 ${(() => {
                   let options = '';
@@ -883,7 +884,7 @@ module.exports = async (req, res) => {
                   return options;
                 })()}
               </select>
-              <select id="partnerDay" style="flex: 1;" required>
+              <select id="partnerDay" style="flex: 1;">
                 <option value="">日</option>
                 ${(() => {
                   let options = '';
@@ -902,7 +903,7 @@ module.exports = async (req, res) => {
           
           <div class="form-group">
             <label for="partnerGender"><strong>性別</strong></label>
-            <select id="partnerGender" name="partnerGender" required>
+            <select id="partnerGender" name="partnerGender">
               <option value="">選択してください</option>
               <option value="male" ${existing.partnerGender === 'male' ? 'selected' : ''}>男性</option>
               <option value="female" ${existing.partnerGender === 'female' ? 'selected' : ''}>女性</option>
@@ -1533,14 +1534,20 @@ module.exports = async (req, res) => {
         // エラーがあっても保存は成功として扱う
       }
       
-      // 成功ページを直接表示（リダイレクトではなく）
+      // 中間ページへリダイレクト
+      const redirectUrl = `/pages/moon-message-sent.html?userId=${userId}`;
       const successHtml = `
 <!DOCTYPE html>
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>保存完了</title>
+  <title>おつきさまに伝えました</title>
+  <script>
+    setTimeout(function() {
+      window.location.href = '${redirectUrl}';
+    }, 1500);
+  </script>
   <style>
     body {
       margin: 0;
