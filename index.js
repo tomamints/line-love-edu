@@ -1190,17 +1190,6 @@ async function handleFollowEvent(event) {
                 uri: formUrl
               },
               color: '#764ba2'
-            },
-            {
-              type: 'button',
-              style: 'primary',
-              height: 'md',
-              action: {
-                type: 'message',
-                label: '🔮 月タロット占いを受ける',
-                text: '月タロット占い'
-              },
-              color: '#667eea'
             }
           ]
         }
@@ -1691,7 +1680,7 @@ async function handleTextMessage(event) {
               },
               {
                 type: 'text',
-                text: 'あなたと大切な方の心に映る',
+                text: '月のカードがあなたの',
                 size: 'md',
                 wrap: true,
                 align: 'center',
@@ -1699,7 +1688,7 @@ async function handleTextMessage(event) {
               },
               {
                 type: 'text',
-                text: '運命の相性',
+                text: '今日の恋愛運を導きます',
                 size: 'md',
                 wrap: true,
                 align: 'center',
@@ -1707,7 +1696,7 @@ async function handleTextMessage(event) {
               },
               {
                 type: 'text',
-                text: '月の姿を視させていただきます',
+                text: '特別なメッセージをお伝えします',
                 size: 'md',
                 wrap: true,
                 align: 'center',
@@ -1770,17 +1759,6 @@ async function handleTextMessage(event) {
                   uri: formUrl
                 },
                 color: '#764ba2'
-              },
-              {
-                type: 'button',
-                style: 'primary',
-                height: 'md',
-                action: {
-                  type: 'message',
-                  label: '診断結果を見る',
-                  text: '診断結果'
-                },
-                color: '#667eea'
               }
             ]
           }
