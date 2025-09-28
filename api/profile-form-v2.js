@@ -1542,10 +1542,24 @@ module.exports = async (req, res) => {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta http-equiv="refresh" content="0; url=${redirectUrl}">
-  <title>リダイレクト中...</title>
+  <meta http-equiv="refresh" content="1; url=${redirectUrl}">
+  <title>おつきさまにお伝えしています...</title>
   <script>
-    window.location.replace('${redirectUrl}');
+    // LINEブラウザ対策: 複数のリダイレクト方法を試す
+    setTimeout(function() {
+      try {
+        // 方法1: location.hrefを使用
+        window.location.href = '${redirectUrl}';
+      } catch(e1) {
+        try {
+          // 方法2: location.replaceを使用
+          window.location.replace('${redirectUrl}');
+        } catch(e2) {
+          // 方法3: locationを直接設定
+          window.location = '${redirectUrl}';
+        }
+      }
+    }, 1000);
   </script>
   <style>
     body {
@@ -1633,11 +1647,53 @@ module.exports = async (req, res) => {
       transform: translateY(-2px);
       box-shadow: 0 6px 20px rgba(6, 199, 85, 0.4);
     }
+    .fallback-link {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 12px 30px;
+      background: white;
+      color: #667eea;
+      text-decoration: none;
+      border-radius: 25px;
+      font-weight: bold;
+      transition: all 0.3s ease;
+    }
+    .fallback-link:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+    }
+    .spinner {
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-top: 3px solid white;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 20px auto;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
   </style>
 </head>
 <body>
-  <div class="container" style="display: none;">
-    <!-- リダイレクト中のため非表示 -->
+  <div class="container">
+    <div class="header">
+      <h1 class="title">おつきさまに伝えています</h1>
+    </div>
+    <div class="message">
+      <span class="moon-emoji">🌙</span>月詠があなたのメッセージを<br>
+      月の光に託しています...
+    </div>
+    <div class="spinner"></div>
+    <p style="color: #666; font-size: 14px; margin-top: 20px;">
+      自動的にページが切り替わります<br>
+      切り替わらない場合は下のボタンをタップしてください
+    </p>
+    <a href="${redirectUrl}" class="fallback-link">
+      次へ進む →
+    </a>
   </div>
 </body>
 </html>
