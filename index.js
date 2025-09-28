@@ -1197,7 +1197,7 @@ async function handleFollowEvent(event) {
               height: 'md',
               action: {
                 type: 'message',
-                label: '月タロット占いを受ける',
+                label: '🔮 月タロット占いを受ける',
                 text: '月タロット占い'
               },
               color: '#667eea'
