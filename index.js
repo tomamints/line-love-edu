@@ -1111,7 +1111,7 @@ async function handleFollowEvent(event) {
             },
             {
               type: 'text',
-              text: '月の滝吹のもと',
+              text: '月のカードが',
               size: 'md',
               wrap: true,
               align: 'center',
@@ -1119,7 +1119,7 @@ async function handleFollowEvent(event) {
             },
             {
               type: 'text',
-              text: '運命のカードがあなたを導きます',
+              text: 'あなたの今日を',
               size: 'md',
               wrap: true,
               align: 'center',
@@ -1127,7 +1127,7 @@ async function handleFollowEvent(event) {
             },
             {
               type: 'text',
-              text: 'あなただけの神秘の言葉を',
+              text: '優しく照らします',
               size: 'md',
               wrap: true,
               align: 'center',
@@ -1152,23 +1152,23 @@ async function handleFollowEvent(event) {
                 },
                 {
                   type: 'text',
-                  text: '一、あなたの思いを月に託す',
+                  text: '一、あなたの情報を入力',
                   size: 'sm',
                   margin: 'sm'
                 },
                 {
                   type: 'text',
-                  text: '二、月の力があなたを包み込む',
+                  text: '二、月にメッセージを送信',
                   size: 'sm'
                 },
                 {
                   type: 'text',
-                  text: '三、神秘のカードが道しるべを示す',
+                  text: '三、タロットカードが今日のメッセージを',
                   size: 'sm'
                 },
                 {
                   type: 'text',
-                  text: '　　あなただけの特別な導きを',
+                  text: '　　優しくお伝えします',
                   size: 'sm'
                 }
               ]
@@ -1721,23 +1721,23 @@ async function handleTextMessage(event) {
                   },
                   {
                     type: 'text',
-                    text: '一、あなたの思いを月に託す',
+                    text: '一、あなたの情報を入力',
                     size: 'sm',
                     margin: 'sm'
                   },
                   {
                     type: 'text',
-                    text: '二、月の力があなたを包み込む',
+                    text: '二、月にメッセージを送信',
                     size: 'sm'
                   },
                   {
                     type: 'text',
-                    text: '三、神秘のカードが道しるべを示す',
+                    text: '三、タロットカードが今日のメッセージを',
                     size: 'sm'
                   },
                   {
                     type: 'text',
-                    text: '　　あなただけの特別な導きを',
+                    text: '　　優しくお伝えします',
                     size: 'sm'
                   }
                 ]
@@ -1919,13 +1919,13 @@ async function handleTextMessage(event) {
               contents: [
                 {
                   type: 'text',
-                  text: '今夜の月が語る',
+                  text: '月のカードが',
                   size: 'md',
                   align: 'center'
                 },
                 {
                   type: 'text',
-                  text: 'あなたへの秘密のメッセージ',
+                  text: 'あなたにメッセージをお伝えします',
                   size: 'md',
                   align: 'center',
                   margin: 'sm'
