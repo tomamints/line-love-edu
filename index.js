@@ -1893,52 +1893,46 @@ async function handleTextMessage(event) {
         const tarotUrl = `${process.env.BASE_URL || 'https://line-love-edu.vercel.app'}/pages/moon-tarot.html?userId=${userId}`;
         await client.replyMessage(event.replyToken, {
           type: 'flex',
-          altText: '🌙 月タロット占い',
+          altText: '🔮 月タロット占い',
           contents: {
             type: 'bubble',
             size: 'mega',
             header: {
               type: 'box',
               layout: 'vertical',
-              backgroundColor: '#667eea',
               contents: [
                 {
                   type: 'text',
                   text: '🔮 月タロット占い',
-                  color: '#ffffff',
                   size: 'xl',
-                  weight: 'bold',
-                  align: 'center'
+                  color: '#ffffff',
+                  align: 'center',
+                  weight: 'bold'
                 }
               ],
+              backgroundColor: '#667eea',
               paddingAll: '20px'
             },
             body: {
               type: 'box',
               layout: 'vertical',
-              spacing: 'md',
               contents: [
                 {
                   type: 'text',
-                  text: '月のカードが',
+                  text: '月のカードがあなたの',
                   size: 'md',
                   align: 'center'
                 },
                 {
                   type: 'text',
-                  text: 'あなたの今日の恋愛運を',
+                  text: '今日の恋愛運を導きます',
                   size: 'md',
-                  align: 'center'
-                },
-                {
-                  type: 'text',
-                  text: '導きます',
-                  size: 'md',
-                  align: 'center'
+                  align: 'center',
+                  margin: 'sm'
                 },
                 {
                   type: 'separator',
-                  margin: 'lg'
+                  margin: 'xl'
                 },
                 {
                   type: 'text',
@@ -1948,7 +1942,8 @@ async function handleTextMessage(event) {
                   align: 'center',
                   margin: 'lg'
                 }
-              ]
+              ],
+              paddingAll: '20px'
             },
             footer: {
               type: 'box',
@@ -1966,7 +1961,8 @@ async function handleTextMessage(event) {
                   },
                   color: '#667eea'
                 }
-              ]
+              ],
+              paddingAll: '10px'
             }
           }
         });
@@ -2512,140 +2508,13 @@ async function handlePostbackEvent(event) {
   
   const userId = event.source.userId;
   
-  // タロット占いへのアクセス
+  // タロット占いへのアクセス（リッチメニューから）
   if (event.postback.data === 'action=tarot') {
     logger.log('🔮 タロット占いへのアクセス要求:', userId);
-    
-    // ユーザーIDを含むURLを生成
-    const tarotUrl = `${process.env.BASE_URL || 'https://line-love-edu.vercel.app'}/moon-tarot.html?userId=${userId}`;
-    
-    return client.replyMessage(event.replyToken, {
-      type: 'flex',
-      altText: '🔮 月タロット占い',
-      contents: {
-        type: 'bubble',
-        size: 'mega',
-        header: {
-          type: 'box',
-          layout: 'vertical',
-          contents: [
-            {
-              type: 'text',
-              text: '🔮 月タロット占い 🔮',
-              size: 'xl',
-              color: '#ffffff',
-              align: 'center',
-              weight: 'bold'
-            },
-            {
-              type: 'text',
-              text: '1日1回の運命カード',
-              size: 'md',
-              color: '#ffffff',
-              align: 'center',
-              margin: 'md'
-            }
-          ],
-          backgroundColor: '#667eea',
-          paddingAll: '20px'
-        },
-        body: {
-          type: 'box',
-          layout: 'vertical',
-          contents: [
-            {
-              type: 'text',
-              text: '✨ 月の満ち欠けとタロットカードが',
-              size: 'md',
-              weight: 'bold',
-              color: '#667eea',
-              wrap: true,
-              align: 'center'
-            },
-            {
-              type: 'text',
-              text: 'あなたの恋愛運を導きます',
-              size: 'sm',
-              color: '#666666',
-              wrap: true,
-              align: 'center',
-              margin: 'md'
-            },
-            {
-              type: 'separator',
-              margin: 'xl'
-            },
-            {
-              type: 'box',
-              layout: 'vertical',
-              margin: 'xl',
-              spacing: 'sm',
-              contents: [
-                {
-                  type: 'text',
-                  text: '🌙 占い内容',
-                  weight: 'bold',
-                  size: 'md',
-                  color: '#667eea'
-                },
-                {
-                  type: 'text',
-                  text: '• 今日の恋愛運',
-                  size: 'sm',
-                  color: '#666666',
-                  margin: 'sm'
-                },
-                {
-                  type: 'text',
-                  text: '• 運命のタロットカード',
-                  size: 'sm',
-                  color: '#666666'
-                },
-                {
-                  type: 'text',
-                  text: '• 月からのメッセージ',
-                  size: 'sm',
-                  color: '#666666'
-                },
-                {
-                  type: 'text',
-                  text: '• 恋愛アドバイス',
-                  size: 'sm',
-                  color: '#666666'
-                }
-              ]
-            }
-          ],
-          paddingAll: '20px'
-        },
-        footer: {
-          type: 'box',
-          layout: 'vertical',
-          spacing: 'sm',
-          contents: [
-            {
-              type: 'button',
-              style: 'primary',
-              height: 'sm',
-              action: {
-                type: 'uri',
-                label: '🔮 占いを始める',
-                uri: tarotUrl
-              },
-              color: '#667eea'
-            },
-            {
-              type: 'text',
-              text: '※1日1回まで占えます',
-              size: 'xs',
-              color: '#aaaaaa',
-              align: 'center',
-              margin: 'sm'
-            }
-          ]
-        }
-      }
-    });
+
+    // 月タロット占いコマンドと同じ処理を実行
+    event.message = { text: '月タロット占い' };
+    return handleTextMessage(event);
   }
   
   // postback処理（日付選択と性別選択）
