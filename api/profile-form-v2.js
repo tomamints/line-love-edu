@@ -1534,7 +1534,7 @@ module.exports = async (req, res) => {
         // エラーがあっても保存は成功として扱う
       }
       
-      // 中間ページへリダイレクト
+      // 中間ページへ直接リダイレクト
       const redirectUrl = `/pages/moon-message-sent.html?userId=${userId}`;
       const successHtml = `
 <!DOCTYPE html>
@@ -1542,11 +1542,10 @@ module.exports = async (req, res) => {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>おつきさまに伝えました</title>
+  <meta http-equiv="refresh" content="0; url=${redirectUrl}">
+  <title>リダイレクト中...</title>
   <script>
-    setTimeout(function() {
-      window.location.href = '${redirectUrl}';
-    }, 1500);
+    window.location.replace('${redirectUrl}');
   </script>
   <style>
     body {
@@ -1637,31 +1636,8 @@ module.exports = async (req, res) => {
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="header">
-      <div class="title">【おつきさまからお返事です】</div>
-    </div>
-    
-    <div class="message">
-      あなたが真剣に書いてくれたおかげで<br>
-      詳しく診断ができました<br>
-      教えてくれてありがとう<span class="moon-emoji">🌙</span>
-    </div>
-    
-    <div class="instructions">
-      <div class="instruction-title">診断結果の見方を教えます</div>
-      <div class="instruction-step">
-        <span class="step-number">①</span>下のボタンを押して、LINEへ戻りなさい
-      </div>
-      <div class="instruction-step">
-        <span class="step-number">②</span>先ほどの下部メニューの<span style="font-size: 18px; font-weight: bold; color: #764ba2; display: inline-block; margin: 0 3px;">「診断結果を見る」</span>を押してください<br>
-        <span style="margin-left: 22px;">あなたとお相手の関係性をお告げします</span>
-      </div>
-    </div>
-    
-    <a href="https://lin.ee/Kk1OqSm" class="line-button">
-      おつきさま診断LINEに戻る
-    </a>
+  <div class="container" style="display: none;">
+    <!-- リダイレクト中のため非表示 -->
   </div>
 </body>
 </html>
