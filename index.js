@@ -1111,7 +1111,7 @@ async function handleFollowEvent(event) {
             },
             {
               type: 'text',
-              text: '月のカードがあなたの',
+              text: '月の滝吹のもと',
               size: 'md',
               wrap: true,
               align: 'center',
@@ -1119,7 +1119,7 @@ async function handleFollowEvent(event) {
             },
             {
               type: 'text',
-              text: '今日の恋愛運を導きます',
+              text: '運命のカードがあなたを導きます',
               size: 'md',
               wrap: true,
               align: 'center',
@@ -1127,7 +1127,7 @@ async function handleFollowEvent(event) {
             },
             {
               type: 'text',
-              text: '特別なメッセージをお伝えします',
+              text: 'あなただけの神秘の言葉を',
               size: 'md',
               wrap: true,
               align: 'center',
@@ -1152,23 +1152,23 @@ async function handleFollowEvent(event) {
                 },
                 {
                   type: 'text',
-                  text: '一、まずはあなたの情報を教えてください',
+                  text: '一、あなたの思いを月に託す',
                   size: 'sm',
                   margin: 'sm'
                 },
                 {
                   type: 'text',
-                  text: '二、月にメッセージを送ります',
+                  text: '二、月の力があなたを包み込む',
                   size: 'sm'
                 },
                 {
                   type: 'text',
-                  text: '三、月のカードがあなたの運勢を占います',
+                  text: '三、神秘のカードが道しるべを示す',
                   size: 'sm'
                 },
                 {
                   type: 'text',
-                  text: '　　特別なメッセージをお届けします',
+                  text: '　　あなただけの特別な導きを',
                   size: 'sm'
                 }
               ]
@@ -1696,7 +1696,7 @@ async function handleTextMessage(event) {
               },
               {
                 type: 'text',
-                text: '特別なメッセージをお伝えします',
+                text: 'あなただけの神秘の言葉を',
                 size: 'md',
                 wrap: true,
                 align: 'center',
@@ -1721,23 +1721,23 @@ async function handleTextMessage(event) {
                   },
                   {
                     type: 'text',
-                    text: '一、まずはあなたの情報を教えてください',
+                    text: '一、あなたの思いを月に託す',
                     size: 'sm',
                     margin: 'sm'
                   },
                   {
                     type: 'text',
-                    text: '二、月にメッセージを送ります',
+                    text: '二、月の力があなたを包み込む',
                     size: 'sm'
                   },
                   {
                     type: 'text',
-                    text: '三、月のカードがあなたの運勢を占います',
+                    text: '三、神秘のカードが道しるべを示す',
                     size: 'sm'
                   },
                   {
                     type: 'text',
-                    text: '　　特別なメッセージをお届けします',
+                    text: '　　あなただけの特別な導きを',
                     size: 'sm'
                   }
                 ]
@@ -1919,13 +1919,13 @@ async function handleTextMessage(event) {
               contents: [
                 {
                   type: 'text',
-                  text: '月のカードがあなたの',
+                  text: '今夜の月が語る',
                   size: 'md',
                   align: 'center'
                 },
                 {
                   type: 'text',
-                  text: '今日の恋愛運を導きます',
+                  text: 'あなたへの秘密のメッセージ',
                   size: 'md',
                   align: 'center',
                   margin: 'sm'
