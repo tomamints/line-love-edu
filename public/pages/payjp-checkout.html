@@ -275,19 +275,13 @@
                     または
                 </div>
 
-                <button id="checkoutButton" class="custom-checkout-button">
-                    クレジットカードで支払う
-                </button>
-            </div>
-            
-            <!-- 隠しフォーム（PAY.JP Checkout用） -->
-            <div style="display: none;">
+                <!-- PAY.JP Checkout直接ボタン -->
                 <script
                     type="text/javascript"
                     src="https://checkout.pay.jp/"
-                    class="payjp-button"
+                    class="payjp-button custom-checkout-button"
                     data-key="pk_test_0383a1b8f91e8a6e3ea0e2a9"
-                    data-text="決済画面を開く"
+                    data-text="クレジットカードで支払う"
                     data-submit-text="支払う"
                     data-payjp-on-created="onTokenCreated"
                     data-payjp-on-failed="onTokenFailed"
@@ -348,9 +342,6 @@
                             document.getElementById('applePayButton').style.display = 'block';
                             document.getElementById('applePayButton').classList.add('available');
                             document.getElementById('paymentSeparator').style.display = 'block';
-
-                            // ボタンテキストを変更
-                            document.getElementById('checkoutButton').textContent = 'クレジットカードで支払う';
                         }
                     });
                 } else {
@@ -447,15 +438,6 @@
             } catch (err) {
                 console.error('Error creating Apple Pay session:', err);
                 alert('Apple Payの初期化に失敗しました: ' + err.message);
-            }
-        });
-
-        // カスタムボタンのクリックでPAY.JP Checkoutを開く
-        document.getElementById('checkoutButton').addEventListener('click', function() {
-            // PAY.JP Checkoutボタンをプログラム的にクリック
-            const payjpButton = document.querySelector('.payjp-button');
-            if (payjpButton) {
-                payjpButton.click();
             }
         });
 
