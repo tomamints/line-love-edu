@@ -277,18 +277,20 @@
                     または
                 </div>
 
-                <!-- PAY.JP Checkout直接ボタン -->
-                <script
-                    type="text/javascript"
-                    src="https://checkout.pay.jp/"
-                    class="payjp-button"
-                    data-key="pk_test_0383a1b8f91e8a6e3ea0e2a9"
-                    data-text="クレジットカードで支払う"
-                    data-submit-text="支払う"
-                    data-payjp-on-created="onTokenCreated"
-                    data-payjp-on-failed="onTokenFailed"
-                    data-payjp-three-d-secure="false">
-                </script>
+                <!-- PAY.JP Checkout直接ボタン（フォームでラップ） -->
+                <form action="#" method="POST">
+                    <script
+                        type="text/javascript"
+                        src="https://checkout.pay.jp/"
+                        class="payjp-button"
+                        data-key="pk_test_0383a1b8f91e8a6e3ea0e2a9"
+                        data-text="クレジットカードで支払う"
+                        data-submit-text="支払う"
+                        data-payjp-on-created="onTokenCreated"
+                        data-payjp-on-failed="onTokenFailed"
+                        data-payjp-three-d-secure="false">
+                    </script>
+                </form>
             </div>
             
             <div class="security-notice">
