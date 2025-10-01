@@ -314,7 +314,7 @@
                 document.getElementById('errorMessage').textContent = '診断IDが見つかりません。診断結果ページから再度お試しください。';
                 document.getElementById('errorMessage').style.display = 'block';
                 document.getElementById('loading').classList.remove('active');
-                return;
+                throw new Error('診断IDが見つかりません');
             }
 
             try {
@@ -346,16 +346,23 @@
                     setTimeout(() => {
                         window.location.href = `/pages/lp-otsukisama-unified.html?id=${finalDiagnosisId}&userId=${finalUserId}&paid=true`;
                     }, 1000);
+
+                    // 成功を返す
+                    return { success: true };
                 } else {
                     document.getElementById('errorMessage').textContent = result.error || '決済処理中にエラーが発生しました';
                     document.getElementById('errorMessage').style.display = 'block';
                     document.getElementById('loading').classList.remove('active');
+                    // エラーをthrowして、Apple Payのcompleteをトリガー
+                    throw new Error(result.error || '決済処理に失敗しました');
                 }
             } catch (error) {
                 console.error('Payment error:', error);
                 document.getElementById('errorMessage').textContent = 'ネットワークエラーが発生しました';
                 document.getElementById('errorMessage').style.display = 'block';
                 document.getElementById('loading').classList.remove('active');
+                // エラーを再throwして、呼び出し元でキャッチできるようにする
+                throw error;
             }
         }
 
@@ -399,13 +406,29 @@
                         paymentRequest,
                         async function success(result) {
                             console.log('Apple Pay success:', result);
-                            if (session && session.completePayment) {
-                                session.completePayment(ApplePaySession.STATUS_SUCCESS);
+                            // 決済処理を実行して、その結果に基づいてcompletePaymentを呼ぶ
+                            try {
+                                await handlePaymentSuccess(result.token, 'apple_pay');
+                                // 決済成功後にSTATUS_SUCCESSを送る
+                                if (session && session.completePayment) {
+                                    session.completePayment(ApplePaySession.STATUS_SUCCESS);
+                                }
+                            } catch (paymentError) {
+                                console.error('Payment processing failed:', paymentError);
+                                // 決済失敗時はSTATUS_FAILUREを送る
+                                if (session && session.completePayment) {
+                                    session.completePayment(ApplePaySession.STATUS_FAILURE);
+                                }
+                                document.getElementById('errorMessage').textContent = '決済処理に失敗しました。もう一度お試しください。';
+                                document.getElementById('errorMessage').style.display = 'block';
                             }
-                            await handlePaymentSuccess(result.token, 'apple_pay');
                         },
                         function failure(error) {
                             console.error('Apple Pay failed:', error);
+                            // Apple Pay自体が失敗した場合
+                            if (session && session.completePayment) {
+                                session.completePayment(ApplePaySession.STATUS_FAILURE);
+                            }
                             document.getElementById('errorMessage').textContent = 'Apple Payは現在ご利用いただけません。クレジットカードをご利用ください。';
                             document.getElementById('errorMessage').style.display = 'block';
                         }
