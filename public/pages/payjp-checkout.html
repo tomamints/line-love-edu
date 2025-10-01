@@ -96,23 +96,25 @@
         .payjp-button-container {
             margin: 30px 0;
         }
-        
-        .custom-checkout-button {
-            width: 100%;
-            padding: 15px;
-            background: linear-gradient(135deg, #4CAF50, #45a049);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 18px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s;
+
+        .payjp-button {
+            width: 100% !important;
+            padding: 15px !important;
+            background: linear-gradient(135deg, #4CAF50, #45a049) !important;
+            color: white !important;
+            border: none !important;
+            border-radius: 10px !important;
+            font-size: 18px !important;
+            font-weight: bold !important;
+            cursor: pointer !important;
+            transition: all 0.3s !important;
+            display: block !important;
+            text-align: center !important;
         }
-        
-        .custom-checkout-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(76, 175, 80, 0.3);
+
+        .payjp-button:hover {
+            transform: translateY(-2px) !important;
+            box-shadow: 0 10px 30px rgba(76, 175, 80, 0.3) !important;
         }
 
         /* Apple Payボタン */
@@ -279,7 +281,7 @@
                 <script
                     type="text/javascript"
                     src="https://checkout.pay.jp/"
-                    class="payjp-button custom-checkout-button"
+                    class="payjp-button"
                     data-key="pk_test_0383a1b8f91e8a6e3ea0e2a9"
                     data-text="クレジットカードで支払う"
                     data-submit-text="支払う"
