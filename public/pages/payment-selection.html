@@ -253,10 +253,7 @@
                 class="payjp-button"
                 data-key="pk_test_16ae008c6fe3b2a1059efc6f"
                 data-text="クレジットカードで支払う"
-                data-submit-text="支払う"
-                data-partial="true"
-                data-on-created="handlePayjpToken"
-                data-on-failed="handlePayjpError">
+                data-submit-text="支払う">
             </script>
         </div>
 
@@ -303,6 +300,7 @@
         async function handlePaymentSuccess(token, paymentMethod = 'credit_card') {
             console.log('Payment token created:', token);
             document.getElementById('loading').classList.add('active');
+            document.getElementById('loading').querySelector('.loading-text').textContent = '決済を処理中です...';
 
             // セッションストレージから情報を取得
             const finalDiagnosisId = diagnosisId || sessionStorage.getItem('diagnosisId');
@@ -333,11 +331,17 @@
                 const result = await response.json();
 
                 if (result.success) {
+                    // 成功メッセージを表示
+                    document.getElementById('loading').querySelector('.loading-text').textContent = '決済が完了しました！完全版へリダイレクトしています...';
+
                     // セッションストレージをクリア
                     sessionStorage.removeItem('diagnosisId');
                     sessionStorage.removeItem('userId');
-                    // 成功したら即座にリダイレクト
-                    window.location.href = `/pages/lp-otsukisama-unified.html?id=${finalDiagnosisId}&userId=${finalUserId}&paid=true`;
+
+                    // 1秒後にリダイレクト
+                    setTimeout(() => {
+                        window.location.href = `/pages/lp-otsukisama-unified.html?id=${finalDiagnosisId}&userId=${finalUserId}&paid=true`;
+                    }, 1000);
                 } else {
                     document.getElementById('errorMessage').textContent = result.error || '決済処理中にエラーが発生しました';
                     document.getElementById('errorMessage').style.display = 'block';
@@ -355,7 +359,7 @@
         function handlePayjpToken(response) {
             console.log('PAY.JP token created:', response);
             if (response && response.id) {
-                handlePaymentSuccess(response.id, 'credit_card');
+                handlePaymentSuccess(response, 'credit_card');
             }
         }
 
@@ -422,6 +426,18 @@
             }
         });
 
+        // フォームサブミット時の処理をDOMContentLoaded後に設定
+        window.addEventListener('DOMContentLoaded', function() {
+            const checkoutForm = document.getElementById('checkout-form');
+            if (checkoutForm) {
+                checkoutForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    console.log('Checkout form submitted - waiting for PAY.JP token');
+                    // PAY.JP Checkoutがトークンを生成してページをリロードするのを待つ
+                });
+            }
+        });
+
         // 初期化
         window.addEventListener('DOMContentLoaded', function() {
             console.log('Payment selection page loaded');
@@ -430,13 +446,12 @@
             const payjpToken = urlParams.get('payjp-token');
             if (payjpToken) {
                 console.log('PAY.JP token found in URL:', payjpToken);
-                // セッションストレージから診断IDを復元
-                const savedDiagnosisId = sessionStorage.getItem('diagnosisId');
-                const savedUserId = sessionStorage.getItem('userId');
-                if (savedDiagnosisId) {
-                    handlePaymentSuccess(payjpToken, 'credit_card');
-                    return;
-                }
+                // payment-process.htmlへリダイレクト
+                const savedDiagnosisId = sessionStorage.getItem('diagnosisId') || diagnosisId;
+                const savedUserId = sessionStorage.getItem('userId') || userId || 'anonymous';
+
+                window.location.href = `/pages/payment-process.html?payjp-token=${payjpToken}&diagnosisId=${savedDiagnosisId}&userId=${savedUserId}`;
+                return;
             }
 
             if (!diagnosisId) {
