@@ -561,11 +561,6 @@
 
                 if (checkoutButton) {
                     console.log('PAY.JP Checkout button found and ready');
-
-                    // data属性でコールバックを設定
-                    checkoutButton.setAttribute('data-on-created', 'payjpTokenHandler');
-                    checkoutButton.setAttribute('data-on-failed', 'payjpErrorHandler');
-
                     clearInterval(checkInterval);
                 } else if (retries >= maxRetries) {
                     console.error('PAY.JP Checkout button not found after retries');
