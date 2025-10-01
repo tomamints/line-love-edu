@@ -247,9 +247,17 @@
             </div>
 
             <!-- クレジットカードボタン（PAY.JP Checkout） -->
-            <button id="creditCardButton" class="checkout-button">
-                クレジットカードで支払う
-            </button>
+            <form action="#" method="POST" id="payjp-checkout-form">
+                <script
+                    type="text/javascript"
+                    src="https://checkout.pay.jp/"
+                    class="payjp-button"
+                    data-key="pk_test_16ae008c6fe3b2a1059efc6f"
+                    data-text="クレジットカードで支払う"
+                    data-submit-text="支払う"
+                    data-partial="false">
+                </script>
+            </form>
         </div>
 
         <!-- Loading -->
@@ -291,16 +299,6 @@
         // PAY.JP初期化
         const payjp = Payjp('pk_test_16ae008c6fe3b2a1059efc6f');
 
-        // PAY.JP Checkout設定
-        let checkoutHandler = null;
-
-        if (typeof PayjpCheckout !== 'undefined') {
-            checkoutHandler = PayjpCheckout.configure({
-                key: 'pk_test_16ae008c6fe3b2a1059efc6f',
-                lang: 'ja'
-            });
-        }
-
         // 決済成功後の処理
         async function handlePaymentSuccess(token, paymentMethod = 'credit_card') {
             console.log('Payment token created:', token);
@@ -339,40 +337,17 @@
             }
         }
 
-        // クレジットカードボタン処理（PAY.JP Checkout）
-        document.getElementById('creditCardButton').addEventListener('click', function(e) {
+        // PAY.JP Checkoutフォーム送信処理
+        document.getElementById('payjp-checkout-form').addEventListener('submit', function(e) {
             e.preventDefault();
-            console.log('Credit card button clicked');
-
-            if (checkoutHandler) {
-                // PAY.JP Checkoutを開く
-                checkoutHandler.open({
-                    amount: 2980,
-                    currency: 'jpy',
-                    name: 'おつきさま診断 完全版',
-                    description: '月が導くあなたの運命',
-                    closed: function() {
-                        console.log('Checkout closed');
-                    }
-                });
-
-                // トークン作成成功時のコールバック
-                checkoutHandler.on('created', function(response) {
-                    console.log('Checkout token created:', response);
-                    handlePaymentSuccess(response, 'credit_card');
-                });
-
-                // エラー時のコールバック
-                checkoutHandler.on('failed', function(error) {
-                    console.error('Checkout failed:', error);
-                    document.getElementById('errorMessage').textContent = 'カード情報の処理に失敗しました';
-                    document.getElementById('errorMessage').style.display = 'block';
-                });
-            } else {
-                console.error('PayjpCheckout not loaded');
-                document.getElementById('errorMessage').textContent = 'PAY.JPの初期化に失敗しました。ページを再読み込みしてください。';
-                document.getElementById('errorMessage').style.display = 'block';
+            console.log('PAY.JP Checkout form submitted');
+            // トークンはPAY.JPによって自動的に追加される
+            const token = this.querySelector('input[name="payjp-token"]');
+            if (token && token.value) {
+                console.log('Token found:', token.value);
+                handlePaymentSuccess(token.value, 'credit_card');
             }
+            return false;
         });
 
         // Apple Payボタン処理
@@ -435,21 +410,6 @@
                 document.getElementById('errorMessage').textContent = '診断IDが見つかりません。診断結果ページから再度お試しください。';
                 document.getElementById('errorMessage').style.display = 'block';
                 return;
-            }
-
-            // PayjpCheckoutが読み込まれているか確認
-            if (typeof PayjpCheckout === 'undefined') {
-                console.warn('PayjpCheckout not loaded on initial load');
-                // 少し待ってから再試行
-                setTimeout(() => {
-                    if (typeof PayjpCheckout !== 'undefined') {
-                        checkoutHandler = PayjpCheckout.configure({
-                            key: 'pk_test_16ae008c6fe3b2a1059efc6f',
-                            lang: 'ja'
-                        });
-                        console.log('PayjpCheckout loaded after delay');
-                    }
-                }, 1000);
             }
         });
     </script>
