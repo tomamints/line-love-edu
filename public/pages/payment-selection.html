@@ -304,6 +304,17 @@
             console.log('Payment token created:', token);
             document.getElementById('loading').classList.add('active');
 
+            // セッションストレージから情報を取得
+            const finalDiagnosisId = diagnosisId || sessionStorage.getItem('diagnosisId');
+            const finalUserId = userId || sessionStorage.getItem('userId') || 'anonymous';
+
+            if (!finalDiagnosisId) {
+                document.getElementById('errorMessage').textContent = '診断IDが見つかりません。診断結果ページから再度お試しください。';
+                document.getElementById('errorMessage').style.display = 'block';
+                document.getElementById('loading').classList.remove('active');
+                return;
+            }
+
             try {
                 const response = await fetch('/api/payjp-create-charge', {
                     method: 'POST',
@@ -312,8 +323,8 @@
                     },
                     body: JSON.stringify({
                         token: token.id || token,
-                        diagnosisId: diagnosisId,
-                        userId: userId || 'anonymous',
+                        diagnosisId: finalDiagnosisId,
+                        userId: finalUserId,
                         amount: 2980,
                         paymentMethod: paymentMethod
                     })
@@ -322,8 +333,11 @@
                 const result = await response.json();
 
                 if (result.success) {
+                    // セッションストレージをクリア
+                    sessionStorage.removeItem('diagnosisId');
+                    sessionStorage.removeItem('userId');
                     // 成功したら即座にリダイレクト
-                    window.location.href = `/pages/lp-otsukisama-unified.html?id=${diagnosisId}&userId=${userId || ''}&paid=true`;
+                    window.location.href = `/pages/lp-otsukisama-unified.html?id=${finalDiagnosisId}&userId=${finalUserId}&paid=true`;
                 } else {
                     document.getElementById('errorMessage').textContent = result.error || '決済処理中にエラーが発生しました';
                     document.getElementById('errorMessage').style.display = 'block';
@@ -412,11 +426,28 @@
         window.addEventListener('DOMContentLoaded', function() {
             console.log('Payment selection page loaded');
 
+            // PAY.JP Checkoutからのトークンチェック
+            const payjpToken = urlParams.get('payjp-token');
+            if (payjpToken) {
+                console.log('PAY.JP token found in URL:', payjpToken);
+                // セッションストレージから診断IDを復元
+                const savedDiagnosisId = sessionStorage.getItem('diagnosisId');
+                const savedUserId = sessionStorage.getItem('userId');
+                if (savedDiagnosisId) {
+                    handlePaymentSuccess(payjpToken, 'credit_card');
+                    return;
+                }
+            }
+
             if (!diagnosisId) {
                 document.getElementById('errorMessage').textContent = '診断IDが見つかりません。診断結果ページから再度お試しください。';
                 document.getElementById('errorMessage').style.display = 'block';
                 return;
             }
+
+            // 診断IDとユーザーIDをセッションストレージに保存
+            sessionStorage.setItem('diagnosisId', diagnosisId);
+            sessionStorage.setItem('userId', userId || 'anonymous');
         });
     </script>
 </body>
