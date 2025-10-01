@@ -289,14 +289,14 @@
         const userId = urlParams.get('userId');
 
         // PAY.JP初期化
-        const payjp = Payjp('pk_test_0383a1b8f91e8a6e3ea0e2a9');
+        const payjp = Payjp('pk_test_16ae008c6fe3b2a1059efc6f');
 
         // PAY.JP Checkout設定
         let checkoutHandler = null;
 
         if (typeof PayjpCheckout !== 'undefined') {
             checkoutHandler = PayjpCheckout.configure({
-                key: 'pk_test_0383a1b8f91e8a6e3ea0e2a9',
+                key: 'pk_test_16ae008c6fe3b2a1059efc6f',
                 lang: 'ja'
             });
         }
@@ -444,7 +444,7 @@
                 setTimeout(() => {
                     if (typeof PayjpCheckout !== 'undefined') {
                         checkoutHandler = PayjpCheckout.configure({
-                            key: 'pk_test_0383a1b8f91e8a6e3ea0e2a9',
+                            key: 'pk_test_16ae008c6fe3b2a1059efc6f',
                             lang: 'ja'
                         });
                         console.log('PayjpCheckout loaded after delay');
