@@ -247,14 +247,18 @@
             </div>
 
             <!-- クレジットカードボタン（PAY.JP Checkout） -->
-            <script
-                type="text/javascript"
-                src="https://checkout.pay.jp/"
-                class="payjp-button"
-                data-key="pk_test_16ae008c6fe3b2a1059efc6f"
-                data-text="クレジットカードで支払う"
-                data-submit-text="支払う">
-            </script>
+            <form action="/pages/payment-process.html" method="GET" id="checkout-form">
+                <input type="hidden" name="diagnosisId" id="diagnosisIdField">
+                <input type="hidden" name="userId" id="userIdField">
+                <script
+                    type="text/javascript"
+                    src="https://checkout.pay.jp/"
+                    class="payjp-button"
+                    data-key="pk_test_16ae008c6fe3b2a1059efc6f"
+                    data-text="クレジットカードで支払う"
+                    data-submit-text="支払う">
+                </script>
+            </form>
         </div>
 
         <!-- Loading -->
@@ -441,6 +445,12 @@
         // 初期化
         window.addEventListener('DOMContentLoaded', function() {
             console.log('Payment selection page loaded');
+
+            // hidden fieldsに値を設定
+            if (diagnosisId) {
+                document.getElementById('diagnosisIdField').value = diagnosisId;
+            }
+            document.getElementById('userIdField').value = userId || 'anonymous';
 
             // PAY.JP Checkoutからのトークンチェック
             const payjpToken = urlParams.get('payjp-token');
