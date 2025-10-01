@@ -290,6 +290,29 @@ app.post('/webhook', middleware(config), async (req, res) => {
                       style: 'primary',
                       color: '#ff6b6b',
                       height: 'sm'
+                    },
+                    {
+                      type: 'separator',
+                      margin: 'md'
+                    },
+                    {
+                      type: 'button',
+                      action: {
+                        type: 'uri',
+                        label: '💳 今すぐ購入（¥9,800）',
+                        uri: `${process.env.BASE_URL || 'https://line-love-edu.vercel.app'}/pages/payjp-checkout.html?diagnosisId=${diagnosis.id}&userId=${userId}`
+                      },
+                      style: 'primary',
+                      color: '#4CAF50',
+                      height: 'md'
+                    },
+                    {
+                      type: 'text',
+                      text: 'カード決済で安心・簡単購入',
+                      size: 'xs',
+                      color: '#999',
+                      align: 'center',
+                      margin: 'sm'
                     }
                   ],
                   paddingAll: '10px'
