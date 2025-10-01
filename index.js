@@ -1509,137 +1509,191 @@ async function handleTextMessage(event) {
       return;
     }
     
-    // 「本格」キーワードでLPへ誘導（テスト用）
+    // 「本格」キーワードで決済ページへ誘導
     if (text === '本格') {
-      const lpUrl = `${process.env.BASE_URL || 'https://line-love-edu.vercel.app'}/lp-otsukisama-input.html?userId=${userId}`;
-      
-      await client.replyMessage(event.replyToken, {
-        type: 'flex',
-        altText: '🌙 本格おつきさま診断',
-        contents: {
-          type: 'bubble',
-          size: 'mega',
-          header: {
-            type: 'box',
-            layout: 'vertical',
-            contents: [
-              {
-                type: 'text',
-                text: '🌙 本格おつきさま診断 🌙',
-                size: 'xl',
-                color: '#ffffff',
-                align: 'center',
-                weight: 'bold'
-              },
-              {
-                type: 'text',
-                text: '直近3ヶ月の詳細運勢',
-                size: 'md',
-                color: '#ffffff',
-                align: 'center',
-                margin: 'md'
-              }
-            ],
-            backgroundColor: '#764ba2',
-            paddingAll: '20px'
-          },
-          body: {
-            type: 'box',
-            layout: 'vertical',
-            contents: [
-              {
-                type: 'text',
-                text: '🌙 あなたの生まれた瞬間の月の形から',
-                size: 'md',
-                weight: 'bold',
-                color: '#764ba2',
-                wrap: true,
-                align: 'center'
-              },
-              {
-                type: 'text',
-                text: '直近3ヶ月の詳細な運勢を診断します',
-                size: 'sm',
-                color: '#666666',
-                wrap: true,
-                align: 'center',
-                margin: 'md'
-              },
-              {
-                type: 'separator',
-                margin: 'xl'
-              },
-              {
-                type: 'box',
-                layout: 'vertical',
-                margin: 'xl',
-                spacing: 'sm',
-                contents: [
-                  {
-                    type: 'text',
-                    text: '💫 占い内容',
-                    weight: 'bold',
-                    size: 'md',
-                    color: '#764ba2'
-                  },
-                  {
-                    type: 'text',
-                    text: '• 3ヶ月の全体運',
-                    size: 'sm',
-                    color: '#666666',
-                    margin: 'sm'
-                  },
-                  {
-                    type: 'text',
-                    text: '• 恋愛運の詳細',
-                    size: 'sm',
-                    color: '#666666'
-                  },
-                  {
-                    type: 'text',
-                    text: '• 人間関係運',
-                    size: 'sm',
-                    color: '#666666'
-                  },
-                  {
-                    type: 'text',
-                    text: '• 金運・仕事運',
-                    size: 'sm',
-                    color: '#666666'
-                  }
-                ]
-              }
-            ],
-            paddingAll: '20px'
-          },
-          footer: {
-            type: 'box',
-            layout: 'vertical',
-            spacing: 'sm',
-            contents: [
-              {
-                type: 'button',
-                style: 'primary',
-                height: 'sm',
-                action: {
-                  type: 'uri',
-                  label: '🌙 診断を始める',
-                  uri: lpUrl
-                },
-                color: '#764ba2'
-              },
-              {
-                type: 'text',
-                text: '※外部サイトへ移動します',
-                size: 'xs',
-                color: '#aaaaaa',
-                align: 'center',
-                margin: 'sm'
-              }
-            ]
-          }
+      try {
+        // 最新の診断IDを取得または作成
+        const { createClient } = require('@supabase/supabase-js');
+        const supabase = createClient(
+          process.env.SUPABASE_URL,
+          process.env.SUPABASE_ANON_KEY
+        );
+
+        // ユーザーの最新診断を取得
+        let { data: diagnosis } = await supabase
+          .from('diagnoses')
+          .select('id')
+          .eq('user_id', userId)
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .single();
+
+        // 診断が無い場合は新規作成
+        if (!diagnosis) {
+          const { data: newDiagnosis } = await supabase
+            .from('diagnoses')
+            .insert([{
+              user_id: userId,
+              birth_date: '2000-01-01',
+              birth_time: '00:00',
+              name: 'ユーザー',
+              partner_name: '',
+              type: 'hongaku'
+            }])
+            .select('id')
+            .single();
+          diagnosis = newDiagnosis;
         }
-      });
+
+        const paymentUrl = `${process.env.BASE_URL || 'https://line-love-edu.vercel.app'}/pages/payjp-checkout.html?diagnosisId=${diagnosis.id}&userId=${userId}`;
+
+        await client.replyMessage(event.replyToken, {
+          type: 'flex',
+          altText: '🌙 本格おつきさま診断',
+          contents: {
+            type: 'bubble',
+            size: 'mega',
+            header: {
+              type: 'box',
+              layout: 'vertical',
+              contents: [
+                {
+                  type: 'text',
+                  text: '🌙 本格おつきさま診断 🌙',
+                  size: 'xl',
+                  color: '#ffffff',
+                  align: 'center',
+                  weight: 'bold'
+                },
+                {
+                  type: 'text',
+                  text: '直近3ヶ月の詳細運勢',
+                  size: 'md',
+                  color: '#ffffff',
+                  align: 'center',
+                  margin: 'md'
+                }
+              ],
+              backgroundColor: '#764ba2',
+              paddingAll: '20px'
+            },
+            body: {
+              type: 'box',
+              layout: 'vertical',
+              contents: [
+                {
+                  type: 'text',
+                  text: '🌙 あなたの生まれた瞬間の月の形から',
+                  size: 'md',
+                  weight: 'bold',
+                  color: '#764ba2',
+                  wrap: true,
+                  align: 'center'
+                },
+                {
+                  type: 'text',
+                  text: '直近3ヶ月の詳細な運勢を診断します',
+                  size: 'sm',
+                  color: '#666666',
+                  wrap: true,
+                  align: 'center',
+                  margin: 'md'
+                },
+                {
+                  type: 'separator',
+                  margin: 'xl'
+                },
+                {
+                  type: 'box',
+                  layout: 'vertical',
+                  margin: 'xl',
+                  spacing: 'sm',
+                  contents: [
+                    {
+                      type: 'text',
+                      text: '💫 占い内容',
+                      weight: 'bold',
+                      size: 'md',
+                      color: '#764ba2'
+                    },
+                    {
+                      type: 'text',
+                      text: '• 3ヶ月の全体運',
+                      size: 'sm',
+                      color: '#666666',
+                      margin: 'sm'
+                    },
+                    {
+                      type: 'text',
+                      text: '• 恋愛運の詳細',
+                      size: 'sm',
+                      color: '#666666'
+                    },
+                    {
+                      type: 'text',
+                      text: '• 人間関係運',
+                      size: 'sm',
+                      color: '#666666'
+                    },
+                    {
+                      type: 'text',
+                      text: '• 金運・仕事運',
+                      size: 'sm',
+                      color: '#666666'
+                    }
+                  ]
+                },
+                {
+                  type: 'separator',
+                  margin: 'xl'
+                },
+                {
+                  type: 'text',
+                  text: '💰 価格: ¥9,800',
+                  size: 'lg',
+                  weight: 'bold',
+                  color: '#ff6b6b',
+                  align: 'center',
+                  margin: 'xl'
+                }
+              ],
+              paddingAll: '20px'
+            },
+            footer: {
+              type: 'box',
+              layout: 'vertical',
+              spacing: 'sm',
+              contents: [
+                {
+                  type: 'button',
+                  style: 'primary',
+                  height: 'md',
+                  action: {
+                    type: 'uri',
+                    label: '💳 今すぐ購入する',
+                    uri: paymentUrl
+                  },
+                  color: '#ff6b6b'
+                },
+                {
+                  type: 'text',
+                  text: '🔒 安全な決済ページへ移動します',
+                  size: 'xs',
+                  color: '#aaaaaa',
+                  align: 'center',
+                  margin: 'sm'
+                }
+              ]
+            }
+          }
+        });
+      } catch (error) {
+        logger.log('❌ 本格コマンドエラー:', error);
+        await client.replyMessage(event.replyToken, {
+          type: 'text',
+          text: 'エラーが発生しました。もう一度お試しください。'
+        });
+      }
       return;
     }
     

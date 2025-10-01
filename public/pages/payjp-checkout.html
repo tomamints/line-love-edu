@@ -301,8 +301,8 @@
             .then(res => res.json())
             .then(result => {
                 if (result.success) {
-                    // 決済成功
-                    window.location.href = `/payment-success.html?id=${diagnosisId}&userId=${userId || ''}&paymentCompleted=true&chargeId=${result.chargeId}`;
+                    // 決済成功 - 完全版ページに直接リダイレクト
+                    window.location.href = `/lp-otsukisama-unified.html?id=${diagnosisId}&userId=${userId || ''}&paymentCompleted=true`;
                 } else {
                     // エラー表示
                     alert(result.error || '決済に失敗しました');
