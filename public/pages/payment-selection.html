@@ -307,7 +307,7 @@
             </div>
             
             <!-- PAY.JP Checkout Form (hidden initially) -->
-            <form id="checkoutForm" action="#" method="POST" style="display: none;">
+            <form id="checkoutForm" action="#" method="POST">
                 <script
                     type="text/javascript"
                     src="https://checkout.pay.jp/"
@@ -319,8 +319,8 @@
                     data-payjp-currency="jpy"
                     data-payjp-name="おつきさま診断 完全版"
                     data-payjp-lang="ja"
-                    data-payjp-partial="true"
-                    data-payjp-token-name="payjp-token">
+                    data-payjp-on-created="payjpTokenHandler"
+                    data-payjp-on-failed="payjpErrorHandler">
                 </script>
             </form>
         </div>
