@@ -247,7 +247,7 @@
             </div>
 
             <!-- クレジットカードボタン（PAY.JP Checkout） -->
-            <form action="#" method="POST" id="payjp-checkout-form">
+            <form id="payjp-checkout-form" onsubmit="return false;">
                 <script
                     type="text/javascript"
                     src="https://checkout.pay.jp/"
@@ -255,7 +255,9 @@
                     data-key="pk_test_16ae008c6fe3b2a1059efc6f"
                     data-text="クレジットカードで支払う"
                     data-submit-text="支払う"
-                    data-partial="false">
+                    data-partial="false"
+                    data-payjp-on-created="handlePayjpToken"
+                    data-payjp-on-failed="handlePayjpError">
                 </script>
             </form>
         </div>
@@ -337,18 +339,20 @@
             }
         }
 
-        // PAY.JP Checkoutフォーム送信処理
-        document.getElementById('payjp-checkout-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            console.log('PAY.JP Checkout form submitted');
-            // トークンはPAY.JPによって自動的に追加される
-            const token = this.querySelector('input[name="payjp-token"]');
-            if (token && token.value) {
-                console.log('Token found:', token.value);
-                handlePaymentSuccess(token.value, 'credit_card');
+        // PAY.JP Checkout成功時のコールバック
+        window.handlePayjpToken = function(response) {
+            console.log('PAY.JP token created:', response);
+            if (response && response.id) {
+                handlePaymentSuccess(response.id, 'credit_card');
             }
-            return false;
-        });
+        };
+
+        // PAY.JP Checkoutエラー時のコールバック
+        window.handlePayjpError = function(error) {
+            console.error('PAY.JP error:', error);
+            document.getElementById('errorMessage').textContent = 'カード情報の処理に失敗しました';
+            document.getElementById('errorMessage').style.display = 'block';
+        };
 
         // Apple Payボタン処理
         document.getElementById('applePayButton').addEventListener('click', function(e) {
