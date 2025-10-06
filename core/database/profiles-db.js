@@ -182,13 +182,11 @@ class ProfilesDB {
   async hasCompleteProfile(userId) {
     const profile = await this.getProfile(userId);
     if (!profile) return false;
-    
+
+    // 必須項目が揃っているか確認（生年月日と性別のみ）
     return !!(
-      profile.userName &&
       profile.birthDate &&
-      profile.gender &&
-      profile.partnerBirthDate &&
-      profile.partnerGender
+      profile.gender
     );
   }
 
