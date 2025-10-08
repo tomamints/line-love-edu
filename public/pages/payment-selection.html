@@ -340,7 +340,9 @@
                     data-submit-text="情報を入力する"
                     data-amount="2980"
                     data-currency="jpy"
-                    data-partial="true">
+                    data-partial="true"
+                    data-payjp-on-created="handlePayjpToken"
+                    data-payjp-on-failed="handlePayjpError">
                 </script>
             </form>
         </div>
@@ -490,19 +492,42 @@
                 }
 
                 setTimeout(() => {
-                    window.location.href = `/pages/lp-otsukisama-unified.html?id=${storedDiagnosisId}&userId=${storedUserId}&paid=true`;
-                }, 1200);
-            } catch (error) {
-                console.error('Finalize payment error:', error);
-                showError(error.message || '決済処理に失敗しました。もう一度お試しください。');
-            } finally {
-                if (finalizeButton) finalizeButton.disabled = false;
-            }
+            window.location.href = `/pages/lp-otsukisama-unified.html?id=${storedDiagnosisId}&userId=${storedUserId}&paid=true`;
+            }, 1200);
+        } catch (error) {
+            console.error('Finalize payment error:', error);
+            showError(error.message || '決済処理に失敗しました。もう一度お試しください。');
+        } finally {
+            if (finalizeButton) finalizeButton.disabled = false;
         }
+    }
 
-        window.addEventListener('DOMContentLoaded', () => {
-            storedDiagnosisId = diagnosisIdParam || sessionStorage.getItem('diagnosisId');
-            storedUserId = userIdParam || sessionStorage.getItem('userId') || 'anonymous';
+    window.handlePayjpToken = function(response) {
+        try {
+            if (!response || !response.id) {
+                throw new Error('トークンを取得できませんでした。');
+            }
+
+            pendingPayjpToken = response.id;
+            hideLoading();
+            clearMessages();
+            openConfirmSection();
+        } catch (error) {
+            console.error('handlePayjpToken error:', error);
+            showError(error.message || 'カード情報の処理に失敗しました。別のカードでお試しください。');
+            resetToSelection();
+        }
+    };
+
+    window.handlePayjpError = function(error) {
+        console.error('PAY.JP tokenization error:', error);
+        showError('カード情報の処理に失敗しました。カード番号やネットワークをご確認の上、再度お試しください。');
+        resetToSelection();
+    };
+
+    window.addEventListener('DOMContentLoaded', () => {
+        storedDiagnosisId = diagnosisIdParam || sessionStorage.getItem('diagnosisId');
+        storedUserId = userIdParam || sessionStorage.getItem('userId') || 'anonymous';
 
             if (!storedDiagnosisId) {
                 showError('診断IDが見つかりません。診断ページから再度お試しください。');
@@ -518,29 +543,15 @@
                     clearMessages();
                     showLoading(true, 'カード情報入力画面を開いています...');
                     payjpButton.click();
-                    setTimeout(() => {
-                        hideLoading();
-                    }, 500);
                 });
             }
 
-            const payjpToken = urlParams.get('payjp-token');
-            if (payjpToken) {
-                pendingPayjpToken = payjpToken;
-                const paramsWithoutToken = new URLSearchParams(window.location.search);
-                paramsWithoutToken.delete('payjp-token');
-                const nextSearch = paramsWithoutToken.toString();
-                history.replaceState({}, '', nextSearch ? `${window.location.pathname}?${nextSearch}` : window.location.pathname);
+        window.addEventListener('focus', () => {
+            if (!pendingPayjpToken) {
                 hideLoading();
-                openConfirmSection();
             }
-
-            window.addEventListener('focus', () => {
-                if (!pendingPayjpToken) {
-                    hideLoading();
-                }
-            });
         });
+    });
 
         if (finalizeButton) {
             finalizeButton.addEventListener('click', finalizePayment);
