@@ -2028,20 +2028,146 @@ async function handleTextMessage(event) {
     // プロファイルが完成していない場合
     const hasComplete = await getProfileManager().hasCompleteProfile(userId);
     if (!hasComplete) {
+      const formUrl = `${process.env.BASE_URL || 'https://line-love-edu.vercel.app'}/api/profile-form?userId=${userId}`;
+
       await client.replyMessage(event.replyToken, {
-        type: 'text',
-        text: 'おつきさま診断を始めるには「情報を入力」して「診断結果」ボタンを押してください🌙',
-        quickReply: {
-          items: [
-            {
-              type: 'action',
-              action: {
-                type: 'message',
-                label: '🔮 占いを始める',
-                text: '占いを始める'
+        type: 'flex',
+        altText: '🌙 まずはこちらで情報を入力してください',
+        contents: {
+          type: 'bubble',
+          size: 'mega',
+          header: {
+            type: 'box',
+            layout: 'vertical',
+            contents: [
+              {
+                type: 'box',
+                layout: 'vertical',
+                contents: [
+                  {
+                    type: 'text',
+                    text: '🌙',
+                    size: '60px',
+                    color: '#ffffff',
+                    align: 'center'
+                  },
+                  {
+                    type: 'text',
+                    text: 'まずはこちらで情報を入力してください',
+                    size: 'lg',
+                    color: '#ffffff',
+                    align: 'center',
+                    weight: 'bold',
+                    margin: 'md',
+                    wrap: true
+                  }
+                ]
               }
-            }
-          ]
+            ],
+            paddingAll: '20px',
+            backgroundColor: '#764ba2',
+            spacing: 'md',
+            paddingTop: '22px'
+          },
+          body: {
+            type: 'box',
+            layout: 'vertical',
+            contents: [
+              {
+                type: 'text',
+                text: '私は月詠（つくよみ）と申します',
+                size: 'md',
+                wrap: true,
+                align: 'center'
+              },
+              {
+                type: 'separator',
+                margin: 'md'
+              },
+              {
+                type: 'text',
+                text: '月のカードが',
+                size: 'md',
+                wrap: true,
+                align: 'center',
+                margin: 'md'
+              },
+              {
+                type: 'text',
+                text: 'あなたの今日を',
+                size: 'md',
+                wrap: true,
+                align: 'center',
+                margin: 'sm'
+              },
+              {
+                type: 'text',
+                text: '優しく照らします',
+                size: 'md',
+                wrap: true,
+                align: 'center',
+                margin: 'sm'
+              },
+              {
+                type: 'separator',
+                margin: 'lg'
+              },
+              {
+                type: 'box',
+                layout: 'vertical',
+                margin: 'lg',
+                spacing: 'sm',
+                contents: [
+                  {
+                    type: 'text',
+                    text: '✨ 月タロット占いの流れ',
+                    weight: 'bold',
+                    size: 'sm',
+                    color: '#764ba2'
+                  },
+                  {
+                    type: 'text',
+                    text: '一、あなたの情報を入力',
+                    size: 'sm',
+                    margin: 'sm'
+                  },
+                  {
+                    type: 'text',
+                    text: '二、月にメッセージを送信',
+                    size: 'sm'
+                  },
+                  {
+                    type: 'text',
+                    text: '三、タロットカードが今日のメッセージを',
+                    size: 'sm'
+                  },
+                  {
+                    type: 'text',
+                    text: '　　優しくお伝えします',
+                    size: 'sm'
+                  }
+                ]
+              }
+            ]
+          },
+          footer: {
+            type: 'box',
+            layout: 'vertical',
+            spacing: 'sm',
+            contents: [
+              {
+                type: 'button',
+                style: 'primary',
+                height: 'md',
+                action: {
+                  type: 'uri',
+                  label: '🔮 情報を入力する',
+                  uri: formUrl
+                },
+                color: '#764ba2'
+              }
+            ]
+          }
         }
       });
       return;
