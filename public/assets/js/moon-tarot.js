@@ -68,6 +68,18 @@ function displayCardResult() {
     const vh = window.innerHeight;
     const isMobile = window.innerWidth <= 768;
 
+    // スクロールインジケーター用のスタイルを1度だけ追加
+    if (!document.getElementById('tarot-scroll-style')) {
+        const style = document.createElement('style');
+        style.id = 'tarot-scroll-style';
+        style.textContent = `@keyframes tarotScrollBounce { 0%, 100% { transform: translateY(0); opacity: 0.6; } 50% { transform: translateY(6px); opacity: 1; } }
+.tarot-scroll-indicator { width: 56px; height: 56px; border: 1px solid rgba(255, 210, 125, 0.6); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #ffd27d; box-shadow: 0 8px 20px rgba(0,0,0,0.35); background: rgba(12,0,40,0.55); animation: tarotScrollBounce 1.8s ease-in-out infinite; }
+.tarot-scroll-indicator span { font-size: 26px; }
+#premiumStatusMessage { display: none; }
+`; // animation for scroll hint
+        document.head.appendChild(style);
+    }
+
     // 結果表示エリアの作成（背景画像をそのまま使用、暗くしない）
     const resultHTML = `
         <div class="tarot-result-container" style="text-align: center; position: fixed; inset: 0; overflow-y: auto; z-index: 2000; display: flex; flex-direction: column; justify-content: flex-start; align-items: center; gap: ${isMobile ? '32px' : '40px'}; padding: ${isMobile ? '24px 18px 60px' : '40px 24px 80px'}; opacity: 0; animation: fadeIn 0.5s ease forwards;">
@@ -119,6 +131,8 @@ function displayCardResult() {
                 </div>
             </div>
 
+            <div class="tarot-scroll-indicator"><span>⬇️</span></div>
+
             <!-- スクロール案内 -->
             <div style="text-align: center; color: #ffd27d; font-size: ${isMobile ? '13px' : '14px'}; letter-spacing: 0.05em; text-shadow: 0 0 12px rgba(255, 210, 125, 0.6);">
                 ▼ さらに下にスクロールすると本格診断のご案内があります
@@ -135,6 +149,7 @@ function displayCardResult() {
                     ボタンを押すとLINEトークに「本格」と送信され、プレミアム診断のご案内が表示されます。
                 </p>
                 <button id="premiumFortuneButton" style="display: block; width: 100%; padding: ${isMobile ? '14px' : '16px'}; border: none; border-radius: 999px; background: linear-gradient(135deg, #764ba2, #667eea); color: #ffffff; font-size: ${isMobile ? '16px' : '17px'}; font-weight: 600; letter-spacing: 0.05em; box-shadow: 0 14px 35px rgba(102, 126, 234, 0.35); cursor: pointer;">🌙 本格占いをやってみる</button>
+                <p id="premiumStatusMessage" style="margin-top: ${isMobile ? '12px' : '16px'}; font-size: ${isMobile ? '12px' : '13px'}; color: #ffd27d; text-align: center;"></p>
                 <p style="margin-top: ${isMobile ? '12px' : '14px'}; font-size: ${isMobile ? '12px' : '13px'}; color: #ffecbe; text-align: center;">
                     ※外部ブラウザへ移動する場合があります
                 </p>
@@ -164,21 +179,82 @@ function displayCardResult() {
     // 本格占い誘導ボタンの動作を設定
     const premiumButton = document.getElementById('premiumFortuneButton');
     if (premiumButton) {
-        premiumButton.addEventListener('click', () => {
+        premiumButton.dataset.state = 'default';
+        premiumButton.addEventListener('click', async () => {
             const lineAccountId = '@CZRKwBv';
             const keyword = encodeURIComponent('本格');
             const schemeUrl = `line://oaMessage/${lineAccountId}/?${keyword}`;
             const universalUrl = `https://line.me/R/oaMessage/${lineAccountId}?${keyword}`;
+            const statusMessage = document.getElementById('premiumStatusMessage');
 
-            // まずはURLスキームを試す
-            window.location.href = schemeUrl;
+            const openLineChat = () => {
+                window.location.href = schemeUrl;
+                setTimeout(() => {
+                    if (document.hasFocus()) {
+                        window.location.href = universalUrl;
+                    }
+                }, 700);
+            };
 
-            // 失敗時はユニバーサルリンクにフォールバック
-            setTimeout(() => {
-                if (document.hasFocus()) {
-                    window.location.href = universalUrl;
+            if (premiumButton.dataset.state === 'readyToOpen') {
+                openLineChat();
+                return;
+            }
+
+            const params = new URLSearchParams(window.location.search);
+            const userId = params.get('userId');
+
+            if (!userId) {
+                if (statusMessage) {
+                    statusMessage.textContent = 'LINEトークで「本格」と送信するとプレミアム診断カードが届きます。';
+                    statusMessage.style.display = 'block';
                 }
-            }, 600);
+                openLineChat();
+                return;
+            }
+
+            premiumButton.disabled = true;
+            const originalLabel = premiumButton.textContent;
+            premiumButton.textContent = 'LINEに送信しています...';
+
+            try {
+                const response = await fetch('/api/send-premium-invite', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ userId })
+                });
+
+                const result = await response.json();
+
+                if (!response.ok || !result.success) {
+                    throw new Error(result?.error || '送信に失敗しました');
+                }
+
+                if (statusMessage) {
+                    statusMessage.textContent = 'LINEトークにカードをお送りしました。画面が切り替わらない場合は下のボタンからLINEを開いてください。';
+                    statusMessage.style.display = 'block';
+                }
+
+                premiumButton.disabled = false;
+                premiumButton.dataset.state = 'readyToOpen';
+                premiumButton.textContent = 'LINEでカードを確認する';
+
+                openLineChat();
+            } catch (error) {
+                console.error('Failed to trigger premium invite:', error);
+                premiumButton.disabled = false;
+                premiumButton.dataset.state = 'default';
+                premiumButton.textContent = 'LINEで「本格」と送る';
+
+                if (statusMessage) {
+                    statusMessage.textContent = '自動送信に失敗しました。お手数ですがLINEで「本格」と送信してください。';
+                    statusMessage.style.display = 'block';
+                }
+
+                openLineChat();
+            }
         });
     }
 }

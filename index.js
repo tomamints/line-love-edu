@@ -72,6 +72,138 @@ function getProfileManager() {
   return profileManager;
 }
 
+function buildPremiumDiagnosisInviteMessage(userId) {
+  const lpUrl = `${process.env.BASE_URL || 'https://line-love-edu.vercel.app'}/lp-otsukisama-input.html?userId=${userId || ''}`;
+
+  return {
+    type: 'flex',
+    altText: '🌙 本格おつきさま診断',
+    contents: {
+      type: 'bubble',
+      size: 'mega',
+      header: {
+        type: 'box',
+        layout: 'vertical',
+        contents: [
+          {
+            type: 'text',
+            text: '🌙 本格おつきさま診断 🌙',
+            size: 'xl',
+            color: '#ffffff',
+            align: 'center',
+            weight: 'bold'
+          },
+          {
+            type: 'text',
+            text: '直近3ヶ月の詳細運勢',
+            size: 'md',
+            color: '#ffffff',
+            align: 'center',
+            margin: 'md'
+          }
+        ],
+        backgroundColor: '#764ba2',
+        paddingAll: '20px'
+      },
+      body: {
+        type: 'box',
+        layout: 'vertical',
+        contents: [
+          {
+            type: 'text',
+            text: '🌙 あなたの生まれた瞬間の月の形から',
+            size: 'md',
+            weight: 'bold',
+            color: '#764ba2',
+            wrap: true,
+            align: 'center'
+          },
+          {
+            type: 'text',
+            text: '直近3ヶ月の詳細な運勢を診断します',
+            size: 'sm',
+            color: '#666666',
+            wrap: true,
+            align: 'center',
+            margin: 'md'
+          },
+          {
+            type: 'separator',
+            margin: 'xl'
+          },
+          {
+            type: 'box',
+            layout: 'vertical',
+            margin: 'xl',
+            spacing: 'sm',
+            contents: [
+              {
+                type: 'text',
+                text: '💫 占い内容',
+                weight: 'bold',
+                size: 'md',
+                color: '#764ba2'
+              },
+              {
+                type: 'text',
+                text: '• 3ヶ月の全体運',
+                size: 'sm',
+                color: '#666666',
+                margin: 'sm'
+              },
+              {
+                type: 'text',
+                text: '• 恋愛運の詳細',
+                size: 'sm',
+                color: '#666666'
+              },
+              {
+                type: 'text',
+                text: '• 人間関係運',
+                size: 'sm',
+                color: '#666666'
+              },
+              {
+                type: 'text',
+                text: '• 金運・仕事運',
+                size: 'sm',
+                color: '#666666'
+              }
+            ]
+          }
+        ],
+        paddingAll: '20px'
+      },
+      footer: {
+        type: 'box',
+        layout: 'vertical',
+        spacing: 'sm',
+        contents: [
+          {
+            type: 'button',
+            style: 'primary',
+            height: 'sm',
+            action: {
+              type: 'uri',
+              label: '🌙 診断を始める',
+              uri: lpUrl
+            },
+            color: '#764ba2'
+          },
+          {
+            type: 'text',
+            text: '※外部サイトへ移動します',
+            size: 'xs',
+            color: '#aaaaaa',
+            align: 'center',
+            margin: 'sm'
+          }
+        ]
+      }
+    }
+  };
+}
+
 // 静的ファイルの提供
 app.use('/images', express.static(path.join(__dirname, 'images')));
 app.use(express.static(path.join(__dirname, 'public')));
@@ -142,6 +274,25 @@ app.get('/api/get-love-profile', async (req, res) => {
 app.post('/api/tarot-permission', async (req, res) => {
   const tarotPermission = require('./api/tarot-permission');
   await tarotPermission(req, res);
+});
+
+// 本格診断カードの自動送信（タロットページから利用）
+app.post('/api/send-premium-invite', async (req, res) => {
+  const userId = req.body?.userId;
+
+  if (!userId) {
+    return res.status(400).json({ success: false, error: 'userId is required' });
+  }
+
+  try {
+    logger.log('🚀 プレミアム診断カード自動送信リクエスト:', userId);
+    const message = buildPremiumDiagnosisInviteMessage(userId);
+    await client.pushMessage(userId, message);
+    return res.json({ success: true });
+  } catch (error) {
+    logger.error('❌ プレミアム診断カード送信エラー:', error);
+    return res.status(500).json({ success: false, error: 'Failed to deliver message' });
+  }
 });
 
 // リッチメニューからのタロットページアクセス
@@ -1511,135 +1662,8 @@ async function handleTextMessage(event) {
     
     // 「本格」キーワードでLPへ誘導（テスト用）
     if (text === '本格') {
-      const lpUrl = `${process.env.BASE_URL || 'https://line-love-edu.vercel.app'}/lp-otsukisama-input.html?userId=${userId}`;
-
-      await client.replyMessage(event.replyToken, {
-        type: 'flex',
-        altText: '🌙 本格おつきさま診断',
-        contents: {
-          type: 'bubble',
-          size: 'mega',
-          header: {
-            type: 'box',
-            layout: 'vertical',
-            contents: [
-              {
-                type: 'text',
-                text: '🌙 本格おつきさま診断 🌙',
-                size: 'xl',
-                color: '#ffffff',
-                align: 'center',
-                weight: 'bold'
-              },
-              {
-                type: 'text',
-                text: '直近3ヶ月の詳細運勢',
-                size: 'md',
-                color: '#ffffff',
-                align: 'center',
-                margin: 'md'
-              }
-            ],
-            backgroundColor: '#764ba2',
-            paddingAll: '20px'
-          },
-          body: {
-            type: 'box',
-            layout: 'vertical',
-            contents: [
-              {
-                type: 'text',
-                text: '🌙 あなたの生まれた瞬間の月の形から',
-                size: 'md',
-                weight: 'bold',
-                color: '#764ba2',
-                wrap: true,
-                align: 'center'
-              },
-              {
-                type: 'text',
-                text: '直近3ヶ月の詳細な運勢を診断します',
-                size: 'sm',
-                color: '#666666',
-                wrap: true,
-                align: 'center',
-                margin: 'md'
-              },
-              {
-                type: 'separator',
-                margin: 'xl'
-              },
-              {
-                type: 'box',
-                layout: 'vertical',
-                margin: 'xl',
-                spacing: 'sm',
-                contents: [
-                  {
-                    type: 'text',
-                    text: '💫 占い内容',
-                    weight: 'bold',
-                    size: 'md',
-                    color: '#764ba2'
-                  },
-                  {
-                    type: 'text',
-                    text: '• 3ヶ月の全体運',
-                    size: 'sm',
-                    color: '#666666',
-                    margin: 'sm'
-                  },
-                  {
-                    type: 'text',
-                    text: '• 恋愛運の詳細',
-                    size: 'sm',
-                    color: '#666666'
-                  },
-                  {
-                    type: 'text',
-                    text: '• 人間関係運',
-                    size: 'sm',
-                    color: '#666666'
-                  },
-                  {
-                    type: 'text',
-                    text: '• 金運・仕事運',
-                    size: 'sm',
-                    color: '#666666'
-                  }
-                ]
-              }
-            ],
-            paddingAll: '20px'
-          },
-          footer: {
-            type: 'box',
-            layout: 'vertical',
-            spacing: 'sm',
-            contents: [
-              {
-                type: 'button',
-                style: 'primary',
-                height: 'sm',
-                action: {
-                  type: 'uri',
-                  label: '🌙 診断を始める',
-                  uri: lpUrl
-                },
-                color: '#764ba2'
-              },
-              {
-                type: 'text',
-                text: '※外部サイトへ移動します',
-                size: 'xs',
-                color: '#aaaaaa',
-                align: 'center',
-                margin: 'sm'
-              }
-            ]
-          }
-        }
-      });
+      const premiumMessage = buildPremiumDiagnosisInviteMessage(userId);
+      await client.replyMessage(event.replyToken, premiumMessage);
       return;
     }
     
