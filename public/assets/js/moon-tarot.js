@@ -143,15 +143,15 @@ function displayCardResult() {
                 <h3 style="font-size: ${isMobile ? '20px' : '22px'}; margin-bottom: ${isMobile ? '12px' : '14px'}; color: #ffd27d; text-align: center; text-shadow: 0 0 18px rgba(255, 210, 125, 0.8);">🌙 本格おつきさま診断のご案内</h3>
                 <p style="margin-bottom: ${isMobile ? '12px' : '14px'}; font-size: ${isMobile ? '14px' : '15px'};">
                     今日のタロットから月が教えてくれたメッセージはここまでです。
-                    もっと詳しく二人のこれからを知りたいときは、本格おつきさま診断で直近3ヶ月の恋愛運・人間関係・未来の流れを詳しくお届けします。
+                    もっと詳しく二人のこれからを知りたいときは、本格おつきさま診断で直近3ヶ月の恋愛運・人間関係・未来の流れを詳しくお届けします（無料パート＋有料パート）。
                 </p>
                 <p style="margin-bottom: ${isMobile ? '18px' : '24px'}; font-size: ${isMobile ? '14px' : '15px'};">
-                    ボタンを押すとLINEトークに「本格」と送信され、プレミアム診断のご案内が表示されます。
+                    このページを閉じてLINEトークに戻り、「本格」と入力するとプレミアム診断のご案内と購入方法が表示されます。
                 </p>
-                <button id="premiumFortuneButton" style="display: block; width: 100%; padding: ${isMobile ? '14px' : '16px'}; border: none; border-radius: 999px; background: linear-gradient(135deg, #764ba2, #667eea); color: #ffffff; font-size: ${isMobile ? '16px' : '17px'}; font-weight: 600; letter-spacing: 0.05em; box-shadow: 0 14px 35px rgba(102, 126, 234, 0.35); cursor: pointer;">🌙 本格占いをやってみる</button>
+                <button id="premiumFortuneButton" style="display: block; width: 100%; padding: ${isMobile ? '14px' : '16px'}; border: none; border-radius: 999px; background: linear-gradient(135deg, #764ba2, #667eea); color: #ffffff; font-size: ${isMobile ? '16px' : '17px'}; font-weight: 600; letter-spacing: 0.05em; box-shadow: 0 14px 35px rgba(102, 126, 234, 0.35); cursor: pointer;">🌙 「本格」と入力して本格占いをやってみる</button>
                 <p id="premiumStatusMessage" style="margin-top: ${isMobile ? '12px' : '16px'}; font-size: ${isMobile ? '12px' : '13px'}; color: #ffd27d; text-align: center;"></p>
                 <p style="margin-top: ${isMobile ? '12px' : '14px'}; font-size: ${isMobile ? '12px' : '13px'}; color: #ffecbe; text-align: center;">
-                    ※外部ブラウザへ移動する場合があります
+                    ※このボタンでLINEに戻り、「本格」とメッセージを送信してください
                 </p>
             </div>
         </div>
@@ -179,82 +179,23 @@ function displayCardResult() {
     // 本格占い誘導ボタンの動作を設定
     const premiumButton = document.getElementById('premiumFortuneButton');
     if (premiumButton) {
-        premiumButton.dataset.state = 'default';
-        premiumButton.addEventListener('click', async () => {
-            const lineAccountId = '@CZRKwBv';
-            const keyword = encodeURIComponent('本格');
-            const schemeUrl = `line://oaMessage/${lineAccountId}/?${keyword}`;
-            const universalUrl = `https://line.me/R/oaMessage/${lineAccountId}?${keyword}`;
+        premiumButton.addEventListener('click', () => {
             const statusMessage = document.getElementById('premiumStatusMessage');
-
-            const openLineChat = () => {
-                window.location.href = schemeUrl;
-                setTimeout(() => {
-                    if (document.hasFocus()) {
-                        window.location.href = universalUrl;
-                    }
-                }, 700);
-            };
-
-            if (premiumButton.dataset.state === 'readyToOpen') {
-                openLineChat();
-                return;
+            if (statusMessage) {
+                statusMessage.textContent = 'LINEトークを開いたら「本格」と入力して送信してください。';
+                statusMessage.style.display = 'block';
             }
 
-            const params = new URLSearchParams(window.location.search);
-            const userId = params.get('userId');
+            const lineAccountId = '@CZRKwBv';
+            const schemeUrl = `line://ti/p/${lineAccountId.replace('@', '')}`;
+            const universalUrl = `https://line.me/R/ti/p/${lineAccountId.replace('@', '')}`;
 
-            if (!userId) {
-                if (statusMessage) {
-                    statusMessage.textContent = 'LINEトークで「本格」と送信するとプレミアム診断カードが届きます。';
-                    statusMessage.style.display = 'block';
+            window.location.href = schemeUrl;
+            setTimeout(() => {
+                if (document.hasFocus()) {
+                    window.location.href = universalUrl;
                 }
-                openLineChat();
-                return;
-            }
-
-            premiumButton.disabled = true;
-            const originalLabel = premiumButton.textContent;
-            premiumButton.textContent = 'LINEに送信しています...';
-
-            try {
-                const response = await fetch('/api/send-premium-invite', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ userId })
-                });
-
-                const result = await response.json();
-
-                if (!response.ok || !result.success) {
-                    throw new Error(result?.error || '送信に失敗しました');
-                }
-
-                if (statusMessage) {
-                    statusMessage.textContent = 'LINEトークにカードをお送りしました。画面が切り替わらない場合は下のボタンからLINEを開いてください。';
-                    statusMessage.style.display = 'block';
-                }
-
-                premiumButton.disabled = false;
-                premiumButton.dataset.state = 'readyToOpen';
-                premiumButton.textContent = 'LINEでカードを確認する';
-
-                openLineChat();
-            } catch (error) {
-                console.error('Failed to trigger premium invite:', error);
-                premiumButton.disabled = false;
-                premiumButton.dataset.state = 'default';
-                premiumButton.textContent = 'LINEで「本格」と送る';
-
-                if (statusMessage) {
-                    statusMessage.textContent = '自動送信に失敗しました。お手数ですがLINEで「本格」と送信してください。';
-                    statusMessage.style.display = 'block';
-                }
-
-                openLineChat();
-            }
+            }, 600);
         });
     }
 }
