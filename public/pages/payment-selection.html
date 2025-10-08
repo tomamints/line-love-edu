@@ -93,38 +93,39 @@
         }
 
         /* Apple Payボタン */
-        .apple-pay-button {
-            -webkit-appearance: -apple-pay-button;
-            -apple-pay-button-type: buy;
-            -apple-pay-button-style: black;
+        .pay-option-button {
             width: 100%;
-            height: 50px;
-            margin-bottom: 15px;
-            cursor: pointer;
-            border-radius: 10px;
-            display: block;
-        }
-
-        /* 標準ボタンスタイル */
-        .checkout-button {
-            width: 100%;
-            padding: 15px;
-            background: linear-gradient(135deg, #4CAF50, #45a049);
-            color: white;
+            padding: 18px;
+            background: linear-gradient(135deg, #ffd27d, #ffb347);
+            color: #4a0e6b;
             border: none;
-            border-radius: 10px;
+            border-radius: 14px;
             font-size: 18px;
-            font-weight: bold;
+            font-weight: 700;
+            letter-spacing: 0.02em;
             cursor: pointer;
             transition: all 0.3s;
-            display: block;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
             text-align: center;
-            margin-bottom: 15px;
+            box-shadow: 0 18px 35px rgba(255, 180, 71, 0.25);
         }
 
-        .checkout-button:hover:not(:disabled) {
+        .pay-option-button:hover:not(:disabled) {
             transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(76, 175, 80, 0.3);
+            box-shadow: 0 22px 38px rgba(255, 180, 71, 0.32);
+        }
+
+        .pay-option-button .subtext {
+            font-size: 13px;
+            font-weight: 500;
+            color: rgba(74, 14, 107, 0.75);
+        }
+
+        .payjp-button {
+            display: none !important;
         }
 
         .checkout-button:disabled {
@@ -246,17 +247,22 @@
         </div>
 
         <div class="payment-methods">
-            <!-- Apple Payボタン（常に表示） -->
+            <!-- Apple Pay は現在未対応 -->
+            <!--
             <button id="applePayButton" class="apple-pay-button">
                 Apple Payで支払う
             </button>
 
-            <!-- セパレーター -->
             <div class="payment-separator">
                 または
             </div>
+            -->
 
-            <!-- クレジットカードボタン（PAY.JP Checkout） -->
+            <button class="pay-option-button" id="cardCheckoutButton" type="button">
+                💳 クレジットカードで支払う
+                <span class="subtext">Visa / Mastercard（中秋の名月割 ¥2,980）</span>
+            </button>
+
             <form action="/pages/payment-process.html" method="GET" id="checkout-form">
                 <input type="hidden" name="diagnosisId" id="diagnosisIdField">
                 <input type="hidden" name="userId" id="userIdField">
@@ -266,7 +272,9 @@
                     class="payjp-button"
                     data-key="pk_test_16ae008c6fe3b2a1059efc6f"
                     data-text="クレジットカードで支払う"
-                    data-submit-text="支払う">
+                    data-submit-text="支払う"
+                    data-amount="2980"
+                    data-currency="jpy">
                 </script>
             </form>
         </div>
@@ -302,210 +310,67 @@
     </div>
 
     <script>
-        // URLパラメータ
         const urlParams = new URLSearchParams(window.location.search);
-        const diagnosisId = urlParams.get('id');
-        const userId = urlParams.get('userId');
+        const diagnosisIdParam = urlParams.get('id');
+        const userIdParam = urlParams.get('userId');
+        const loadingEl = document.getElementById('loading');
+        const errorEl = document.getElementById('errorMessage');
 
-        // PAY.JP初期化
-        const payjp = Payjp('pk_test_16ae008c6fe3b2a1059efc6f');
-
-        // 決済成功後の処理
-        async function handlePaymentSuccess(token, paymentMethod = 'credit_card') {
-            console.log('Payment token created:', token);
-            document.getElementById('loading').classList.add('active');
-            document.getElementById('loading').querySelector('.loading-text').textContent = '決済を処理中です...';
-
-            // セッションストレージから情報を取得
-            const finalDiagnosisId = diagnosisId || sessionStorage.getItem('diagnosisId');
-            const finalUserId = userId || sessionStorage.getItem('userId') || 'anonymous';
-
-            if (!finalDiagnosisId) {
-                document.getElementById('errorMessage').textContent = '診断IDが見つかりません。診断結果ページから再度お試しください。';
-                document.getElementById('errorMessage').style.display = 'block';
-                document.getElementById('loading').classList.remove('active');
-                throw new Error('診断IDが見つかりません');
-            }
-
-            try {
-                const response = await fetch('/api/payjp-create-charge', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        token: token.id || token,
-                        diagnosisId: finalDiagnosisId,
-                        userId: finalUserId,
-                        amount: 2980,
-                        paymentMethod: paymentMethod
-                    })
-                });
-
-                const result = await response.json();
-
-                if (result.success) {
-                    // 成功メッセージを表示
-                    document.getElementById('loading').querySelector('.loading-text').textContent = '決済が完了しました！完全版へリダイレクトしています...';
-
-                    // セッションストレージをクリア
-                    sessionStorage.removeItem('diagnosisId');
-                    sessionStorage.removeItem('userId');
-
-                    // 1秒後にリダイレクト
-                    setTimeout(() => {
-                        window.location.href = `/pages/lp-otsukisama-unified.html?id=${finalDiagnosisId}&userId=${finalUserId}&paid=true`;
-                    }, 1000);
-
-                    // 成功を返す
-                    return { success: true };
-                } else {
-                    document.getElementById('errorMessage').textContent = result.error || '決済処理中にエラーが発生しました';
-                    document.getElementById('errorMessage').style.display = 'block';
-                    document.getElementById('loading').classList.remove('active');
-                    // エラーをthrowして、Apple Payのcompleteをトリガー
-                    throw new Error(result.error || '決済処理に失敗しました');
-                }
-            } catch (error) {
-                console.error('Payment error:', error);
-                document.getElementById('errorMessage').textContent = 'ネットワークエラーが発生しました';
-                document.getElementById('errorMessage').style.display = 'block';
-                document.getElementById('loading').classList.remove('active');
-                // エラーを再throwして、呼び出し元でキャッチできるようにする
-                throw error;
-            }
+        function setHiddenFields(diagnosisId, userId) {
+            const diagnosisField = document.getElementById('diagnosisIdField');
+            const userField = document.getElementById('userIdField');
+            if (diagnosisField && diagnosisId) diagnosisField.value = diagnosisId;
+            if (userField && userId) userField.value = userId;
         }
 
-        // PAY.JP Checkout成功時のコールバック（グローバルに定義）
-        function handlePayjpToken(response) {
-            console.log('PAY.JP token created:', response);
-            if (response && response.id) {
-                handlePaymentSuccess(response, 'credit_card');
-            }
+        function showLoading(active) {
+            if (!loadingEl) return;
+            loadingEl.classList.toggle('active', Boolean(active));
         }
 
-        // PAY.JP Checkoutエラー時のコールバック（グローバルに定義）
-        function handlePayjpError(error) {
-            console.error('PAY.JP error:', error);
-            document.getElementById('errorMessage').textContent = 'カード情報の処理に失敗しました';
-            document.getElementById('errorMessage').style.display = 'block';
+        function showError(message) {
+            if (!errorEl) return;
+            errorEl.textContent = message;
+            errorEl.style.display = 'block';
+            showLoading(false);
         }
 
-        // グローバルスコープに露出
-        window.handlePayjpToken = handlePayjpToken;
-        window.handlePayjpError = handlePayjpError;
+        window.addEventListener('DOMContentLoaded', () => {
+            const storedDiagnosisId = diagnosisIdParam || sessionStorage.getItem('diagnosisId');
+            const storedUserId = userIdParam || sessionStorage.getItem('userId') || 'anonymous';
 
-        // Apple Payボタン処理
-        document.getElementById('applePayButton').addEventListener('click', function(e) {
-            e.preventDefault();
-            console.log('Apple Pay button clicked');
-
-            // Apple Pay利用可能性チェック
-            if (payjp && payjp.applePay) {
-                const paymentRequest = {
-                    countryCode: 'JP',
-                    currencyCode: 'JPY',
-                    total: {
-                        label: 'おつきさま診断 完全版',
-                        amount: '2980'
-                    }
-                };
-
-                try {
-                    const session = payjp.applePay.buildSession(
-                        paymentRequest,
-                        async function success(result) {
-                            console.log('Apple Pay success:', result);
-                            // 決済処理を実行して、その結果に基づいてcompletePaymentを呼ぶ
-                            try {
-                                await handlePaymentSuccess(result.token, 'apple_pay');
-                                // 決済成功後にSTATUS_SUCCESSを送る
-                                if (session && session.completePayment) {
-                                    session.completePayment(ApplePaySession.STATUS_SUCCESS);
-                                }
-                            } catch (paymentError) {
-                                console.error('Payment processing failed:', paymentError);
-                                // 決済失敗時はSTATUS_FAILUREを送る
-                                if (session && session.completePayment) {
-                                    session.completePayment(ApplePaySession.STATUS_FAILURE);
-                                }
-                                document.getElementById('errorMessage').textContent = '決済処理に失敗しました。もう一度お試しください。';
-                                document.getElementById('errorMessage').style.display = 'block';
-                            }
-                        },
-                        function failure(error) {
-                            console.error('Apple Pay failed:', error);
-                            // Apple Pay自体が失敗した場合
-                            if (session && session.completePayment) {
-                                session.completePayment(ApplePaySession.STATUS_FAILURE);
-                            }
-                            document.getElementById('errorMessage').textContent = 'Apple Payは現在ご利用いただけません。クレジットカードをご利用ください。';
-                            document.getElementById('errorMessage').style.display = 'block';
-                        }
-                    );
-
-                    if (session && session.begin) {
-                        session.begin();
-                    } else {
-                        // Apple Payが使えない場合はクレジットカードを案内
-                        document.getElementById('errorMessage').textContent = 'Apple Payは現在ご利用いただけません。クレジットカードをご利用ください。';
-                        document.getElementById('errorMessage').style.display = 'block';
-                    }
-                } catch (err) {
-                    console.error('Apple Pay initialization error:', err);
-                    document.getElementById('errorMessage').textContent = 'Apple Payは現在ご利用いただけません。クレジットカードをご利用ください。';
-                    document.getElementById('errorMessage').style.display = 'block';
-                }
-            } else {
-                // Apple Payが利用できない場合もエラーは出さず、クレジットカードを案内
-                document.getElementById('errorMessage').textContent = 'Apple Payは現在ご利用いただけません。クレジットカードをご利用ください。';
-                document.getElementById('errorMessage').style.display = 'block';
+            if (!storedDiagnosisId) {
+                showError('診断IDが見つかりません。診断ページから再度お試しください。');
+                return;
             }
-        });
 
-        // フォームサブミット時の処理をDOMContentLoaded後に設定
-        window.addEventListener('DOMContentLoaded', function() {
-            const checkoutForm = document.getElementById('checkout-form');
-            if (checkoutForm) {
-                checkoutForm.addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    console.log('Checkout form submitted - waiting for PAY.JP token');
-                    // PAY.JP Checkoutがトークンを生成してページをリロードするのを待つ
+            sessionStorage.setItem('diagnosisId', storedDiagnosisId);
+            sessionStorage.setItem('userId', storedUserId);
+            setHiddenFields(storedDiagnosisId, storedUserId);
+
+            const payjpButton = document.querySelector('.payjp-button');
+            const cardCheckoutButton = document.getElementById('cardCheckoutButton');
+
+            if (cardCheckoutButton && payjpButton) {
+                cardCheckoutButton.addEventListener('click', () => {
+                    showLoading(true);
+                    payjpButton.click();
                 });
             }
-        });
 
-        // 初期化
-        window.addEventListener('DOMContentLoaded', function() {
-            console.log('Payment selection page loaded');
-
-            // hidden fieldsに値を設定
-            if (diagnosisId) {
-                document.getElementById('diagnosisIdField').value = diagnosisId;
-            }
-            document.getElementById('userIdField').value = userId || 'anonymous';
-
-            // PAY.JP Checkoutからのトークンチェック
             const payjpToken = urlParams.get('payjp-token');
             if (payjpToken) {
-                console.log('PAY.JP token found in URL:', payjpToken);
-                // payment-process.htmlへリダイレクト
-                const savedDiagnosisId = sessionStorage.getItem('diagnosisId') || diagnosisId;
-                const savedUserId = sessionStorage.getItem('userId') || userId || 'anonymous';
-
-                window.location.href = `/pages/payment-process.html?payjp-token=${payjpToken}&diagnosisId=${savedDiagnosisId}&userId=${savedUserId}`;
+                const redirectUrl = `/pages/payment-process.html?payjp-token=${payjpToken}&diagnosisId=${storedDiagnosisId}&userId=${storedUserId}`;
+                window.location.replace(redirectUrl);
                 return;
             }
 
-            if (!diagnosisId) {
-                document.getElementById('errorMessage').textContent = '診断IDが見つかりません。診断結果ページから再度お試しください。';
-                document.getElementById('errorMessage').style.display = 'block';
-                return;
-            }
-
-            // 診断IDとユーザーIDをセッションストレージに保存
-            sessionStorage.setItem('diagnosisId', diagnosisId);
-            sessionStorage.setItem('userId', userId || 'anonymous');
+            window.addEventListener('focus', () => {
+                const refreshedToken = new URLSearchParams(window.location.search).get('payjp-token');
+                if (!refreshedToken) {
+                    showLoading(false);
+                }
+            });
         });
     </script>
 </body>
