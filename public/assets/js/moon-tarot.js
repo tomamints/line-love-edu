@@ -70,9 +70,9 @@ function displayCardResult() {
 
     // 結果表示エリアの作成（背景画像をそのまま使用、暗くしない）
     const resultHTML = `
-        <div class="tarot-result-container" style="text-align: center; position: fixed; top: 0; left: 0; right: 0; bottom: 0; overflow-y: auto; z-index: 2000; display: flex; flex-direction: column; justify-content: center; opacity: 0; animation: fadeIn 0.5s ease forwards;">
+        <div class="tarot-result-container" style="text-align: center; position: fixed; inset: 0; overflow-y: auto; z-index: 2000; display: flex; flex-direction: column; justify-content: flex-start; align-items: center; gap: ${isMobile ? '32px' : '40px'}; padding: ${isMobile ? '24px 18px 60px' : '40px 24px 80px'}; opacity: 0; animation: fadeIn 0.5s ease forwards;">
             <!-- メインコンテンツ -->
-            <div class="tarot-content" style="text-align: center; max-width: 400px; margin: 0 auto; width: 100%; padding: 20px;">
+            <div class="tarot-content" style="text-align: center; max-width: 420px; width: 100%; padding: ${isMobile ? '18px' : '24px'}; background: rgba(10, 0, 35, 0.55); border: 1px solid rgba(206, 178, 124, 0.45); border-radius: 20px; box-shadow: 0 15px 40px rgba(0, 0, 0, 0.45);">
                 <!-- カードタイトル -->
                 <div class="card-title" style="text-align: center; margin-bottom: ${isMobile ? '10px' : '15px'};">
                     <h2 style="color: #FFFFFF; text-shadow: 0 0 20px #ceb27c, 0 0 40px #ceb27c; margin-bottom: 0; font-size: ${isMobile ? '22px' : '26px'};">
@@ -118,6 +118,27 @@ function displayCardResult() {
                     <p style="color: #FFFFFF; text-shadow: 0 0 10px rgba(206, 178, 124, 0.6); line-height: 1.4; font-size: ${isMobile ? '13px' : '15px'}; margin: 0;">${cardData.caution}</p>
                 </div>
             </div>
+
+            <!-- スクロール案内 -->
+            <div style="text-align: center; color: #ffd27d; font-size: ${isMobile ? '13px' : '14px'}; letter-spacing: 0.05em; text-shadow: 0 0 12px rgba(255, 210, 125, 0.6);">
+                ▼ さらに下にスクロールすると本格診断のご案内があります
+            </div>
+
+            <!-- 本格診断への誘導セクション -->
+            <div class="premium-invite" style="width: 100%; max-width: 480px; background: rgba(12, 0, 40, 0.72); border: 1px solid rgba(206, 178, 124, 0.5); border-radius: 22px; padding: ${isMobile ? '22px' : '28px'}; color: #FFFFFF; text-align: left; line-height: 1.6; box-shadow: 0 12px 36px rgba(0, 0, 0, 0.45);">
+                <h3 style="font-size: ${isMobile ? '20px' : '22px'}; margin-bottom: ${isMobile ? '12px' : '14px'}; color: #ffd27d; text-align: center; text-shadow: 0 0 18px rgba(255, 210, 125, 0.8);">🌙 本格おつきさま診断のご案内</h3>
+                <p style="margin-bottom: ${isMobile ? '12px' : '14px'}; font-size: ${isMobile ? '14px' : '15px'};">
+                    今日のタロットから月が教えてくれたメッセージはここまでです。
+                    もっと詳しく二人のこれからを知りたいときは、本格おつきさま診断で直近3ヶ月の恋愛運・人間関係・未来の流れを詳しくお届けします。
+                </p>
+                <p style="margin-bottom: ${isMobile ? '18px' : '24px'}; font-size: ${isMobile ? '14px' : '15px'};">
+                    ボタンを押すとLINEトークに「本格」と送信され、プレミアム診断のご案内が表示されます。
+                </p>
+                <button id="premiumFortuneButton" style="display: block; width: 100%; padding: ${isMobile ? '14px' : '16px'}; border: none; border-radius: 999px; background: linear-gradient(135deg, #764ba2, #667eea); color: #ffffff; font-size: ${isMobile ? '16px' : '17px'}; font-weight: 600; letter-spacing: 0.05em; box-shadow: 0 14px 35px rgba(102, 126, 234, 0.35); cursor: pointer;">🌙 本格占いをやってみる</button>
+                <p style="margin-top: ${isMobile ? '12px' : '14px'}; font-size: ${isMobile ? '12px' : '13px'}; color: #ffecbe; text-align: center;">
+                    ※外部ブラウザへ移動する場合があります
+                </p>
+            </div>
         </div>
     `;
 
@@ -140,10 +161,26 @@ function displayCardResult() {
         mainTitle.style.display = 'none';
     }
 
-    // bodyのスクロールを無効化
-    document.body.style.overflow = 'hidden';
-    document.body.style.position = 'fixed';
-    document.body.style.width = '100%';
+    // 本格占い誘導ボタンの動作を設定
+    const premiumButton = document.getElementById('premiumFortuneButton');
+    if (premiumButton) {
+        premiumButton.addEventListener('click', () => {
+            const lineAccountId = '@CZRKwBv';
+            const keyword = encodeURIComponent('本格');
+            const schemeUrl = `line://oaMessage/${lineAccountId}/?${keyword}`;
+            const universalUrl = `https://line.me/R/oaMessage/${lineAccountId}?${keyword}`;
+
+            // まずはURLスキームを試す
+            window.location.href = schemeUrl;
+
+            // 失敗時はユニバーサルリンクにフォールバック
+            setTimeout(() => {
+                if (document.hasFocus()) {
+                    window.location.href = universalUrl;
+                }
+            }, 600);
+        });
+    }
 }
 
 // 新しいカードを引く
