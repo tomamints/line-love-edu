@@ -193,6 +193,81 @@
             background: rgba(255, 210, 125, 0.12);
         }
 
+        .guidance-demo {
+            margin-top: 40px;
+            padding: 26px 22px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 18px;
+            border: 1px solid rgba(255, 210, 125, 0.3);
+            text-align: center;
+        }
+
+        .guidance-title {
+            font-size: 20px;
+            margin-bottom: 10px;
+            color: #ffd27d;
+        }
+
+        .guidance-description {
+            font-size: 13px;
+            line-height: 1.8;
+            color: rgba(255, 255, 255, 0.85);
+            margin-bottom: 18px;
+        }
+
+        .guidance-preview {
+            min-height: 140px;
+            background: rgba(15, 0, 40, 0.6);
+            border: 1px dashed rgba(255, 210, 125, 0.4);
+            border-radius: 12px;
+            padding: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 18px;
+        }
+
+        .guidance-placeholder,
+        .guidance-error {
+            font-size: 13px;
+            color: rgba(255, 210, 125, 0.85);
+        }
+
+        .guidance-error {
+            color: #ff9aa5;
+        }
+
+        .guidance-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+
+        .guidance-reload,
+        .guidance-docs {
+            padding: 10px 18px;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 210, 125, 0.4);
+            color: rgba(255, 210, 125, 0.95);
+            background: rgba(255, 210, 125, 0.1);
+            font-size: 13px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .guidance-reload:hover,
+        .guidance-docs:hover {
+            background: rgba(255, 210, 125, 0.2);
+        }
+
+        .guidance-note {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.65);
+        }
+
         .checkout-button:disabled {
             opacity: 0.5;
             cursor: not-allowed;
@@ -362,6 +437,22 @@
             <button class="cancel-token-button" id="cancelTokenButton">カード情報を再入力する</button>
         </div>
 
+        <div class="guidance-demo" id="guidanceDemoSection">
+            <h2 class="guidance-title">実験中: PAY.JP Guidance UI</h2>
+            <p class="guidance-description">
+                PAY.JP Guidance を利用したカスタムカードフォームの見た目を検証するテストエリアです。<br>
+                このデモでは実際の決済は行われません。
+            </p>
+            <div class="guidance-preview" id="payjpGuidanceContainer">
+                <p class="guidance-placeholder">読み込み中...</p>
+            </div>
+            <div class="guidance-actions">
+                <button class="guidance-reload" id="guidanceReloadButton" type="button">デモを再読み込み</button>
+                <a class="guidance-docs" href="https://docs.pay.jp/v1/payjs-guidance" target="_blank" rel="noopener noreferrer">公式ドキュメント</a>
+            </div>
+            <p class="guidance-note">※対応アカウントと最新SDKが必要です。利用できない場合はメッセージが表示されます。</p>
+        </div>
+
         <div class="features">
             <div class="feature">
                 <span class="feature-icon">🔒</span>
@@ -394,6 +485,8 @@
         const confirmSection = document.getElementById('confirmSection');
         const finalizeButton = document.getElementById('finalizePaymentButton');
         const cancelTokenButton = document.getElementById('cancelTokenButton');
+        const guidanceContainer = document.getElementById('payjpGuidanceContainer');
+        const guidanceReloadButton = document.getElementById('guidanceReloadButton');
 
         let storedDiagnosisId = null;
         let storedUserId = null;
@@ -561,6 +654,78 @@
                 resetToSelection();
             });
         }
+
+        async function loadGuidanceDemo() {
+            if (!guidanceContainer) return;
+            guidanceContainer.innerHTML = '<p class="guidance-placeholder">読み込み中です...</p>';
+
+            const ensureScript = () => new Promise((resolve, reject) => {
+                if (window.Payjp) return resolve(window.Payjp);
+                const existing = document.querySelector('script[data-payjp-guidance]');
+                if (existing) {
+                    existing.addEventListener('load', () => resolve(window.Payjp));
+                    existing.addEventListener('error', reject);
+                    return;
+                }
+                const script = document.createElement('script');
+                script.src = 'https://js.pay.jp/v2/pay.js';
+                script.async = true;
+                script.dataset.payjpGuidance = 'true';
+                script.onload = () => resolve(window.Payjp);
+                script.onerror = reject;
+                document.head.appendChild(script);
+            });
+
+            try {
+                const PayjpLib = await ensureScript();
+                if (!PayjpLib || !PayjpLib.guidance) {
+                    guidanceContainer.innerHTML = '<p class="guidance-error">Guidance APIが利用できません。対応アカウントか確認してください。</p>';
+                    return;
+                }
+
+                const payjpGuidanceInstance = PayjpLib('pk_test_16ae008c6fe3b2a1059efc6f');
+                if (!payjpGuidanceInstance.guidance) {
+                    guidanceContainer.innerHTML = '<p class="guidance-error">guidance機能が無効です。Pay.JP管理画面で有効化が必要です。</p>';
+                    return;
+                }
+
+                guidanceContainer.innerHTML = '<div id="payjp-guidance-frame"></div>';
+                const mountPoint = document.getElementById('payjp-guidance-frame');
+                const guidance = payjpGuidanceInstance.guidance({
+                    acceptedBrands: ['visa', 'mastercard'],
+                    style: {
+                        base: {
+                            color: '#ffffff',
+                            fontSize: '16px',
+                            fontFamily: '\"Noto Serif JP\", serif',
+                            letterSpacing: '0.04em',
+                            '::placeholder': {
+                                color: '#c9c3ff'
+                            }
+                        },
+                        invalid: {
+                            color: '#ff9aa5'
+                        }
+                    }
+                });
+
+                guidance.mount(mountPoint);
+                guidance.on('error', (event) => {
+                    guidanceContainer.innerHTML = `<p class="guidance-error">ガイダンスの初期化に失敗しました: ${event?.message || 'エラー'}</p>`;
+                });
+            } catch (error) {
+                console.error('Guidance demo load error:', error);
+                guidanceContainer.innerHTML = '<p class="guidance-error">ガイダンスの読み込みに失敗しました。ネットワークやSDK設定をご確認ください。</p>';
+            }
+        }
+
+        if (guidanceReloadButton) {
+            guidanceReloadButton.addEventListener('click', () => {
+                loadGuidanceDemo();
+            });
+        }
+
+        loadGuidanceDemo();
     </script>
 </body>
 </html>
