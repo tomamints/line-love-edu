@@ -39,11 +39,38 @@
         }
         
         .price-display {
-            font-size: 32px;
-            font-weight: bold;
-            color: #ffd700;
             text-align: center;
             margin-bottom: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            color: #ffd700;
+        }
+
+        .price-display .campaign-title {
+            font-size: 16px;
+            letter-spacing: 0.08em;
+        }
+
+        .price-display .original-price {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: line-through;
+        }
+
+        .price-display .discount-arrow {
+            font-size: 13px;
+        }
+
+        .price-display .current-price {
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .price-display .price-note {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.75);
         }
         
         .payment-form {
@@ -238,7 +265,13 @@
             <h1>クレジットカード決済（Checkout）</h1>
         </div>
         
-        <div class="price-display">¥9,800</div>
+        <div class="price-display">
+            <div class="campaign-title">中秋の名月割</div>
+            <div class="original-price">通常価格 ¥9,980</div>
+            <div class="discount-arrow">↓（7割引）</div>
+            <div class="current-price">今だけ ¥2,980</div>
+            <div class="price-note">（税込）</div>
+        </div>
         
         <!-- テストモード表示 -->
         <div class="test-mode-notice" id="testModeNotice">
@@ -360,7 +393,7 @@
             console.log('Apple Pay button clicked');
 
             // 金額設定
-            const amount = 9800;
+            const amount = 2980;
 
             // ペイメントリクエスト
             const paymentRequest = {
@@ -462,7 +495,7 @@
                     token: response.id,
                     diagnosisId: diagnosisId,
                     userId: userId,
-                    amount: 9800
+                    amount: 2980
                 })
             })
             .then(res => res.json())

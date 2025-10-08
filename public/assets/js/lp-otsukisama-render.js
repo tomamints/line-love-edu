@@ -286,11 +286,17 @@ class DiagnosisRenderer {
                 </div>
                 
                 <div class="price-section">
-                    <div class="original-price">通常価格 ¥9,800</div>
-                    <div class="special-price">
-                        <span class="price-label">特別価格</span>
-                        <span class="price-amount">¥2,980</span>
-                        <span class="price-tax">（税込）</span>
+                    <div class="campaign-price" style="display: flex; flex-direction: column; align-items: center; gap: 6px;">
+                        <div class="campaign-title" style="font-size: 15px; color: #ffd27d; letter-spacing: 0.08em;">中秋の名月割</div>
+                        <div style="display: flex; flex-direction: column; align-items: center; gap: 4px;">
+                            <div class="original-price" style="font-size: 14px; color: rgba(255, 255, 255, 0.7); text-decoration: line-through;">通常価格 ¥9,980</div>
+                            <div style="font-size: 13px; color: #ffd27d;">↓（7割引）</div>
+                        </div>
+                        <div class="special-price" style="display: flex; align-items: baseline; gap: 6px;">
+                            <span class="price-label" style="font-size: 16px; color: rgba(255, 255, 255, 0.85);">今だけ</span>
+                            <span class="price-amount" style="font-size: 32px; font-weight: 700; color: #ffd27d;">¥2,980</span>
+                            <span class="price-tax" style="font-size: 13px; color: rgba(255, 255, 255, 0.7);">（税込）</span>
+                        </div>
                     </div>
                 </div>
                 
