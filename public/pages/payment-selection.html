@@ -3,13 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>お支払い方法の選択 | おつきさま診断</title>
-
-    <!-- PAY.JP v2 -->
+    <title>お支払い方法を選択 | おつきさま診断</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;500;600;700;900&display=swap" rel="stylesheet">
     <script src="https://js.pay.jp/v2/pay.js"></script>
-    <!-- PAY.JP Checkout -->
-    <script src="https://checkout.pay.jp/"></script>
-
     <style>
         * {
             margin: 0;
@@ -18,7 +16,7 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+            font-family: 'Noto Serif JP', serif;
             background: linear-gradient(135deg, #1a0033 0%, #2d1b69 100%);
             color: #ffffff;
             min-height: 100vh;
@@ -29,205 +27,77 @@
         }
 
         .container {
-            max-width: 450px;
+            max-width: 420px;
             width: 100%;
-            text-align: center;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+            padding: 32px 28px;
+            position: relative;
         }
 
         .logo {
-            font-size: 48px;
-            margin-bottom: 20px;
+            font-size: 42px;
+            text-align: center;
+            margin-bottom: 18px;
         }
 
         .title {
             font-size: 24px;
             color: #ffd700;
-            margin-bottom: 10px;
+            text-align: center;
+            margin-bottom: 12px;
         }
 
         .subtitle {
+            text-align: center;
             font-size: 14px;
-            color: rgba(255, 255, 255, 0.8);
-            margin-bottom: 30px;
+            color: rgba(255, 255, 255, 0.75);
+            margin-bottom: 28px;
         }
 
         .price-section {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.12);
+            border-radius: 15px;
             padding: 20px;
-            border-radius: 12px;
-            margin-bottom: 30px;
+            margin-bottom: 26px;
             text-align: center;
-        }
-
-        .campaign-tag {
-            font-size: 12px;
-            color: #ffd27d;
-            letter-spacing: 0.06em;
-            margin-bottom: 10px;
-            display: inline-block;
         }
 
         .price-label {
             font-size: 14px;
-            color: rgba(255, 255, 255, 0.8);
-            margin-bottom: 5px;
+            color: rgba(255, 255, 255, 0.7);
         }
 
         .price {
-            font-size: 32px;
+            font-size: 36px;
             font-weight: bold;
             color: #ffd700;
+            margin: 6px 0;
         }
 
         .price-note {
             font-size: 12px;
             color: rgba(255, 255, 255, 0.6);
-            margin-top: 5px;
         }
 
         .payment-methods {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 12px;
-            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 16px;
+            padding: 24px;
             margin-bottom: 20px;
-        }
-
-        /* Apple Payボタン */
-        .pay-option-button {
-            width: 100%;
-            padding: 18px;
-            background: linear-gradient(135deg, #ffd27d, #ffb347);
-            color: #4a0e6b;
-            border: none;
-            border-radius: 14px;
-            font-size: 18px;
-            font-weight: 700;
-            letter-spacing: 0.02em;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 6px;
             text-align: center;
-            box-shadow: 0 18px 35px rgba(255, 180, 71, 0.25);
-        }
-
-        .pay-option-button:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 22px 38px rgba(255, 180, 71, 0.32);
-        }
-
-        .pay-option-button .subtext {
-            font-size: 13px;
-            font-weight: 500;
-            color: rgba(74, 14, 107, 0.75);
         }
 
         .payjp-button {
-            display: none !important;
-        }
-
-        .confirm-section {
-            display: none;
-            margin-top: 25px;
-            background: rgba(255, 255, 255, 0.12);
-            border: 1px solid rgba(255, 210, 125, 0.3);
-            border-radius: 16px;
-            padding: 24px 20px;
-            text-align: center;
-            color: #ffd27d;
-            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.25);
-        }
-
-        .confirm-section h3 {
-            font-size: 18px;
-            margin-bottom: 10px;
-            color: #ffd27d;
-        }
-
-        .confirm-section p {
-            font-size: 13px;
-            color: rgba(255, 255, 255, 0.8);
-            line-height: 1.6;
-        }
-
-        .finalize-button {
-            margin-top: 18px;
-            width: 100%;
-            padding: 16px;
-            background: linear-gradient(135deg, #764ba2, #667eea);
-            color: #ffffff;
-            border: none;
-            border-radius: 12px;
-            font-size: 17px;
-            font-weight: 600;
-            letter-spacing: 0.02em;
-            cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 16px 28px rgba(118, 75, 162, 0.35);
-        }
-
-        .finalize-button:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 20px 32px rgba(118, 75, 162, 0.42);
-        }
-
-        .finalize-button:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-
-        .cancel-token-button {
-            margin-top: 14px;
-            background: transparent;
-            border: 1px solid rgba(255, 210, 125, 0.5);
-            color: rgba(255, 210, 125, 0.9);
-            padding: 10px 20px;
-            border-radius: 999px;
-            font-size: 13px;
-            cursor: pointer;
-        }
-
-        .cancel-token-button:hover {
-            background: rgba(255, 210, 125, 0.12);
-        }
-
-        .checkout-button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .payment-separator {
-            text-align: center;
-            margin: 20px 0;
-            position: relative;
-            color: #999;
-            font-size: 14px;
-        }
-
-        .payment-separator::before,
-        .payment-separator::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            width: 40%;
-            height: 1px;
-            background: #ddd;
-        }
-
-        .payment-separator::before {
-            left: 0;
-        }
-
-        .payment-separator::after {
-            right: 0;
+            width: 100% !important;
         }
 
         .loading {
             display: none;
+            margin-top: 20px;
             text-align: center;
-            padding: 20px;
         }
 
         .loading.active {
@@ -235,44 +105,52 @@
         }
 
         .loading-spinner {
-            width: 50px;
-            height: 50px;
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            border-top-color: #ffd700;
+            border: 3px solid rgba(255, 255, 255, 0.2);
+            border-top: 3px solid #ffd700;
             border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 20px;
+            width: 40px;
+            height: 40px;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 12px;
         }
 
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
 
-        .error-message, .success-message {
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
+        .loading-text {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.75);
+        }
+
+        .error-message,
+        .success-message {
             display: none;
+            padding: 14px;
+            border-radius: 10px;
+            margin-top: 16px;
+            font-size: 13px;
+            line-height: 1.6;
         }
 
         .error-message {
-            background: rgba(255, 0, 0, 0.1);
-            border: 1px solid #ff0000;
-            color: #ff6b6b;
+            background: rgba(255, 72, 85, 0.2);
+            color: #ff6273;
+            border: 1px solid rgba(255, 72, 85, 0.35);
         }
 
         .success-message {
-            background: rgba(0, 255, 0, 0.1);
-            border: 1px solid #00ff00;
-            color: #4CAF50;
+            background: rgba(120, 255, 168, 0.2);
+            color: #8ef2b6;
+            border: 1px solid rgba(120, 255, 168, 0.35);
         }
 
         .features {
             display: flex;
             justify-content: space-around;
             margin-top: 30px;
-            font-size: 12px;
-            color: rgba(255, 255, 255, 0.7);
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.6);
         }
 
         .feature {
@@ -280,16 +158,18 @@
         }
 
         .feature-icon {
-            font-size: 24px;
-            margin-bottom: 5px;
+            font-size: 22px;
+            margin-bottom: 6px;
             display: block;
         }
 
         .back-link {
-            color: rgba(255, 255, 255, 0.7);
+            display: block;
+            text-align: center;
+            margin-top: 26px;
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.65);
             text-decoration: none;
-            margin-top: 20px;
-            display: inline-block;
             transition: color 0.3s;
         }
 
@@ -302,17 +182,16 @@
     <div class="container">
         <div class="logo">🌙</div>
         <h1 class="title">お支払い方法を選択</h1>
-        <p class="subtitle">お好きな決済方法をお選びください</p>
+        <p class="subtitle">お好きな決済方法で、中秋の名月割をご利用ください</p>
 
         <div class="price-section">
-            <div class="campaign-tag">中秋の名月割（通常 ¥9,980）</div>
             <div class="price-label">お支払い金額</div>
             <div class="price">¥2,980</div>
-            <div class="price-note">（税込・買い切り）</div>
+            <div class="price-note">（通常 ¥9,980 → 中秋の名月割）</div>
         </div>
 
         <div class="payment-methods">
-            <!-- Apple Pay は現在未対応 -->
+            <!-- Apple Payは現在未対応（参考用に以前の実装をコメントとして残しています） -->
             <!--
             <button id="applePayButton" class="apple-pay-button">
                 Apple Payで支払う
@@ -322,12 +201,6 @@
                 または
             </div>
             -->
-
-            <button class="pay-option-button" id="cardCheckoutButton" type="button">
-                💳 STEP1: クレジットカード情報を入力する
-                <span class="subtext">Visa / Mastercard（入力後に決済確認が表示されます）</span>
-            </button>
-
             <form action="/pages/payment-process.html" method="GET" id="checkout-form">
                 <input type="hidden" name="diagnosisId" id="diagnosisIdField">
                 <input type="hidden" name="userId" id="userIdField">
@@ -336,130 +209,66 @@
                     src="https://checkout.pay.jp/"
                     class="payjp-button"
                     data-key="pk_test_16ae008c6fe3b2a1059efc6f"
-                    data-text="クレジットカード情報を入力する"
-                    data-submit-text="情報を入力する"
+                    data-text="クレジットカードで支払う"
+                    data-submit-text="支払う"
                     data-amount="2980"
-                    data-currency="jpy"
-                    data-partial="true"
-                    data-payjp-on-created="handlePayjpToken"
-                    data-payjp-on-failed="handlePayjpError">
+                    data-currency="jpy">
                 </script>
             </form>
         </div>
 
-        <!-- Loading -->
         <div class="loading" id="loading">
             <div class="loading-spinner"></div>
             <div class="loading-text">決済を処理中です...</div>
         </div>
 
-        <!-- Messages -->
         <div class="error-message" id="errorMessage"></div>
         <div class="success-message" id="successMessage"></div>
 
-        <div class="confirm-section" id="confirmSection">
-            <h3>STEP2: カード情報の入力が完了しました</h3>
-            <p>内容を確認のうえ「¥2,980 を支払う（決済）」を押すと課金が完了します。</p>
-            <p>※中秋の名月割（通常 ¥9,980 → ¥2,980） / 決済後に完全版ページへ移動します。</p>
-            <button class="finalize-button" id="finalizePaymentButton">¥2,980 を支払う（決済）</button>
-            <button class="cancel-token-button" id="cancelTokenButton">カード情報を再入力する</button>
+        <div class="features">
+            <div class="feature">
+                <span class="feature-icon">🔒</span>
+                <span>SSL暗号化通信で安全</span>
+            </div>
+            <div class="feature">
+                <span class="feature-icon">⚡</span>
+                <span>スピーディな決済</span>
+            </div>
+            <div class="feature">
+                <span class="feature-icon">🛡️</span>
+                <span>カード情報は保護されます</span>
+            </div>
         </div>
 
         <a href="#" class="back-link" onclick="history.back(); return false;">
-            ← 前のページに戻る
+            ← 戻る
         </a>
     </div>
 
     <script>
         const urlParams = new URLSearchParams(window.location.search);
-        const diagnosisIdParam = urlParams.get('id');
-        const userIdParam = urlParams.get('userId');
-        const loadingEl = document.getElementById('loading');
-        const errorEl = document.getElementById('errorMessage');
-        const successEl = document.getElementById('successMessage');
-        const cardCheckoutButton = document.getElementById('cardCheckoutButton');
-        const payjpButton = document.querySelector('.payjp-button');
-        const confirmSection = document.getElementById('confirmSection');
-        const finalizeButton = document.getElementById('finalizePaymentButton');
-        const cancelTokenButton = document.getElementById('cancelTokenButton');
+        const diagnosisId = urlParams.get('id');
+        const userId = urlParams.get('userId');
 
+        const payjp = Payjp('pk_test_16ae008c6fe3b2a1059efc6f');
 
-        let storedDiagnosisId = null;
-        let storedUserId = null;
-        let pendingPayjpToken = null;
+        async function handlePaymentSuccess(token) {
+            const loading = document.getElementById('loading');
+            const errorMessage = document.getElementById('errorMessage');
+            const successMessage = document.getElementById('successMessage');
 
-        const PAYMENT_AMOUNT = 2980;
+            loading.classList.add('active');
+            loading.querySelector('.loading-text').textContent = '決済を処理しています...';
 
-        function setHiddenFields(diagnosisId, userId) {
-            const diagnosisField = document.getElementById('diagnosisIdField');
-            const userField = document.getElementById('userIdField');
-            if (diagnosisField && diagnosisId) diagnosisField.value = diagnosisId;
-            if (userField && userId) userField.value = userId;
-        }
+            const finalDiagnosisId = diagnosisId || sessionStorage.getItem('diagnosisId');
+            const finalUserId = userId || sessionStorage.getItem('userId') || 'anonymous';
 
-        function showLoading(active, message) {
-            if (!loadingEl) return;
-            loadingEl.classList.toggle('active', Boolean(active));
-            if (message) {
-                const textEl = loadingEl.querySelector('.loading-text');
-                if (textEl) textEl.textContent = message;
-            }
-        }
-
-        function hideLoading() {
-            if (!loadingEl) return;
-            loadingEl.classList.remove('active');
-        }
-
-        function showError(message) {
-            if (!errorEl) return;
-            errorEl.textContent = message;
-            errorEl.style.display = 'block';
-            hideLoading();
-        }
-
-        function clearMessages() {
-            if (errorEl) {
-                errorEl.textContent = '';
-                errorEl.style.display = 'none';
-            }
-            if (successEl) {
-                successEl.textContent = '';
-                successEl.style.display = 'none';
-            }
-        }
-
-        function openConfirmSection() {
-            if (cardCheckoutButton) {
-                cardCheckoutButton.style.display = 'none';
-            }
-            if (confirmSection) {
-                confirmSection.style.display = 'block';
-            }
-        }
-
-        function resetToSelection() {
-            pendingPayjpToken = null;
-            if (confirmSection) {
-                confirmSection.style.display = 'none';
-            }
-            if (cardCheckoutButton) {
-                cardCheckoutButton.style.display = '';
-            }
-            clearMessages();
-            hideLoading();
-        }
-
-        async function finalizePayment() {
-            if (!pendingPayjpToken) {
-                showError('カード情報が確認できませんでした。もう一度入力してください。');
-                resetToSelection();
+            if (!finalDiagnosisId) {
+                errorMessage.textContent = '診断IDが見つかりませんでした。診断結果ページから再度お試しください。';
+                errorMessage.style.display = 'block';
+                loading.classList.remove('active');
                 return;
             }
-
-            if (finalizeButton) finalizeButton.disabled = true;
-            showLoading(true, '決済を処理しています...');
-            clearMessages();
 
             try {
                 const response = await fetch('/api/payjp-create-charge', {
@@ -468,100 +277,61 @@
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        token: pendingPayjpToken,
-                        diagnosisId: storedDiagnosisId,
-                        userId: storedUserId,
-                        amount: PAYMENT_AMOUNT,
+                        token: token,
+                        diagnosisId: finalDiagnosisId,
+                        userId: finalUserId,
+                        amount: 2980,
                         paymentMethod: 'credit_card'
                     })
                 });
 
                 const result = await response.json();
-                if (!response.ok || !result.success) {
-                    throw new Error(result?.error || '決済に失敗しました。別の方法でお試しください。');
+
+                if (result.success) {
+                    sessionStorage.removeItem('diagnosisId');
+                    sessionStorage.removeItem('userId');
+
+                    successMessage.textContent = '決済が完了しました。完全版ページへ移動します。';
+                    successMessage.style.display = 'block';
+                    setTimeout(() => {
+                        window.location.href = `/pages/lp-otsukisama-unified.html?id=${finalDiagnosisId}&userId=${finalUserId || ''}&paid=true`;
+                    }, 2000);
+                } else {
+                    errorMessage.textContent = result.error || '決済に失敗しました。別のカードでお試しください。';
+                    errorMessage.style.display = 'block';
+                    loading.classList.remove('active');
                 }
-
-                pendingPayjpToken = null;
-                hideLoading();
-                if (confirmSection) {
-                    confirmSection.style.display = 'none';
-                }
-                if (successEl) {
-                    successEl.textContent = '決済が完了しました。完全版ページへ移動します。';
-                    successEl.style.display = 'block';
-                }
-
-                setTimeout(() => {
-            window.location.href = `/pages/lp-otsukisama-unified.html?id=${storedDiagnosisId}&userId=${storedUserId}&paid=true`;
-            }, 1200);
-        } catch (error) {
-            console.error('Finalize payment error:', error);
-            showError(error.message || '決済処理に失敗しました。もう一度お試しください。');
-        } finally {
-            if (finalizeButton) finalizeButton.disabled = false;
-        }
-    }
-
-    window.handlePayjpToken = function(response) {
-        try {
-            if (!response || !response.id) {
-                throw new Error('トークンを取得できませんでした。');
+            } catch (error) {
+                console.error('決済処理エラー:', error);
+                errorMessage.textContent = 'ネットワークエラーが発生しました。通信環境をご確認のうえ再度お試しください。';
+                errorMessage.style.display = 'block';
+                loading.classList.remove('active');
             }
-
-            pendingPayjpToken = response.id;
-            hideLoading();
-            clearMessages();
-            openConfirmSection();
-        } catch (error) {
-            console.error('handlePayjpToken error:', error);
-            showError(error.message || 'カード情報の処理に失敗しました。別のカードでお試しください。');
-            resetToSelection();
-        }
-    };
-
-    window.handlePayjpError = function(error) {
-        console.error('PAY.JP tokenization error:', error);
-        showError('カード情報の処理に失敗しました。カード番号やネットワークをご確認の上、再度お試しください。');
-        resetToSelection();
-    };
-
-    window.addEventListener('DOMContentLoaded', () => {
-        storedDiagnosisId = diagnosisIdParam || sessionStorage.getItem('diagnosisId');
-        storedUserId = userIdParam || sessionStorage.getItem('userId') || 'anonymous';
-
-            if (!storedDiagnosisId) {
-                showError('診断IDが見つかりません。診断ページから再度お試しください。');
-                return;
-            }
-
-            sessionStorage.setItem('diagnosisId', storedDiagnosisId);
-            sessionStorage.setItem('userId', storedUserId);
-            setHiddenFields(storedDiagnosisId, storedUserId);
-
-            if (cardCheckoutButton && payjpButton) {
-                cardCheckoutButton.addEventListener('click', () => {
-                    clearMessages();
-                    showLoading(true, 'カード情報入力画面を開いています...');
-                    payjpButton.click();
-                });
-            }
-
-        window.addEventListener('focus', () => {
-            if (!pendingPayjpToken) {
-                hideLoading();
-            }
-        });
-    });
-
-        if (finalizeButton) {
-            finalizeButton.addEventListener('click', finalizePayment);
         }
 
-        if (cancelTokenButton) {
-            cancelTokenButton.addEventListener('click', () => {
-                resetToSelection();
-            });
+        window.handlePayjpToken = function(response) {
+            if (response && response.id) {
+                handlePaymentSuccess(response.id);
+            }
+        };
+
+        window.handlePayjpError = function(error) {
+            console.error('PAY.JP error:', error);
+            const errorMessage = document.getElementById('errorMessage');
+            errorMessage.textContent = 'カード情報の処理に失敗しました。再度お試しください。';
+            errorMessage.style.display = 'block';
+        };
+
+        if (diagnosisId) {
+            sessionStorage.setItem('diagnosisId', diagnosisId);
         }
+
+        if (userId) {
+            sessionStorage.setItem('userId', userId);
+        }
+
+        document.getElementById('diagnosisIdField').value = diagnosisId || sessionStorage.getItem('diagnosisId');
+        document.getElementById('userIdField').value = userId || sessionStorage.getItem('userId') || 'anonymous';
     </script>
 </body>
 </html>
