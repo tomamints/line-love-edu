@@ -127,42 +127,48 @@ async function loadUserBirthdate() {
         const data = await response.json();
         console.log('API response:', data);
         
-        if (data.success && data.profile && data.profile.birthdate) {
-            console.log('Birthdate found:', data.profile.birthdate);
+        if (data.success && data.profile) {
+            const profile = data.profile;
+            const birthdateValue = profile.birthdate || profile.birthDate;
+            const nameValue = profile.name || profile.userName;
+
+            if (birthdateValue) {
+                console.log('Birthdate found:', birthdateValue);
             // 生年月日をパース (YYYY-MM-DD形式を想定)
-            const birthdate = new Date(data.profile.birthdate);
-            const year = birthdate.getFullYear();
-            const month = birthdate.getMonth() + 1;
-            const day = birthdate.getDate();
-            
-            fillBirthdateForm(year, month, day);
-            
+                const birthdate = new Date(birthdateValue);
+                const year = birthdate.getFullYear();
+                const month = birthdate.getMonth() + 1;
+                const day = birthdate.getDate();
+                
+                fillBirthdateForm(year, month, day);
+
+                // 生年月日からパターンを計算して更新
+                if (typeof currentPatternId !== 'undefined') {
+                    currentPatternId = generatePatternId(year, month, day);
+                    updateMoonPhaseContent(currentPatternId);
+                    
+                    // パターンIDから月相を計算
+                    const moonPhaseIndex = Math.floor(currentPatternId / 8);
+                    const hiddenPhaseIndex = currentPatternId % 8;
+                    const moonPhaseNames = ['新月', '三日月', '上弧の月', '十三夜', '満月', '十六夜', '下弦の月', '暁'];
+                    const moonPhase = moonPhaseNames[moonPhaseIndex];
+                    const hiddenMoonPhase = moonPhaseNames[hiddenPhaseIndex];
+                    
+                    // APIから取得したプロフィールを渡す
+                    updateSixElements(currentPatternId, moonPhase, hiddenMoonPhase, profile);
+                    if (typeof updateFortuneGraph === 'function') {
+                        updateFortuneGraph(currentPatternId);
+                    }
+                }
+
+                console.log('User birthdate loaded and pattern updated:', year, month, day);
+            }
+
             // 名前も自動入力
             const nameInput = document.getElementById('name');
-            if (nameInput && data.profile.name) {
-                nameInput.value = data.profile.name;
+            if (nameInput && nameValue) {
+                nameInput.value = nameValue;
             }
-            
-            // 生年月日からパターンを計算して更新
-            if (typeof currentPatternId !== 'undefined') {
-                currentPatternId = generatePatternId(year, month, day);
-                updateMoonPhaseContent(currentPatternId);
-                
-                // パターンIDから月相を計算
-                const moonPhaseIndex = Math.floor(currentPatternId / 8);
-                const hiddenPhaseIndex = currentPatternId % 8;
-                const moonPhaseNames = ['新月', '三日月', '上弧の月', '十三夜', '満月', '十六夜', '下弦の月', '暁'];
-                const moonPhase = moonPhaseNames[moonPhaseIndex];
-                const hiddenMoonPhase = moonPhaseNames[hiddenPhaseIndex];
-                
-                // APIから取得したプロフィールを渡す
-                updateSixElements(currentPatternId, moonPhase, hiddenMoonPhase, data.profile);
-                if (typeof updateFortuneGraph === 'function') {
-                    updateFortuneGraph(currentPatternId);
-                }
-            }
-            
-            console.log('User birthdate loaded and pattern updated:', year, month, day);
         }
     } catch (error) {
         console.log('Could not load user birthdate:', error);

@@ -85,6 +85,8 @@ module.exports = async (req, res) => {
     console.log('Diagnosis type:', profile?.diagnosisType);
     
     if (profile && profile.diagnosisType === 'otsukisama') {
+      const normalizedName = profile.userName || profile.name || null;
+      const normalizedBirthDate = profile.birthDate || profile.birthdate || null;
       // おつきさま診断のデータを返す（4つの軸データを含む）
       console.log('Returning otsukisama data with 4 axes:', {
         emotionalExpression: profile.emotionalExpression,
@@ -96,8 +98,10 @@ module.exports = async (req, res) => {
       return res.status(200).json({
         success: true,
         profile: {
-          userName: profile.userName,
-          birthDate: profile.birthDate,
+          userName: normalizedName,
+          name: normalizedName,
+          birthDate: normalizedBirthDate,
+          birthdate: normalizedBirthDate,
           moonPatternId: profile.moonPatternId,
           diagnosisType: 'otsukisama',
           emotionalExpression: profile.emotionalExpression,
@@ -128,9 +132,18 @@ module.exports = async (req, res) => {
       loveEnergy: profile.loveEnergy
     };
     
+    const normalizedName = loveProfile.name || profile?.userName || null;
+    const normalizedBirthDate = loveProfile.birthdate || profile?.birthDate || null;
+
     return res.status(200).json({
       success: true,
-      profile: completeProfile,
+      profile: {
+        ...completeProfile,
+        name: normalizedName,
+        userName: normalizedName,
+        birthdate: normalizedBirthDate,
+        birthDate: normalizedBirthDate
+      },
       userId: userId
     });
     

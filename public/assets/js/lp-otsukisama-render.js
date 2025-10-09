@@ -24,22 +24,29 @@ class DiagnosisRenderer {
                     const data = await response.json();
                     
                     if (data.profile) {
+                        const profile = data.profile;
+                        const birthdateValue = profile.birthDate || profile.birthdate;
+                        const nameValue = profile.userName || profile.user_name || profile.name || 'あなた';
                         // プロファイルデータから必要な情報を取得
-                        const birthDate = new Date(data.profile.birthDate);
-                        const patternId = data.profile.moonPatternId || this.calculatePatternFromDate(birthDate);
+                        const birthDate = birthdateValue ? new Date(birthdateValue) : null;
+                        const rawPatternId = profile.moonPatternId || (birthDate ? this.calculatePatternFromDate(birthDate) : 0);
+                        const patternIdNumber = Number(rawPatternId);
+                        const patternId = Number.isFinite(patternIdNumber) ? patternIdNumber : 0;
                         
                         // パターンデータの読み込み
                         await this.loadPatternData(patternId);
                         
                         // 4軸データも取得
                         this.diagnosisData = {
-                            name: data.profile.userName || data.profile.user_name || 'あなた',
-                            birthDate: data.profile.birthDate,
+                            name: nameValue,
+                            userName: nameValue,
+                            birthDate: birthdateValue,
+                            birthdate: birthdateValue,
                             patternId: patternId,
-                            emotionalType: data.profile.emotionalExpression || data.profile.emotional_expression,
-                            distanceType: data.profile.distanceStyle || data.profile.distance_style,
-                            valuesType: data.profile.loveValues || data.profile.love_values,
-                            energyType: data.profile.loveEnergy || data.profile.love_energy,
+                            emotionalType: profile.emotionalExpression || profile.emotional_expression,
+                            distanceType: profile.distanceStyle || profile.distance_style,
+                            valuesType: profile.loveValues || profile.love_values,
+                            energyType: profile.loveEnergy || profile.love_energy,
                             ...this.patternData
                         };
                         

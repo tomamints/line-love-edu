@@ -136,14 +136,18 @@
                 const data = await response.json();
                 
                 if (data.profile) {
+                    const profile = data.profile;
+                    const nameValue = profile.userName || profile.name;
+                    const birthdateValue = profile.birthDate || profile.birthdate;
+
                     // 名前の自動入力
-                    if (data.profile.userName) {
-                        document.getElementById('name').value = data.profile.userName;
+                    if (nameValue) {
+                        document.getElementById('name').value = nameValue;
                     }
                     
                     // 生年月日の自動入力
-                    if (data.profile.birthDate) {
-                        const birthDate = new Date(data.profile.birthDate);
+                    if (birthdateValue) {
+                        const birthDate = new Date(birthdateValue);
                         document.getElementById('year').value = birthDate.getFullYear();
                         document.getElementById('month').value = birthDate.getMonth() + 1;
                         document.getElementById('day').value = birthDate.getDate();

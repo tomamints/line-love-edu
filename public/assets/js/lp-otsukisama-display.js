@@ -1310,7 +1310,7 @@ async function updateEmotionalExpressionContent(type, profile) {
     const typeData = personalityAxesData.emotionalExpression[japaneseKey];
     if (typeData) {
         // profileから直接ユーザー名を取得
-        const userName = profile?.userName || window.currentUserName || 'あなた';
+        const userName = profile?.userName || profile?.name || window.currentUserName || 'あなた';
         let htmlContent = '';
         
         // 説明文を追加（HTMLタグ含む）
@@ -1370,7 +1370,7 @@ async function updateDistanceStyleContent(type, profile) {
     const typeData = personalityAxesData.distanceStyle[japaneseKey];
     if (typeData) {
         // profileから直接ユーザー名を取得
-        const userName = profile?.userName || window.currentUserName || 'あなた';
+        const userName = profile?.userName || profile?.name || window.currentUserName || 'あなた';
         let htmlContent = '';
         
         // 説明文を追加（HTMLタグ含む）
@@ -1430,7 +1430,7 @@ async function updateLoveValuesContent(type, profile) {
     const typeData = personalityAxesData.loveValues[japaneseKey];
     if (typeData) {
         // profileから直接ユーザー名を取得
-        const userName = profile?.userName || window.currentUserName || 'あなた';
+        const userName = profile?.userName || profile?.name || window.currentUserName || 'あなた';
         let htmlContent = '';
         
         // 説明文を追加（HTMLタグ含む）
@@ -1490,7 +1490,7 @@ async function updateLoveEnergyContent(type, profile) {
     const typeData = personalityAxesData.energyType[japaneseKey];
     if (typeData) {
         // profileから直接ユーザー名を取得
-        const userName = profile?.userName || window.currentUserName || 'あなた';
+        const userName = profile?.userName || profile?.name || window.currentUserName || 'あなた';
         let htmlContent = '';
         
         // 説明文を追加（HTMLタグ含む）
