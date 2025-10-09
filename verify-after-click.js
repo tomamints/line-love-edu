@@ -60,22 +60,6 @@ async function verifyAfterClick() {
         console.log('パターンID:', diagnosis.result_data.moon_pattern_id);
     }
     
-    // アクセス権限も確認
-    const { data: access } = await supabase
-        .from('access_rights')
-        .select('*')
-        .eq('user_id', userId)
-        .eq('resource_type', 'diagnosis')
-        .eq('resource_id', diagnosisId)
-        .single();
-    
-    console.log('');
-    console.log('【アクセス権限】');
-    if (access) {
-        console.log('アクセスレベル:', access.access_level);
-        console.log(access.access_level === 'preview' ? '→ モザイク表示' : '→ 全表示');
-    }
-    
     console.log('');
     console.log('='.repeat(60));
     console.log('診断作成後、自動的に遷移するプレビューページ:');

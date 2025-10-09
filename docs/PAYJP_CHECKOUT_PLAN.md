@@ -64,7 +64,6 @@ payment-select.htmlでPayPayオプションをコメントアウト
 1. `/api/payjp-create-charge.js`でトークンを受け取る
 2. 決済を実行
 3. purchasesテーブルに記録
-4. access_rightsテーブルを更新
 
 ### Step 4: 決済完了後の処理
 1. 成功: 診断結果ページにリダイレクト（フルアクセス権限付き）

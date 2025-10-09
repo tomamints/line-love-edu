@@ -122,26 +122,6 @@ async function handler(req, res) {
       // 決済は成功しているので、エラーを返さない
     }
 
-    // アクセス権を付与
-    if (charge.paid) {
-      const { data: accessRight, error: accessError } = await supabase
-        .from('access_rights')
-        .insert({
-          user_id: userId || 'anonymous',
-          diagnosis_id: diagnosisId,
-          access_level: 'full',
-          granted_at: new Date().toISOString(),
-          expires_at: null,
-          purchase_id: purchaseId
-        })
-        .select()
-        .single();
-
-      if (accessError) {
-        console.error('[PAY.JP] Failed to grant access:', accessError);
-      }
-    }
-
     return res.status(200).json({
       success: true,
       chargeId: charge.id,

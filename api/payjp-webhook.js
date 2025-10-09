@@ -104,37 +104,12 @@ async function handleChargeSucceeded(charge) {
     console.error('[PAY.JP Webhook] Failed to update rich menu:', menuError);
   }
 
-  // アクセス権が存在しない場合は付与
-  const { data: existingAccess } = await supabase
-    .from('access_rights')
-    .select('*')
-    .eq('diagnosis_id', diagnosisId)
-    .eq('user_id', userId)
-    .single();
-
-  if (!existingAccess) {
-    const { error: accessError } = await supabase
-      .from('access_rights')
-      .insert({
-        user_id: userId,
-        diagnosis_id: diagnosisId,
-        access_level: 'full',
-        granted_at: new Date().toISOString(),
-        expires_at: null,
-        purchase_id: purchaseId
-      });
-
-    if (accessError) {
-      console.error('[PAY.JP Webhook] Failed to grant access:', accessError);
-    } else {
-      console.log('[PAY.JP Webhook] Access granted for:', diagnosisId);
-    }
-  }
 }
 
 // 決済失敗時の処理
 async function handleChargeFailed(charge) {
   const diagnosisId = charge.metadata?.diagnosis_id;
+  const userId = charge.metadata?.user_id || 'anonymous';
   
   if (!diagnosisId) {
     return;
@@ -163,7 +138,7 @@ async function handleChargeFailed(charge) {
 
   try {
     const { updateUserRichMenu } = require('./update-user-rich-menu');
-    await updateUserRichMenu(charge.metadata?.user_id || 'anonymous', false);
+    await updateUserRichMenu(userId, false);
   } catch (menuError) {
     console.error('[PAY.JP Webhook] Failed to reset rich menu after failure:', menuError);
   }
@@ -172,6 +147,7 @@ async function handleChargeFailed(charge) {
 // 返金処理
 async function handleChargeRefunded(charge) {
   const diagnosisId = charge.metadata?.diagnosis_id;
+  const userId = charge.metadata?.user_id || 'anonymous';
   
   if (!diagnosisId) {
     return;
@@ -200,15 +176,9 @@ async function handleChargeRefunded(charge) {
     })
     .eq('purchase_id', purchaseId);
 
-  // アクセス権を削除
-  await supabase
-    .from('access_rights')
-    .delete()
-    .eq('purchase_id', purchaseId);
-
   try {
     const { updateUserRichMenu } = require('./update-user-rich-menu');
-    await updateUserRichMenu(charge.metadata?.user_id || 'anonymous', false);
+    await updateUserRichMenu(userId, false);
   } catch (menuError) {
     console.error('[PAY.JP Webhook] Failed to reset rich menu after refund:', menuError);
   }

@@ -2,7 +2,6 @@
 -- Supabaseダッシュボードで実行してください
 
 -- 全てのpublicテーブルのRLSを有効化
-ALTER TABLE public.access_rights ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.diagnoses ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.purchases ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
@@ -11,9 +10,6 @@ ALTER TABLE public.user_messages ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.diagnosis_types ENABLE ROW LEVEL SECURITY;
 
 -- 既存のポリシーを削除（存在する場合）
-DROP POLICY IF EXISTS "Enable read for authenticated" ON public.access_rights;
-DROP POLICY IF EXISTS "Enable insert for authenticated" ON public.access_rights;
-DROP POLICY IF EXISTS "Enable update for authenticated" ON public.access_rights;
 DROP POLICY IF EXISTS "Enable all for authenticated" ON public.diagnoses;
 DROP POLICY IF EXISTS "Enable all for authenticated" ON public.purchases;
 DROP POLICY IF EXISTS "Enable all for authenticated" ON public.profiles;
@@ -24,19 +20,6 @@ DROP POLICY IF EXISTS "Enable read for all" ON public.diagnosis_types;
 -- ポリシーの作成
 -- 重要：現在のシステムはAPIキー（ANON_KEY）を使用してバックエンドから
 -- アクセスしているため、以下のポリシーを設定
-
--- access_rightsテーブル：バックエンドAPIのみアクセス可能
-CREATE POLICY "Enable read for authenticated" ON public.access_rights
-    FOR SELECT
-    USING (true);  -- ANONキーでの読み取りを許可
-
-CREATE POLICY "Enable insert for authenticated" ON public.access_rights
-    FOR INSERT
-    WITH CHECK (true);  -- ANONキーでの挿入を許可
-
-CREATE POLICY "Enable update for authenticated" ON public.access_rights
-    FOR UPDATE
-    USING (true);  -- ANONキーでの更新を許可
 
 -- diagnosesテーブル：バックエンドAPIのみアクセス可能
 CREATE POLICY "Enable all for authenticated" ON public.diagnoses

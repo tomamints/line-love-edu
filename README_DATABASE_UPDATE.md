@@ -2,6 +2,13 @@
 
 ## Supabaseを使用している場合
 
+### access_rightsテーブルの削除
+ランタイムからの参照を廃止したため、以下のSQLでテーブルを削除してください。
+
+```sql
+DROP TABLE IF EXISTS access_rights;
+```
+
 1. Supabaseダッシュボードにログイン
 2. SQL Editorを開く
 3. 以下のSQLを実行：

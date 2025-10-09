@@ -5,7 +5,6 @@
 ### ✅ 良い点
 1. **データベース設計が決済プロバイダーに依存しない**
    - purchasesテーブル: 統一された購入履歴
-   - access_rightsテーブル: 決済方法に関係ないアクセス管理
    - payment_methodフィールドで決済方法を識別
 
 2. **決済フローが標準化されている**
@@ -39,17 +38,6 @@ class PaymentHandler {
       created_at: getJSTDateTime()
     });
     return purchaseId;
-  }
-
-  // アクセス権限更新（共通）
-  async grantFullAccess(diagnosisId, userId, purchaseId) {
-    await supabase.from('access_rights').update({
-      access_level: 'full',
-      purchase_id: purchaseId,
-      valid_from: getJSTDateTime()
-    })
-    .eq('resource_id', diagnosisId)
-    .eq('user_id', userId);
   }
 
   // 購入完了処理（共通）
@@ -113,7 +101,6 @@ class SquareProvider extends PaymentProvider {
 2. **api/update-square-payment.js** を作成
    - update-paypay-payment.jsをコピーして修正
    - Square APIで決済確認
-   - access_rights更新は同じ
 
 3. **payment-select.html** を修正
    - コメントアウトを解除

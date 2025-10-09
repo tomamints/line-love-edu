@@ -115,32 +115,11 @@ export default async function handler(req, res) {
 
     console.log('[TEST] Purchase record created:', purchase.purchase_id);
 
-    // アクセス権を付与
-    const { data: accessRight, error: accessError } = await supabase
-      .from('access_rights')
-      .insert({
-        user_id: userId || 'test_user',
-        diagnosis_id: diagnosisId,
-        access_level: 'full',
-        granted_at: new Date().toISOString(),
-        expires_at: null,
-        purchase_id: purchaseId
-      })
-      .select()
-      .single();
-
-    if (accessError) {
-      console.error('[TEST] Failed to grant access:', accessError);
-      // アクセス権の付与に失敗してもエラーにしない（購入は成功しているため）
-    } else {
-      console.log('[TEST] Access granted:', accessRight);
-    }
-
     return res.status(200).json({
       success: true,
       message: 'Test payment completed successfully',
       purchaseId: purchaseId,
-      accessGranted: !accessError
+      accessGranted: true
     });
 
   } catch (error) {

@@ -37,7 +37,7 @@ module.exports = async function handler(req, res) {
                 .from('purchases')
                 .select('*')
                 .eq('diagnosis_id', diagnosisId)
-                .eq('payment_status', 'completed')
+                .or('status.eq.completed,payment_status.eq.completed')
                 .single();
             
             if (error && error.code !== 'PGRST116') { // PGRST116 = no rows returned
@@ -52,23 +52,6 @@ module.exports = async function handler(req, res) {
                     purchaseId: purchase.id,
                     paymentMethod: purchase.payment_method,
                     completedAt: purchase.completed_at
-                });
-            }
-            
-            // access_rightsテーブルも確認（フォールバック）
-            const { data: accessRight, error: accessError } = await supabase
-                .from('access_rights')
-                .select('*')
-                .eq('diagnosis_id', diagnosisId)
-                .eq('has_full_access', true)
-                .single();
-            
-            if (accessRight) {
-                console.log(`Access right found for diagnosis ${diagnosisId}`);
-                return res.json({
-                    isPaid: true,
-                    hasFullAccess: true,
-                    grantedAt: accessRight.granted_at
                 });
             }
         }
