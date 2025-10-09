@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>カード決済 | おつきさま診断</title>
     <script src="https://js.pay.jp/v2/pay.js"></script>
+    <script src="/config/payjp-public-key.js"></script>
     <style>
         * {
             margin: 0;
@@ -331,7 +332,17 @@
         const userId = urlParams.get('userId');
         
         // PAY.JP公開鍵（環境変数から取得する必要があります）
-        const PAYJP_PUBLIC_KEY = 'pk_test_16ae008c6fe3b2a1059efc6f';
+        const PAYJP_PUBLIC_KEY = window.PAYJP_PUBLIC_KEY || '';
+        if (!PAYJP_PUBLIC_KEY) {
+            const errorEl = document.getElementById('errorMessage');
+            if (errorEl) {
+                errorEl.textContent = '決済設定が完了していません。管理者にお問い合わせください。';
+                errorEl.style.display = 'block';
+            }
+            const submitBtn = document.getElementById('submitButton');
+            if (submitBtn) submitBtn.disabled = true;
+            throw new Error('PAYJP_PUBLIC_KEY not configured');
+        }
         
         // テストモードかどうかを確認
         const isTestMode = PAYJP_PUBLIC_KEY.includes('test');

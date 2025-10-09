@@ -276,6 +276,23 @@ app.post('/api/tarot-permission', async (req, res) => {
   await tarotPermission(req, res);
 });
 
+// PAY.JP 公開鍵を返す（クライアントで利用）
+app.get('/api/payjp/public-key', (req, res) => {
+  const publicKey = process.env.PAYJP_PUBLIC_KEY;
+
+  if (!publicKey) {
+    return res.status(404).json({ success: false, error: 'PAYJP_PUBLIC_KEY is not configured' });
+  }
+
+  res.json({ success: true, publicKey });
+});
+
+app.get('/config/payjp-public-key.js', (req, res) => {
+  const publicKey = process.env.PAYJP_PUBLIC_KEY || '';
+  res.setHeader('Content-Type', 'application/javascript');
+  res.send(`window.PAYJP_PUBLIC_KEY = ${JSON.stringify(publicKey)};`);
+});
+
 // 本格診断カードの自動送信（タロットページから利用）
 app.post('/api/send-premium-invite', async (req, res) => {
   const userId = req.body?.userId;

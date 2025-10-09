@@ -7,6 +7,7 @@
     
     <!-- PAY.JP -->
     <script src="https://js.pay.jp/v2/pay.js"></script>
+    <script src="/config/payjp-public-key.js"></script>
     
     <style>
         * {
@@ -286,7 +287,11 @@
         const userId = urlParams.get('userId');
         
         // PAY.JP設定
-        const publicKey = 'pk_test_0383a1b8f91e8a6e3ea0e2a9';
+        const publicKey = window.PAYJP_PUBLIC_KEY || '';
+        if (!publicKey) {
+            alert('決済設定が完了していません。管理者にお問い合わせください。');
+            throw new Error('PAYJP_PUBLIC_KEY not configured');
+        }
         let payjp = null;
         
         // エラー表示

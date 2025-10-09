@@ -8,6 +8,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;500;600;700;900&display=swap" rel="stylesheet">
     <script src="https://js.pay.jp/v2/pay.js"></script>
+    <script src="/config/payjp-public-key.js"></script>
     <style>
         * {
             margin: 0;
@@ -88,10 +89,6 @@
             padding: 24px;
             margin-bottom: 20px;
             text-align: center;
-        }
-
-        .payjp-button {
-            width: 100% !important;
         }
 
         .loading {
@@ -191,7 +188,7 @@
         </div>
 
         <div class="payment-methods">
-            <!-- Apple Payは現在未対応（参考用に以前の実装をコメントとして残しています） -->
+            <!-- Apple Payボタン（常に表示） -->
             <!--
             <button id="applePayButton" class="apple-pay-button">
                 Apple Payで支払う
@@ -201,19 +198,12 @@
                 または
             </div>
             -->
+
+            <!-- クレジットカードボタン（PAY.JP Checkout） -->
             <form action="/pages/payment-process.html" method="GET" id="checkout-form">
                 <input type="hidden" name="diagnosisId" id="diagnosisIdField">
                 <input type="hidden" name="userId" id="userIdField">
-                <script
-                    type="text/javascript"
-                    src="https://checkout.pay.jp/"
-                    class="payjp-button"
-                    data-key="pk_test_16ae008c6fe3b2a1059efc6f"
-                    data-text="クレジットカードで支払う"
-                    data-submit-text="支払う"
-                    data-amount="2980"
-                    data-currency="jpy">
-                </script>
+                <div id="payjp-button-container"></div>
             </form>
         </div>
 
@@ -250,12 +240,37 @@
         const diagnosisId = urlParams.get('id');
         const userId = urlParams.get('userId');
 
-        const payjp = Payjp('pk_test_16ae008c6fe3b2a1059efc6f');
+        const loadingEl = document.getElementById('loading');
+        const errorEl = document.getElementById('errorMessage');
+        const successEl = document.getElementById('successMessage');
+        const payjpButtonContainer = document.getElementById('payjp-button-container');
+
+        const PAYJP_PUBLIC_KEY = window.PAYJP_PUBLIC_KEY || '';
+
+        if (!PAYJP_PUBLIC_KEY) {
+            if (errorEl) {
+                errorEl.textContent = '決済設定が完了していません。管理者にお問い合わせください。';
+                errorEl.style.display = 'block';
+            }
+        } else {
+            const script = document.createElement('script');
+            script.type = 'text/javascript';
+            script.src = 'https://checkout.pay.jp/';
+            script.className = 'payjp-button';
+            script.dataset.key = PAYJP_PUBLIC_KEY;
+            script.dataset.text = 'クレジットカードで支払う';
+            script.dataset.submitText = '支払う';
+            script.dataset.amount = '2980';
+            script.dataset.currency = 'jpy';
+            script.dataset.payjpOnCreated = 'handlePayjpToken';
+            script.dataset.payjpOnFailed = 'handlePayjpError';
+            payjpButtonContainer.appendChild(script);
+        }
 
         async function handlePaymentSuccess(token) {
-            const loading = document.getElementById('loading');
-            const errorMessage = document.getElementById('errorMessage');
-            const successMessage = document.getElementById('successMessage');
+            const loading = loadingEl;
+            const errorMessage = errorEl;
+            const successMessage = successEl;
 
             loading.classList.add('active');
             loading.querySelector('.loading-text').textContent = '決済を処理しています...';
@@ -317,9 +332,10 @@
 
         window.handlePayjpError = function(error) {
             console.error('PAY.JP error:', error);
-            const errorMessage = document.getElementById('errorMessage');
-            errorMessage.textContent = 'カード情報の処理に失敗しました。再度お試しください。';
-            errorMessage.style.display = 'block';
+            if (errorEl) {
+                errorEl.textContent = 'カード情報の処理に失敗しました。再度お試しください。';
+                errorEl.style.display = 'block';
+            }
         };
 
         if (diagnosisId) {
