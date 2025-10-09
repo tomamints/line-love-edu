@@ -97,6 +97,13 @@ async function handleChargeSucceeded(charge) {
     console.error('[PAY.JP Webhook] Failed to update purchase:', updateError);
   }
 
+  try {
+    const { updateUserRichMenu } = require('./update-user-rich-menu');
+    await updateUserRichMenu(userId, true);
+  } catch (menuError) {
+    console.error('[PAY.JP Webhook] Failed to update rich menu:', menuError);
+  }
+
   // アクセス権が存在しない場合は付与
   const { data: existingAccess } = await supabase
     .from('access_rights')
@@ -153,6 +160,13 @@ async function handleChargeFailed(charge) {
       updated_at: new Date().toISOString()
     })
     .eq('purchase_id', purchaseId);
+
+  try {
+    const { updateUserRichMenu } = require('./update-user-rich-menu');
+    await updateUserRichMenu(charge.metadata?.user_id || 'anonymous', false);
+  } catch (menuError) {
+    console.error('[PAY.JP Webhook] Failed to reset rich menu after failure:', menuError);
+  }
 }
 
 // 返金処理
@@ -191,4 +205,11 @@ async function handleChargeRefunded(charge) {
     .from('access_rights')
     .delete()
     .eq('purchase_id', purchaseId);
+
+  try {
+    const { updateUserRichMenu } = require('./update-user-rich-menu');
+    await updateUserRichMenu(charge.metadata?.user_id || 'anonymous', false);
+  } catch (menuError) {
+    console.error('[PAY.JP Webhook] Failed to reset rich menu after refund:', menuError);
+  }
 }
