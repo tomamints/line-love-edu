@@ -1679,6 +1679,100 @@ async function handleTextMessage(event) {
     
     // 「本格」キーワードでLPへ誘導（テスト用）
     if (text === '本格') {
+      const inputStatus = await getProfileManager().getInputStatus(userId);
+      const hasBasicProfile = inputStatus.hasUserName && inputStatus.hasUserBirthDate;
+
+      if (!hasBasicProfile) {
+        const formUrl = `${process.env.BASE_URL || 'https://line-love-edu.vercel.app'}/api/profile-form?userId=${userId}`;
+        await client.replyMessage(event.replyToken, {
+          type: 'flex',
+          altText: '🌙 本格診断の前に情報を入力してください',
+          contents: {
+            type: 'bubble',
+            size: 'mega',
+            header: {
+              type: 'box',
+              layout: 'vertical',
+              backgroundColor: '#764ba2',
+              contents: [
+                {
+                  type: 'text',
+                  text: '🌙 本格診断の前に',
+                  color: '#ffffff',
+                  size: 'lg',
+                  weight: 'bold',
+                  align: 'center'
+                }
+              ],
+              paddingAll: '20px'
+            },
+            body: {
+              type: 'box',
+              layout: 'vertical',
+              spacing: 'md',
+              contents: [
+                {
+                  type: 'text',
+                  text: 'より正確な診断のために、先にプロフィールを入力してください。',
+                  size: 'md',
+                  wrap: true,
+                  align: 'center'
+                },
+                {
+                  type: 'separator',
+                  margin: 'lg'
+                },
+                {
+                  type: 'box',
+                  layout: 'vertical',
+                  spacing: 'sm',
+                  contents: [
+                    {
+                      type: 'text',
+                      text: '✅ 入力が必要な項目',
+                      size: 'sm',
+                      color: '#764ba2',
+                      weight: 'bold'
+                    },
+                    {
+                      type: 'text',
+                      text: '・あなたのお名前（またはニックネーム）',
+                      size: 'sm',
+                      wrap: true
+                    },
+                    {
+                      type: 'text',
+                      text: '・あなたの生年月日',
+                      size: 'sm',
+                      wrap: true
+                    }
+                  ]
+                }
+              ]
+            },
+            footer: {
+              type: 'box',
+              layout: 'vertical',
+              spacing: 'sm',
+              contents: [
+                {
+                  type: 'button',
+                  style: 'primary',
+                  height: 'md',
+                  action: {
+                    type: 'uri',
+                    label: '🔮 情報を入力する',
+                    uri: formUrl
+                  },
+                  color: '#764ba2'
+                }
+              ]
+            }
+          }
+        });
+        return;
+      }
+
       const premiumMessage = buildPremiumDiagnosisInviteMessage(userId);
       await client.replyMessage(event.replyToken, premiumMessage);
       return;
