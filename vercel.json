@@ -91,7 +91,7 @@
     },
     {
       "source": "/index.html",
-      "destination": "/pages/index.html"
+      "destination": "/index.html"
     }
   ],
   "functions": {
