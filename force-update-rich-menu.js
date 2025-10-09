@@ -8,8 +8,8 @@ const axios = require('axios');
 
 const CHANNEL_ACCESS_TOKEN = process.env.CHANNEL_ACCESS_TOKEN;
 
-// 新しいリッチメニューの設定（タイムスタンプ付きで名前を変更）
-const richMenuObject = {
+// デフォルト（無料ユーザー向け）リッチメニュー
+const defaultRichMenuObject = {
   size: {
     width: 2500,
     height: 843
@@ -48,6 +48,44 @@ const richMenuObject = {
   ]
 };
 
+// プレミアム（購入者向け）リッチメニュー
+const premiumRichMenuObject = {
+  size: {
+    width: 2500,
+    height: 843
+  },
+  selected: false,
+  name: `月の占いプレミアム_${Date.now()}`,
+  chatBarText: 'プレミアムメニュー',
+  areas: [
+    {
+      bounds: {
+        x: 0,
+        y: 0,
+        width: 1250,
+        height: 843
+      },
+      action: {
+        type: 'postback',
+        data: 'action=tarot',
+        displayText: '🔮 月タロット占い'
+      }
+    },
+    {
+      bounds: {
+        x: 1250,
+        y: 0,
+        width: 1250,
+        height: 843
+      },
+      action: {
+        type: 'message',
+        text: '履歴' // 購入履歴表示用キーワード
+      }
+    }
+  ]
+};
+
 async function forceUpdateRichMenu() {
   try {
     console.log('🔄 リッチメニューを強制更新します...\n');
@@ -81,7 +119,7 @@ async function forceUpdateRichMenu() {
     console.log('Step 2: 新しいリッチメニューを作成中...');
     const createResponse = await axios.post(
       'https://api.line.me/v2/bot/richmenu',
-      richMenuObject,
+      defaultRichMenuObject,
       {
         headers: {
           'Authorization': `Bearer ${CHANNEL_ACCESS_TOKEN}`,
@@ -89,9 +127,8 @@ async function forceUpdateRichMenu() {
         }
       }
     );
-
-    const newMenuId = createResponse.data.richMenuId;
-    console.log(`✅ 新しいメニュー作成完了: ${newMenuId}\n`);
+    const defaultMenuId = createResponse.data.richMenuId;
+    console.log(`✅ デフォルトメニュー作成完了: ${defaultMenuId}\n`);
 
     // 3. デフォルト画像を生成してアップロード
     console.log('Step 3: 画像を生成してアップロード中...');
@@ -139,7 +176,7 @@ async function forceUpdateRichMenu() {
     const buffer = canvas.toBuffer('image/png');
 
     await axios.post(
-      `https://api-data.line.me/v2/bot/richmenu/${newMenuId}/content`,
+      `https://api-data.line.me/v2/bot/richmenu/${defaultMenuId}/content`,
       buffer,
       {
         headers: {
@@ -155,7 +192,7 @@ async function forceUpdateRichMenu() {
     // 4. デフォルトリッチメニューとして設定
     console.log('Step 4: デフォルトメニューとして設定中...');
     await axios.post(
-      `https://api.line.me/v2/bot/user/all/richmenu/${newMenuId}`,
+      `https://api.line.me/v2/bot/user/all/richmenu/${defaultMenuId}`,
       {},
       {
         headers: {
@@ -166,14 +203,92 @@ async function forceUpdateRichMenu() {
 
     console.log('✅ デフォルトメニューとして設定完了\n');
 
-    // 5. 確認
+    // 5. プレミアムリッチメニューを作成
+    console.log('Step 5: プレミアムリッチメニューを作成中...');
+    const premiumResponse = await axios.post(
+      'https://api.line.me/v2/bot/richmenu',
+      premiumRichMenuObject,
+      {
+        headers: {
+          'Authorization': `Bearer ${CHANNEL_ACCESS_TOKEN}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+
+    const premiumMenuId = premiumResponse.data.richMenuId;
+    console.log(`✅ プレミアムメニュー作成完了: ${premiumMenuId}\n`);
+
+    // 画像を作成してアップロード（プレミアム用）
+    const premiumCanvas = createCanvas(2500, 843);
+    const premiumCtx = premiumCanvas.getContext('2d');
+
+    const premiumGradient = premiumCtx.createLinearGradient(0, 0, 2500, 843);
+    premiumGradient.addColorStop(0, '#2b5876');
+    premiumGradient.addColorStop(1, '#4e4376');
+    premiumCtx.fillStyle = premiumGradient;
+    premiumCtx.fillRect(0, 0, 2500, 843);
+
+    // 左側: 月タロット占い
+    premiumCtx.fillStyle = 'white';
+    premiumCtx.font = 'bold 120px sans-serif';
+    premiumCtx.textAlign = 'center';
+    premiumCtx.textBaseline = 'middle';
+    premiumCtx.fillText('🔮', 625, 280);
+    premiumCtx.font = 'bold 70px sans-serif';
+    premiumCtx.fillText('月タロット占い', 625, 460);
+    premiumCtx.font = '48px sans-serif';
+    premiumCtx.fillText('今日のメッセージを確認', 625, 600);
+
+    // 中央線
+    premiumCtx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+    premiumCtx.lineWidth = 3;
+    premiumCtx.beginPath();
+    premiumCtx.moveTo(1250, 50);
+    premiumCtx.lineTo(1250, 793);
+    premiumCtx.stroke();
+
+    // 右側: 購入履歴
+    premiumCtx.fillStyle = 'white';
+    premiumCtx.font = 'bold 120px sans-serif';
+    premiumCtx.fillText('🧾', 1875, 280);
+    premiumCtx.font = 'bold 70px sans-serif';
+    premiumCtx.fillText('購入履歴', 1875, 460);
+    premiumCtx.font = '48px sans-serif';
+    premiumCtx.fillText('「履歴」で最新レポート', 1875, 600);
+
+    const premiumBuffer = premiumCanvas.toBuffer('image/png');
+
+    await axios.post(
+      `https://api-data.line.me/v2/bot/richmenu/${premiumMenuId}/content`,
+      premiumBuffer,
+      {
+        headers: {
+          'Authorization': `Bearer ${CHANNEL_ACCESS_TOKEN}`,
+          'Content-Type': 'image/png',
+          'Content-Length': premiumBuffer.length
+        }
+      }
+    );
+
+    console.log('✅ プレミアム用画像アップロード完了\n');
+
+    // 6. 出力
     console.log('========================================');
     console.log('🎉 リッチメニューの強制更新が完了しました！');
     console.log('========================================');
-    console.log(`新しいメニューID: ${newMenuId}`);
-    console.log('\n📱 メニュー構成:');
+    console.log(`🆔 デフォルトメニューID : ${defaultMenuId}`);
+    console.log(`🆔 プレミアムメニューID : ${premiumMenuId}`);
+    console.log('\n📱 デフォルトメニュー構成:');
     console.log('  左ボタン: 🔮 月タロット占い (Postback)');
     console.log('  右ボタン: 🌙 【本格】おつきさま診断 (メッセージ: "本格")');
+    console.log('\n💎 プレミアムメニュー構成:');
+    console.log('  左ボタン: 🔮 月タロット占い (Postback)');
+    console.log('  右ボタン: 🧾 購入履歴 (メッセージ: "履歴")');
+    console.log('\n📝 次の手順:');
+    console.log('  1. `.env` などに DEFAULT_RICH_MENU_ID と PREMIUM_RICH_MENU_ID を設定');
+    console.log('  2. 決済完了Webhookから /api/update-user-rich-menu を呼び出す');
+    console.log('  3. プレミアムユーザーには PREMIUM_RICH_MENU_ID をリンク');
     console.log('\n💡 LINEアプリでの確認方法:');
     console.log('  1. LINEアプリを完全に終了（タスクキル）');
     console.log('  2. LINEアプリを再起動');
