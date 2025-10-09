@@ -203,7 +203,16 @@
             <form action="/pages/payment-process.html" method="GET" id="checkout-form">
                 <input type="hidden" name="diagnosisId" id="diagnosisIdField">
                 <input type="hidden" name="userId" id="userIdField">
-                <div id="payjp-button-container"></div>
+                <script
+                    type="text/javascript"
+                    src="https://checkout.pay.jp/"
+                    class="payjp-button"
+                    data-key="pk_test_16ae008c6fe3b2a1059efc6f"
+                    data-text="クレジットカードで支払う"
+                    data-submit-text="支払う"
+                    data-amount="2980"
+                    data-currency="jpy">
+                </script>
             </form>
         </div>
 
@@ -243,45 +252,20 @@
         const loadingEl = document.getElementById('loading');
         const errorEl = document.getElementById('errorMessage');
         const successEl = document.getElementById('successMessage');
-        const payjpButtonContainer = document.getElementById('payjp-button-container');
 
-        const PAYJP_PUBLIC_KEY = window.PAYJP_PUBLIC_KEY || '';
-
-        if (!PAYJP_PUBLIC_KEY) {
-            if (errorEl) {
-                errorEl.textContent = '準備中です';
-                errorEl.style.display = 'block';
-            }
-        } else {
-            const script = document.createElement('script');
-            script.type = 'text/javascript';
-            script.src = 'https://checkout.pay.jp/';
-            script.className = 'payjp-button';
-            script.dataset.key = PAYJP_PUBLIC_KEY;
-            script.dataset.text = 'クレジットカードで支払う';
-            script.dataset.submitText = '支払う';
-            script.dataset.amount = '2980';
-            script.dataset.currency = 'jpy';
-            script.dataset.payjpOnCreated = 'handlePayjpToken';
-            script.dataset.payjpOnFailed = 'handlePayjpError';
-            payjpButtonContainer.appendChild(script);
-        }
+        const payjp = Payjp('pk_test_16ae008c6fe3b2a1059efc6f');
 
         async function handlePaymentSuccess(token) {
-            const loading = loadingEl;
-            const errorMessage = errorEl;
-            const successMessage = successEl;
-
-            loading.classList.add('active');
-            loading.querySelector('.loading-text').textContent = '決済を処理しています...';
+            loadingEl.classList.add('active');
+            loadingEl.querySelector('.loading-text').textContent = '決済を処理しています...';
 
             const finalDiagnosisId = diagnosisId || sessionStorage.getItem('diagnosisId');
             const finalUserId = userId || sessionStorage.getItem('userId') || 'anonymous';
 
             if (!finalDiagnosisId) {
-                errorMessage.textContent = '診断IDが見つかりませんでした。診断結果ページから再度お試しください。';
-                errorMessage.style.display = 'block';
-                loading.classList.remove('active');
+                errorEl.textContent = '診断IDが見つかりませんでした。診断結果ページから再度お試しください。';
+                errorEl.style.display = 'block';
+                loadingEl.classList.remove('active');
                 return;
             }
 
@@ -306,21 +290,21 @@
                     sessionStorage.removeItem('diagnosisId');
                     sessionStorage.removeItem('userId');
 
-                    successMessage.textContent = '決済が完了しました。完全版ページへ移動します。';
-                    successMessage.style.display = 'block';
+                    successEl.textContent = '決済が完了しました。完全版ページへ移動します。';
+                    successEl.style.display = 'block';
                     setTimeout(() => {
                         window.location.href = `/pages/lp-otsukisama-unified.html?id=${finalDiagnosisId}&userId=${finalUserId || ''}&paid=true`;
                     }, 2000);
                 } else {
-                    errorMessage.textContent = result.error || '決済に失敗しました。別のカードでお試しください。';
-                    errorMessage.style.display = 'block';
-                    loading.classList.remove('active');
+                    errorEl.textContent = result.error || '決済に失敗しました。別のカードでお試しください。';
+                    errorEl.style.display = 'block';
+                    loadingEl.classList.remove('active');
                 }
             } catch (error) {
                 console.error('決済処理エラー:', error);
-                errorMessage.textContent = 'ネットワークエラーが発生しました。通信環境をご確認のうえ再度お試しください。';
-                errorMessage.style.display = 'block';
-                loading.classList.remove('active');
+                errorEl.textContent = 'ネットワークエラーが発生しました。通信環境をご確認のうえ再度お試しください。';
+                errorEl.style.display = 'block';
+                loadingEl.classList.remove('active');
             }
         }
 
@@ -332,10 +316,8 @@
 
         window.handlePayjpError = function(error) {
             console.error('PAY.JP error:', error);
-            if (errorEl) {
-                errorEl.textContent = 'カード情報の処理に失敗しました。再度お試しください。';
-                errorEl.style.display = 'block';
-            }
+            errorEl.textContent = 'カード情報の処理に失敗しました。再度お試しください。';
+            errorEl.style.display = 'block';
         };
 
         if (diagnosisId) {
