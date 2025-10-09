@@ -12,7 +12,7 @@
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             background: linear-gradient(135deg, #1a0033 0%, #2d1b69 100%);
@@ -20,24 +20,24 @@
             min-height: 100vh;
             padding: 20px;
         }
-        
+
         .container {
             max-width: 500px;
             margin: 0 auto;
             padding-top: 40px;
         }
-        
+
         .header {
             text-align: center;
             margin-bottom: 40px;
         }
-        
+
         .header h1 {
             font-size: 24px;
             color: #ffd700;
             margin-bottom: 10px;
         }
-        
+
         .price-display {
             text-align: center;
             margin-bottom: 30px;
@@ -72,14 +72,14 @@
             font-size: 12px;
             color: rgba(255, 255, 255, 0.75);
         }
-        
+
         .payment-form {
             background: rgba(255, 255, 255, 0.95);
             border-radius: 15px;
             padding: 30px;
             color: #333;
         }
-        
+
         .card-brands {
             display: flex;
             gap: 10px;
@@ -87,7 +87,7 @@
             justify-content: center;
             flex-wrap: wrap;
         }
-        
+
         .card-brand {
             padding: 5px 10px;
             background: #f5f5f5;
@@ -95,12 +95,12 @@
             font-size: 12px;
             color: #666;
         }
-        
+
         .card-brand.active {
             background: #4CAF50;
             color: white;
         }
-        
+
         #payjp-element {
             margin-bottom: 20px;
             padding: 15px;
@@ -109,14 +109,14 @@
             background: white;
             min-height: 200px;
         }
-        
+
         .error-message {
             color: #f44336;
             font-size: 14px;
             margin-top: 10px;
             display: none;
         }
-        
+
         .submit-button {
             width: 100%;
             padding: 15px;
@@ -129,17 +129,17 @@
             cursor: pointer;
             transition: all 0.3s;
         }
-        
+
         .submit-button:hover:not(:disabled) {
             transform: translateY(-2px);
             box-shadow: 0 10px 30px rgba(76, 175, 80, 0.3);
         }
-        
+
         .submit-button:disabled {
             opacity: 0.5;
             cursor: not-allowed;
         }
-        
+
         .security-notice {
             background: rgba(76, 175, 80, 0.1);
             border: 1px solid #4CAF50;
@@ -148,13 +148,13 @@
             margin-top: 20px;
             text-align: center;
         }
-        
+
         .security-notice p {
             font-size: 12px;
             color: #4CAF50;
             line-height: 1.6;
         }
-        
+
         .loading-overlay {
             display: none;
             position: fixed;
@@ -167,11 +167,11 @@
             justify-content: center;
             align-items: center;
         }
-        
+
         .loading-content {
             text-align: center;
         }
-        
+
         .spinner {
             width: 50px;
             height: 50px;
@@ -181,11 +181,11 @@
             animation: spin 1s linear infinite;
             margin: 0 auto 20px;
         }
-        
+
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
-        
+
         .loading-text {
             color: white;
             font-size: 16px;
@@ -199,13 +199,13 @@
             margin-bottom: 20px;
             text-align: center;
         }
-        
+
         .test-mode-notice h3 {
             color: #ffa500;
             font-size: 16px;
             margin-bottom: 10px;
         }
-        
+
         .test-mode-notice p {
             font-size: 12px;
             line-height: 1.6;
@@ -249,7 +249,7 @@
         <div class="header">
             <h1>クレジットカード決済</h1>
         </div>
-        
+
         <div class="price-display">
             <div class="campaign-title">中秋の名月割</div>
             <div class="original-price">通常価格 ¥9,980</div>
@@ -257,13 +257,13 @@
             <div class="current-price">今だけ ¥2,980</div>
             <div class="price-note">（税込）</div>
         </div>
-        
+
         <!-- テストモード表示 -->
         <div class="test-mode-notice" id="testModeNotice" style="display: none;">
             <h3>🧪 テストモード</h3>
             <p>現在テストモードで動作しています。<br>下記のテストカード番号をご利用ください。</p>
         </div>
-        
+
         <div class="payment-form">
             <div class="card-brands">
                 <div class="card-brand active">Visa</div>
@@ -273,16 +273,16 @@
                 <div class="card-brand active">Diners</div>
                 <div class="card-brand active">Discover</div>
             </div>
-            
+
             <!-- PAY.JP Elements用のコンテナ -->
             <div id="payjp-element"></div>
-            
+
             <div class="error-message" id="errorMessage"></div>
-            
+
             <button type="button" class="submit-button" id="submitButton">
                 中秋の名月割 ¥2,980 を支払う
             </button>
-            
+
             <div class="security-notice">
                 <p>
                     🔒 カード情報は安全に暗号化されます<br>
@@ -316,7 +316,7 @@
             </p>
         </div>
     </div>
-    
+
     <!-- ローディング表示 -->
     <div class="loading-overlay" id="loadingOverlay">
         <div class="loading-content">
@@ -324,37 +324,37 @@
             <div class="loading-text">決済処理中...</div>
         </div>
     </div>
-    
+
     <script>
         // URLパラメータを取得
         const urlParams = new URLSearchParams(window.location.search);
         const diagnosisId = urlParams.get('id');
         const userId = urlParams.get('userId');
-        
+
         // PAY.JP公開鍵（環境変数から取得する必要があります）
         const PAYJP_PUBLIC_KEY = window.PAYJP_PUBLIC_KEY || '';
         if (!PAYJP_PUBLIC_KEY) {
             const errorEl = document.getElementById('errorMessage');
             if (errorEl) {
-                errorEl.textContent = '決済設定が完了していません。管理者にお問い合わせください。';
+                errorEl.textContent = '準備中です。';
                 errorEl.style.display = 'block';
             }
             const submitBtn = document.getElementById('submitButton');
             if (submitBtn) submitBtn.disabled = true;
             throw new Error('PAYJP_PUBLIC_KEY not configured');
         }
-        
+
         // テストモードかどうかを確認
         const isTestMode = PAYJP_PUBLIC_KEY.includes('test');
         if (isTestMode) {
             document.getElementById('testModeNotice').style.display = 'block';
             document.getElementById('testCardsInfo').style.display = 'block';
         }
-        
+
         // PAY.JP初期化
         const payjp = Payjp(PAYJP_PUBLIC_KEY);
         const elements = payjp.elements();
-        
+
         // カード入力要素を作成
         const cardElement = elements.create('card', {
             style: {
@@ -372,10 +372,10 @@
                 }
             }
         });
-        
+
         // 要素をマウント
         cardElement.mount('#payjp-element');
-        
+
         // エラー表示
         cardElement.on('change', function(event) {
             const errorElement = document.getElementById('errorMessage');
@@ -387,20 +387,20 @@
                 errorElement.style.display = 'none';
             }
         });
-        
+
         // 決済処理
         document.getElementById('submitButton').addEventListener('click', async function() {
             const button = this;
             const errorElement = document.getElementById('errorMessage');
-            
+
             // ボタンを無効化
             button.disabled = true;
             document.getElementById('loadingOverlay').style.display = 'flex';
-            
+
             try {
                 // トークンを作成
                 const { error, token } = await payjp.createToken(cardElement);
-                
+
                 if (error) {
                     // エラー表示
                     errorElement.textContent = error.message;
@@ -409,7 +409,7 @@
                     document.getElementById('loadingOverlay').style.display = 'none';
                     return;
                 }
-                
+
                 // 決済処理APIを呼び出し
                 const response = await fetch('/api/payjp-create-charge', {
                     method: 'POST',
@@ -423,9 +423,9 @@
                         amount: 2980
                     })
                 });
-                
+
                 const result = await response.json();
-                
+
                 if (result.success) {
                     // 決済成功
                     window.location.href = `/payment-success.html?id=${diagnosisId}&userId=${userId || ''}&paymentCompleted=true&chargeId=${result.chargeId}`;
@@ -436,7 +436,7 @@
                     button.disabled = false;
                     document.getElementById('loadingOverlay').style.display = 'none';
                 }
-                
+
             } catch (error) {
                 console.error('Payment error:', error);
                 errorElement.textContent = 'ネットワークエラーが発生しました';

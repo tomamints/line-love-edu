@@ -4,18 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Apple Pay決済 | おつきさま診断</title>
-    
+
     <!-- PAY.JP -->
     <script src="https://js.pay.jp/v2/pay.js"></script>
     <script src="/config/payjp-public-key.js"></script>
-    
+
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
             background: linear-gradient(135deg, #1a0033 0%, #2d1b69 100%);
@@ -26,61 +26,61 @@
             justify-content: center;
             padding: 20px;
         }
-        
+
         .container {
             max-width: 400px;
             width: 100%;
             text-align: center;
         }
-        
+
         .logo {
             font-size: 48px;
             margin-bottom: 20px;
         }
-        
+
         .title {
             font-size: 24px;
             color: #ffd700;
             margin-bottom: 10px;
         }
-        
+
         .subtitle {
             font-size: 14px;
             color: rgba(255, 255, 255, 0.8);
             margin-bottom: 30px;
         }
-        
+
         .price-box {
             background: rgba(255, 255, 255, 0.1);
             border-radius: 15px;
             padding: 30px;
             margin-bottom: 30px;
         }
-        
+
         .price-label {
             font-size: 14px;
             color: rgba(255, 255, 255, 0.8);
             margin-bottom: 10px;
         }
-        
+
         .price {
             font-size: 36px;
             font-weight: bold;
             color: #ffd700;
             margin-bottom: 10px;
         }
-        
+
         .price-note {
             font-size: 12px;
             color: rgba(255, 255, 255, 0.7);
         }
-        
+
         /* Apple Pay Button */
         .apple-pay-button-container {
             margin: 30px auto;
             max-width: 300px;
         }
-        
+
         .apple-pay-button {
             -webkit-appearance: -apple-pay-button;
             -apple-pay-button-type: buy;
@@ -90,11 +90,11 @@
             border-radius: 8px;
             cursor: pointer;
         }
-        
+
         .apple-pay-button:active {
             opacity: 0.8;
         }
-        
+
         .not-supported {
             display: none;
             background: rgba(255, 255, 255, 0.1);
@@ -102,23 +102,23 @@
             padding: 30px;
             margin: 30px 0;
         }
-        
+
         .not-supported-icon {
             font-size: 48px;
             margin-bottom: 15px;
         }
-        
+
         .not-supported-text {
             font-size: 16px;
             margin-bottom: 10px;
         }
-        
+
         .not-supported-desc {
             font-size: 14px;
             color: rgba(255, 255, 255, 0.7);
             margin-bottom: 20px;
         }
-        
+
         .alternative-button {
             background: linear-gradient(135deg, #ffd700, #ffed4e);
             color: #1a0033;
@@ -132,18 +132,18 @@
             display: inline-block;
             transition: all 0.3s ease;
         }
-        
+
         .alternative-button:hover {
             transform: translateY(-2px);
             box-shadow: 0 10px 30px rgba(255, 215, 0, 0.3);
         }
-        
+
         .features {
             margin-top: 30px;
             padding-top: 30px;
             border-top: 1px solid rgba(255, 255, 255, 0.1);
         }
-        
+
         .feature {
             display: flex;
             align-items: center;
@@ -152,12 +152,12 @@
             font-size: 14px;
             color: rgba(255, 255, 255, 0.9);
         }
-        
+
         .feature-icon {
             margin-right: 10px;
             font-size: 18px;
         }
-        
+
         .back-link {
             margin-top: 20px;
             color: rgba(255, 255, 255, 0.7);
@@ -166,16 +166,16 @@
             transition: color 0.3s;
             display: inline-block;
         }
-        
+
         .back-link:hover {
             color: #ffd700;
         }
-        
+
         .loading {
             display: none;
             margin: 30px 0;
         }
-        
+
         .loading-spinner {
             width: 40px;
             height: 40px;
@@ -185,16 +185,16 @@
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
-        
+
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
-        
+
         .loading-text {
             font-size: 14px;
             color: rgba(255, 255, 255, 0.8);
         }
-        
+
         .error-message {
             display: none;
             background: rgba(255, 0, 0, 0.1);
@@ -205,7 +205,7 @@
             margin: 20px 0;
             font-size: 14px;
         }
-        
+
         .success-message {
             display: none;
             background: rgba(0, 255, 0, 0.1);
@@ -223,18 +223,18 @@
         <div class="logo">🌙</div>
         <h1 class="title">Apple Pay決済</h1>
         <p class="subtitle">Touch ID / Face IDで簡単・安全にお支払い</p>
-        
+
         <div class="price-box">
             <div class="price-label">お支払い金額</div>
             <div class="price">¥2,980</div>
             <div class="price-note">（税込・買い切り）</div>
         </div>
-        
+
         <!-- Apple Payボタン -->
         <div class="apple-pay-button-container" id="applePayContainer">
             <button class="apple-pay-button" id="applePayButton"></button>
         </div>
-        
+
         <!-- Apple Pay非対応時の表示 -->
         <div class="not-supported" id="notSupported">
             <div class="not-supported-icon">⚠️</div>
@@ -247,19 +247,19 @@
                 クレジットカードで支払う
             </a>
         </div>
-        
+
         <!-- ローディング -->
         <div class="loading" id="loading">
             <div class="loading-spinner"></div>
             <div class="loading-text">決済を処理中です...</div>
         </div>
-        
+
         <!-- エラーメッセージ -->
         <div class="error-message" id="errorMessage"></div>
-        
+
         <!-- 成功メッセージ -->
         <div class="success-message" id="successMessage"></div>
-        
+
         <div class="features">
             <div class="feature">
                 <span class="feature-icon">🔒</span>
@@ -274,26 +274,26 @@
                 <span>カード情報は保護されます</span>
             </div>
         </div>
-        
+
         <a href="#" class="back-link" onclick="history.back(); return false;">
             ← 前のページに戻る
         </a>
     </div>
-    
+
     <script>
         // URLパラメータを取得
         const urlParams = new URLSearchParams(window.location.search);
         const diagnosisId = urlParams.get('id');
         const userId = urlParams.get('userId');
-        
+
         // PAY.JP設定
         const publicKey = window.PAYJP_PUBLIC_KEY || '';
         if (!publicKey) {
-            alert('決済設定が完了していません。管理者にお問い合わせください。');
+            alert('現在準備中です。');
             throw new Error('PAYJP_PUBLIC_KEY not configured');
         }
         let payjp = null;
-        
+
         // エラー表示
         function showError(message) {
             const errorEl = document.getElementById('errorMessage');
@@ -301,7 +301,7 @@
             errorEl.style.display = 'block';
             document.getElementById('loading').style.display = 'none';
         }
-        
+
         // 成功表示
         function showSuccess(message) {
             const successEl = document.getElementById('successMessage');
@@ -309,33 +309,33 @@
             successEl.style.display = 'block';
             document.getElementById('loading').style.display = 'none';
         }
-        
+
         // ローディング表示
         function showLoading() {
             document.getElementById('loading').style.display = 'block';
             document.getElementById('applePayContainer').style.display = 'none';
         }
-        
+
         // 非対応表示
         function showNotSupported(message) {
             document.getElementById('applePayContainer').style.display = 'none';
             document.getElementById('notSupported').style.display = 'block';
-            
+
             if (message) {
                 document.querySelector('.not-supported-desc').textContent = message;
             }
-            
+
             // クレジットカードリンクを設定
             const creditLink = document.getElementById('creditCardLink');
             if (creditLink && diagnosisId) {
                 creditLink.href = `/pages/payment-checkout.html?id=${diagnosisId}&userId=${userId || ''}`;
             }
         }
-        
+
         // 決済処理
         async function processPayment(token) {
             showLoading();
-            
+
             const response = await fetch('/api/payjp-create-charge', {
                 method: 'POST',
                 headers: {
@@ -348,12 +348,12 @@
                     amount: 2980
                 })
             });
-            
+
             const result = await response.json();
-            
+
             if (result.success) {
                 showSuccess('決済が完了しました！診断結果ページへ戻ります...');
-                
+
                 // 2秒後に診断結果ページへリダイレクト
                 setTimeout(() => {
                     const redirectUrl = `/pages/lp-otsukisama-unified.html?id=${diagnosisId}&userId=${userId || ''}&paid=true`;
@@ -363,7 +363,7 @@
                 throw new Error(result.error || '決済処理中にエラーが発生しました');
             }
         }
-        
+
         // Apple Pay初期化
         async function initializeApplePay() {
             // ブラウザチェック（Safariのみ対応）
@@ -373,36 +373,36 @@
                 showNotSupported('Apple PayはSafariブラウザでのみご利用いただけます。');
                 return;
             }
-            
+
             // HTTPSチェック
             if (location.protocol !== 'https:') {
                 console.log('[Apple Pay] Not HTTPS');
                 showNotSupported('Apple Payはセキュアな接続でのみご利用いただけます。');
                 return;
             }
-            
+
             // Apple Pay対応チェック
             if (!window.ApplePaySession) {
                 console.log('[Apple Pay] ApplePaySession not available');
                 showNotSupported('このデバイスではApple Payがご利用いただけません。');
                 return;
             }
-            
+
             // デバイスがApple Payに対応しているかチェック
             if (!ApplePaySession.canMakePayments()) {
                 console.log('[Apple Pay] Cannot make payments');
                 showNotSupported('Apple Payの設定を確認してください。Walletにカードが登録されていることをご確認ください。');
                 return;
             }
-            
+
             // PAY.JP初期化
             payjp = Payjp(publicKey);
-            
+
             // PAY.JPのApple Pay利用可能性をチェック
             try {
                 const isAvailable = await payjp.applePay.checkAvailability();
                 console.log('[Apple Pay] PAY.JP availability:', isAvailable);
-                
+
                 if (!isAvailable) {
                     showNotSupported('Apple Payの準備ができていません。しばらく待ってから再度お試しください。');
                     return;
@@ -412,11 +412,11 @@
                 showNotSupported('Apple Payの確認中にエラーが発生しました。');
                 return;
             }
-            
+
             // Apple Payボタンを表示
             document.getElementById('applePayContainer').style.display = 'block';
             document.getElementById('notSupported').style.display = 'none';
-            
+
             // Apple Payボタンのクリックイベント
             document.getElementById('applePayButton').addEventListener('click', function() {
                 const paymentRequest = {
@@ -430,14 +430,14 @@
                     merchantCapabilities: ['supports3DS'],
                     requiredBillingContactFields: ['postalCode']
                 };
-                
+
                 try {
                     const session = payjp.applePay.buildSession(
                         paymentRequest,
                         async function(result) {
                             // 成功時
                             console.log('[Apple Pay] Payment authorized:', result);
-                            
+
                             try {
                                 // 決済処理
                                 await processPayment(result.token);
@@ -453,10 +453,10 @@
                         function(error) {
                             // エラー時
                             console.error('[Apple Pay] Session error:', error);
-                            
+
                             // エラーの詳細に基づいてメッセージを表示
                             let errorMessage = 'Apple Payでの決済に失敗しました。';
-                            
+
                             if (error.code === 'APPLE_PAY_NOT_REGISTERED') {
                                 errorMessage = 'このサイトはApple Payに登録されていません。管理者にお問い合わせください。';
                             } else if (error.code === 'USER_CANCEL') {
@@ -464,9 +464,9 @@
                             } else if (error.message) {
                                 errorMessage += ` (${error.message})`;
                             }
-                            
+
                             showError(errorMessage);
-                            
+
                             if (session) {
                                 try {
                                     session.completePayment(ApplePaySession.STATUS_FAILURE);
@@ -476,7 +476,7 @@
                             }
                         }
                     );
-                    
+
                     // セッション開始
                     if (session && session.begin) {
                         session.begin();
@@ -489,20 +489,20 @@
                     showError('Apple Payセッションの作成に失敗しました。');
                 }
             });
-            
+
             // 自動でApple Payボタンをクリック（オプション）
             // setTimeout(() => {
             //     document.getElementById('applePayButton').click();
             // }, 500);
         }
-        
+
         // 初期化
         window.addEventListener('DOMContentLoaded', function() {
             if (!diagnosisId) {
                 showError('診断IDが見つかりません。診断結果ページから再度お試しください。');
                 return;
             }
-            
+
             // 非同期で初期化
             initializeApplePay().catch(error => {
                 console.error('[Apple Pay] Initialization error:', error);
