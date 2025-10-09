@@ -28,20 +28,19 @@ async function checkUserPurchased(userId) {
     if (!supabase) return false;
     
     try {
-        // diagnosesテーブルから購入済み診断を確認
-        const { data: diagnoses, error } = await supabase
-            .from('diagnoses')
-            .select('*')
-            .eq('line_user_id', userId)
-            .eq('payment_status', 'completed')
+        const { data: purchases, error } = await supabase
+            .from('purchases')
+            .select('id, status, payment_status')
+            .eq('user_id', userId)
+            .or('status.eq.completed,payment_status.eq.completed')
             .limit(1);
-        
+
         if (error) {
             console.error('Purchase check error:', error);
             return false;
         }
-        
-        return diagnoses && diagnoses.length > 0;
+
+        return purchases && purchases.length > 0;
     } catch (error) {
         console.error('Error checking user purchases:', error);
         return false;
