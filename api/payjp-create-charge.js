@@ -122,6 +122,15 @@ async function handler(req, res) {
       // 決済は成功しているので、エラーを返さない
     }
 
+    if (charge.paid && userId) {
+      try {
+        const { updateUserRichMenu } = require('./update-user-rich-menu');
+        await updateUserRichMenu(userId, true);
+      } catch (menuError) {
+        console.error('[PAY.JP] Failed to update rich menu after charge:', menuError);
+      }
+    }
+
     return res.status(200).json({
       success: true,
       chargeId: charge.id,
