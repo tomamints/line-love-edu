@@ -77,7 +77,7 @@ function buildPremiumDiagnosisInviteMessage(userId) {
 
   return {
     type: 'flex',
-    altText: '🌙 本格おつきさま診断',
+    altText: '🌙 おつきさま診断',
     contents: {
       type: 'bubble',
       size: 'mega',
@@ -87,7 +87,7 @@ function buildPremiumDiagnosisInviteMessage(userId) {
         contents: [
           {
             type: 'text',
-            text: '🌙 本格おつきさま診断 🌙',
+            text: '🌙 おつきさま診断 🌙',
             size: 'xl',
             color: '#ffffff',
             align: 'center',
@@ -1451,7 +1451,7 @@ async function handleTextMessage(event) {
       if (error || !purchases || purchases.length === 0) {
         await client.replyMessage(event.replyToken, {
           type: 'text',
-          text: '購入履歴がありません。\n\n「本格」と入力すると、本格おつきさま診断を始められます。'
+          text: '購入履歴がありません。\n\n「おつきさま診断」と入力すると、おつきさま診断を始められます。'
         });
         return;
       }
@@ -1546,7 +1546,7 @@ async function handleTextMessage(event) {
                 action: {
                   type: 'message',
                   label: '新しい診断を始める',
-                  text: '本格'
+                  text: 'おつきさま診断'
                 },
                 style: 'primary',
                 color: '#667eea'
@@ -1558,14 +1558,14 @@ async function handleTextMessage(event) {
       return;
     }
     
-    // 「おつきさま診断」メッセージのハンドリング
-    if (text === 'おつきさま診断') {
+    // 簡易版（月の運勢占い）への誘導
+    if (['簡易版', '簡易診断', '月の運勢占い'].includes(text)) {
       const webUrl = `${process.env.BASE_URL || 'https://line-love-edu.vercel.app'}/moon-fortune.html?userId=${userId}`;
       
       await client.replyMessage(event.replyToken, [
         {
           type: 'text',
-          text: '🌙 本格おつきさま診断は現在準備中です\n\nサービス開始までもうしばらくお待ちください。'
+          text: '🌙 おつきさま診断（完全版）は現在準備中です\n\nサービス開始までもうしばらくお待ちください。'
         },
         {
           type: 'flex',
@@ -1677,8 +1677,8 @@ async function handleTextMessage(event) {
       return;
     }
     
-    // 「本格」キーワードでLPへ誘導（テスト用）
-    if (text === '本格') {
+    // 「おつきさま診断」（旧: 本格）キーワードでLPへ誘導
+    if (['おつきさま診断', '本格'].includes(text)) {
       const inputStatus = await getProfileManager().getInputStatus(userId);
       const hasBasicProfile = inputStatus.hasUserName && inputStatus.hasUserBirthDate;
 
@@ -1686,7 +1686,7 @@ async function handleTextMessage(event) {
         const formUrl = `${process.env.BASE_URL || 'https://line-love-edu.vercel.app'}/api/profile-form?userId=${userId}`;
         await client.replyMessage(event.replyToken, {
           type: 'flex',
-          altText: '🌙 本格診断の前に情報を入力してください',
+          altText: '🌙 おつきさま診断の前に情報を入力してください',
           contents: {
             type: 'bubble',
             size: 'mega',
@@ -1697,7 +1697,7 @@ async function handleTextMessage(event) {
               contents: [
                 {
                   type: 'text',
-                  text: '🌙 本格診断の前に',
+                  text: '🌙 おつきさま診断の前に',
                   color: '#ffffff',
                   size: 'lg',
                   weight: 'bold',

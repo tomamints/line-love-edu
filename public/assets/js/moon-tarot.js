@@ -135,23 +135,23 @@ function displayCardResult() {
 
             <!-- スクロール案内 -->
             <div style="text-align: center; color: #ffd27d; font-size: ${isMobile ? '13px' : '14px'}; letter-spacing: 0.05em; text-shadow: 0 0 12px rgba(255, 210, 125, 0.6);">
-                ▼ さらに下にスクロールすると本格診断のご案内があります
+                ▼ さらに下にスクロールするとおつきさま診断（完全版）のご案内があります
             </div>
 
-            <!-- 本格診断への誘導セクション -->
+            <!-- おつきさま診断（完全版）への誘導セクション -->
             <div class="premium-invite" style="width: 100%; max-width: 480px; background: rgba(12, 0, 40, 0.72); border: 1px solid rgba(206, 178, 124, 0.5); border-radius: 22px; padding: ${isMobile ? '22px' : '28px'}; color: #FFFFFF; text-align: left; line-height: 1.6; box-shadow: 0 12px 36px rgba(0, 0, 0, 0.45);">
-                <h3 style="font-size: ${isMobile ? '20px' : '22px'}; margin-bottom: ${isMobile ? '12px' : '14px'}; color: #ffd27d; text-align: center; text-shadow: 0 0 18px rgba(255, 210, 125, 0.8);">🌙 本格おつきさま診断のご案内</h3>
+                <h3 style="font-size: ${isMobile ? '20px' : '22px'}; margin-bottom: ${isMobile ? '12px' : '14px'}; color: #ffd27d; text-align: center; text-shadow: 0 0 18px rgba(255, 210, 125, 0.8);">🌙 おつきさま診断（完全版）のご案内</h3>
                 <p style="margin-bottom: ${isMobile ? '12px' : '14px'}; font-size: ${isMobile ? '14px' : '15px'};">
                     今日のタロットから月が教えてくれたメッセージはここまでです。
-                    もっと詳しく二人のこれからを知りたいときは、本格おつきさま診断で直近3ヶ月の恋愛運・人間関係・未来の流れを詳しくお届けします（無料パート＋有料パート）。
+                    もっと詳しく二人のこれからを知りたいときは、おつきさま診断（完全版）で直近3ヶ月の恋愛運・人間関係・未来の流れを詳しくお届けします（無料パート＋有料パート）。
                 </p>
                 <p style="margin-bottom: ${isMobile ? '18px' : '24px'}; font-size: ${isMobile ? '14px' : '15px'};">
-                    このページを閉じてLINEトークに戻り、「本格」と入力するとプレミアム診断のご案内と購入方法が表示されます。
+                    このページを閉じてLINEトークに戻り、「おつきさま診断」と入力すると完全版診断のご案内と購入方法が表示されます。
                 </p>
-                <button id="premiumFortuneButton" style="display: block; width: 100%; padding: ${isMobile ? '14px' : '16px'}; border: none; border-radius: 999px; background: linear-gradient(135deg, #764ba2, #667eea); color: #ffffff; font-size: ${isMobile ? '16px' : '17px'}; font-weight: 600; letter-spacing: 0.05em; box-shadow: 0 14px 35px rgba(102, 126, 234, 0.35); cursor: pointer;">🌙 「本格」と入力して本格占いをやってみる</button>
+                <button id="premiumFortuneButton" style="display: block; width: 100%; padding: ${isMobile ? '14px' : '16px'}; border: none; border-radius: 999px; background: linear-gradient(135deg, #764ba2, #667eea); color: #ffffff; font-size: ${isMobile ? '16px' : '17px'}; font-weight: 600; letter-spacing: 0.05em; box-shadow: 0 14px 35px rgba(102, 126, 234, 0.35); cursor: pointer;">🌙 「おつきさま診断」と入力して完全版を受け取る</button>
                 <p id="premiumStatusMessage" style="margin-top: ${isMobile ? '12px' : '16px'}; font-size: ${isMobile ? '12px' : '13px'}; color: #ffd27d; text-align: center;"></p>
                 <p style="margin-top: ${isMobile ? '12px' : '14px'}; font-size: ${isMobile ? '12px' : '13px'}; color: #ffecbe; text-align: center;">
-                    ※このボタンでLINEに戻り、「本格」とメッセージを送信してください
+                    ※このボタンでLINEに戻り、「おつきさま診断」とメッセージを送信してください
                 </p>
             </div>
         </div>
@@ -176,13 +176,13 @@ function displayCardResult() {
         mainTitle.style.display = 'none';
     }
 
-    // 本格占い誘導ボタンの動作を設定
+    // 完全版診断誘導ボタンの動作を設定
     const premiumButton = document.getElementById('premiumFortuneButton');
     if (premiumButton) {
         premiumButton.addEventListener('click', () => {
             const statusMessage = document.getElementById('premiumStatusMessage');
             if (statusMessage) {
-                statusMessage.textContent = 'LINEトークを開いたら「本格」と入力して送信してください。';
+                statusMessage.textContent = 'LINEトークを開いたら「おつきさま診断」と入力して送信してください。';
                 statusMessage.style.display = 'block';
             }
 

@@ -32,7 +32,7 @@ const defaultRichMenuObject = {
         displayText: '🔮 月タロット占い'
       }
     },
-    // 右側: 【本格】おつきさま診断（キーワード送信用）
+    // 右側: おつきさま診断（完全版）
     {
       bounds: {
         x: 1250,
@@ -42,7 +42,7 @@ const defaultRichMenuObject = {
       },
       action: {
         type: 'message',
-        text: '本格'  // ← 【本格】診断用キーワード
+        text: 'おつきさま診断'  // ← 完全版診断用キーワード
       }
     }
   ]
@@ -162,14 +162,14 @@ async function forceUpdateRichMenu() {
     ctx.lineTo(1250, 793);
     ctx.stroke();
 
-    // 右側: 【本格】おつきさま診断
+    // 右側: おつきさま診断（完全版）
     ctx.fillStyle = 'white';
     ctx.font = 'bold 120px sans-serif';
     ctx.fillText('🌙', 1875, 280);
     ctx.font = 'bold 70px sans-serif';
-    ctx.fillText('【本格】', 1875, 460);
+    ctx.fillText('おつきさま診断', 1875, 460);
     ctx.font = 'bold 60px sans-serif';
-    ctx.fillText('おつきさま診断', 1875, 550);
+    ctx.fillText('完全版はこちら', 1875, 550);
     ctx.font = '45px sans-serif';
     ctx.fillText('本気で占いたい方向け✨', 1875, 660);
 
@@ -281,7 +281,7 @@ async function forceUpdateRichMenu() {
     console.log(`🆔 プレミアムメニューID : ${premiumMenuId}`);
     console.log('\n📱 デフォルトメニュー構成:');
     console.log('  左ボタン: 🔮 月タロット占い (Postback)');
-    console.log('  右ボタン: 🌙 【本格】おつきさま診断 (メッセージ: "本格")');
+    console.log('  右ボタン: 🌙 おつきさま診断 (メッセージ: "おつきさま診断")');
     console.log('\n💎 プレミアムメニュー構成:');
     console.log('  左ボタン: 🔮 月タロット占い (Postback)');
     console.log('  右ボタン: 🧾 購入履歴 (メッセージ: "履歴")');
