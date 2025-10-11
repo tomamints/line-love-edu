@@ -280,6 +280,7 @@ class ProfilesDB {
         userBirthdate: data.birth_date,
         userAge: data.birth_date ? this.calculateAge(data.birth_date) : null,
         userGender: data.gender,
+        userName: data.user_name,
         partnerBirthdate: data.partner_birth_date,
         partnerAge: data.partner_birth_date ? this.calculateAge(data.partner_birth_date) : null,
         partnerGender: data.partner_gender,

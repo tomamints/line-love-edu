@@ -448,8 +448,8 @@ app.get('/api/get-love-profile', async (req, res) => {
       });
     }
 
-    const normalizedName = profile.userName || profile.name || null;
-    const normalizedBirthDate = profile.birthDate || profile.birthdate || null;
+    const normalizedName = profile.userName || profile.name || profile.personalInfo?.userName || null;
+    const normalizedBirthDate = profile.birthDate || profile.birthdate || profile.personalInfo?.userBirthdate || null;
 
     const responseProfile = {
       userName: normalizedName,
@@ -458,10 +458,10 @@ app.get('/api/get-love-profile', async (req, res) => {
       birthdate: normalizedBirthDate,
       moonPatternId: profile.moonPatternId,
       diagnosisType: profile.diagnosisType,
-      emotionalExpression: profile.emotionalExpression,
-      distanceStyle: profile.distanceStyle,
-      loveValues: profile.loveValues,
-      loveEnergy: profile.loveEnergy
+      emotionalExpression: profile.emotionalExpression || profile.personalInfo?.emotionalExpression,
+      distanceStyle: profile.distanceStyle || profile.personalInfo?.distanceStyle,
+      loveValues: profile.loveValues || profile.personalInfo?.loveValues,
+      loveEnergy: profile.loveEnergy || profile.personalInfo?.loveEnergy
     };
 
     if (profile.diagnosisType === 'otsukisama') {
