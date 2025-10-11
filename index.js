@@ -269,6 +269,57 @@ app.get('/api/blogs/latest', async (req, res) => {
   }
 });
 
+app.options('/api/blogs/:id', (req, res) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.sendStatus(200);
+});
+
+app.get('/api/blogs/:id', async (req, res) => {
+  if (!microcmsConfig.serviceDomain || !microcmsConfig.apiKey) {
+    return res.status(503).json({ error: 'microCMS is not configured.' });
+  }
+
+  const { id } = req.params;
+
+  if (!id) {
+    return res.status(400).json({ error: 'Blog ID is required.' });
+  }
+
+  try {
+    const endpoint = `https://${microcmsConfig.serviceDomain}.microcms.io/api/v1/blogs/${id}`;
+    const response = await axios.get(endpoint, {
+      headers: {
+        'X-MICROCMS-API-KEY': microcmsConfig.apiKey
+      },
+      params: {
+        depth: 1
+      }
+    });
+
+    const item = response.data;
+
+    if (!item) {
+      return res.status(404).json({ error: 'Blog not found.' });
+    }
+
+    res.json({
+      id: item.id,
+      title: item.title,
+      content: item.content,
+      eyecatchUrl: item.eyecatch?.url || null,
+      category: item.category?.name || '',
+      publishedAt: item.publishedAt || item.createdAt,
+      revisedAt: item.revisedAt,
+      summary: getBlogExcerpt(item.content, 160)
+    });
+  } catch (error) {
+    logger.error('microCMS single fetch error:', error.response?.data || error.message);
+    res.status(500).json({ error: 'Failed to fetch blog post.' });
+  }
+});
+
 // Stripe Webhook（raw bodyが必要なので、他のミドルウェアの前に配置）
 app.post('/api/stripe/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
   const stripeWebhook = require('./api/stripe-webhook-simple');

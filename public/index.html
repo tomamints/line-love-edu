@@ -552,7 +552,7 @@
                 <div class="blog-placeholder" role="status">最新の記事を読み込み中…</div>
             </div>
             <div class="blog-actions" id="blogActions">
-                <a href="/blog/" class="blog-more">ブログをもっと見る</a>
+                <a href="/blog-list.html" class="blog-more">ブログをもっと見る</a>
             </div>
         </section>
     </div>
@@ -659,7 +659,7 @@
 
                     const link = document.createElement('a');
                     link.className = 'blog-link';
-                    link.href = post.link || '#';
+                    link.href = `/blog.html?id=${encodeURIComponent(post.id)}`;
 
                     const eyecatch = document.createElement('div');
                     eyecatch.className = 'blog-eyecatch';

@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ブログ一覧 | 月詠のブログ</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Noto Serif JP', serif;
+            background: radial-gradient(circle at top, #2a2257, #110b2b);
+            color: #f5f2ff;
+            min-height: 100vh;
+        }
+
+        .header {
+            text-align: center;
+            padding: 60px 20px 30px;
+        }
+
+        .header h1 {
+            font-size: 40px;
+            margin-bottom: 12px;
+            letter-spacing: 0.08em;
+        }
+
+        .header p {
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.75);
+        }
+
+        .header nav {
+            margin-top: 18px;
+        }
+
+        .header nav a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            font-size: 14px;
+            margin: 0 10px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto 80px;
+            padding: 0 20px 60px;
+        }
+
+        .blog-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 28px;
+        }
+
+        .blog-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .blog-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 26px 48px rgba(0, 0, 0, 0.35);
+        }
+
+        .blog-link {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .blog-eyecatch {
+            min-height: 180px;
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .blog-content {
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .blog-category {
+            display: inline-flex;
+            align-self: flex-start;
+            padding: 6px 14px;
+            border-radius: 999px;
+            background: rgba(123, 108, 236, 0.22);
+            color: #cbc3ff;
+            font-size: 12px;
+            letter-spacing: 0.08em;
+        }
+
+        .blog-title {
+            font-size: 20px;
+            line-height: 1.5;
+        }
+
+        .blog-excerpt {
+            color: rgba(255, 255, 255, 0.72);
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        .blog-meta {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.5);
+            letter-spacing: 0.08em;
+        }
+
+        .loading,
+        .error-message {
+            text-align: center;
+            padding: 50px 30px;
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.05);
+            color: rgba(255, 255, 255, 0.75);
+            margin-top: 40px;
+            letter-spacing: 0.08em;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 40px 16px 24px;
+            }
+
+            .header h1 {
+                font-size: 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>月詠のブログ</h1>
+        <p>月のリズムや幸せな恋のヒントをお届けします。</p>
+        <nav>
+            <a href="/">占いメニューへ戻る</a>
+        </nav>
+    </header>
+    <main class="container">
+        <div class="blog-grid" id="blogList">
+            <div class="loading" id="blogListLoading">記事を読み込み中です...</div>
+        </div>
+        <div class="error-message" id="blogListError" hidden>ブログの読み込みに失敗しました。時間を置いて再度お試しください。</div>
+    </main>
+
+    <script>
+        function formatDate(dateString) {
+            if (!dateString) return '';
+            const date = new Date(dateString);
+            if (Number.isNaN(date.getTime())) return '';
+            return date.toLocaleDateString('ja-JP', { year: 'numeric', month: 'short', day: 'numeric' });
+        }
+
+        async function loadBlogList() {
+            const list = document.getElementById('blogList');
+            const loading = document.getElementById('blogListLoading');
+            const error = document.getElementById('blogListError');
+
+            try {
+                const response = await fetch('/api/blogs/latest?limit=20');
+                if (!response.ok) {
+                    throw new Error(`status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                const posts = data?.contents || [];
+
+                if (loading) {
+                    loading.remove();
+                }
+
+                list.innerHTML = '';
+
+                if (!posts.length) {
+                    list.innerHTML = '<div class="loading">記事は準備中です。もう少しお待ちください。</div>';
+                    return;
+                }
+
+                posts.forEach(post => {
+                    const article = document.createElement('article');
+                    article.className = 'blog-card';
+
+                    const link = document.createElement('a');
+                    link.className = 'blog-link';
+                    link.href = `/blog.html?id=${encodeURIComponent(post.id)}`;
+
+                    const eyecatch = document.createElement('div');
+                    eyecatch.className = 'blog-eyecatch';
+                    if (post.eyecatchUrl) {
+                        eyecatch.style.backgroundImage = `linear-gradient(135deg, rgba(119, 102, 238, 0.35), rgba(195, 142, 255, 0.35)), url('${post.eyecatchUrl}')`;
+                        eyecatch.style.backgroundSize = 'cover';
+                        eyecatch.style.backgroundPosition = 'center';
+                    }
+
+                    const content = document.createElement('div');
+                    content.className = 'blog-content';
+
+                    if (post.category) {
+                        const badge = document.createElement('span');
+                        badge.className = 'blog-category';
+                        badge.textContent = post.category;
+                        content.appendChild(badge);
+                    }
+
+                    const title = document.createElement('h2');
+                    title.className = 'blog-title';
+                    title.textContent = post.title;
+                    content.appendChild(title);
+
+                    const excerpt = document.createElement('p');
+                    excerpt.className = 'blog-excerpt';
+                    excerpt.textContent = post.excerpt;
+                    content.appendChild(excerpt);
+
+                    const meta = document.createElement('span');
+                    meta.className = 'blog-meta';
+                    meta.textContent = formatDate(post.publishedAt);
+                    content.appendChild(meta);
+
+                    link.appendChild(eyecatch);
+                    link.appendChild(content);
+                    article.appendChild(link);
+                    list.appendChild(article);
+                });
+            } catch (err) {
+                console.error('ブログ一覧の取得に失敗しました:', err);
+                if (loading) {
+                    loading.hidden = true;
+                }
+                error.hidden = false;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadBlogList);
+    </script>
+</body>
+</html>
