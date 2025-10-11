@@ -1,8 +1,8 @@
-import { createClient } from '@supabase/supabase-js';
+const { createClient } = require('@supabase/supabase-js');
 
 // Supabase設定
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_SERVICE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_ANON_KEY || process.env.SUPABASE_SERVICE_KEY;
 
 // 環境変数チェック
 if (!supabaseUrl || !supabaseKey) {
@@ -16,7 +16,7 @@ if (!supabaseUrl || !supabaseKey) {
 
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-export default async function handler(req, res) {
+module.exports = async (req, res) => {
   try {
     // 環境変数の早期チェック
     if (!supabaseUrl || !supabaseKey) {
@@ -150,4 +150,4 @@ export default async function handler(req, res) {
       message: topLevelError.message || 'Unknown error occurred'
     });
   }
-}
+};
