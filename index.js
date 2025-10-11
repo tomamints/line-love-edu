@@ -395,6 +395,7 @@ app.get('/api/get-love-profile', async (req, res) => {
   }
 
   try {
+    logger.log('📥 get-love-profile request:', { userId, checkOnly });
     const profilesDB = getProfileManager();
 
     if (checkOnly === 'true') {
@@ -440,6 +441,11 @@ app.get('/api/get-love-profile', async (req, res) => {
     }
 
     const profile = await profilesDB.getProfile(userId);
+    logger.log('🔎 profile lookup result:', profile ? {
+      userName: profile.userName,
+      birthDate: profile.birthDate,
+      diagnosisType: profile.diagnosisType
+    } : null);
 
     if (!profile) {
       return res.status(404).json({
@@ -467,6 +473,12 @@ app.get('/api/get-love-profile', async (req, res) => {
     if (profile.diagnosisType === 'otsukisama') {
       responseProfile.diagnosisType = 'otsukisama';
     }
+
+    logger.log('📤 get-love-profile response:', {
+      userId,
+      hasName: !!normalizedName,
+      hasBirthDate: !!normalizedBirthDate
+    });
 
     return res.status(200).json({
       success: true,
