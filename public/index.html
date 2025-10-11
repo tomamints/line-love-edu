@@ -255,6 +255,19 @@
     gap: 24px;
 }
 
+.blog-placeholder,
+.blog-error {
+    grid-column: 1 / -1;
+    padding: 40px 30px;
+    text-align: center;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px dashed rgba(255, 255, 255, 0.12);
+    border-radius: 18px;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 15px;
+    letter-spacing: 0.04em;
+}
+
 .blog-card {
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.08);
@@ -310,6 +323,12 @@
     color: rgba(255, 255, 255, 0.7);
     font-size: 14px;
     line-height: 1.7;
+}
+
+.blog-meta {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.55);
+    letter-spacing: 0.08em;
 }
 
 .blog-actions {
@@ -529,40 +548,11 @@
                 <h2>月詠のブログ</h2>
                 <p>月のリズムや恋愛TIPS、診断の楽しみ方などを最新情報とともにお届けします。</p>
             </div>
-            <div class="blog-grid">
-                <article class="blog-card">
-                    <a href="#" class="blog-link">
-                        <div class="blog-eyecatch" aria-hidden="true"></div>
-                        <div class="blog-content">
-                            <span class="blog-category">月のリズム</span>
-                            <h3 class="blog-title">（サンプル）春分から始める月の過ごし方</h3>
-                            <p class="blog-excerpt">月のサイクルに合わせた1ヶ月の過ごし方を紹介します。恋愛運を高めたいときに意識したいポイントとは？</p>
-                        </div>
-                    </a>
-                </article>
-                <article class="blog-card">
-                    <a href="#" class="blog-link">
-                        <div class="blog-eyecatch" aria-hidden="true"></div>
-                        <div class="blog-content">
-                            <span class="blog-category">恋愛TIPS</span>
-                            <h3 class="blog-title">（サンプル）月相タイプ別・距離の縮め方</h3>
-                            <p class="blog-excerpt">お相手の月タイプに合わせた距離の縮め方を、診断の活用例とともにまとめました。</p>
-                        </div>
-                    </a>
-                </article>
-                <article class="blog-card">
-                    <a href="#" class="blog-link">
-                        <div class="blog-eyecatch" aria-hidden="true"></div>
-                        <div class="blog-content">
-                            <span class="blog-category">お知らせ</span>
-                            <h3 class="blog-title">（サンプル）おつきさま診断アップデート情報</h3>
-                            <p class="blog-excerpt">最新機能やキャンペーン情報などを随時更新予定です。リッチメニューとの連携方法も掲載します。</p>
-                        </div>
-                    </a>
-                </article>
+            <div class="blog-grid" id="blogGrid">
+                <div class="blog-placeholder" role="status">最新の記事を読み込み中…</div>
             </div>
-            <div class="blog-actions">
-                <a href="#" class="blog-more">ブログをもっと見る</a>
+            <div class="blog-actions" id="blogActions">
+                <a href="/blog/" class="blog-more">ブログをもっと見る</a>
             </div>
         </section>
     </div>
@@ -636,6 +626,93 @@
             });
         }
 
+        async function loadBlogPosts(limit = 3) {
+            const blogGrid = document.getElementById('blogGrid');
+            const blogActions = document.getElementById('blogActions');
+            if (!blogGrid) return;
+
+            try {
+                const response = await fetch(`/api/blogs/latest?limit=${limit}`);
+                if (!response.ok) {
+                    throw new Error(`status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                const posts = data?.contents || [];
+
+                if (!posts.length) {
+                    blogGrid.innerHTML = '<div class="blog-placeholder">記事は準備中です。もう少しお待ちください。</div>';
+                    if (blogActions) {
+                        blogActions.style.display = 'none';
+                    }
+                    return;
+                }
+
+                blogGrid.innerHTML = '';
+                if (blogActions) {
+                    blogActions.style.display = '';
+                }
+
+                posts.forEach(post => {
+                    const article = document.createElement('article');
+                    article.className = 'blog-card';
+
+                    const link = document.createElement('a');
+                    link.className = 'blog-link';
+                    link.href = post.link || '#';
+
+                    const eyecatch = document.createElement('div');
+                    eyecatch.className = 'blog-eyecatch';
+                    if (post.eyecatchUrl) {
+                        eyecatch.style.backgroundImage = `linear-gradient(135deg, rgba(119, 102, 238, 0.35), rgba(195, 142, 255, 0.35)), url('${post.eyecatchUrl}')`;
+                        eyecatch.style.backgroundSize = 'cover';
+                        eyecatch.style.backgroundPosition = 'center';
+                    }
+
+                    const content = document.createElement('div');
+                    content.className = 'blog-content';
+
+                    if (post.category) {
+                        const badge = document.createElement('span');
+                        badge.className = 'blog-category';
+                        badge.textContent = post.category;
+                        content.appendChild(badge);
+                    }
+
+                    const title = document.createElement('h3');
+                    title.className = 'blog-title';
+                    title.textContent = post.title;
+                    content.appendChild(title);
+
+                    if (post.excerpt) {
+                        const excerpt = document.createElement('p');
+                        excerpt.className = 'blog-excerpt';
+                        excerpt.textContent = post.excerpt;
+                        content.appendChild(excerpt);
+                    }
+
+                    if (post.publishedAt) {
+                        const meta = document.createElement('span');
+                        meta.className = 'blog-meta';
+                        const date = new Date(post.publishedAt);
+                        meta.textContent = date.toLocaleDateString('ja-JP', { year: 'numeric', month: 'short', day: 'numeric' });
+                        content.appendChild(meta);
+                    }
+
+                    link.appendChild(eyecatch);
+                    link.appendChild(content);
+                    article.appendChild(link);
+                    blogGrid.appendChild(article);
+                });
+            } catch (error) {
+                console.error('ブログ記事の取得に失敗しました:', error);
+                blogGrid.innerHTML = '<div class="blog-error">ブログ記事の読み込みに失敗しました。時間を置いて再度お試しください。</div>';
+                if (blogActions) {
+                    blogActions.style.display = 'none';
+                }
+            }
+        }
+
         // 星空の生成
         function createStars() {
             const starsContainer = document.getElementById('stars');
@@ -650,9 +727,10 @@
                 starsContainer.appendChild(star);
             }
         }
-        
+
         window.addEventListener('DOMContentLoaded', () => {
             setupContentSwitcher();
+            loadBlogPosts();
             createStars();
         });
     </script>

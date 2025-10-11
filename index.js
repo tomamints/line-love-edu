@@ -5,6 +5,7 @@ require('dotenv').config({ path: '.env.local' });
 const express = require('express');
 const path    = require('path');
 const fs      = require('fs');
+const axios   = require('axios');
 const { Client, middleware } = require('@line/bot-sdk');
 const logger = require('./utils/logger');
 
@@ -63,6 +64,27 @@ const client = new Client(config);
 // インスタンスを事前に作成（高速化）
 const paymentHandler = new PaymentHandler();
 const profileManager = UserProfileManager; // ProfilesDBはすでにインスタンス
+
+const microcmsConfig = {
+  serviceDomain: process.env.MICROCMS_SERVICE_DOMAIN,
+  apiKey: process.env.MICROCMS_API_KEY
+};
+
+function extractPlainText(html = '') {
+  if (!html) return '';
+  return html
+    .replace(/<[^>]*?>/g, ' ') // タグ除去
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&amp;/g, '&')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function getBlogExcerpt(content = '', length = 110) {
+  const text = extractPlainText(content);
+  if (text.length <= length) return text;
+  return `${text.slice(0, length)}…`;
+}
 
 function getPaymentHandler() {
   return paymentHandler;
@@ -207,6 +229,44 @@ function buildPremiumDiagnosisInviteMessage(userId) {
 // 静的ファイルの提供
 app.use('/images', express.static(path.join(__dirname, 'images')));
 app.use(express.static(path.join(__dirname, 'public')));
+
+app.get('/api/blogs/latest', async (req, res) => {
+  if (!microcmsConfig.serviceDomain || !microcmsConfig.apiKey) {
+    return res.status(503).json({ error: 'microCMS is not configured.' });
+  }
+
+  const limitParam = parseInt(req.query.limit, 10);
+  const limit = Number.isNaN(limitParam) ? 6 : Math.min(Math.max(limitParam, 1), 12);
+
+  try {
+    const endpoint = `https://${microcmsConfig.serviceDomain}.microcms.io/api/v1/blogs`;
+    const response = await axios.get(endpoint, {
+      headers: {
+        'X-MICROCMS-API-KEY': microcmsConfig.apiKey
+      },
+      params: {
+        limit,
+        depth: 1,
+        fields: 'id,title,content,eyecatch,category,publishedAt,createdAt'
+      }
+    });
+
+    const contents = (response.data?.contents || []).map(item => ({
+      id: item.id,
+      title: item.title,
+      excerpt: getBlogExcerpt(item.content),
+      eyecatchUrl: item.eyecatch?.url || null,
+      category: item.category?.name || '',
+      publishedAt: item.publishedAt || item.createdAt,
+      link: `/blog/${item.id}`
+    }));
+
+    res.json({ contents });
+  } catch (error) {
+    logger.error('microCMS fetch error:', error.response?.data || error.message);
+    res.status(500).json({ error: 'Failed to fetch blog posts.' });
+  }
+});
 
 // Stripe Webhook（raw bodyが必要なので、他のミドルウェアの前に配置）
 app.post('/api/stripe/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
