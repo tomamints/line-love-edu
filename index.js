@@ -43,6 +43,7 @@ const MoonFortuneEngineV2 = require('./core/moon-fortune-v2');
 const UserProfileManager = require('./core/database/profiles-db');
 const ordersDB = require('./core/database/orders-db');
 const { formatMoonReportV2 } = require('./utils/moon-formatter-v2');
+const { getUserLoveProfile } = require('./utils/love-type-mapper');
 
 // loadHeavyModulesは互換性のために空関数として残す
 function loadHeavyModules() {}
@@ -324,10 +325,132 @@ app.get('/api/profile-form-success', async (req, res) => {
   `);
 });
 
-// プロファイル取得API
+app.options('/api/get-love-profile', (req, res) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.sendStatus(200);
+});
+
+// プロファイル取得API（本格診断フォーム用）
 app.get('/api/get-love-profile', async (req, res) => {
-  const getLoveProfile = require('./api/get-love-profile');
-  await getLoveProfile(req, res);
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+  const { userId, checkOnly } = req.query;
+
+  if (!userId) {
+    return res.status(400).json({ error: 'User ID is required' });
+  }
+
+  try {
+    const profilesDB = getProfileManager();
+
+    if (checkOnly === 'true') {
+      const isValidLineUserId = /^U[0-9a-f]{32}$/i.test(userId);
+
+      if (isValidLineUserId) {
+        try {
+          let profile = await profilesDB.getProfile(userId);
+
+          if (!profile) {
+            await profilesDB.saveProfile(userId, {
+              userId,
+              createdAt: new Date().toISOString(),
+              source: 'line_tarot',
+              isMinimalProfile: true
+            });
+          }
+        } catch (profileError) {
+          logger.warn('Profile creation error (non-critical):', profileError.message);
+        }
+
+        return res.status(200).json({
+          success: true,
+          exists: true,
+          hasProfile: true
+        });
+      }
+
+      let profile = null;
+      try {
+        profile = await profilesDB.getProfile(userId);
+      } catch (dbError) {
+        logger.warn('profilesDB check error:', dbError.message);
+      }
+
+      const exists = !!profile;
+
+      return res.status(200).json({
+        success: true,
+        exists,
+        hasProfile: exists
+      });
+    }
+
+    const profile = await profilesDB.getProfile(userId);
+
+    if (profile && profile.diagnosisType === 'otsukisama') {
+      const normalizedName = profile.userName || profile.name || null;
+      const normalizedBirthDate = profile.birthDate || profile.birthdate || null;
+
+      return res.status(200).json({
+        success: true,
+        profile: {
+          userName: normalizedName,
+          name: normalizedName,
+          birthDate: normalizedBirthDate,
+          birthdate: normalizedBirthDate,
+          moonPatternId: profile.moonPatternId,
+          diagnosisType: 'otsukisama',
+          emotionalExpression: profile.emotionalExpression,
+          distanceStyle: profile.distanceStyle,
+          loveValues: profile.loveValues,
+          loveEnergy: profile.loveEnergy
+        },
+        userId
+      });
+    }
+
+    const loveProfile = await getUserLoveProfile(userId);
+
+    if (!loveProfile) {
+      return res.status(404).json({
+        error: 'Profile not found or incomplete',
+        message: 'Please complete the questionnaire first'
+      });
+    }
+
+    const completeProfile = {
+      ...loveProfile,
+      emotionalExpression: profile?.emotionalExpression,
+      distanceStyle: profile?.distanceStyle,
+      loveValues: profile?.loveValues,
+      loveEnergy: profile?.loveEnergy
+    };
+
+    const normalizedName = loveProfile.name || profile?.userName || null;
+    const normalizedBirthDate = loveProfile.birthdate || profile?.birthDate || null;
+
+    return res.status(200).json({
+      success: true,
+      profile: {
+        ...completeProfile,
+        name: normalizedName,
+        userName: normalizedName,
+        birthdate: normalizedBirthDate,
+        birthDate: normalizedBirthDate
+      },
+      userId
+    });
+  } catch (error) {
+    logger.error('Error fetching love profile:', error);
+    return res.status(500).json({
+      error: 'Failed to fetch profile',
+      message: error.message
+    });
+  }
 });
 
 // タロット権限管理API
