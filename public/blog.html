@@ -6,7 +6,7 @@
     <title>ブログ記事 | 月詠のブログ</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Kiwi+Maru:wght@300;400;500&display=swap" rel="stylesheet">
     <style>
         *, *::before, *::after {
             box-sizing: border-box;
@@ -14,8 +14,8 @@
 
         body {
             margin: 0;
-            font-family: 'Noto Serif JP', serif;
-            background: radial-gradient(circle at top, #2a2257, #110b2b);
+            font-family: 'Kiwi Maru', serif;
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
             color: #f5f2ff;
             min-height: 100vh;
             display: flex;
@@ -28,10 +28,10 @@
             width: min(92%, 820px);
             margin: 60px auto 54px;
             background: rgba(16, 10, 36, 0.82);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 18px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
             padding: 36px 32px;
-            box-shadow: 0 18px 46px rgba(7, 2, 24, 0.35);
+            box-shadow: 0 18px 46px rgba(7, 2, 24, 0.38);
             backdrop-filter: blur(6px);
         }
 
@@ -41,10 +41,11 @@
         }
 
         .page-header a {
-            color: rgba(255, 255, 255, 0.75);
+            color: rgba(255, 255, 255, 0.78);
             text-decoration: none;
             font-size: 14px;
             letter-spacing: 0.1em;
+            font-weight: 500;
         }
 
         .page-header a:hover {
@@ -224,12 +225,15 @@
 
             .footer-actions {
                 flex-direction: column;
-                align-items: stretch;
+                align-items: center;
+                gap: 12px;
             }
 
             .footer-actions a {
-                max-width: none;
+                max-width: 280px;
                 width: 100%;
+                padding: 10px 20px;
+                font-size: 14px;
             }
         }
 
