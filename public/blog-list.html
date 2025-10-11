@@ -8,12 +8,17 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
         body {
             margin: 0;
             font-family: 'Noto Serif JP', serif;
             background: radial-gradient(circle at top, #2a2257, #110b2b);
             color: #f5f2ff;
             min-height: 100vh;
+            overflow-x: hidden;
         }
 
         .header {
@@ -45,7 +50,7 @@
 
         .container {
             max-width: 1100px;
-            margin: 0 auto 80px;
+            margin: 0 auto 70px;
             padding: 0 20px 60px;
         }
 
@@ -58,9 +63,9 @@
         .blog-card {
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 20px;
+            border-radius: 18px;
             overflow: hidden;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+            box-shadow: 0 18px 36px rgba(7, 2, 24, 0.28);
             transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
 
@@ -80,10 +85,12 @@
         .blog-eyecatch {
             min-height: 180px;
             background: rgba(255, 255, 255, 0.08);
+            background-size: cover;
+            background-position: center;
         }
 
         .blog-content {
-            padding: 24px;
+            padding: 22px;
             display: flex;
             flex-direction: column;
             gap: 12px;
@@ -109,6 +116,7 @@
             color: rgba(255, 255, 255, 0.72);
             font-size: 14px;
             line-height: 1.7;
+            min-height: 44px;
         }
 
         .blog-meta {
@@ -130,16 +138,16 @@
 
         @media (max-width: 768px) {
             .header {
-                padding: 40px 16px 24px;
+                padding: 44px 16px 24px;
             }
 
             .header h1 {
-                font-size: 30px;
+                font-size: 32px;
             }
 
             .container {
-                width: 95%;
-                padding: 20px 16px;
+                width: 94%;
+                padding: 0 16px 50px;
             }
 
             .blog-grid {
@@ -147,7 +155,7 @@
                 gap: 20px;
             }
 
-            .blog-card {
+            .blog-content {
                 padding: 20px;
             }
 
@@ -157,7 +165,14 @@
 
             .blog-excerpt {
                 font-size: 13px;
-                line-height: 1.6;
+                line-height: 1.65;
+                min-height: 0;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 28px;
             }
         }
     </style>
@@ -203,6 +218,7 @@
                     loading.remove();
                 }
 
+                error.hidden = true;
                 list.innerHTML = '';
 
                 if (!posts.length) {
