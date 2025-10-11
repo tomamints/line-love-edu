@@ -41,3 +41,4 @@ public/videos/*.backup
 archive/
 *.test.js
 *.test.html
+.playwright-mcp/
