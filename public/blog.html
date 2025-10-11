@@ -106,6 +106,26 @@
             text-decoration: underline;
         }
 
+        /* 記事内画像のレスポンシブ対応 */
+        .blog-content img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 24px auto;
+            border-radius: 8px;
+        }
+
+        .blog-content figure {
+            margin: 32px 0;
+            padding: 0;
+        }
+
+        .blog-content figure img {
+            width: 100%;
+            max-width: 100%;
+            height: auto;
+        }
+
         .loading,
         .error-message {
             text-align: center;
@@ -156,10 +176,33 @@
             .container {
                 margin: 40px auto;
                 padding: 32px 24px;
+                width: 95%;
             }
 
             .blog-title {
                 font-size: 26px;
+            }
+
+            /* モバイルでの画像制御 */
+            .blog-content img,
+            .blog-content figure img {
+                max-width: 100%;
+                width: 100%;
+                height: auto;
+                margin: 16px 0;
+            }
+
+            .blog-content figure {
+                margin: 24px -12px;
+                padding: 0 12px;
+            }
+
+            .blog-eyecatch {
+                margin: 0 -24px 32px;
+            }
+
+            .blog-eyecatch img {
+                border-radius: 0;
             }
 
             .footer-actions {
