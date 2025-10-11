@@ -441,58 +441,38 @@ app.get('/api/get-love-profile', async (req, res) => {
     }
 
     const profile = await profilesDB.getProfile(userId);
-
-    if (profile && profile.diagnosisType === 'otsukisama') {
-      const normalizedName = profile.userName || profile.name || null;
-      const normalizedBirthDate = profile.birthDate || profile.birthdate || null;
-
-      return res.status(200).json({
-        success: true,
-        profile: {
-          userName: normalizedName,
-          name: normalizedName,
-          birthDate: normalizedBirthDate,
-          birthdate: normalizedBirthDate,
-          moonPatternId: profile.moonPatternId,
-          diagnosisType: 'otsukisama',
-          emotionalExpression: profile.emotionalExpression,
-          distanceStyle: profile.distanceStyle,
-          loveValues: profile.loveValues,
-          loveEnergy: profile.loveEnergy
-        },
-        userId
-      });
-    }
-
     const loveProfile = await getUserLoveProfile(userId);
 
-    if (!loveProfile) {
+    if (!profile && !loveProfile) {
       return res.status(404).json({
         error: 'Profile not found or incomplete',
         message: 'Please complete the questionnaire first'
       });
     }
 
-    const completeProfile = {
-      ...loveProfile,
-      emotionalExpression: profile?.emotionalExpression,
-      distanceStyle: profile?.distanceStyle,
-      loveValues: profile?.loveValues,
-      loveEnergy: profile?.loveEnergy
+    const normalizedName = profile?.userName || profile?.name || loveProfile?.name || null;
+    const normalizedBirthDate = profile?.birthDate || profile?.birthdate || loveProfile?.birthdate || loveProfile?.birthDate || null;
+
+    const responseProfile = {
+      userName: normalizedName,
+      name: normalizedName,
+      birthDate: normalizedBirthDate,
+      birthdate: normalizedBirthDate,
+      moonPatternId: profile?.moonPatternId || loveProfile?.moonPatternId,
+      diagnosisType: profile?.diagnosisType || loveProfile?.diagnosisType,
+      emotionalExpression: profile?.emotionalExpression || loveProfile?.emotionalExpression,
+      distanceStyle: profile?.distanceStyle || loveProfile?.distanceStyle,
+      loveValues: profile?.loveValues || loveProfile?.loveValues,
+      loveEnergy: profile?.loveEnergy || loveProfile?.loveEnergy
     };
 
-    const normalizedName = loveProfile.name || profile?.userName || null;
-    const normalizedBirthDate = loveProfile.birthdate || profile?.birthDate || null;
+    if (profile?.diagnosisType === 'otsukisama') {
+      responseProfile.diagnosisType = 'otsukisama';
+    }
 
     return res.status(200).json({
       success: true,
-      profile: {
-        ...completeProfile,
-        name: normalizedName,
-        userName: normalizedName,
-        birthdate: normalizedBirthDate,
-        birthDate: normalizedBirthDate
-      },
+      profile: responseProfile,
       userId
     });
   } catch (error) {
