@@ -92,12 +92,49 @@
         }
 
         /* メニューカード */
-        .menu-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 30px;
-            margin-top: 50px;
-        }
+.menu-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 30px;
+    margin-top: 50px;
+}
+
+.content-switcher {
+    display: inline-flex;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 999px;
+    padding: 6px;
+    margin-bottom: 20px;
+    backdrop-filter: blur(6px);
+}
+
+.switcher-button {
+    position: relative;
+    border: none;
+    background: transparent;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    padding: 12px 28px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.switcher-button:hover {
+    transform: translateY(-2px);
+}
+
+.switcher-button.active {
+    background: linear-gradient(135deg, rgba(142, 119, 255, 0.9), rgba(96, 173, 255, 0.9));
+    color: #ffffff;
+    box-shadow: 0 12px 28px rgba(118, 104, 255, 0.35);
+}
+
+.content-section.hidden {
+    display: none;
+}
 
         .menu-card {
             background: rgba(255, 255, 255, 0.05);
@@ -190,14 +227,120 @@
             display: inline-block;
         }
 
-        .menu-button:hover {
-            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
-            transform: scale(1.05);
-        }
+.menu-button:hover {
+    box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+    transform: scale(1.05);
+}
 
-        /* フッター */
-        .footer {
-            text-align: center;
+.blog-intro {
+    text-align: center;
+    margin: 40px 0 30px;
+}
+
+.blog-intro h2 {
+    font-size: 32px;
+    margin-bottom: 12px;
+    letter-spacing: 0.06em;
+}
+
+.blog-intro p {
+    color: rgba(255, 255, 255, 0.75);
+    font-size: 16px;
+    line-height: 1.8;
+}
+
+.blog-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 24px;
+}
+
+.blog-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.blog-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 18px 36px rgba(0, 0, 0, 0.35);
+}
+
+.blog-link {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    text-decoration: none;
+    color: inherit;
+}
+
+.blog-eyecatch {
+    background: linear-gradient(135deg, rgba(119, 102, 238, 0.65), rgba(195, 142, 255, 0.65));
+    min-height: 160px;
+}
+
+.blog-content {
+    padding: 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.blog-category {
+    display: inline-flex;
+    align-items: center;
+    align-self: flex-start;
+    padding: 4px 12px;
+    border-radius: 999px;
+    background: rgba(119, 102, 238, 0.18);
+    color: #cbbfff;
+    font-size: 12px;
+    letter-spacing: 0.08em;
+}
+
+.blog-title {
+    font-size: 20px;
+    line-height: 1.5;
+}
+
+.blog-excerpt {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+.blog-actions {
+    text-align: center;
+    margin-top: 28px;
+}
+
+.blog-more {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px 28px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #7563df, #a384ff);
+    color: #ffffff;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-decoration: none;
+    box-shadow: 0 14px 30px rgba(118, 99, 239, 0.38);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.blog-more:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 18px 34px rgba(118, 99, 239, 0.45);
+}
+
+/* フッター */
+.footer {
+    text-align: center;
             padding: 60px 20px 40px;
             margin-top: 80px;
             border-top: 1px solid rgba(255, 255, 255, 0.1);
@@ -301,6 +444,20 @@
             .menu-grid {
                 grid-template-columns: 1fr;
             }
+
+            .content-switcher {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .switcher-button {
+                flex: 1;
+                padding: 12px 0;
+            }
+
+            .blog-grid {
+                grid-template-columns: 1fr;
+            }
             
             .moon-decoration {
                 width: 100px;
@@ -326,39 +483,88 @@
 
     <!-- メインコンテンツ -->
     <div class="container">
-        <div class="menu-grid">
-            <!-- おつきさま診断 -->
-            <a href="moon-fortune.html" class="menu-card">
-                <span class="menu-icon">🌙</span>
-                <h2 class="menu-title">おつきさま診断</h2>
-                <p class="menu-description">
-                    生まれた日の月があなたの本当の性格と恋愛スタイルを教えます
-                </p>
-                <ul class="menu-features">
-                    <li>8つの月タイプから性格診断</li>
-                    <li>詳細な恋愛傾向分析</li>
-                    <li>他の月タイプとの相性</li>
-                    <li>今すぐできる改善アドバイス</li>
-                </ul>
-                <span class="menu-button">診断を始める</span>
-            </a>
-
-            <!-- 月タロット占い -->
-            <a href="moon-tarot.html" class="menu-card">
-                <span class="menu-icon">🔮</span>
-                <h2 class="menu-title">月タロット占い</h2>
-                <p class="menu-description">
-                    月の満ち欠けとタロットの神秘が今日の恋愛運を導きます
-                </p>
-                <ul class="menu-features">
-                    <li>17枚の月のカード</li>
-                    <li>今日の恋愛運を占う</li>
-                    <li>過去・現在・未来の流れ</li>
-                    <li>月詠からの特別なメッセージ</li>
-                </ul>
-                <span class="menu-button">カードを引く</span>
-            </a>
+        <div class="content-switcher" role="tablist" aria-label="コンテンツ切り替え">
+            <button class="switcher-button active" data-target="fortune" role="tab" aria-selected="true">占い</button>
+            <button class="switcher-button" data-target="blog" role="tab" aria-selected="false">ブログ</button>
         </div>
+
+        <section class="content-section" id="section-fortune" data-section="fortune" role="tabpanel" aria-hidden="false">
+            <div class="menu-grid">
+                <!-- おつきさま診断 -->
+                <a href="moon-fortune.html" class="menu-card">
+                    <span class="menu-icon">🌙</span>
+                    <h2 class="menu-title">おつきさま診断</h2>
+                    <p class="menu-description">
+                        生まれた日の月があなたの本当の性格と恋愛スタイルを教えます
+                    </p>
+                    <ul class="menu-features">
+                        <li>8つの月タイプから性格診断</li>
+                        <li>詳細な恋愛傾向分析</li>
+                        <li>他の月タイプとの相性</li>
+                        <li>今すぐできる改善アドバイス</li>
+                    </ul>
+                    <span class="menu-button">診断を始める</span>
+                </a>
+
+                <!-- 月タロット占い -->
+                <a href="moon-tarot.html" class="menu-card">
+                    <span class="menu-icon">🔮</span>
+                    <h2 class="menu-title">月タロット占い</h2>
+                    <p class="menu-description">
+                        月の満ち欠けとタロットの神秘が今日の恋愛運を導きます
+                    </p>
+                    <ul class="menu-features">
+                        <li>17枚の月のカード</li>
+                        <li>今日の恋愛運を占う</li>
+                        <li>過去・現在・未来の流れ</li>
+                        <li>月詠からの特別なメッセージ</li>
+                    </ul>
+                    <span class="menu-button">カードを引く</span>
+                </a>
+            </div>
+        </section>
+
+        <section class="content-section hidden" id="section-blog" data-section="blog" role="tabpanel" aria-hidden="true">
+            <div class="blog-intro">
+                <h2>月詠のブログ</h2>
+                <p>月のリズムや恋愛TIPS、診断の楽しみ方などを最新情報とともにお届けします。</p>
+            </div>
+            <div class="blog-grid">
+                <article class="blog-card">
+                    <a href="#" class="blog-link">
+                        <div class="blog-eyecatch" aria-hidden="true"></div>
+                        <div class="blog-content">
+                            <span class="blog-category">月のリズム</span>
+                            <h3 class="blog-title">（サンプル）春分から始める月の過ごし方</h3>
+                            <p class="blog-excerpt">月のサイクルに合わせた1ヶ月の過ごし方を紹介します。恋愛運を高めたいときに意識したいポイントとは？</p>
+                        </div>
+                    </a>
+                </article>
+                <article class="blog-card">
+                    <a href="#" class="blog-link">
+                        <div class="blog-eyecatch" aria-hidden="true"></div>
+                        <div class="blog-content">
+                            <span class="blog-category">恋愛TIPS</span>
+                            <h3 class="blog-title">（サンプル）月相タイプ別・距離の縮め方</h3>
+                            <p class="blog-excerpt">お相手の月タイプに合わせた距離の縮め方を、診断の活用例とともにまとめました。</p>
+                        </div>
+                    </a>
+                </article>
+                <article class="blog-card">
+                    <a href="#" class="blog-link">
+                        <div class="blog-eyecatch" aria-hidden="true"></div>
+                        <div class="blog-content">
+                            <span class="blog-category">お知らせ</span>
+                            <h3 class="blog-title">（サンプル）おつきさま診断アップデート情報</h3>
+                            <p class="blog-excerpt">最新機能やキャンペーン情報などを随時更新予定です。リッチメニューとの連携方法も掲載します。</p>
+                        </div>
+                    </a>
+                </article>
+            </div>
+            <div class="blog-actions">
+                <a href="#" class="blog-more">ブログをもっと見る</a>
+            </div>
+        </section>
     </div>
 
     <!-- フッター -->
@@ -404,6 +610,32 @@
         // ページ読み込み時にリンクを更新
         window.addEventListener('DOMContentLoaded', updateLinksWithUserId);
         
+        // タブ切り替え（占い / ブログ）
+        function setupContentSwitcher() {
+            const buttons = document.querySelectorAll('.switcher-button');
+            const sections = document.querySelectorAll('.content-section');
+
+            if (!buttons.length || !sections.length) return;
+
+            buttons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const target = button.getAttribute('data-target');
+
+                    buttons.forEach(b => {
+                        const isActive = b === button;
+                        b.classList.toggle('active', isActive);
+                        b.setAttribute('aria-selected', isActive ? 'true' : 'false');
+                    });
+
+                    sections.forEach(section => {
+                        const shouldShow = section.getAttribute('data-section') === target;
+                        section.classList.toggle('hidden', !shouldShow);
+                        section.setAttribute('aria-hidden', shouldShow ? 'false' : 'true');
+                    });
+                });
+            });
+        }
+
         // 星空の生成
         function createStars() {
             const starsContainer = document.getElementById('stars');
@@ -418,7 +650,11 @@
                 starsContainer.appendChild(star);
             }
         }
-        createStars();
+        
+        window.addEventListener('DOMContentLoaded', () => {
+            setupContentSwitcher();
+            createStars();
+        });
     </script>
 </body>
 </html>
