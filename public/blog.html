@@ -26,12 +26,12 @@
         .container {
             max-width: 820px;
             width: min(92%, 820px);
-            margin: 70px auto 56px;
+            margin: 60px auto 54px;
             background: rgba(16, 10, 36, 0.82);
             border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 20px;
-            padding: 40px 34px;
-            box-shadow: 0 18px 48px rgba(7, 2, 24, 0.4);
+            border-radius: 18px;
+            padding: 36px 32px;
+            box-shadow: 0 18px 46px rgba(7, 2, 24, 0.35);
             backdrop-filter: blur(6px);
         }
 
@@ -77,9 +77,9 @@
 
         .blog-eyecatch {
             width: 100%;
-            border-radius: 18px;
+            border-radius: 16px;
             overflow: hidden;
-            margin: 30px 0;
+            margin: 26px 0;
             background: rgba(255, 255, 255, 0.05);
         }
 
@@ -157,45 +157,50 @@
         }
 
         .footer-actions {
-            margin-top: 60px;
+            margin-top: 52px;
             display: flex;
-            justify-content: space-between;
+            justify-content: center;
             gap: 16px;
             flex-wrap: wrap;
         }
 
         .footer-actions a {
-            flex: 1 1 240px;
-            max-width: 320px;
-            padding: 12px 18px;
-            border-radius: 999px;
+            flex: 1 1 220px;
+            max-width: 280px;
+            padding: 12px 24px;
+            border-radius: 28px;
             text-align: center;
             text-decoration: none;
             font-weight: 600;
             letter-spacing: 0.08em;
             transition: transform 0.2s ease, box-shadow 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
 
         .footer-actions a.primary {
-            background: linear-gradient(135deg, #6a5ae0, #9c7bff);
+            background: linear-gradient(135deg, #7563df, #a384ff);
             color: #fff;
-            box-shadow: 0 16px 32px rgba(118, 99, 239, 0.35);
+            box-shadow: 0 14px 30px rgba(118, 99, 239, 0.32);
         }
 
         .footer-actions a.secondary {
-            background: rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.06);
             color: rgba(255, 255, 255, 0.85);
-            border: 1px solid rgba(255, 255, 255, 0.14);
+            border: 1px solid rgba(255, 255, 255, 0.12);
         }
 
         .footer-actions a:hover {
             transform: translateY(-3px);
+            box-shadow: 0 18px 36px rgba(118, 99, 239, 0.28);
         }
 
         @media (max-width: 768px) {
             .container {
-                margin: 36px auto 48px;
-                padding: 28px 20px;
+                margin: 34px auto 44px;
+                padding: 26px 18px;
                 width: 94%;
             }
 
@@ -213,7 +218,8 @@
             }
 
             .blog-eyecatch {
-                margin: 0 -20px 28px;
+                margin: 24px 0;
+                border-radius: 14px;
             }
 
             .footer-actions {
