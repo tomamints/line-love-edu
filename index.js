@@ -43,7 +43,6 @@ const MoonFortuneEngineV2 = require('./core/moon-fortune-v2');
 const UserProfileManager = require('./core/database/profiles-db');
 const ordersDB = require('./core/database/orders-db');
 const { formatMoonReportV2 } = require('./utils/moon-formatter-v2');
-const { getUserLoveProfile } = require('./utils/love-type-mapper');
 
 // loadHeavyModulesは互換性のために空関数として残す
 function loadHeavyModules() {}
@@ -441,32 +440,31 @@ app.get('/api/get-love-profile', async (req, res) => {
     }
 
     const profile = await profilesDB.getProfile(userId);
-    const loveProfile = await getUserLoveProfile(userId);
 
-    if (!profile && !loveProfile) {
+    if (!profile) {
       return res.status(404).json({
         error: 'Profile not found or incomplete',
         message: 'Please complete the questionnaire first'
       });
     }
 
-    const normalizedName = profile?.userName || profile?.name || loveProfile?.name || null;
-    const normalizedBirthDate = profile?.birthDate || profile?.birthdate || loveProfile?.birthdate || loveProfile?.birthDate || null;
+    const normalizedName = profile.userName || profile.name || null;
+    const normalizedBirthDate = profile.birthDate || profile.birthdate || null;
 
     const responseProfile = {
       userName: normalizedName,
       name: normalizedName,
       birthDate: normalizedBirthDate,
       birthdate: normalizedBirthDate,
-      moonPatternId: profile?.moonPatternId || loveProfile?.moonPatternId,
-      diagnosisType: profile?.diagnosisType || loveProfile?.diagnosisType,
-      emotionalExpression: profile?.emotionalExpression || loveProfile?.emotionalExpression,
-      distanceStyle: profile?.distanceStyle || loveProfile?.distanceStyle,
-      loveValues: profile?.loveValues || loveProfile?.loveValues,
-      loveEnergy: profile?.loveEnergy || loveProfile?.loveEnergy
+      moonPatternId: profile.moonPatternId,
+      diagnosisType: profile.diagnosisType,
+      emotionalExpression: profile.emotionalExpression,
+      distanceStyle: profile.distanceStyle,
+      loveValues: profile.loveValues,
+      loveEnergy: profile.loveEnergy
     };
 
-    if (profile?.diagnosisType === 'otsukisama') {
+    if (profile.diagnosisType === 'otsukisama') {
       responseProfile.diagnosisType = 'otsukisama';
     }
 

@@ -8,12 +8,12 @@ class ProfilesDB {
     this.fileManager = new UserProfileManager();
     this.checkDatabase();
   }
-  
+
   checkDatabase() {
     this.useDatabase = isDatabaseConfigured();
-    
+
     console.log('🔍 isDatabaseConfigured():', this.useDatabase);
-    
+
     if (this.useDatabase) {
       const { supabase } = require('./supabase');
       this.supabase = supabase;
@@ -46,7 +46,7 @@ class ProfilesDB {
       created_at TIMESTAMP DEFAULT NOW(),
       updated_at TIMESTAMP DEFAULT NOW()
     );
-    
+
     -- 既存テーブルに新しいカラムを追加する場合：
     ALTER TABLE profiles ADD COLUMN IF NOT EXISTS love_situation TEXT;
     ALTER TABLE profiles ADD COLUMN IF NOT EXISTS want_to_know TEXT;
@@ -60,11 +60,11 @@ class ProfilesDB {
   // プロファイルを保存
   async saveProfile(userId, profileData) {
     console.log('📝 saveProfile呼び出し:', { userId, profileData });
-    
+
     // 毎回最新の接続状態を確認
     this.checkDatabase();
     console.log('🔍 useDatabase:', this.useDatabase);
-    
+
     if (!this.useDatabase || !this.supabase) {
       console.log('⚠️ データベース未設定、ファイルストレージを使用');
       return this.fileManager.saveProfile(userId, profileData);
@@ -74,7 +74,7 @@ class ProfilesDB {
       // 既存のプロファイルを取得してマージ
       const existingProfile = await this.getProfile(userId) || {};
       const mergedData = { ...existingProfile, ...profileData };
-      
+
       // personalInfoがある場合は個別フィールドにマップ（新しいデータを優先）
       if (profileData.personalInfo) {
         const info = profileData.personalInfo;
@@ -90,7 +90,7 @@ class ProfilesDB {
         mergedData.loveValues = info.loveValues;
         mergedData.loveEnergy = info.loveEnergy;
       }
-      
+
       const upsertData = {
         user_id: userId,
         user_name: mergedData.userName || null,
@@ -112,9 +112,9 @@ class ProfilesDB {
         is_paid: mergedData.isPaid || false,
         updated_at: new Date().toISOString()
       };
-      
+
       console.log('📤 Supabaseに送信するデータ:', upsertData);
-      
+
       const { data, error } = await this.supabase
         .from('profiles')
         .upsert(upsertData)
@@ -193,7 +193,7 @@ class ProfilesDB {
   // 入力ステータスを取得
   async getInputStatus(userId) {
     const profile = await this.getProfile(userId) || {};
-    
+
     return {
       hasUserName: !!profile.userName,
       hasUserBirthDate: !!profile.birthDate,
@@ -233,10 +233,10 @@ class ProfilesDB {
       }
 
       console.log('✅ プロファイルを削除:', userId);
-      
+
       // ファイルストレージからも削除
       await this.fileManager.deleteProfile(userId);
-      
+
       return true;
     } catch (err) {
       console.error('データベースエラー:', err);
@@ -247,7 +247,7 @@ class ProfilesDB {
   // データベースの形式をアプリケーションの形式に変換
   formatProfile(data) {
     if (!data) return null;
-    
+
     // データベースの形式をアプリケーションの形式に変換
     const profile = {
       userId: data.user_id,
@@ -273,7 +273,7 @@ class ProfilesDB {
       // lastFortuneResultなどの追加データは元のprofileDataから継承
       ...data.profile_data
     };
-    
+
     // personalInfo形式も追加（FortuneEngineで使用）
     if (data.birth_date || data.partner_birth_date || data.love_situation) {
       profile.personalInfo = {
@@ -291,10 +291,10 @@ class ProfilesDB {
         loveEnergy: data.love_energy
       };
     }
-    
+
     return profile;
   }
-  
+
   // 生年月日から年齢を計算
   calculateAge(birthDate) {
     if (!birthDate) return null;
