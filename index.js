@@ -395,7 +395,7 @@ app.get('/api/get-love-profile', async (req, res) => {
   }
 
   try {
-    logger.log('📥 get-love-profile request:', { userId, checkOnly });
+    console.log('📥 get-love-profile request:', { userId, checkOnly });
     const profilesDB = getProfileManager();
 
     if (checkOnly === 'true') {
@@ -441,9 +441,10 @@ app.get('/api/get-love-profile', async (req, res) => {
     }
 
     const profile = await profilesDB.getProfile(userId);
-    logger.log('🔎 profile lookup result:', profile ? {
+    console.log('🔎 profile lookup result:', profile ? {
       userName: profile.userName,
       birthDate: profile.birthDate,
+      rawBirthDate: profile.birthdate,
       diagnosisType: profile.diagnosisType
     } : null);
 
@@ -455,7 +456,7 @@ app.get('/api/get-love-profile', async (req, res) => {
     }
 
     const normalizedName = profile.userName || profile.name || profile.personalInfo?.userName || null;
-    const normalizedBirthDate = profile.birthDate || profile.birthdate || profile.personalInfo?.userBirthdate || null;
+    const normalizedBirthDate = profile.birthDate || profile.personalInfo?.userBirthdate || profile.birthdate || null;
 
     const responseProfile = {
       userName: normalizedName,
@@ -474,7 +475,7 @@ app.get('/api/get-love-profile', async (req, res) => {
       responseProfile.diagnosisType = 'otsukisama';
     }
 
-    logger.log('📤 get-love-profile response:', {
+    console.log('📤 get-love-profile response:', {
       userId,
       hasName: !!normalizedName,
       hasBirthDate: !!normalizedBirthDate
