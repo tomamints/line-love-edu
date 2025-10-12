@@ -2,6 +2,10 @@
   "version": 2,
   "rewrites": [
     {
+      "source": "/webhook",
+      "destination": "/api/webhook"
+    },
+    {
       "source": "/api/download-report",
       "destination": "/api/download-report"
     },
