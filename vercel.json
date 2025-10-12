@@ -2,10 +2,6 @@
   "version": 2,
   "rewrites": [
     {
-      "source": "/webhook",
-      "destination": "/api/main"
-    },
-    {
       "source": "/api/download-report",
       "destination": "/api/download-report"
     },
@@ -95,10 +91,6 @@
     }
   ],
   "functions": {
-    "api/main.js": {
-      "maxDuration": 60,
-      "memory": 1024
-    },
     "api/*.js": {
       "maxDuration": 60
     }
