@@ -102,14 +102,21 @@ class UserProfileManager {
   // 入力ステータス取得
   async getInputStatus(userId) {
     const profile = await this.getProfile(userId) || {};
-    
+
     return {
-      hasUserName: !!profile.userName,
-      hasUserBirthDate: !!profile.birthDate,
+      hasUserName: !!profile.userName || !!profile.user_name,
+      hasUserBirthDate: !!profile.birthDate || !!profile.birth_date,
       hasUserGender: !!profile.gender,
-      hasPartnerBirthDate: !!profile.partnerBirthDate,
-      hasPartnerGender: !!profile.partnerGender,
-      hasPartnerName: !!profile.partnerName,
+      hasPartnerBirthDate: !!profile.partnerBirthDate || !!profile.partner_birth_date,
+      hasPartnerGender: !!profile.partnerGender || !!profile.partner_gender,
+      hasPartnerName: !!profile.partnerName || !!profile.partner_name,
+      // 6種類のアンケート項目のチェック
+      hasEmotionalExpression: !!profile.emotionalExpression || !!profile.emotional_expression,
+      hasDistanceStyle: !!profile.distanceStyle || !!profile.distance_style,
+      hasLoveValues: !!profile.loveValues || !!profile.love_values,
+      hasLoveEnergy: !!profile.loveEnergy || !!profile.love_energy,
+      hasLoveSituation: !!profile.loveSituation || !!profile.love_situation,
+      hasWantToKnow: !!profile.wantToKnow || !!profile.want_to_know,
       currentStep: this.getCurrentStep(profile)
     };
   }
