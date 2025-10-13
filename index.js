@@ -1922,19 +1922,9 @@ async function handleTextMessage(event) {
       if (!hasAllRequired) {
         const formUrl = `${process.env.BASE_URL || 'https://line-love-edu.vercel.app'}/api/profile-form?userId=${userId}`;
 
-        // 不足している項目を確認
-        const missingItems = [];
-        if (!hasBirthDate) missingItems.push('・生年月日');
-        if (!hasEmotionalExpression) missingItems.push('・感情表現タイプ');
-        if (!hasDistanceStyle) missingItems.push('・距離感の好み');
-        if (!hasLoveValues) missingItems.push('・恋愛観');
-        if (!hasLoveEnergy) missingItems.push('・恋愛エネルギー');
-        if (!hasLoveSituation) missingItems.push('・現在の恋愛状況');
-        if (!hasWantToKnow) missingItems.push('・知りたいこと');
-
         await client.replyMessage(event.replyToken, {
           type: 'flex',
-          altText: '🌙 おつきさま診断の前に情報を入力してください',
+          altText: '🌙 おつきさま診断の前にアンケートにお答えください',
           contents: {
             type: 'bubble',
             size: 'mega',
@@ -1945,7 +1935,7 @@ async function handleTextMessage(event) {
               contents: [
                 {
                   type: 'text',
-                  text: '🌙 おつきさま診断の前に',
+                  text: '🌙 おつきさま診断',
                   color: '#ffffff',
                   size: 'lg',
                   weight: 'bold',
@@ -1961,41 +1951,20 @@ async function handleTextMessage(event) {
               contents: [
                 {
                   type: 'text',
-                  text: 'より正確な診断のために、先に必要な情報を入力してください。',
+                  text: '診断に必要な情報をお聞きします',
                   size: 'md',
                   wrap: true,
-                  align: 'center'
+                  align: 'center',
+                  weight: 'bold'
                 },
                 {
-                  type: 'separator',
-                  margin: 'lg'
-                },
-                {
-                  type: 'box',
-                  layout: 'vertical',
-                  spacing: 'sm',
-                  contents: [
-                    {
-                      type: 'text',
-                      text: '✅ 未入力の項目',
-                      size: 'sm',
-                      color: '#764ba2',
-                      weight: 'bold'
-                    },
-                    ...missingItems.slice(0, 5).map(item => ({
-                      type: 'text',
-                      text: item,
-                      size: 'sm',
-                      wrap: true
-                    })),
-                    ...(missingItems.length > 5 ? [{
-                      type: 'text',
-                      text: `他${missingItems.length - 5}項目`,
-                      size: 'sm',
-                      wrap: true,
-                      color: '#888888'
-                    }] : [])
-                  ]
+                  type: 'text',
+                  text: 'まずは簡単なアンケートにお答えください',
+                  size: 'sm',
+                  wrap: true,
+                  align: 'center',
+                  margin: 'md',
+                  color: '#666666'
                 }
               ]
             },
@@ -2010,7 +1979,7 @@ async function handleTextMessage(event) {
                   height: 'md',
                   action: {
                     type: 'uri',
-                    label: '🔮 情報を入力する',
+                    label: '🔮 アンケートに回答する',
                     uri: formUrl
                   },
                   color: '#764ba2'
