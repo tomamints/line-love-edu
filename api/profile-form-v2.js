@@ -15,13 +15,13 @@ const supabase = createClient(
 function getJSTDateTime() {
   // 現在時刻を取得
   const now = new Date();
-  
+
   // JSTのオフセット（9時間 = 540分）
   const jstOffset = 9 * 60; // 分単位
-  
+
   // 現在のUTC時刻にオフセットを追加
   const jstTime = new Date(now.getTime() + jstOffset * 60 * 1000);
-  
+
   // YYYY-MM-DDTHH:mm:ss.sss+09:00 形式で返す
   const year = jstTime.getUTCFullYear();
   const month = String(jstTime.getUTCMonth() + 1).padStart(2, '0');
@@ -30,7 +30,7 @@ function getJSTDateTime() {
   const minutes = String(jstTime.getUTCMinutes()).padStart(2, '0');
   const seconds = String(jstTime.getUTCSeconds()).padStart(2, '0');
   const milliseconds = String(jstTime.getUTCMilliseconds()).padStart(3, '0');
-  
+
   return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${milliseconds}+09:00`;
 }
 
@@ -39,38 +39,38 @@ module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-  
+
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
   }
-  
+
   // GETリクエストのアクション処理
   if (req.method === 'GET' && req.query.action) {
     const { action } = req.query;
-    
+
     // 診断データ取得
     if (action === 'get-diagnosis') {
       const { id } = req.query;
-      
+
       if (!id) {
         return res.status(400).json({ error: '診断IDが必要です' });
       }
-      
+
       try {
         // まずdiagnosesテーブルから診断データを取得
         let diagnosisData = null;
         let isPaid = false;
-        
+
         const { data: diagnosis, error: diagError } = await supabase
           .from('diagnoses')
           .select('*')
           .eq('id', id)
           .single();
-        
+
         if (!diagError && diagnosis) {
           // diagnosesテーブルから取得成功
           diagnosisData = diagnosis;
-          
+
           // purchasesテーブルで支払い状態をチェック
           const { data: purchase } = await supabase
             .from('purchases')
@@ -78,7 +78,7 @@ module.exports = async (req, res) => {
             .eq('diagnosis_id', id)
             .eq('status', 'completed')
             .single();
-          
+
           isPaid = !!purchase;
         } else {
           // 後方互換性: profilesテーブルから取得を試みる
@@ -87,15 +87,15 @@ module.exports = async (req, res) => {
             .select('*')
             .eq('diagnosis_id', id)
             .single();
-          
+
           if (profileError || !profileDiagnosis) {
             console.log('診断データが見つかりません:', id);
-            return res.status(404).json({ 
+            return res.status(404).json({
               success: false,
-              error: '診断データが見つかりません' 
+              error: '診断データが見つかりません'
             });
           }
-          
+
           // profilesテーブルのデータをdiagnoses形式に変換
           diagnosisData = {
             id: profileDiagnosis.diagnosis_id,
@@ -112,12 +112,12 @@ module.exports = async (req, res) => {
             },
             created_at: profileDiagnosis.diagnosis_date || profileDiagnosis.created_at
           };
-          
+
           isPaid = profileDiagnosis.is_paid || false;
         }
-        
+
         const data = diagnosisData;
-          
+
           // 基本データ（プレビュー版でも表示）
           const basicDiagnosis = {
             id: data.id,
@@ -137,7 +137,7 @@ module.exports = async (req, res) => {
             is_paid: isPaid,
             created_at: data.created_at
           };
-          
+
           // 支払い済みの場合は完全データを返す
           if (isPaid) {
             return res.json({
@@ -147,7 +147,7 @@ module.exports = async (req, res) => {
               accessLevel: 'full'
             });
           }
-          
+
           // 未払いの場合は基本データのみ（プレビュー用）
           return res.json({
             success: true,
@@ -157,40 +157,40 @@ module.exports = async (req, res) => {
           });
       } catch (error) {
         console.error('診断データ取得エラー:', error);
-        return res.status(500).json({ 
+        return res.status(500).json({
           success: false,
-          error: 'サーバーエラーが発生しました' 
+          error: 'サーバーエラーが発生しました'
         });
       }
     }
-    
+
     // Stripe決済成功処理は削除（PayPayのみ使用）
     if (false && action === 'payment-success') {
       const { session_id, diagnosis_id } = req.query;
-      
+
       if (!session_id || !diagnosis_id) {
         return res.status(400).send('必要なパラメータが不足しています');
       }
-      
+
       try {
         const session = await stripe.checkout.sessions.retrieve(session_id);
-        
+
         if (session.payment_status !== 'paid') {
           return res.status(400).send('支払いが確認できません');
         }
-        
+
         await supabase
           .from('diagnoses')
-          .update({ 
+          .update({
             is_paid: true,
             paid_at: getJSTDateTime(),
             stripe_session_id: session_id,
             payment_amount: session.amount_total
           })
           .eq('id', diagnosis_id);
-        
+
         const redirectUrl = `/lp-otsukisama-unified.html?id=${diagnosis_id}`;
-        
+
         res.send(`
           <!DOCTYPE html>
           <html>
@@ -253,26 +253,26 @@ module.exports = async (req, res) => {
       return;
     }
   }
-  
+
   // Stripe Checkout作成処理は削除（PayPayのみ使用）
   if (false && req.method === 'POST' && req.query.action === 'create-checkout') {
     const { diagnosisId, userId } = req.body;
-    
+
     if (!diagnosisId) {
       return res.status(400).json({ error: '診断IDが必要です' });
     }
-    
+
     try {
       const { data: diagnosis, error: diagError } = await supabase
         .from('diagnoses')
         .select('*')
         .eq('id', diagnosisId)
         .single();
-      
+
       if (diagError || !diagnosis) {
         return res.status(404).json({ error: '診断データが見つかりません' });
       }
-      
+
       if (diagnosis.is_paid) {
         return res.json({
           success: true,
@@ -280,7 +280,7 @@ module.exports = async (req, res) => {
           redirectUrl: `/lp-otsukisama-unified.html?id=${diagnosisId}`
         });
       }
-      
+
       const session = await stripe.checkout.sessions.create({
         payment_method_types: ['card'],
         line_items: [
@@ -306,15 +306,15 @@ module.exports = async (req, res) => {
         cancel_url: `${process.env.BASE_URL}/lp-otsukisama-unified.html?id=${diagnosisId}`,
         expires_at: Math.floor(Date.now() / 1000) + (30 * 60),
       });
-      
+
       await supabase
         .from('diagnoses')
-        .update({ 
+        .update({
           stripe_session_id: session.id,
           checkout_created_at: getJSTDateTime()
         })
         .eq('id', diagnosisId);
-      
+
       return res.json({
         success: true,
         checkoutUrl: session.url,
@@ -322,27 +322,27 @@ module.exports = async (req, res) => {
       });
     } catch (error) {
       console.error('Checkout作成エラー:', error);
-      return res.status(500).json({ 
+      return res.status(500).json({
         error: '決済セッションの作成に失敗しました',
-        details: error.message 
+        details: error.message
       });
     }
   }
-  
+
   // POSTリクエスト: 診断データ保存（/api/save-diagnosisの代替）
   if (req.method === 'POST' && req.headers['content-type']?.includes('application/json')) {
     // CORSヘッダー
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-    
+
     try {
       const { action, userId, userName, name, birthDate, patternId, diagnosisType, resultData } = req.body;
-      
+
       // save-diagnosisアクションの処理
       if (action === 'save-diagnosis') {
         const diagnosisId = `diag_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-        
+
         // 月相番号を取得するヘルパー関数
         function getMoonPhaseNumber(moonPhase) {
           const moonPhaseMap = {
@@ -357,14 +357,14 @@ module.exports = async (req, res) => {
           };
           return moonPhaseMap[moonPhase] || 1;
         }
-        
+
         // 3つの力を計算（誕生日ベース）
         const [year, month, day] = birthDate.split('-').map(Number);
         const moonPhaseNumber = getMoonPhaseNumber(resultData?.moon_phase);
         const actionKey = (year + day + month) % 20;
         const emotionKey = (month + (moonPhaseNumber - 1)) % 20;
         const thinkingKey = year % 20;
-        
+
         // 1. diagnosesテーブルに新規診断を保存（毎回新規）
         const { data: diagnosis, error: diagError } = await supabase
           .from('diagnoses')
@@ -396,7 +396,7 @@ module.exports = async (req, res) => {
           })
           .select()
           .single();
-        
+
         if (diagError) {
           console.error('診断データ保存エラー:', diagError);
           // エラーでもローカルストレージで続行
@@ -406,7 +406,7 @@ module.exports = async (req, res) => {
             message: '診断データを保存しました（ローカル）'
           });
         }
-        
+
         // 2. profilesテーブルの基本情報も更新（最新の名前・誕生日・恋愛4軸）
         if (userId) {
           const profileData = {
@@ -419,26 +419,26 @@ module.exports = async (req, res) => {
           };
           await profilesDB.saveProfile(userId, profileData);
         }
-        
+
         return res.status(200).json({
           success: true,
           diagnosisId: diagnosisId,
           message: '診断データを保存しました'
         });
       }
-      
+
       // おつきさま診断データの保存
       if (diagnosisType === 'otsukisama' || patternId !== undefined) {
         if (!name || !birthDate) {
-          return res.status(400).json({ 
+          return res.status(400).json({
             error: 'Missing required fields',
             required: ['name', 'birthDate']
           });
         }
-        
+
         // 診断IDを生成
         const diagnosisId = `diag_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-        
+
         // プロファイルデータとして保存
         const diagnosisData = {
           diagnosisId: diagnosisId,
@@ -449,11 +449,11 @@ module.exports = async (req, res) => {
           diagnosisType: 'otsukisama',
           isPaid: false
         };
-        
+
         if (userId) {
           await profilesDB.saveProfile(userId, diagnosisData);
         }
-        
+
         const diagnosis = {
           id: diagnosisId,
           user_id: userId || null,
@@ -464,7 +464,7 @@ module.exports = async (req, res) => {
           is_paid: false,
           created_at: getJSTDateTime()
         };
-        
+
         // プロファイルもprofiles DBに保存（LINE連携用）
         if (userId) {
           const profileData = {
@@ -476,7 +476,7 @@ module.exports = async (req, res) => {
           };
           await profilesDB.saveProfile(userId, profileData);
         }
-        
+
         return res.status(200).json({
           success: true,
           diagnosisId: diagnosis.id,
@@ -485,25 +485,25 @@ module.exports = async (req, res) => {
       }
     } catch (error) {
       console.error('診断データ保存エラー:', error);
-      return res.status(500).json({ 
+      return res.status(500).json({
         error: 'Internal server error',
-        message: error.message 
+        message: error.message
       });
     }
   }
-  
+
   // GETリクエスト: フォーム表示
   if (req.method === 'GET') {
     const { userId, liffId } = req.query;
-    
+
     if (!userId) {
       return res.status(400).send('User ID is required');
     }
-    
+
     // 既存のプロフィールを取得
     const profile = await profilesDB.getProfile(userId);
     const existing = profile?.personalInfo || {};
-    
+
     const html = `
 <!DOCTYPE html>
 <html lang="ja">
@@ -519,14 +519,14 @@ module.exports = async (req, res) => {
       padding: 0;
       box-sizing: border-box;
     }
-    
+
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       min-height: 100vh;
       padding: 20px;
     }
-    
+
     .container {
       max-width: 500px;
       margin: 0 auto;
@@ -535,33 +535,33 @@ module.exports = async (req, res) => {
       box-shadow: 0 20px 60px rgba(0,0,0,0.3);
       overflow: hidden;
     }
-    
-    
+
+
     .header {
       background: linear-gradient(135deg, #1a0033, #24243e);
       color: white;
       padding: 30px;
       text-align: center;
     }
-    
+
     .header h1 {
       font-size: 24px;
       margin-bottom: 10px;
     }
-    
+
     .header p {
       opacity: 0.9;
       font-size: 14px;
     }
-    
+
     .form-container {
       padding: 30px;
     }
-    
+
     .section {
       margin-bottom: 30px;
     }
-    
+
     .section-title {
       font-size: 18px;
       color: #1a0033;
@@ -569,11 +569,11 @@ module.exports = async (req, res) => {
       padding-left: 10px;
       border-left: 4px solid #667eea;
     }
-    
+
     .form-group {
       margin-bottom: 20px;
     }
-    
+
     label {
       display: block;
       margin-bottom: 8px;
@@ -581,7 +581,7 @@ module.exports = async (req, res) => {
       font-weight: 500;
       font-size: 14px;
     }
-    
+
     input, select {
       width: 100%;
       padding: 12px 15px;
@@ -590,19 +590,19 @@ module.exports = async (req, res) => {
       font-size: 16px;
       transition: all 0.3s;
     }
-    
+
     select option {
       padding: 10px;
       line-height: 1.5;
     }
-    
+
     /* ラジオボタンのスタイル */
     .radio-group {
       display: flex;
       flex-direction: column;
       gap: 12px;
     }
-    
+
     .radio-option {
       display: flex;
       align-items: flex-start;
@@ -612,57 +612,57 @@ module.exports = async (req, res) => {
       cursor: pointer;
       transition: all 0.3s;
     }
-    
+
     .radio-option:hover {
       border-color: #667eea;
       background: #f8f9ff;
     }
-    
+
     .radio-option input[type="radio"] {
       width: auto;
       margin: 0 10px 0 0;
       flex-shrink: 0;
       align-self: center;
     }
-    
+
     .radio-option.selected {
       border-color: #667eea;
       background: #f8f9ff;
     }
-    
+
     .radio-label {
       flex: 1;
     }
-    
+
     .radio-title {
       font-weight: bold;
       color: #333;
       margin-bottom: 4px;
       font-size: 15px;
     }
-    
+
     .radio-description {
       color: #666;
       font-size: 13px;
       line-height: 1.4;
     }
-    
+
     input:focus, select:focus {
       outline: none;
       border-color: #667eea;
       box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
     }
-    
+
     input[type="date"] {
       font-family: inherit;
     }
-    
+
     .age-calc {
       display: flex;
       gap: 10px;
       align-items: center;
     }
-    
+
     .age-display {
       padding: 10px;
       background: #f5f5f5;
@@ -670,7 +670,7 @@ module.exports = async (req, res) => {
       font-size: 14px;
       color: #666;
     }
-    
+
     .submit-btn {
       width: 100%;
       padding: 16px;
@@ -683,26 +683,26 @@ module.exports = async (req, res) => {
       cursor: pointer;
       transition: transform 0.2s, box-shadow 0.2s;
     }
-    
+
     .submit-btn:hover {
       transform: translateY(-2px);
       box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
     }
-    
+
     .submit-btn:active {
       transform: translateY(0);
     }
-    
+
     .loading {
       display: none;
       text-align: center;
       padding: 20px;
     }
-    
+
     .loading.show {
       display: block;
     }
-    
+
     .spinner {
       border: 3px solid #f3f3f3;
       border-top: 3px solid #667eea;
@@ -712,12 +712,12 @@ module.exports = async (req, res) => {
       animation: spin 1s linear infinite;
       margin: 0 auto;
     }
-    
+
     @keyframes spin {
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
-    
+
     .success-message {
       display: none;
       background: linear-gradient(135deg, #667eea, #764ba2);
@@ -728,17 +728,17 @@ module.exports = async (req, res) => {
       margin: 20px;
       box-shadow: 0 10px 30px rgba(0,0,0,0.2);
     }
-    
+
     .success-message.show {
       display: block;
       animation: fadeIn 0.5s ease-in;
     }
-    
+
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
     }
-    
+
     .optional-tag {
       display: inline-block;
       background: #ff9800;
@@ -756,7 +756,7 @@ module.exports = async (req, res) => {
       <h1>おつきさま診断</h1>
       <p>おつきさまにあなたとお相手のことを教えてください。</p>
     </div>
-    
+
     <div class="form-container">
       <div class="success-message" id="successMessage">
         <div style="font-size: 24px; margin-bottom: 20px;">🌙</div>
@@ -769,20 +769,20 @@ module.exports = async (req, res) => {
 
           まもなく月タロット占いへ<br>
           ご案内いたします<br><br>
-          
+
           <span style="font-size: 14px; opacity: 0.9;">
             どうぞこのままお待ちください<br>
             月の導きがあなたに届きますように
           </span>
         </div>
       </div>
-      
+
       <form id="profileForm" action="/api/profile-form" method="POST">
         <input type="hidden" name="userId" value="${userId}">
-        
+
         <div class="section">
           <h2 class="section-title">👤 あなたのこと</h2>
-          
+
           <div class="form-group">
             <label for="userBirthdate"><strong>生年月日</strong></label>
             <div style="display: flex; gap: 5px;">
@@ -823,9 +823,9 @@ module.exports = async (req, res) => {
             </div>
             <input type="hidden" id="userBirthdate" name="userBirthdate" value="${existing.userBirthdate || ''}" required>
           </div>
-          
+
           <input type="hidden" id="userAge" name="userAge" value="${existing.userAge || ''}">
-          
+
           <div class="form-group">
             <label for="userGender"><strong>性別</strong></label>
             <select id="userGender" name="userGender" required>
@@ -836,10 +836,10 @@ module.exports = async (req, res) => {
             </select>
           </div>
         </div>
-        
+
         <div class="section">
           <h2 class="section-title">💖 お相手のこと（任意）</h2>
-          <p style="font-size: 14px; color: #888; margin-bottom: 15px;">※相性占いをする場合のみ入力してください</p>
+          <p style="font-size: 14px; color: #888; margin-bottom: 15px;"></p>
 
           <div class="form-group">
             <label for="partnerBirthdate"><strong>生年月日</strong></label>
@@ -881,9 +881,9 @@ module.exports = async (req, res) => {
             </div>
             <input type="hidden" id="partnerBirthdate" name="partnerBirthdate" value="${existing.partnerBirthdate || ''}" required>
           </div>
-          
+
           <input type="hidden" id="partnerAge" name="partnerAge" value="${existing.partnerAge || ''}">
-          
+
           <div class="form-group">
             <label for="partnerGender"><strong>性別</strong></label>
             <select id="partnerGender" name="partnerGender">
@@ -894,10 +894,10 @@ module.exports = async (req, res) => {
             </select>
           </div>
         </div>
-        
+
         <div class="section">
           <h2 class="section-title">🌙 恋愛状況について</h2>
-          
+
           <div class="form-group">
             <label><strong>Q1：あなたの恋の状況は、どれに近いですか？</strong></label>
             <div class="radio-group">
@@ -938,7 +938,7 @@ module.exports = async (req, res) => {
               </label>
             </div>
           </div>
-          
+
           <div class="form-group">
             <label><strong>Q2：今、特に何を知りたいですか？</strong></label>
             <div class="radio-group">
@@ -968,7 +968,7 @@ module.exports = async (req, res) => {
               </label>
             </div>
           </div>
-          
+
           <div class="form-group">
             <label><strong>Q3：想いを伝えるときのスタイルは？</strong></label>
             <div class="radio-group">
@@ -998,7 +998,7 @@ module.exports = async (req, res) => {
               </label>
             </div>
           </div>
-          
+
           <div class="form-group">
             <label><strong>Q4：恋人との距離感で心地いいのは？</strong></label>
             <div class="radio-group">
@@ -1028,7 +1028,7 @@ module.exports = async (req, res) => {
               </label>
             </div>
           </div>
-          
+
           <div class="form-group">
             <label><strong>Q5：恋愛で大事にしたいものは？</strong></label>
             <div class="radio-group">
@@ -1058,7 +1058,7 @@ module.exports = async (req, res) => {
               </label>
             </div>
           </div>
-          
+
           <div class="form-group">
             <label><strong>Q6：あなたのこれまでの恋愛のペースは？</strong></label>
             <div class="radio-group">
@@ -1089,39 +1089,39 @@ module.exports = async (req, res) => {
             </div>
           </div>
         </div>
-        
+
         <button type="submit" class="submit-btn">
           おつきさまにお伝えする
         </button>
       </form>
-      
+
       <div class="loading" id="loading">
         <div class="spinner"></div>
         <p style="margin-top: 10px;">お伝え中...</p>
       </div>
     </div>
   </div>
-  
+
   <script>
     // 年齢を自動計算
     function calculateAge(type) {
       const birthdateInput = document.getElementById(type + 'Birthdate');
       const ageInput = document.getElementById(type + 'Age');
-      
+
       if (birthdateInput.value) {
         const birthDate = new Date(birthdateInput.value);
         const today = new Date();
         let age = today.getFullYear() - birthDate.getFullYear();
         const monthDiff = today.getMonth() - birthDate.getMonth();
-        
+
         if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
           age--;
         }
-        
+
         ageInput.value = age;
       }
     }
-    
+
     // 初期表示時に年齢計算
     window.onload = function() {
       calculateAge('user');
@@ -1134,14 +1134,14 @@ module.exports = async (req, res) => {
       const year = document.getElementById(type + 'Year').value;
       const month = document.getElementById(type + 'Month').value;
       const day = document.getElementById(type + 'Day').value;
-      
+
       if (year && month && day) {
         const dateStr = year + '-' + String(month).padStart(2, '0') + '-' + String(day).padStart(2, '0');
         document.getElementById(type + 'Birthdate').value = dateStr;
         calculateAge(type);
       }
     }
-    
+
     // イベントリスナーを設定
     ['user', 'partner'].forEach(type => {
       ['Year', 'Month', 'Day'].forEach(part => {
@@ -1171,7 +1171,7 @@ module.exports = async (req, res) => {
           });
         });
       });
-      
+
       // ラベルクリック時の処理（ラベル全体をクリック可能に）
       document.querySelectorAll('.radio-option').forEach(option => {
         option.addEventListener('click', function(e) {
@@ -1230,15 +1230,15 @@ module.exports = async (req, res) => {
 </body>
 </html>
     `;
-    
+
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
     res.send(html);
-    
+
   // POSTリクエスト: データ保存
   } else if (req.method === 'POST') {
     console.log('📮 POST request received');
     console.log('req.body:', req.body);
-    
+
     // ボディが既にパースされていない場合のみパース
     if (!req.body) {
       await new Promise((resolve) => {
@@ -1260,16 +1260,16 @@ module.exports = async (req, res) => {
         });
       });
     }
-    
+
     // save-otsuきsamaアクションの処理
     if (req.body.action === 'save-otsukisama') {
       console.log('📝 save-otsukisama action received:', req.body);
       const { userId, name, birthDate } = req.body;
-      
+
       if (!userId || !name || !birthDate) {
         return res.status(400).json({ error: 'Missing required fields' });
       }
-      
+
       try {
         // 月のパターンを計算（lp-otsukisama-moon.jsと同じロジック）
         const calculateMoonPattern = (birthDate) => {
@@ -1277,14 +1277,14 @@ module.exports = async (req, res) => {
           const year = date.getFullYear();
           const month = date.getMonth() + 1;
           const day = date.getDate();
-          
+
           // 月齢を計算（LINEバックエンドと同じ）
           const referenceDate = new Date('2000-01-06 18:14:00');
           const lunarCycle = 29.53059;
           const daysDiff = (date - referenceDate) / (1000 * 60 * 60 * 24);
           let moonAge = daysDiff % lunarCycle;
           if (moonAge < 0) moonAge += lunarCycle;
-          
+
           // 月齢から月相を判定
           const ranges = [
             { index: 0, min: 0, max: 3.7 },      // 新月
@@ -1296,7 +1296,7 @@ module.exports = async (req, res) => {
             { index: 6, min: 22.1, max: 25.8 },  // 下弦
             { index: 7, min: 25.8, max: 29.53 }  // 暁
           ];
-          
+
           let moonPhaseIndex = 0;
           for (const range of ranges) {
             if (moonAge >= range.min && moonAge < range.max) {
@@ -1304,19 +1304,19 @@ module.exports = async (req, res) => {
               break;
             }
           }
-          
+
           // 隠れ月相のインデックスを計算（既存のロジック）
           const seed = (month * 31 + day) % 8;
           const hiddenIndex = (moonPhaseIndex + seed + 4) % 8;
-          
+
           // パターンID計算（0-63）
           const patternId = moonPhaseIndex * 8 + hiddenIndex;
           return patternId;
         };
-        
+
         const moonPatternId = calculateMoonPattern(birthDate);
         const diagnosisId = `diag_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-        
+
         // プロファイルを保存
         const profileData = {
           userName: name,
@@ -1326,11 +1326,11 @@ module.exports = async (req, res) => {
           diagnosisId: diagnosisId,
           diagnosisDate: getJSTDateTime()
         };
-        
+
         await profilesDB.saveProfile(userId, profileData);
-        
+
         console.log('✅ Profile saved successfully:', { userId, diagnosisId, moonPatternId });
-        
+
         return res.json({
           success: true,
           diagnosisId: diagnosisId,
@@ -1342,23 +1342,23 @@ module.exports = async (req, res) => {
         return res.status(500).json({ error: 'Failed to save profile' });
       }
     }
-    
+
     // 既存の恋愛占いフォームデータ処理
-    const { 
-      userId, userBirthdate, userAge, userGender, 
-      partnerBirthdate, partnerAge, partnerGender, 
+    const {
+      userId, userBirthdate, userAge, userGender,
+      partnerBirthdate, partnerAge, partnerGender,
       loveSituation, wantToKnow,
-      emotionalExpression, distanceStyle, loveValues, loveEnergy 
+      emotionalExpression, distanceStyle, loveValues, loveEnergy
     } = req.body;
-    
+
     if (!userId) {
       return res.status(400).json({ error: 'User ID is required' });
     }
-    
+
     try {
       // プロフィールを保存
       const profile = await profilesDB.getProfile(userId) || {};
-      
+
       profile.personalInfo = {
         ...profile.personalInfo,
         userBirthdate,
@@ -1375,27 +1375,27 @@ module.exports = async (req, res) => {
         loveEnergy,
         updatedAt: getJSTDateTime()
       };
-      
+
       // データベースのカラムに合わせたデータも設定
       profile.birthDate = userBirthdate;
       profile.gender = userGender;
       profile.partnerBirthDate = partnerBirthdate;
       profile.partnerGender = partnerGender;
-      
+
       await profilesDB.saveProfile(userId, profile);
-      
+
       console.log('✅ Profile saved for user:', userId);
-      
+
       // 相性診断を実行
       console.log('📊 相性診断開始 for user:', userId);
       let fortuneResult = null;
       try {
         const MoonFortuneEngineV2 = require('../core/moon-fortune-v2');
-        
+
         console.log('🌙 月の相性診断生成開始');
         // 月の相性診断を生成
         const moonEngine = new MoonFortuneEngineV2();
-        
+
         // プロファイルオブジェクトを作成
         const userProfile = {
           birthDate: userBirthdate,
@@ -1405,40 +1405,40 @@ module.exports = async (req, res) => {
           birthDate: partnerBirthdate,
           gender: partnerGender
         };
-        
+
         fortuneResult = moonEngine.generateCompleteReading(userBirthdate, partnerBirthdate);
         console.log('🌙 診断結果生成完了');
-        
+
         // 診断結果をファイルに保存（データベースには対応カラムがないため）
         // Vercel環境では/tmpに保存（一時的）
         try {
           const fs = require('fs').promises;
           const path = require('path');
-          const dataDir = process.env.VERCEL 
+          const dataDir = process.env.VERCEL
             ? '/tmp/profiles'
             : path.join(__dirname, '../data/profiles');
-          
+
           await fs.mkdir(dataDir, { recursive: true });
-          
+
           const profileData = {
             ...profile,
             lastFortuneResult: fortuneResult
           };
-          
+
           await fs.writeFile(
             path.join(dataDir, `${userId}.json`),
             JSON.stringify(profileData, null, 2)
           );
-          
+
           console.log('✅ 診断結果をファイルに保存:', path.join(dataDir, `${userId}.json`));
         } catch (fileError) {
           // ファイル保存エラーは無視（データベースに保存済み）
           console.log('⚠️ ファイル保存スキップ:', fileError.message);
         }
-        
+
         // プッシュメッセージは送らない（レート制限回避）
         // 代わりに成功ページで診断結果を表示
-        
+
         /* コメントアウト：レート制限対策
         const message = {
           type: 'flex',
@@ -1537,8 +1537,8 @@ module.exports = async (req, res) => {
                 },
                 {
                   type: 'text',
-                  text: Array.isArray(result.compatibility.advice) 
-                    ? result.compatibility.advice.join(' ') 
+                  text: Array.isArray(result.compatibility.advice)
+                    ? result.compatibility.advice.join(' ')
                     : result.compatibility.advice,
                   wrap: true,
                   size: 'sm',
@@ -1548,15 +1548,15 @@ module.exports = async (req, res) => {
             }
           }
         };
-        
+
         */
-        
+
       } catch (sendError) {
         console.error('❌ 診断生成エラー:', sendError);
         console.error('❌ エラー詳細:', sendError.stack);
         // エラーがあっても保存は成功として扱う
       }
-      
+
       // Content-Typeをチェックして適切なレスポンスを返す
       const contentType = req.headers['content-type'] || '';
       const isAjaxRequest = contentType.includes('application/json');
@@ -1731,15 +1731,15 @@ module.exports = async (req, res) => {
 </body>
 </html>
       `;
-      
+
       res.setHeader('Content-Type', 'text/html; charset=utf-8');
       res.send(successHtml);
-      
+
     } catch (error) {
       console.error('Profile save error:', error);
       res.status(500).json({ error: 'Failed to save profile' });
     }
-    
+
   } else {
     res.status(405).json({ error: 'Method not allowed' });
   }
