@@ -173,6 +173,22 @@
             display: block;
         }
 
+        /* Apple Pay非対応ブラウザ用の代替スタイル */
+        @supports not (-webkit-appearance: -apple-pay-button) {
+            .apple-pay-button-official {
+                background: #000;
+                color: #fff;
+                font-size: 17px;
+                font-weight: 600;
+                border: none;
+                font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            }
+            .apple-pay-button-official:before {
+                content: ' Pay';
+                font-weight: 600;
+            }
+        }
+
         .apple-pay-button-official:active {
             opacity: 0.8;
         }
@@ -220,7 +236,7 @@
 
             <!-- Apple Pay非対応時のメッセージ -->
             <div id="applePayNotSupported" style="display: none; text-align: center; padding: 20px; background: rgba(255, 255, 255, 0.05); border-radius: 12px; margin-bottom: 18px;">
-                <p style="color: rgba(255, 255, 255, 0.6); font-size: 14px;">Apple PayはSafariブラウザでのみご利用いただけます</p>
+                <p style="color: rgba(255, 255, 255, 0.6); font-size: 14px;">Apple Payはこの環境ではご利用いただけません</p>
             </div>
 
             <div class="payment-separator">
@@ -363,36 +379,23 @@
 
         // Apple Pay初期化と処理
         async function initializeApplePay() {
-            // Safariチェック
-            const isSafari = /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent);
+            // PAY.JPのApple Pay Web実装を使用
+            // ブラウザ制限なし - PAY.JPが対応を処理
 
-            if (!isSafari) {
-                document.getElementById('applePayNotSupported').style.display = 'block';
-                return;
-            }
-
-            // HTTPSチェック
-            if (location.protocol !== 'https:') {
-                document.getElementById('applePayNotSupported').style.display = 'block';
-                return;
-            }
-
-            // Apple Pay対応チェック
-            if (!window.ApplePaySession || !ApplePaySession.canMakePayments()) {
-                document.getElementById('applePayNotSupported').style.display = 'block';
-                return;
-            }
-
-            // Apple Payが利用可能な場合
+            // PAY.JPのApple Pay利用可能性チェック
             try {
+                // PAY.JPが内部でブラウザ互換性を処理
                 const isAvailable = await payjp.applePay.checkAvailability();
-                if (!isAvailable) {
+
+                if (isAvailable) {
+                    // Apple Payボタンを表示
+                    document.getElementById('applePayContainer').style.display = 'block';
+                } else {
+                    // 利用不可の場合はメッセージを表示
                     document.getElementById('applePayNotSupported').style.display = 'block';
+                    console.log('[Apple Pay] Not available on this device/browser');
                     return;
                 }
-
-                // Apple Payボタンを表示
-                document.getElementById('applePayContainer').style.display = 'block';
 
                 // Apple Payボタンのクリックイベント
                 document.getElementById('applePayButton').addEventListener('click', function() {
