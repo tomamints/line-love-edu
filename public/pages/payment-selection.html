@@ -160,6 +160,36 @@
             display: block;
         }
 
+        .apple-pay-button {
+            width: 100%;
+            padding: 14px 0;
+            border-radius: 28px;
+            border: none;
+            background: #000;
+            color: #fff;
+            font-size: 16px;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            cursor: pointer;
+            margin-bottom: 18px;
+            box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
+            transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+        }
+
+        .apple-pay-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 14px 28px rgba(0, 0, 0, 0.4);
+            opacity: 0.9;
+        }
+
+        .payment-separator {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.55);
+            font-size: 12px;
+            letter-spacing: 0.2em;
+            margin: 18px 0;
+        }
+
         .back-link {
             display: block;
             text-align: center;
@@ -188,8 +218,7 @@
         </div>
 
         <div class="payment-methods">
-            <!-- Apple Payボタン（常に表示） -->
-            <!--
+            <!-- Apple Payボタン（Safariでpayment-applepay.htmlへ遷移） -->
             <button id="applePayButton" class="apple-pay-button">
                 Apple Payで支払う
             </button>
@@ -197,7 +226,6 @@
             <div class="payment-separator">
                 または
             </div>
-            -->
 
             <!-- クレジットカードボタン（PAY.JP Checkout） -->
             <form action="/pages/payment-process.html" method="GET" id="checkout-form">
@@ -330,6 +358,26 @@
 
         document.getElementById('diagnosisIdField').value = diagnosisId || sessionStorage.getItem('diagnosisId');
         document.getElementById('userIdField').value = userId || sessionStorage.getItem('userId') || 'anonymous';
+
+        const applePayButton = document.getElementById('applePayButton');
+        if (applePayButton) {
+            applePayButton.addEventListener('click', () => {
+                const finalDiagnosisId = diagnosisId || sessionStorage.getItem('diagnosisId');
+                const finalUserId = userId || sessionStorage.getItem('userId') || '';
+
+                if (!finalDiagnosisId) {
+                    errorEl.textContent = '診断IDが見つかりませんでした。診断結果ページから再度お試しください。';
+                    errorEl.style.display = 'block';
+                    return;
+                }
+
+                const params = new URLSearchParams({ id: finalDiagnosisId });
+                if (finalUserId) {
+                    params.set('userId', finalUserId);
+                }
+                window.location.href = `/pages/payment-applepay.html?${params.toString()}`;
+            });
+        }
     </script>
 </body>
 </html>
