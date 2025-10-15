@@ -378,92 +378,77 @@
         document.getElementById('userIdField').value = userId || sessionStorage.getItem('userId') || 'anonymous';
 
         // Apple Pay初期化と処理
-        async function initializeApplePay() {
-            // PAY.JPのApple Pay Web実装を使用
-            // ブラウザ制限なし - PAY.JPが対応を処理
+        function initializeApplePay() {
+            // Apple Payボタンを常に表示して実際にテスト可能にする
+            document.getElementById('applePayContainer').style.display = 'block';
 
-            // PAY.JPのApple Pay利用可能性チェック
-            try {
-                // PAY.JPが内部でブラウザ互換性を処理
-                const isAvailable = await payjp.applePay.checkAvailability();
+            // Apple Payボタンのクリックイベント
+            document.getElementById('applePayButton').addEventListener('click', function() {
+                const finalDiagnosisId = diagnosisId || sessionStorage.getItem('diagnosisId');
+                const finalUserId = userId || sessionStorage.getItem('userId') || '';
 
-                if (isAvailable) {
-                    // Apple Payボタンを表示
-                    document.getElementById('applePayContainer').style.display = 'block';
-                } else {
-                    // 利用不可の場合はメッセージを表示
-                    document.getElementById('applePayNotSupported').style.display = 'block';
-                    console.log('[Apple Pay] Not available on this device/browser');
+                if (!finalDiagnosisId) {
+                    errorEl.textContent = '診断IDが見つかりませんでした。';
+                    errorEl.style.display = 'block';
                     return;
                 }
 
-                // Apple Payボタンのクリックイベント
-                document.getElementById('applePayButton').addEventListener('click', function() {
-                    const finalDiagnosisId = diagnosisId || sessionStorage.getItem('diagnosisId');
-                    const finalUserId = userId || sessionStorage.getItem('userId') || '';
+                const paymentRequest = {
+                    countryCode: 'JP',
+                    currencyCode: 'JPY',
+                    total: {
+                        label: 'おつきさま診断 完全版',
+                        amount: '2980'
+                    },
+                    supportedNetworks: ['visa', 'masterCard', 'amex', 'jcb'],
+                    merchantCapabilities: ['supports3DS'],
+                    requiredBillingContactFields: ['postalCode']
+                };
 
-                    if (!finalDiagnosisId) {
-                        errorEl.textContent = '診断IDが見つかりませんでした。';
-                        errorEl.style.display = 'block';
-                        return;
-                    }
+                try {
+                    const session = payjp.applePay.buildSession(
+                        paymentRequest,
+                        function(result) {
+                            // 成功時のコールバック
+                            console.log('[Apple Pay] Payment authorized:', result);
 
-                    const paymentRequest = {
-                        countryCode: 'JP',
-                        currencyCode: 'JPY',
-                        total: {
-                            label: 'おつきさま診断 完全版',
-                            amount: '2980'
-                        },
-                        supportedNetworks: ['visa', 'masterCard', 'amex', 'jcb'],
-                        merchantCapabilities: ['supports3DS'],
-                        requiredBillingContactFields: ['postalCode']
-                    };
-
-                    try {
-                        const session = payjp.applePay.buildSession(
-                            paymentRequest,
-                            async function(result) {
-                                // 成功時
-                                console.log('[Apple Pay] Payment authorized');
-                                try {
-                                    await handlePaymentSuccess(result.token.id, 'apple_pay');
-                                    session.completePayment(ApplePaySession.STATUS_SUCCESS);
-                                } catch (error) {
-                                    console.error('[Apple Pay] Payment processing failed:', error);
-                                    session.completePayment(ApplePaySession.STATUS_FAILURE);
-                                    errorEl.textContent = '決済処理に失敗しました。';
-                                    errorEl.style.display = 'block';
-                                }
-                            },
-                            function(error) {
-                                // エラー時
-                                console.error('[Apple Pay] Session error:', error);
-                                let errorMessage = 'Apple Payでの決済に失敗しました。';
-
-                                if (error.code === 'USER_CANCEL') {
-                                    errorMessage = '決済がキャンセルされました。';
-                                }
-
-                                errorEl.textContent = errorMessage;
+                            // 決済処理を実行してからAppleに成功を通知
+                            handlePaymentSuccess(result.token.id, 'apple_pay').then(function() {
+                                session.completePayment(ApplePaySession.STATUS_SUCCESS);
+                            }).catch(function(error) {
+                                console.error('[Apple Pay] Payment processing failed:', error);
+                                session.completePayment(ApplePaySession.STATUS_FAILURE);
+                                errorEl.textContent = '決済処理に失敗しました。';
                                 errorEl.style.display = 'block';
-                            }
-                        );
+                            });
+                        },
+                        function(error) {
+                            // エラー時のコールバック
+                            console.error('[Apple Pay] Session error:', error);
+                            let errorMessage = 'Apple Payでの決済に失敗しました。';
 
-                        // セッション開始
-                        if (session && session.begin) {
-                            session.begin();
+                            if (error.code === 'USER_CANCEL') {
+                                errorMessage = '決済がキャンセルされました。';
+                            } else if (error.code === 'APPLE_PAY_NOT_REGISTERED') {
+                                errorMessage = 'このサイトはApple Payに登録されていません。';
+                            }
+
+                            errorEl.textContent = errorMessage;
+                            errorEl.style.display = 'block';
                         }
-                    } catch (error) {
-                        console.error('[Apple Pay] Failed to create session:', error);
-                        errorEl.textContent = 'Apple Payセッションの作成に失敗しました。';
-                        errorEl.style.display = 'block';
+                    );
+
+                    // セッション開始
+                    if (session && session.begin) {
+                        session.begin();
+                        console.log('[Apple Pay] Session started');
                     }
-                });
-            } catch (error) {
-                console.error('[Apple Pay] Initialization error:', error);
-                document.getElementById('applePayNotSupported').style.display = 'block';
-            }
+                } catch (error) {
+                    console.error('[Apple Pay] Failed to create session:', error);
+                    errorEl.textContent = 'Apple Payセッションの作成に失敗しました：' + error.message;
+                    errorEl.style.display = 'block';
+                }
+            });
         }
 
         // Apple Pay初期化を実行
