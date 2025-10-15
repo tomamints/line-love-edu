@@ -403,16 +403,34 @@
 
             // Apple Payボタンのクリックイベント
             document.getElementById('applePayButton').addEventListener('click', function() {
-                console.log('[Apple Pay] Button clicked');
+                showDebugInfo('Apple Pay button clicked');
+
+                // ブラウザチェック
+                if (!window.ApplePaySession) {
+                    showDebugInfo('ApplePaySession not available');
+                    errorEl.textContent = 'Apple PayはSafariブラウザでのみご利用いただけます。クレジットカードをお試しください。';
+                    errorEl.style.display = 'block';
+                    return;
+                }
+
+                // Apple Pay対応チェック
+                if (!ApplePaySession.canMakePayments()) {
+                    showDebugInfo('Cannot make payments');
+                    errorEl.textContent = 'Apple Payが利用できません。Walletにカードが登録されているかご確認ください。';
+                    errorEl.style.display = 'block';
+                    return;
+                }
 
                 // PAY.JP初期化チェック
                 if (!payjp) {
+                    showDebugInfo('PAYJP not initialized');
                     errorEl.textContent = 'PAY.JPが初期化されていません。';
                     errorEl.style.display = 'block';
                     return;
                 }
 
                 if (!payjp.applePay) {
+                    showDebugInfo('PAYJP applePay not available');
                     errorEl.textContent = 'PAY.JP Apple Payが利用できません。';
                     errorEl.style.display = 'block';
                     return;
