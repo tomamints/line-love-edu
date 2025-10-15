@@ -379,11 +379,30 @@
 
         // Apple Pay初期化と処理
         function initializeApplePay() {
+            // PAY.JP初期化状態を確認
+            console.log('[Apple Pay] PAYJP object:', typeof payjp);
+            console.log('[Apple Pay] PAYJP applePay:', typeof payjp?.applePay);
+            console.log('[Apple Pay] Public key:', publicKey);
+
             // Apple Payボタンを常に表示して実際にテスト可能にする
             document.getElementById('applePayContainer').style.display = 'block';
 
             // Apple Payボタンのクリックイベント
             document.getElementById('applePayButton').addEventListener('click', function() {
+                console.log('[Apple Pay] Button clicked');
+
+                // PAY.JP初期化チェック
+                if (!payjp) {
+                    errorEl.textContent = 'PAY.JPが初期化されていません。';
+                    errorEl.style.display = 'block';
+                    return;
+                }
+
+                if (!payjp.applePay) {
+                    errorEl.textContent = 'PAY.JP Apple Payが利用できません。';
+                    errorEl.style.display = 'block';
+                    return;
+                }
                 const finalDiagnosisId = diagnosisId || sessionStorage.getItem('diagnosisId');
                 const finalUserId = userId || sessionStorage.getItem('userId') || '';
 
@@ -445,7 +464,13 @@
                     }
                 } catch (error) {
                     console.error('[Apple Pay] Failed to create session:', error);
-                    errorEl.textContent = 'Apple Payセッションの作成に失敗しました：' + error.message;
+                    console.error('[Apple Pay] Error details:', {
+                        message: error.message,
+                        code: error.code,
+                        type: error.type,
+                        stack: error.stack
+                    });
+                    errorEl.textContent = `Apple Payセッションの作成に失敗しました：${error.message || error.type || 'Unknown error'}`;
                     errorEl.style.display = 'block';
                 }
             });
