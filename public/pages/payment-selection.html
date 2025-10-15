@@ -7,6 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://js.pay.jp/v2/pay.js"></script>
     <script src="/config/payjp-public-key.js"></script>
     <style>
@@ -253,20 +254,23 @@
         }
 
         .card-brand-icon {
-            width: 45px;
-            height: 30px;
+            width: 50px;
+            height: 32px;
             background: rgba(255, 255, 255, 0.95);
-            border-radius: 6px;
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: bold;
-            font-size: 10px;
+            font-size: 18px;
             color: #333;
             text-align: center;
-            line-height: 1.2;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-            margin-bottom: 5px;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.25);
+            margin-bottom: 8px;
+            transition: transform 0.2s ease;
+        }
+
+        .card-brand-icon:hover {
+            transform: translateY(-2px);
         }
 
         .card-brand-name {
@@ -372,27 +376,27 @@
                 <div class="card-brands-title">ご利用いただけるクレジットカード</div>
                 <div class="card-brands-list">
                     <div class="card-brand card-brand-visa">
-                        <div class="card-brand-icon">VISA</div>
+                        <div class="card-brand-icon"><i class="fab fa-cc-visa"></i></div>
                         <div class="card-brand-name">Visa</div>
                     </div>
                     <div class="card-brand card-brand-mastercard">
-                        <div class="card-brand-icon">MC</div>
+                        <div class="card-brand-icon"><i class="fab fa-cc-mastercard"></i></div>
                         <div class="card-brand-name">Mastercard</div>
                     </div>
                     <div class="card-brand card-brand-jcb">
-                        <div class="card-brand-icon">JCB</div>
+                        <div class="card-brand-icon"><i class="fab fa-cc-jcb"></i></div>
                         <div class="card-brand-name">JCB</div>
                     </div>
                     <div class="card-brand card-brand-discover">
-                        <div class="card-brand-icon">DISC</div>
+                        <div class="card-brand-icon"><i class="fab fa-cc-discover"></i></div>
                         <div class="card-brand-name">Discover</div>
                     </div>
                     <div class="card-brand card-brand-amex">
-                        <div class="card-brand-icon">AMEX</div>
+                        <div class="card-brand-icon"><i class="fab fa-cc-amex"></i></div>
                         <div class="card-brand-name">American Express</div>
                     </div>
                     <div class="card-brand card-brand-diners">
-                        <div class="card-brand-icon">DINERS</div>
+                        <div class="card-brand-icon"><i class="fab fa-cc-diners-club"></i></div>
                         <div class="card-brand-name">Diners Club</div>
                     </div>
                 </div>
