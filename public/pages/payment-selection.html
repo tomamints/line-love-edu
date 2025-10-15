@@ -302,8 +302,8 @@
         const errorEl = document.getElementById('errorMessage');
         const successEl = document.getElementById('successMessage');
 
-        // PAY.JP公開鍵（テスト環境）
-        const publicKey = window.PAYJP_PUBLIC_KEY || 'pk_test_16ae008c6fe3b2a1059efc6f';
+        // PAY.JP公開鍵（本番環境）
+        const publicKey = window.PAYJP_PUBLIC_KEY || 'pk_live_fa40ede10b640eba6ef28414';
         const payjp = Payjp(publicKey);
 
         async function handlePaymentSuccess(token, paymentMethod = 'credit_card') {
@@ -450,13 +450,13 @@
                     total: {
                         label: 'おつきさま診断 完全版',
                         amount: '2980'
-                    },
-                    supportedNetworks: ['visa', 'masterCard', 'amex', 'jcb'],
-                    merchantCapabilities: ['supports3DS'],
-                    requiredBillingContactFields: ['postalCode']
+                    }
                 };
 
+                showDebugInfo(`PaymentRequest: ${JSON.stringify(paymentRequest)}`);
+
                 try {
+                    showDebugInfo('Calling buildSession...');
                     const session = payjp.applePay.buildSession(
                         paymentRequest,
                         function(result) {
