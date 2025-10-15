@@ -475,13 +475,19 @@
                         },
                         function(error) {
                             // エラー時のコールバック
-                            console.error('[Apple Pay] Session error:', error);
+                            showDebugInfo(`Apple Pay error: ${JSON.stringify(error)}`);
+                            showDebugInfo(`Error code: ${error.code}`);
+                            showDebugInfo(`Error message: ${error.message}`);
+                            showDebugInfo(`Error type: ${error.type}`);
+
                             let errorMessage = 'Apple Payでの決済に失敗しました。';
 
                             if (error.code === 'USER_CANCEL') {
                                 errorMessage = '決済がキャンセルされました。';
                             } else if (error.code === 'APPLE_PAY_NOT_REGISTERED') {
                                 errorMessage = 'このサイトはApple Payに登録されていません。';
+                            } else if (error.message) {
+                                errorMessage += ` (${error.message})`;
                             }
 
                             errorEl.textContent = errorMessage;
@@ -491,8 +497,11 @@
 
                     // セッション開始
                     if (session && session.begin) {
+                        showDebugInfo('Apple Pay session created successfully');
                         session.begin();
-                        console.log('[Apple Pay] Session started');
+                        showDebugInfo('Apple Pay session started');
+                    } else {
+                        showDebugInfo('Failed to create Apple Pay session - no session object');
                     }
                 } catch (error) {
                     showDebugInfo(`Error creating session: ${error.message}`);
