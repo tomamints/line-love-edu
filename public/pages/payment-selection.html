@@ -268,6 +268,11 @@
         <div class="error-message" id="errorMessage"></div>
         <div class="success-message" id="successMessage"></div>
 
+        <!-- デバッグ情報表示 -->
+        <div id="debugInfo" style="display: none; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.3); color: #ffffff; padding: 15px; border-radius: 10px; margin: 20px 0; font-size: 12px; word-break: break-all;">
+            <strong>デバッグ情報:</strong><br>
+        </div>
+
         <div class="features">
             <div class="feature">
                 <span class="feature-icon">🔒</span>
@@ -377,12 +382,21 @@
         document.getElementById('diagnosisIdField').value = diagnosisId || sessionStorage.getItem('diagnosisId');
         document.getElementById('userIdField').value = userId || sessionStorage.getItem('userId') || 'anonymous';
 
+        // デバッグ情報表示用
+        function showDebugInfo(message) {
+            const debugEl = document.getElementById('debugInfo');
+            if (debugEl) {
+                debugEl.innerHTML += message + '<br>';
+                debugEl.style.display = 'block';
+            }
+        }
+
         // Apple Pay初期化と処理
         function initializeApplePay() {
             // PAY.JP初期化状態を確認
-            console.log('[Apple Pay] PAYJP object:', typeof payjp);
-            console.log('[Apple Pay] PAYJP applePay:', typeof payjp?.applePay);
-            console.log('[Apple Pay] Public key:', publicKey);
+            showDebugInfo(`PAY.JP object: ${typeof payjp}`);
+            showDebugInfo(`PAY.JP applePay: ${typeof payjp?.applePay}`);
+            showDebugInfo(`Public key: ${publicKey}`);
 
             // Apple Payボタンを常に表示して実際にテスト可能にする
             document.getElementById('applePayContainer').style.display = 'block';
@@ -463,13 +477,11 @@
                         console.log('[Apple Pay] Session started');
                     }
                 } catch (error) {
-                    console.error('[Apple Pay] Failed to create session:', error);
-                    console.error('[Apple Pay] Error details:', {
-                        message: error.message,
-                        code: error.code,
-                        type: error.type,
-                        stack: error.stack
-                    });
+                    showDebugInfo(`Error creating session: ${error.message}`);
+                    showDebugInfo(`Error code: ${error.code}`);
+                    showDebugInfo(`Error type: ${error.type}`);
+                    showDebugInfo(`Error toString: ${error.toString()}`);
+
                     errorEl.textContent = `Apple Payセッションの作成に失敗しました：${error.message || error.type || 'Unknown error'}`;
                     errorEl.style.display = 'block';
                 }
