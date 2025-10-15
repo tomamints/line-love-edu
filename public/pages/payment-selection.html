@@ -229,12 +229,12 @@
         </div>
 
         <div class="payment-methods">
-            <!-- Apple Pay公式ボタン -->
+            <!-- Apple Pay公式ボタン（一時的にコメントアウト） -->
+            <!--
             <div id="applePayContainer" style="display: none;">
                 <button id="applePayButton" class="apple-pay-button-official"></button>
             </div>
 
-            <!-- Apple Pay非対応時のメッセージ -->
             <div id="applePayNotSupported" style="display: none; text-align: center; padding: 20px; background: rgba(255, 255, 255, 0.05); border-radius: 12px; margin-bottom: 18px;">
                 <p style="color: rgba(255, 255, 255, 0.6); font-size: 14px;">Apple Payはこの環境ではご利用いただけません</p>
             </div>
@@ -242,6 +242,7 @@
             <div class="payment-separator">
                 または
             </div>
+            -->
 
             <!-- クレジットカードボタン（PAY.JP Checkout） -->
             <form action="/pages/payment-process.html" method="GET" id="checkout-form">
@@ -382,6 +383,8 @@
         document.getElementById('diagnosisIdField').value = diagnosisId || sessionStorage.getItem('diagnosisId');
         document.getElementById('userIdField').value = userId || sessionStorage.getItem('userId') || 'anonymous';
 
+        // Apple Pay関連機能（一時的にコメントアウト）
+        /*
         // デバッグ情報表示用
         function showDebugInfo(message) {
             const debugEl = document.getElementById('debugInfo');
@@ -517,6 +520,7 @@
 
         // Apple Pay初期化を実行
         initializeApplePay();
+        */
     </script>
 </body>
 </html>
