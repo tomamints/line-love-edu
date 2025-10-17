@@ -899,7 +899,7 @@ module.exports = async (req, res) => {
           <h2 class="section-title">🌙 恋愛状況について</h2>
 
           <div class="form-group">
-            <label><strong>Q1：あなたの恋の状況は、どれに近いですか？</strong></label>
+            <label><strong>Q1：あなたは今何にお悩みですか？</strong></label>
             <div class="radio-group">
               <label class="radio-option ${existing.loveSituation === 'beginning' ? 'selected' : ''}">
                 <input type="radio" name="loveSituation" value="beginning" ${existing.loveSituation === 'beginning' ? 'checked' : ''} required>
@@ -932,7 +932,7 @@ module.exports = async (req, res) => {
               <label class="radio-option ${existing.loveSituation === 'ending' ? 'selected' : ''}">
                 <input type="radio" name="loveSituation" value="ending" ${existing.loveSituation === 'ending' ? 'checked' : ''} required>
                 <div class="radio-label">
-                  <div class="radio-title">復縁・終わった恋</div>
+                  <div class="radio-title">復縁・終わってしまった恋</div>
                   <div class="radio-description">復縁したい、別れの危機、失恋を乗り越えたいなど</div>
                 </div>
               </label>
