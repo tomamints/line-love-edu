@@ -896,11 +896,20 @@ module.exports = async (req, res) => {
         </div>
 
         <div class="section">
+        <p style="margin: 8px 0 18px;
+            padding: 10px 16px;
+            font-size: 13px;
+            color: #c30000;
+            background: #fff4f4;
+            border-left: 4px solid #ff6a6a;
+            border-radius: 6px;
+            font-weight: 600;
+            letter-spacing: 0.2px;">
+           ⭐ ※ここから先はあなた直感で答えてください
+          </p>
           <h2 class="section-title">🌙 恋愛状況について</h2>
-
           <div class="form-group">
             <label><strong>Q1：あなたは今何にお悩みですか？</strong></label>
-            <p style="margin: 8px 0 18px; font-size: 13px; color: rgba(0, 0, 0, 0.68);">ここから先はあなた直感で答えてください</p>
             <div class="radio-group">
               <label class="radio-option ${existing.loveSituation === 'beginning' ? 'selected' : ''}">
                 <input type="radio" name="loveSituation" value="beginning" ${existing.loveSituation === 'beginning' ? 'checked' : ''} required>
