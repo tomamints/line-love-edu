@@ -900,6 +900,7 @@ module.exports = async (req, res) => {
 
           <div class="form-group">
             <label><strong>Q1：あなたは今何にお悩みですか？</strong></label>
+            <p style="margin: 8px 0 18px; font-size: 13px; color: rgba(0, 0, 0, 0.68);">ここから先はあなた直感で答えてください</p>
             <div class="radio-group">
               <label class="radio-option ${existing.loveSituation === 'beginning' ? 'selected' : ''}">
                 <input type="radio" name="loveSituation" value="beginning" ${existing.loveSituation === 'beginning' ? 'checked' : ''} required>
@@ -1030,7 +1031,7 @@ module.exports = async (req, res) => {
           </div>
 
           <div class="form-group">
-            <label><strong>Q5：恋愛で大事にしたいものは？</strong></label>
+            <label><strong>Q5：特に一番大事にしたいものは？</strong></label>
             <div class="radio-group">
               <label class="radio-option ${existing.loveValues === 'romantic' ? 'selected' : ''}">
                 <input type="radio" name="loveValues" value="romantic" ${existing.loveValues === 'romantic' ? 'checked' : ''} required>
