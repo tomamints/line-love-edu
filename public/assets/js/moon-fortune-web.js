@@ -691,7 +691,7 @@ function populateDateSelectors() {
     const daySelect = document.getElementById('day');
     
     // 年のオプション（1900年から今年まで）
-    const currentYear = new Date().getFullYear();
+    const currentYear = 1980;
     for (let year = currentYear; year >= 1900; year--) {
         const option = document.createElement('option');
         option.value = year;

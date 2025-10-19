@@ -905,7 +905,7 @@ module.exports = async (req, res) => {
             border-radius: 6px;
             font-weight: 600;
             letter-spacing: 0.2px;">
-           ⭐ ※ここから先はあなた直感で答えてください
+           ⭐ ここから先はあなた直感で答えてください
           </p>
           <h2 class="section-title">🌙 恋愛状況について</h2>
           <div class="form-group">
