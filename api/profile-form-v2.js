@@ -898,7 +898,7 @@ module.exports = async (req, res) => {
         <div class="section">
         <p style="margin: 8px 0 18px;
             padding: 10px 16px;
-            font-size: 13px;
+            font-size: 20px;
             color: #c30000;
             background: #fff4f4;
             border-left: 4px solid #ff6a6a;
