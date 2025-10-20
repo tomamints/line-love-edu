@@ -5,7 +5,7 @@ class MoonFortuneEngineV2 {
   constructor() {
     // 8つの月タイプ定義（aisyo.mdベース）
     this.moonTypes = [
-      '新月',      // 0
+      '新月',      // 0.
       '三日月',    // 1
       '上弦の月',  // 2
       '十三夜',    // 3
@@ -275,14 +275,14 @@ class MoonFortuneEngineV2 {
     // 基準日（新月）: 2000年1月6日 18:14:00
     const referenceDate = new Date('2000-01-06 18:14:00');
     const lunarCycle = 29.53059; // 朔望月（日）
-    
+
     // 経過日数を計算
     const daysDiff = (date - referenceDate) / (1000 * 60 * 60 * 24);
-    
+
     // 月齢を計算（0-29.53日）
     let moonAge = daysDiff % lunarCycle;
     if (moonAge < 0) moonAge += lunarCycle;
-    
+
     return Math.round(moonAge * 10) / 10;
   }
 
@@ -319,10 +319,10 @@ class MoonFortuneEngineV2 {
   getCompatibilityDetails(userType, partnerType) {
     const score = this.getCompatibilityScore(userType, partnerType);
     const baseDetails = this.compatibilityDetails[score] || this.compatibilityDetails[55];
-    
+
     // aisyo.mdからの具体的な相性説明を追加
     const specificDetails = this.getSpecificCompatibilityAdvice(userType, partnerType);
-    
+
     return {
       score,
       ...baseDetails,
@@ -334,7 +334,7 @@ class MoonFortuneEngineV2 {
   getSpecificCompatibilityAdvice(userType, partnerType) {
     // aisyo.mdの相性説明を全て実装
     const key = `${userType}-${partnerType}`;
-    
+
     const adviceMap = {
       // 新月の相性
       '新月-新月': {
@@ -377,7 +377,7 @@ class MoonFortuneEngineV2 {
         example: '新月が行動した後、暁との対話で深い気づきを得る',
         advice: 'ペースの違いを理解し合えれば、深い関係に発展'
       },
-      
+
       // 三日月の相性
       '三日月-新月': {
         reason: '新月の勢いに三日月が優しくブレーキをかける',
@@ -419,7 +419,7 @@ class MoonFortuneEngineV2 {
         example: '静かな場所でゆっくり過ごすデートが心地よい',
         advice: 'お互いの内面を理解し合える深い関係'
       },
-      
+
       // 上弦の月の相性
       '上弦の月-新月': {
         reason: '新月の直感を上弦が計画に落とし込む',
@@ -461,7 +461,7 @@ class MoonFortuneEngineV2 {
         example: '暁が迷っている時、上弦が道筋を示す',
         advice: '暁の内省と上弦の実行力が補完し合う'
       },
-      
+
       // 十三夜の相性
       '十三夜-新月': {
         reason: '新月の直感と行動力が、十三夜に新鮮な風を運ぶ',
@@ -503,7 +503,7 @@ class MoonFortuneEngineV2 {
         example: '週末は各自の趣味→夜に1時間の深いおしゃべり',
         advice: '静けさ×滋養で心が満ちる関係'
       },
-      
+
       // 満月の相性
       '満月-新月': {
         reason: '新月の直感と行動力が、満月の感情を長く燃やし続ける',
@@ -545,7 +545,7 @@ class MoonFortuneEngineV2 {
         example: '満月が暁を外の世界へ連れ出す',
         advice: 'お互いの世界を理解し合うことが大切'
       },
-      
+
       // 十六夜の相性
       '十六夜-新月': {
         reason: '新月の行動力に安定の軸を与える',
@@ -587,7 +587,7 @@ class MoonFortuneEngineV2 {
         example: '静かに深い対話を楽しむ',
         advice: '精神的に豊かな関係'
       },
-      
+
       // 下弦の月の相性
       '下弦の月-新月': {
         reason: '新月の散らかったエネルギーを下弦が整理',
@@ -629,7 +629,7 @@ class MoonFortuneEngineV2 {
         example: '深い対話と整理された生活',
         advice: '精神的に成熟した関係'
       },
-      
+
       // 暁の相性
       '暁-新月': {
         reason: '新月の外向性が暁に新しい世界を見せる',
@@ -672,7 +672,7 @@ class MoonFortuneEngineV2 {
         advice: '時には外の刺激も必要'
       }
     };
-    
+
     return adviceMap[key] || {
       reason: 'お互いの個性が調和する関係',
       example: 'それぞれの魅力を活かしながら成長できます',
@@ -684,10 +684,10 @@ class MoonFortuneEngineV2 {
   generateMonthlyFortune(userType, currentDate = new Date()) {
     const currentMoonAge = this.calculateMoonAge(currentDate);
     const currentMoonType = this.getMoonTypeFromAge(currentMoonAge);
-    
+
     // 現在の月相と誕生月相の関係から運勢を決定
     const compatibility = this.getCompatibilityScore(userType, currentMoonType.type);
-    
+
     return {
       currentMoon: {
         type: currentMoonType.type,
@@ -704,7 +704,7 @@ class MoonFortuneEngineV2 {
   getMonthlyFortuneMessage(userType, currentType, compatibility) {
     const userDetails = this.moonTypeDetails[userType];
     const month = new Date().getMonth() + 1;
-    
+
     if (compatibility >= 85) {
       return {
         level: '絶好調',
@@ -731,15 +731,15 @@ class MoonFortuneEngineV2 {
     const luckyDays = [];
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth();
-    
+
     for (let day = 1; day <= 31; day++) {
       const date = new Date(year, month, day);
       if (date.getMonth() !== month) break;
-      
+
       const moonAge = this.calculateMoonAge(date);
       const dayType = this.getMoonTypeFromAge(moonAge);
       const compatibility = this.getCompatibilityScore(userType, dayType.type);
-      
+
       if (compatibility >= 85) {
         luckyDays.push({
           date: day,
@@ -749,14 +749,14 @@ class MoonFortuneEngineV2 {
         });
       }
     }
-    
+
     return luckyDays.slice(0, 3);
   }
 
   // ラッキーデーのアドバイス
   getLuckyDayAdvice(userType, dayMoonType) {
     const compatibility = this.getCompatibilityScore(userType, dayMoonType);
-    
+
     if (compatibility >= 95) {
       return '最高の波動が訪れる日。大切な告白や決断に最適。';
     } else if (compatibility >= 85) {
@@ -770,7 +770,7 @@ class MoonFortuneEngineV2 {
   getMonthlyActionAdvice(userType, currentDate) {
     const month = currentDate.getMonth() + 1;
     const userDetails = this.moonTypeDetails[userType];
-    
+
     // 月と月タイプに応じた具体的なアドバイス
     const seasonalAdvice = {
       1: '新年の始まり。新しい関係性を築くチャンス。',
@@ -786,7 +786,7 @@ class MoonFortuneEngineV2 {
       11: '深まる秋。内面的な繋がりを大切に。',
       12: '年末の振り返り。来年への準備期間。'
     };
-    
+
     return {
       seasonal: seasonalAdvice[month],
       personal: userDetails.actionAdvice.slice(0, 2)
@@ -797,7 +797,7 @@ class MoonFortuneEngineV2 {
   generateCompleteReading(userBirthdate, partnerBirthdate = null) {
     const userMoonType = this.getMoonTypeFromBirthdate(userBirthdate);
     const userDetails = this.moonTypeDetails[userMoonType.type];
-    
+
     const result = {
       user: {
         moonType: userMoonType.type,
@@ -815,11 +815,11 @@ class MoonFortuneEngineV2 {
       },
       monthlyFortune: this.generateMonthlyFortune(userMoonType.type)
     };
-    
+
     if (partnerBirthdate) {
       const partnerMoonType = this.getMoonTypeFromBirthdate(partnerBirthdate);
       const partnerDetails = this.moonTypeDetails[partnerMoonType.type];
-      
+
       result.partner = {
         moonType: partnerMoonType.type,
         emoji: partnerMoonType.emoji,
@@ -830,13 +830,13 @@ class MoonFortuneEngineV2 {
           loveStyle: partnerDetails.loveStyle
         }
       };
-      
+
       result.compatibility = this.getCompatibilityDetails(
         userMoonType.type,
         partnerMoonType.type
       );
     }
-    
+
     return result;
   }
 }
