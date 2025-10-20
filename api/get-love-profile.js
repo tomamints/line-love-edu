@@ -16,7 +16,6 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 
 module.exports = async (req, res) => {
   try {
-    // 環境変数の早期チェック
     if (!supabaseUrl || !supabaseKey) {
       console.error('Environment variables missing');
       return res.status(500).json({
