@@ -55,6 +55,7 @@ module.exports = async function handler(req, res) {
 
     const detail = detailChunks.join('\n\n');
     const relationship = compatibility.relationship || specific.relationship || specific.example || '';
+    const relationshipTheme = specific.theme || compatibility.reason || '';
 
     const adviceArray = [];
     if (specific.advice && typeof specific.advice === 'object') {
@@ -88,6 +89,11 @@ module.exports = async function handler(req, res) {
           relationship,
           summary,
           detail
+        },
+        theme: relationshipTheme,
+        actions: {
+          user: specific.userAction || '',
+          partner: specific.partnerAction || ''
         },
         relationship,
         advice: adviceArray,

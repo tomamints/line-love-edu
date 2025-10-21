@@ -144,6 +144,17 @@
             margin-bottom: 24px;
         }
 
+        .highlight-panel {
+            background: linear-gradient(145deg, rgba(118, 104, 255, 0.2), rgba(201, 173, 255, 0.14));
+            border: 1px solid rgba(200, 173, 255, 0.35);
+            box-shadow: 0 14px 36px rgba(93, 61, 210, 0.28);
+        }
+
+        .actions-panel {
+            background: rgba(30, 22, 60, 0.82);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
         .result-panel h3 {
             font-size: 18px;
             margin-bottom: 12px;
@@ -154,6 +165,32 @@
             line-height: 1.8;
             color: rgba(255, 255, 255, 0.85);
             white-space: pre-wrap;
+        }
+
+        .action-cards {
+            display: grid;
+            gap: 16px;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        }
+
+        .action-card {
+            background: rgba(12, 9, 28, 0.65);
+            border-radius: 14px;
+            padding: 18px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .action-card.partner {
+            background: rgba(37, 24, 48, 0.7);
+            border-color: rgba(255, 215, 125, 0.3);
+        }
+
+        .action-title {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #ffe4b5;
+            letter-spacing: 0.02em;
         }
 
         .share-section {
@@ -199,6 +236,10 @@
 
             .date-selects {
                 flex-direction: row;
+            }
+
+            .action-cards {
+                grid-template-columns: 1fr;
             }
 
             .submit-button {
@@ -263,6 +304,10 @@
                 <h3 id="compatibilitySummary"></h3>
                 <p id="compatibilityDetail"></p>
             </div>
+            <div class="result-panel highlight-panel" id="themePanel" style="display:none;">
+                <h3>二人に流れているテーマ</h3>
+                <p id="themeDetail"></p>
+            </div>
             <div class="result-panel">
                 <h3>二人のストーリー</h3>
                 <p id="storyDetail"></p>
@@ -270,6 +315,19 @@
             <div class="result-panel">
                 <h3>これからの流れと心構え</h3>
                 <p id="flowDetail"></p>
+            </div>
+            <div class="result-panel actions-panel" id="actionsPanel" style="display:none;">
+                <h3>今日のおすすめアクション</h3>
+                <div class="action-cards">
+                    <div class="action-card">
+                        <div class="action-title">あなたにできること</div>
+                        <p id="userActionDetail"></p>
+                    </div>
+                    <div class="action-card partner">
+                        <div class="action-title">お相手へ伝えたいひとこと</div>
+                        <p id="partnerActionDetail"></p>
+                    </div>
+                </div>
             </div>
             <div class="result-panel">
                 <h3>月からのアドバイス</h3>
@@ -293,6 +351,11 @@
             const adviceDetail = document.getElementById('adviceDetail');
             const shareButton = document.getElementById('shareButton');
             const profileDetail = document.getElementById('profileDetail');
+            const themePanel = document.getElementById('themePanel');
+            const themeDetail = document.getElementById('themeDetail');
+            const actionsPanel = document.getElementById('actionsPanel');
+            const userActionDetail = document.getElementById('userActionDetail');
+            const partnerActionDetail = document.getElementById('partnerActionDetail');
 
             function populateDateSelects(prefix) {
                 const yearSelect = document.getElementById(`${prefix}Year`);
@@ -368,7 +431,7 @@
                         throw new Error(result.error || '診断に失敗しました。');
                     }
 
-                    const { user, partner, compatibility, relationship, advice, shareText } = result.data;
+                    const { user, partner, compatibility, relationship, advice, shareText, theme, actions } = result.data;
                     const userLabel = `${user.emoji || ''}${user.moonType || 'あなた'}`;
                     const partnerLabel = `${partner.emoji || ''}${partner.moonType || 'お相手'}`;
                     const profileSummary = compatibility.reason || '二人の月タイプの相性を分析しました。';
@@ -383,6 +446,14 @@
                     compatibilitySummary.textContent = compatibility.summary;
                     compatibilityDetail.textContent = compatibility.detail || '診断結果を取得できませんでした。';
                     storyDetail.textContent = relationship || '二人の相性ストーリーを準備中です。';
+                    const themeText = (theme || '').trim();
+                    if (themeText) {
+                        themeDetail.textContent = themeText;
+                        themePanel.style.display = 'block';
+                    } else {
+                        themeDetail.textContent = '';
+                        themePanel.style.display = 'none';
+                    }
                     const flowLines = [
                         `スコア: ${compatibility.score} 点 / ${compatibility.level || ''}`
                     ];
@@ -390,6 +461,19 @@
                         flowLines.push(`相性ランキング: 第${compatibility.rank}位 / 64組`);
                     }
                     flowDetail.innerHTML = flowLines.join('<br>');
+
+                    const userAction = (actions?.user || '').trim();
+                    const partnerAction = (actions?.partner || '').trim();
+                    if (userAction || partnerAction) {
+                        userActionDetail.textContent = userAction || '今日は自分をいたわる一言を添えてみましょう。';
+                        partnerActionDetail.textContent = partnerAction || 'お相手が安心できる言葉をひとつ届けてみましょう。';
+                        actionsPanel.style.display = 'block';
+                    } else {
+                        userActionDetail.textContent = '';
+                        partnerActionDetail.textContent = '';
+                        actionsPanel.style.display = 'none';
+                    }
+
                     adviceDetail.innerHTML = advice && advice.length
                         ? advice.map(line => `<span>${line}</span>`).join('<br>')
                         : '月からのアドバイスを参考に、互いの違いを尊重して歩み寄ってください。';

@@ -2,6 +2,13 @@
 // aisyo.md の詳細な月タイプ診断を実装
 
 const { getCompatibilityData } = require('./fortune/compatibility-data');
+const compatibilityActionList = require('../data/moon-compatibility-actions.json');
+
+const compatibilityActionsMap = new Map();
+compatibilityActionList.forEach(entry => {
+  const key = `${entry.userType}-${entry.partnerType}`;
+  compatibilityActionsMap.set(key, entry);
+});
 
 class MoonFortuneEngineV2 {
   constructor() {
@@ -712,11 +719,15 @@ class MoonFortuneEngineV2 {
     const relationship = compatibilityData.relationship || '';
     const userAdvice = compatibilityData.userAdvice || entry.advice || '';
     const partnerAdvice = reverseCompatibilityData.userAdvice || entry.advice || '';
+    const actionEntry = compatibilityActionsMap.get(key);
 
     return {
       reason,
       example,
       relationship,
+      theme: actionEntry?.theme || '',
+      userAction: actionEntry?.userAction || '',
+      partnerAction: actionEntry?.partnerAction || '',
       advice: {
         user: userAdvice,
         partner: partnerAdvice
