@@ -325,6 +325,11 @@ app.post('/api/stripe/webhook', express.raw({ type: 'application/json' }), async
   await stripeWebhook(req, res);
 });
 
+app.post('/api/moon-compatibility', express.json(), async (req, res) => {
+  const handler = require('./api/moon-compatibility');
+  await handler(req, res);
+});
+
 // JSONボディパーサー（API用） - Stripe Webhookの後に配置
 app.use('/api', express.json());
 // URLエンコードされたフォームデータ用
