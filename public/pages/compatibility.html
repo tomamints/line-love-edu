@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>月の相性診断 | 月詠の占い</title>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-G4NCK7M5RL"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-G4NCK7M5RL');
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kiwi+Maru:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Kiwi Maru', serif;
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            color: #f5f2ff;
+            min-height: 100vh;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container {
+            max-width: 960px;
+            width: min(94%, 960px);
+            margin: 60px auto 80px;
+            background: rgba(16, 10, 36, 0.82);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 40px 36px;
+            box-shadow: 0 18px 46px rgba(7, 2, 24, 0.38);
+            backdrop-filter: blur(6px);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 36px;
+        }
+
+        .header h1 {
+            font-size: clamp(26px, 4vw, 34px);
+            margin-bottom: 12px;
+        }
+
+        .header p {
+            color: rgba(255, 255, 255, 0.75);
+            line-height: 1.7;
+        }
+
+        .form-section {
+            margin-bottom: 36px;
+            background: rgba(25, 18, 53, 0.65);
+            border-radius: 16px;
+            padding: 28px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .form-section h2 {
+            font-size: 20px;
+            margin-bottom: 18px;
+            color: #ffd27d;
+            text-align: center;
+            letter-spacing: 0.08em;
+        }
+
+        .form-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            justify-content: center;
+            margin-bottom: 24px;
+        }
+
+        .input-block {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            width: min(360px, 100%);
+        }
+
+        .input-block label {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.75);
+        }
+
+        .date-selects {
+            display: flex;
+            gap: 8px;
+        }
+
+        .date-selects select {
+            flex: 1;
+            padding: 10px 12px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            background: rgba(255, 255, 255, 0.12);
+            color: #fff;
+            font-size: 15px;
+        }
+
+        .submit-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 14px 28px;
+            border-radius: 28px;
+            background: linear-gradient(135deg, #7563df, #a384ff);
+            color: #fff;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .submit-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 16px 32px rgba(118, 99, 239, 0.35);
+        }
+
+        .result-section {
+            margin-top: 40px;
+            display: none;
+        }
+
+        .result-panel {
+            background: rgba(25, 18, 53, 0.75);
+            border-radius: 18px;
+            padding: 26px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            margin-bottom: 24px;
+        }
+
+        .result-panel h3 {
+            font-size: 18px;
+            margin-bottom: 12px;
+            color: #ffd27d;
+        }
+
+        .result-panel p {
+            line-height: 1.8;
+            color: rgba(255, 255, 255, 0.85);
+            white-space: pre-wrap;
+        }
+
+        .share-section {
+            margin-top: 28px;
+            text-align: center;
+        }
+
+        .share-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 12px 24px;
+            border-radius: 24px;
+            background: rgba(255, 255, 255, 0.12);
+            color: #fff;
+            text-decoration: none;
+            font-size: 14px;
+            letter-spacing: 0.05em;
+        }
+
+        .error-message {
+            display: none;
+            margin-top: 18px;
+            padding: 12px;
+            background: rgba(255, 95, 109, 0.12);
+            border: 1px solid rgba(255, 95, 109, 0.4);
+            color: #ff6b6b;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 40px auto 60px;
+                padding: 28px 18px;
+            }
+
+            .form-group {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .date-selects {
+                flex-direction: row;
+            }
+
+            .submit-button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>月の相性診断</h1>
+            <p>あなたとお相手の月タイプを照らし合わせ、恋愛の相性を読み解きます。</p>
+        </div>
+
+        <form id="compatibilityForm" class="form-section">
+            <h2>あなたとお相手の情報を入力してください</h2>
+            <div class="form-group">
+                <div class="input-block">
+                    <label for="userYear">あなたの生年月日</label>
+                    <div class="date-selects">
+                        <select id="userYear" required>
+                            <option value="">年</option>
+                        </select>
+                        <select id="userMonth" required>
+                            <option value="">月</option>
+                        </select>
+                        <select id="userDay" required>
+                            <option value="">日</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="input-block">
+                    <label for="partnerYear">お相手の生年月日</label>
+                    <div class="date-selects">
+                        <select id="partnerYear" required>
+                            <option value="">年</option>
+                        </select>
+                        <select id="partnerMonth" required>
+                            <option value="">月</option>
+                        </select>
+                        <select id="partnerDay" required>
+                            <option value="">日</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <button type="submit" class="submit-button">
+                    🌙 相性を診断する
+                </button>
+            </div>
+            <p class="error-message" id="errorMessage"></p>
+        </form>
+
+        <div class="result-section" id="resultSection">
+            <div class="result-panel">
+                <h3 id="compatibilitySummary"></h3>
+                <p id="compatibilityDetail"></p>
+            </div>
+            <div class="result-panel">
+                <h3>二人のストーリー</h3>
+                <p id="storyDetail"></p>
+            </div>
+            <div class="result-panel">
+                <h3>これからの流れと心構え</h3>
+                <p id="flowDetail"></p>
+            </div>
+            <div class="result-panel">
+                <h3>月からのアドバイス</h3>
+                <p id="adviceDetail"></p>
+            </div>
+            <div class="share-section">
+                <a href="#" class="share-button" id="shareButton">💬 LINEで結果をシェアする</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('compatibilityForm');
+            const resultSection = document.getElementById('resultSection');
+            const errorMessage = document.getElementById('errorMessage');
+            const compatibilitySummary = document.getElementById('compatibilitySummary');
+            const compatibilityDetail = document.getElementById('compatibilityDetail');
+            const storyDetail = document.getElementById('storyDetail');
+            const flowDetail = document.getElementById('flowDetail');
+            const adviceDetail = document.getElementById('adviceDetail');
+            const shareButton = document.getElementById('shareButton');
+
+            function populateDateSelects(prefix) {
+                const yearSelect = document.getElementById(`${prefix}Year`);
+                const monthSelect = document.getElementById(`${prefix}Month`);
+                const daySelect = document.getElementById(`${prefix}Day`);
+
+                const currentYear = new Date().getFullYear();
+                for (let year = currentYear; year >= 1950; year--) {
+                    const option = document.createElement('option');
+                    option.value = year;
+                    option.textContent = `${year}年`;
+                    yearSelect.appendChild(option);
+                }
+
+                for (let month = 1; month <= 12; month++) {
+                    const option = document.createElement('option');
+                    option.value = month;
+                    option.textContent = `${month}月`;
+                    monthSelect.appendChild(option);
+                }
+
+                for (let day = 1; day <= 31; day++) {
+                    const option = document.createElement('option');
+                    option.value = day;
+                    option.textContent = `${day}日`;
+                    daySelect.appendChild(option);
+                }
+            }
+
+            function buildDate(prefix) {
+                const year = document.getElementById(`${prefix}Year`).value;
+                const month = document.getElementById(`${prefix}Month`).value;
+                const day = document.getElementById(`${prefix}Day`).value;
+                if (!year || !month || !day) {
+                    return '';
+                }
+                return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+            }
+
+            populateDateSelects('user');
+            populateDateSelects('partner');
+
+            form.addEventListener('submit', async (event) => {
+                event.preventDefault();
+
+                const userBirthdate = buildDate('user');
+                const partnerBirthdate = buildDate('partner');
+
+                if (!userBirthdate || !partnerBirthdate) {
+                    errorMessage.textContent = '生年月日をすべて選択してください。';
+                    errorMessage.style.display = 'block';
+                    resultSection.style.display = 'none';
+                    return;
+                }
+
+                errorMessage.style.display = 'none';
+
+                try {
+                    const response = await fetch('/api/moon-compatibility', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            userBirthdate,
+                            partnerBirthdate
+                        })
+                    });
+
+                    const result = await response.json();
+
+                    if (!result.success) {
+                        throw new Error(result.error || '診断に失敗しました。');
+                    }
+
+                    const { user, partner, compatibility, relationship, advice, shareText } = result.data;
+
+                    compatibilitySummary.textContent = compatibility.summary;
+                    compatibilityDetail.textContent = compatibility.detail || '診断結果を取得できませんでした。';
+                    storyDetail.textContent = relationship || '二人の相性ストーリーを準備中です。';
+                    flowDetail.textContent = `スコア: ${compatibility.score} 点 / ${compatibility.level || ''}`;
+                    adviceDetail.innerHTML = advice && advice.length
+                        ? advice.map(line => `<span>${line}</span>`).join('<br>')
+                        : '月からのアドバイスを参考に、互いの違いを尊重して歩み寄ってください。';
+
+                    shareButton.href = `https://line.me/R/msg/text/?${encodeURIComponent(shareText)}`;
+                    resultSection.style.display = 'block';
+                    resultSection.scrollIntoView({ behavior: 'smooth' });
+                } catch (error) {
+                    console.error('Compatibility error:', error);
+                    errorMessage.textContent = error.message || '診断に失敗しました。少し時間をおいて再度お試しください。';
+                    errorMessage.style.display = 'block';
+                    resultSection.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
