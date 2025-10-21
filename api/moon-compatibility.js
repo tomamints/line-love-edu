@@ -57,7 +57,7 @@ module.exports = async function handler(req, res) {
       adviceArray = [specific.advice];
     }
 
-    const shareText = `${summary}\n${detail}\nhttps://line-love-edu.vercel.app/compatibility.html`;
+    const shareText = `${summary}\n${detail}\nhttps://line-love-edu.vercel.app/pages/compatibility.html`;
 
     return res.json({
       success: true,
