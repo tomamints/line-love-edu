@@ -256,6 +256,10 @@
 
         <div class="result-section" id="resultSection">
             <div class="result-panel">
+                <h3>月タイプの組み合わせ</h3>
+                <p id="profileDetail"></p>
+            </div>
+            <div class="result-panel">
                 <h3 id="compatibilitySummary"></h3>
                 <p id="compatibilityDetail"></p>
             </div>
@@ -288,6 +292,7 @@
             const flowDetail = document.getElementById('flowDetail');
             const adviceDetail = document.getElementById('adviceDetail');
             const shareButton = document.getElementById('shareButton');
+            const profileDetail = document.getElementById('profileDetail');
 
             function populateDateSelects(prefix) {
                 const yearSelect = document.getElementById(`${prefix}Year`);
@@ -364,11 +369,27 @@
                     }
 
                     const { user, partner, compatibility, relationship, advice, shareText } = result.data;
+                    const userLabel = `${user.emoji || ''}${user.moonType || 'あなた'}`;
+                    const partnerLabel = `${partner.emoji || ''}${partner.moonType || 'お相手'}`;
+                    const profileSummary = compatibility.reason || '二人の月タイプの相性を分析しました。';
+
+                    if (profileDetail) {
+                        profileDetail.innerHTML = `
+                            <strong>${userLabel}</strong> × <strong>${partnerLabel}</strong><br>
+                            <span style="color: rgba(255, 255, 255, 0.75);">${profileSummary}</span>
+                        `;
+                    }
 
                     compatibilitySummary.textContent = compatibility.summary;
                     compatibilityDetail.textContent = compatibility.detail || '診断結果を取得できませんでした。';
                     storyDetail.textContent = relationship || '二人の相性ストーリーを準備中です。';
-                    flowDetail.textContent = `スコア: ${compatibility.score} 点 / ${compatibility.level || ''}`;
+                    const flowLines = [
+                        `スコア: ${compatibility.score} 点 / ${compatibility.level || ''}`
+                    ];
+                    if (compatibility.rank) {
+                        flowLines.push(`相性ランキング: 第${compatibility.rank}位 / 64組`);
+                    }
+                    flowDetail.innerHTML = flowLines.join('<br>');
                     adviceDetail.innerHTML = advice && advice.length
                         ? advice.map(line => `<span>${line}</span>`).join('<br>')
                         : '月からのアドバイスを参考に、互いの違いを尊重して歩み寄ってください。';

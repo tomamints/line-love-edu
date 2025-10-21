@@ -40,24 +40,40 @@ module.exports = async function handler(req, res) {
 
     const summary = `${userMoon.emoji || ''}${userMoon.moonType || ''} × ${partnerMoon.emoji || ''}${partnerMoon.moonType || ''} は ${compatibility.score || '-'}点（${compatibility.level || '相性'}）`;
     const detailChunks = [];
-
-    if (compatibility.description) detailChunks.push(compatibility.description);
-    if (specific.reason) detailChunks.push(specific.reason);
-    if (specific.example) detailChunks.push(specific.example);
-
-    const detail = detailChunks.join('\n\n');
-    const relationship = specific.relationship || specific.example || '';
-
-    let adviceArray = [];
-    if (Array.isArray(specific.advice)) {
-      adviceArray = specific.advice;
-    } else if (specific.advice && typeof specific.advice === 'object') {
-      adviceArray = Object.entries(specific.advice).map(([key, value]) => `${key}: ${value}`);
-    } else if (typeof specific.advice === 'string') {
-      adviceArray = [specific.advice];
+    if (compatibility.description) {
+      detailChunks.push(compatibility.description);
+    }
+    if (compatibility.reason && !detailChunks.includes(compatibility.reason)) {
+      detailChunks.push(compatibility.reason);
+    }
+    if (specific.reason && specific.reason !== compatibility.reason) {
+      detailChunks.push(specific.reason);
+    }
+    if (specific.example) {
+      detailChunks.push(specific.example);
     }
 
-    const shareText = `${summary}\n${detail}\nhttps://line-love-edu.vercel.app/pages/compatibility.html`;
+    const detail = detailChunks.join('\n\n');
+    const relationship = compatibility.relationship || specific.relationship || specific.example || '';
+
+    const adviceArray = [];
+    if (specific.advice && typeof specific.advice === 'object') {
+      const userLabel = userMoon.moonType ? `${userMoon.moonType}タイプのあなた` : 'あなた';
+      const partnerLabel = partnerMoon.moonType ? `${partnerMoon.moonType}タイプのお相手` : 'お相手';
+      const { user: userAdvice, partner: partnerAdvice } = specific.advice;
+      if (userAdvice) {
+        adviceArray.push(`${userLabel}へのアドバイス: ${userAdvice}`);
+      }
+      if (partnerAdvice && partnerAdvice !== userAdvice) {
+        adviceArray.push(`${partnerLabel}へのアドバイス: ${partnerAdvice}`);
+      }
+    } else if (Array.isArray(specific.advice)) {
+      adviceArray.push(...specific.advice);
+    } else if (typeof specific.advice === 'string' && specific.advice.trim()) {
+      adviceArray.push(specific.advice);
+    }
+
+    const shareText = `${summary}\n${detail}${relationship ? `\n${relationship}` : ''}\nhttps://line-love-edu.vercel.app/pages/compatibility.html`;
 
     return res.json({
       success: true,
@@ -67,6 +83,9 @@ module.exports = async function handler(req, res) {
         compatibility: {
           score: compatibility.score,
           level: compatibility.level,
+          rank: compatibility.rank,
+          reason: compatibility.reason,
+          relationship,
           summary,
           detail
         },

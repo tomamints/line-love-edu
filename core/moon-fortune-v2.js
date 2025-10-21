@@ -1,6 +1,8 @@
 // 月相占いエンジン V2
 // aisyo.md の詳細な月タイプ診断を実装
 
+const { getCompatibilityData } = require('./fortune/compatibility-data');
+
 class MoonFortuneEngineV2 {
   constructor() {
     // 8つの月タイプ定義（aisyo.mdベース）
@@ -270,6 +272,20 @@ class MoonFortuneEngineV2 {
     };
   }
 
+  getCompatibilityBaseDetail(score) {
+    if (score >= 95) return this.compatibilityDetails[95];
+    if (score >= 75) return this.compatibilityDetails[75];
+    return this.compatibilityDetails[55];
+  }
+
+  getCompatibilityLevel(score) {
+    return this.getCompatibilityBaseDetail(score).level;
+  }
+
+  getCompatibilityDescription(score) {
+    return this.getCompatibilityBaseDetail(score).description;
+  }
+
   // 月齢を計算（正確な天文学的計算）
   calculateMoonAge(date) {
     // 基準日（新月）: 2000年1月6日 18:14:00
@@ -317,21 +333,32 @@ class MoonFortuneEngineV2 {
 
   // 相性の詳細情報を生成
   getCompatibilityDetails(userType, partnerType) {
-    const score = this.getCompatibilityScore(userType, partnerType);
-    const baseDetails = this.compatibilityDetails[score] || this.compatibilityDetails[55];
-
-    // aisyo.mdからの具体的な相性説明を追加
-    const specificDetails = this.getSpecificCompatibilityAdvice(userType, partnerType);
+    const compatibilityData = getCompatibilityData(userType, partnerType) || {};
+    const reverseCompatibilityData = getCompatibilityData(partnerType, userType) || {};
+    const fallbackScore = this.getCompatibilityScore(userType, partnerType);
+    const score = compatibilityData.score || fallbackScore;
+    const level = this.getCompatibilityLevel(score);
+    const description = this.getCompatibilityDescription(score);
+    const specificDetails = this.getSpecificCompatibilityAdvice(
+      userType,
+      partnerType,
+      compatibilityData,
+      reverseCompatibilityData
+    );
 
     return {
       score,
-      ...baseDetails,
+      level,
+      description,
+      rank: compatibilityData.rank || null,
+      reason: compatibilityData.reason || specificDetails.reason || description,
+      relationship: compatibilityData.relationship || specificDetails.relationship || '',
       specific: specificDetails
     };
   }
 
   // 特定の組み合わせに対する詳細アドバイス
-  getSpecificCompatibilityAdvice(userType, partnerType) {
+  getSpecificCompatibilityAdvice(userType, partnerType, compatibilityData = {}, reverseCompatibilityData = {}) {
     // aisyo.mdの相性説明を全て実装
     const key = `${userType}-${partnerType}`;
 
@@ -673,10 +700,27 @@ class MoonFortuneEngineV2 {
       }
     };
 
-    return adviceMap[key] || {
+    const defaultEntry = {
       reason: 'お互いの個性が調和する関係',
       example: 'それぞれの魅力を活かしながら成長できます',
       advice: '違いを認め合うことで、より深い絆が生まれるでしょう'
+    };
+
+    const entry = adviceMap[key] || defaultEntry;
+    const reason = compatibilityData.reason || entry.reason;
+    const example = entry.example || '';
+    const relationship = compatibilityData.relationship || '';
+    const userAdvice = compatibilityData.userAdvice || entry.advice || '';
+    const partnerAdvice = reverseCompatibilityData.userAdvice || entry.advice || '';
+
+    return {
+      reason,
+      example,
+      relationship,
+      advice: {
+        user: userAdvice,
+        partner: partnerAdvice
+      }
     };
   }
 
