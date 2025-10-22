@@ -73,8 +73,8 @@ function displayCardResult() {
         const style = document.createElement('style');
         style.id = 'tarot-scroll-style';
         style.textContent = `@keyframes tarotScrollBounce { 0%, 100% { transform: translateY(0); opacity: 0.6; } 50% { transform: translateY(6px); opacity: 1; } }
-.tarot-scroll-indicator { width: 56px; height: 56px; border: 1px solid rgba(255, 210, 125, 0.6); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #ffd27d; box-shadow: 0 8px 20px rgba(0,0,0,0.35); background: rgba(12,0,40,0.55); animation: tarotScrollBounce 1.8s ease-in-out infinite; }
-.tarot-scroll-indicator span { font-size: 26px; }
+.tarot-scroll-indicator { width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; animation: tarotScrollBounce 1.8s ease-in-out infinite; }
+.tarot-scroll-indicator img { width: 100%; height: 100%; object-fit: contain; }
 #premiumStatusMessage { display: none; }
 `; // animation for scroll hint
         document.head.appendChild(style);
@@ -131,7 +131,7 @@ function displayCardResult() {
                 </div>
             </div>
 
-            <div><img src="../assets/images/web/arrow-logo.png" alt="スクロール案内" style="width:28px; height:28px;"></div>
+            <div class="tarot-scroll-indicator"><img src="../assets/images/web/arrow-logo.png" alt="スクロール案内" style="width:28px; height:28px;"></div>
 
             <!-- スクロール案内 -->
             <div style="text-align: center; color: #ffd27d; font-size: ${isMobile ? '13px' : '14px'}; letter-spacing: 0.05em; text-shadow: 0 0 12px rgba(255, 210, 125, 0.6);">
