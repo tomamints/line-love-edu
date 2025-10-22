@@ -131,7 +131,7 @@ function displayCardResult() {
                 </div>
             </div>
 
-            <div class="tarot-scroll-indicator"><img src="../assets/images/web/arrow-logo.png" alt="スクロール案内" style="width:28px; height:28px;"></div>
+            <div><img src="../assets/images/web/arrow-logo.png" alt="スクロール案内" style="width:28px; height:28px;"></div>
 
             <!-- スクロール案内 -->
             <div style="text-align: center; color: #ffd27d; font-size: ${isMobile ? '13px' : '14px'}; letter-spacing: 0.05em; text-shadow: 0 0 12px rgba(255, 210, 125, 0.6);">
