@@ -41,7 +41,7 @@ const compatibilityDetails = {
   '十三夜-十六夜': { reason: '二人とも成熟した落ち着きがある', example: '大人の余裕を持った関係', advice: '時には刺激も必要かもしれません' },
   '十三夜-下弦の月': { reason: '下弦の"手放し・整理"が、十三夜の"保持・安定"と時に衝突', example: '物を減らしたい下弦、思い出を残したい十三夜。"思い出はデータ化、実物は厳選"の中庸で◎', advice: '役割が噛み合えば堅実な関係' },
   '十三夜-暁': { reason: '暁の内省と深い対話が、十三夜の安心基盤にぴたり', example: '週末は各自の趣味→夜に1時間の深いおしゃべり', advice: '静けさ×滋養で心が満ちる関係' },
-  // 満月の相性  
+  // 満月の相性
   '満月-新月': { reason: '新月の直感と行動力が、満月の感情を長く燃やし続ける', example: '新月の「突然だけど旅行行こう！」に、満月が即ノリで熱量倍増', advice: '情熱的で刺激的な関係' },
   '満月-三日月': { reason: '満月の明るさが三日月を優しく照らす', example: '満月が三日月を励まし、新しい世界へ導く', advice: '満月が三日月に勇気を与える関係' },
   '満月-上弦の月': { reason: '満月の情熱を上弦が形にする', example: '満月の夢を上弦が計画して実現', advice: '感情と実行力の良いコンビネーション' },
@@ -83,7 +83,7 @@ const compatibilityDetails = {
 const moonTypes = {
     '新月': {
         emoji: '🌑',
-        title: '新月タイプの物語',
+        title: '新月',
         introduction: 'あなたが生まれた夜、空には月が見えませんでした。',
         symbolism: '新月は「始まり」「真っさらな可能性」「まだ見えない未来」を象徴します。',
         traits: [
@@ -313,26 +313,26 @@ function diagnose() {
     const year = document.getElementById('year').value;
     const month = document.getElementById('month').value;
     const day = document.getElementById('day').value;
-    
+
     if (!year || !month || !day) {
         alert('誕生日を選択してください');
         return;
     }
-    
+
     const birthdate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
     const date = new Date(birthdate + ' 00:00:00');
     const moonAge = calculateMoonAge(date);
     const moonType = getMoonTypeFromAge(moonAge);
     const moonData = moonTypes[moonType];
-    
+
     // 診断IDを生成して保存
     const diagnosisId = generateDiagnosisId();
     localStorage.setItem('currentDiagnosisId', diagnosisId);
     console.log('診断ID生成:', diagnosisId);
-    
+
     // 診断データをAPIに送信して保存
     saveDiagnosisToDatabase(diagnosisId, birthdate, moonType, moonData);
-    
+
     displayResult(moonType, moonData, birthdate);
 }
 
@@ -373,7 +373,7 @@ async function saveDiagnosisToDatabase(diagnosisId, birthdate, moonType, moonDat
                 }
             })
         });
-        
+
         if (response.ok) {
             const result = await response.json();
             console.log('診断データが保存されました:', result.diagnosisId);
@@ -393,15 +393,15 @@ async function saveDiagnosisToDatabase(diagnosisId, birthdate, moonType, moonDat
 function getCompatibilityList(moonType) {
     const moonTypes = ['新月', '三日月', '上弦の月', '十三夜', '満月', '十六夜', '下弦の月', '暁'];
     const compatibilities = [];
-    
+
     moonTypes.forEach(otherType => {
         if (otherType === moonType) return; // 自分自身は除外
-        
+
         // 動的データから相性情報を取得
         const compatData = getCompatibilityDataWeb(moonType, otherType);
         const key = `${moonType}-${otherType}`;
         const oldDetails = compatibilityDetails[key] || {};
-        
+
         compatibilities.push({
             type: otherType,
             emoji: getEmojiForType(otherType),
@@ -413,7 +413,7 @@ function getCompatibilityList(moonType) {
             advice: compatData.userAdvice || oldDetails.advice
         });
     });
-    
+
     // スコアで降順ソート
     return compatibilities.sort((a, b) => b.score - a.score);
 }
@@ -437,22 +437,22 @@ function getEmojiForType(type) {
 function displayResult(moonType, moonData, birthdate) {
     const inputSection = document.getElementById('inputSection');
     const resultSection = document.getElementById('resultSection');
-    
+
     inputSection.style.display = 'none';
     resultSection.style.display = 'block';
-    
+
     const compatibilityList = getCompatibilityList(moonType);
     const bestMatch = compatibilityList.filter(c => c.score >= 95);
     const goodMatch = compatibilityList.filter(c => c.score >= 75 && c.score < 95);
     const normalMatch = compatibilityList.filter(c => c.score < 75);
-    
+
     resultSection.innerHTML = `
         <div class="moon-type-card">
             <div class="moon-emoji">${moonData.emoji}</div>
             <div class="moon-type-name">${moonType}タイプ</div>
             <div class="moon-type-title">${moonData.title}</div>
         </div>
-        
+
         <div class="description-box">
             <div class="description-title">
                 <span>📖</span>
@@ -463,7 +463,7 @@ function displayResult(moonType, moonData, birthdate) {
                 ${moonData.symbolism}
             </div>
         </div>
-        
+
         <div class="description-box">
             <div class="description-title">
                 <span>✨</span>
@@ -473,7 +473,7 @@ function displayResult(moonType, moonData, birthdate) {
                 ${moonData.traits.map(trait => `<li>${trait}</li>`).join('')}
             </ul>
         </div>
-        
+
         <div class="description-box love-style-box">
             <div class="description-title">
                 <span>💕</span>
@@ -483,7 +483,7 @@ function displayResult(moonType, moonData, birthdate) {
                 ${moonData.loveStyle}
             </div>
         </div>
-        
+
         <div class="description-box examples-box">
             <div class="description-title">
                 <span>💭</span>
@@ -493,7 +493,7 @@ function displayResult(moonType, moonData, birthdate) {
                 ${moonData.loveExamples.map(ex => `<li>${ex}</li>`).join('')}
             </ul>
         </div>
-        
+
         <div class="description-box">
             <div class="description-title">
                 <span>⚠️</span>
@@ -503,7 +503,7 @@ function displayResult(moonType, moonData, birthdate) {
                 ${moonData.caution}
             </div>
         </div>
-        
+
         <div class="description-box advice-box">
             <div class="description-title">
                 <span>💡</span>
@@ -513,13 +513,13 @@ function displayResult(moonType, moonData, birthdate) {
                 ${moonData.actionAdvice.map(advice => `<li>${advice}</li>`).join('')}
             </ul>
         </div>
-        
+
         <div class="description-box" style="background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%); border-left: 4px solid #fdcb6e;">
             <div class="description-title">
                 <span>🌙</span>
                 <span>あなたと他の月タイプとの相性</span>
             </div>
-            
+
             ${bestMatch.length > 0 ? `
             <div style="margin-top: 20px;">
                 <div style="font-weight: bold; color: #d63031; margin-bottom: 12px; font-size: 16px;">
@@ -545,7 +545,7 @@ function displayResult(moonType, moonData, birthdate) {
                 `).join('')}
             </div>
             ` : ''}
-            
+
             ${goodMatch.length > 0 ? `
             <div style="margin-top: 20px;">
                 <div style="font-weight: bold; color: #00b894; margin-bottom: 12px; font-size: 16px;">
@@ -571,7 +571,7 @@ function displayResult(moonType, moonData, birthdate) {
                 `).join('')}
             </div>
             ` : ''}
-            
+
             ${normalMatch.length > 0 ? `
             <div style="margin-top: 20px;">
                 <div style="font-weight: bold; color: #636e72; margin-bottom: 12px; font-size: 16px;">
@@ -598,7 +598,7 @@ function displayResult(moonType, moonData, birthdate) {
             </div>
             ` : ''}
         </div>
-        
+
         <!-- LINE公式アカウントへの誘導セクション -->
         <div style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); border-radius: 20px; padding: 30px; margin: 30px 0; text-align: center; border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
             <div style="color: rgba(255, 255, 255, 0.9); margin-bottom: 20px;">
@@ -610,7 +610,7 @@ function displayResult(moonType, moonData, birthdate) {
                     月詠からの、さらなる言葉をお届けします
                 </div>
             </div>
-            
+
             <div style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 20px; margin: 20px 0;">
                 <div style="color: rgba(255, 255, 255, 0.9); margin-bottom: 15px;">
                     <div style="font-size: 16px; font-weight: normal; color: rgba(255, 255, 255, 0.9); margin-bottom: 12px; letter-spacing: 0.5px;">
@@ -623,15 +623,15 @@ function displayResult(moonType, moonData, birthdate) {
                         📜 月詠からの個別メッセージ
                     </div>
                 </div>
-                
-                <a href="https://lin.ee/egmCXoG" 
+
+                <a href="https://lin.ee/egmCXoG"
                    target="_blank"
                    style="display: inline-block; background: linear-gradient(135deg, #2a2a3e 0%, #16213e 100%); color: rgba(255, 255, 255, 0.9); padding: 14px 36px; border-radius: 30px; text-decoration: none; font-weight: normal; font-size: 15px; margin-top: 15px; border: 1px solid rgba(255, 255, 255, 0.2); box-shadow: 0 4px 15px rgba(0,0,0,0.3); letter-spacing: 0.5px;">
                     🌙 月詠とLINEで繋がる
                 </a>
             </div>
         </div>
-        
+
         <div class="share-section">
             <p class="share-text">診断結果をシェアする</p>
             <div style="background: rgba(255,255,255,0.1); border-radius: 12px; padding: 16px; margin-bottom: 16px;">
@@ -648,23 +648,23 @@ function displayResult(moonType, moonData, birthdate) {
                 </div>
             </div>
             <div class="share-buttons">
-                <a href="https://twitter.com/intent/tweet?text=${encodeURIComponent(`私は${moonType}タイプでした！${moonData.emoji}\n\n${moonData.title}\n\nおつきさま診断で自分の本当の性格と恋愛スタイルがわかる✨`)}&url=${encodeURIComponent('https://line-love-edu.vercel.app/moon-fortune.html')}" 
-                   target="_blank" 
+                <a href="https://twitter.com/intent/tweet?text=${encodeURIComponent(`私は${moonType}タイプでした！${moonData.emoji}\n\n${moonData.title}\n\nおつきさま診断で自分の本当の性格と恋愛スタイルがわかる✨`)}&url=${encodeURIComponent('https://line-love-edu.vercel.app/moon-fortune.html')}"
+                   target="_blank"
                    class="share-btn share-twitter">
                     Xでシェア
                 </a>
-                <a href="https://line.me/R/msg/text/?${encodeURIComponent(`私は${moonType}タイプでした！${moonData.emoji}\n\n${moonData.title}\n\nおつきさま診断で自分の本当の性格と恋愛スタイルがわかる✨\n\nhttps://line-love-edu.vercel.app/moon-fortune.html`)}" 
-                   target="_blank" 
+                <a href="https://line.me/R/msg/text/?${encodeURIComponent(`私は${moonType}タイプでした！${moonData.emoji}\n\n${moonData.title}\n\nおつきさま診断で自分の本当の性格と恋愛スタイルがわかる✨\n\nhttps://line-love-edu.vercel.app/moon-fortune.html`)}"
+                   target="_blank"
                    class="share-btn share-line">
                     LINEでシェア
                 </a>
             </div>
         </div>
-        
+
         <button class="btn-retry" onclick="retry()">
             もう一度診断する
         </button>
-        
+
         <a href="index.html" style="display: inline-block; margin-top: 16px; padding: 14px 28px; background: linear-gradient(135deg, #4a4a6a, #3a3a5a); color: white; text-decoration: none; border-radius: 25px; font-size: 16px; text-align: center; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); transition: all 0.3s ease;">
             トップに戻る
         </a>
@@ -675,10 +675,10 @@ function displayResult(moonType, moonData, birthdate) {
 function retry() {
     const inputSection = document.getElementById('inputSection');
     const resultSection = document.getElementById('resultSection');
-    
+
     inputSection.style.display = 'block';
     resultSection.style.display = 'none';
-    
+
     document.getElementById('year').value = '';
     document.getElementById('month').value = '';
     document.getElementById('day').value = '';
@@ -689,7 +689,7 @@ function populateDateSelectors() {
     const yearSelect = document.getElementById('year');
     const monthSelect = document.getElementById('month');
     const daySelect = document.getElementById('day');
-    
+
     // 年のオプション（1900年から現在の年まで）
     const currentYear = new Date().getFullYear();
     for (let year = currentYear; year >= 1900; year--) {
@@ -698,7 +698,7 @@ function populateDateSelectors() {
         option.textContent = year;
         yearSelect.appendChild(option);
     }
-    
+
     // 月のオプション
     for (let month = 1; month <= 12; month++) {
         const option = document.createElement('option');
@@ -706,10 +706,10 @@ function populateDateSelectors() {
         option.textContent = month;
         monthSelect.appendChild(option);
     }
-    
+
     // 日のオプション（最初は31日まで）
     updateDays();
-    
+
     // 月や年が変更されたら日を更新
     yearSelect.addEventListener('change', updateDays);
     monthSelect.addEventListener('change', updateDays);
@@ -720,10 +720,10 @@ function updateDays() {
     const yearSelect = document.getElementById('year');
     const monthSelect = document.getElementById('month');
     const daySelect = document.getElementById('day');
-    
+
     const year = parseInt(yearSelect.value);
     const month = parseInt(monthSelect.value);
-    
+
     // 選択された月の最大日数を取得
     let maxDays = 31;
     if (month) {
@@ -738,10 +738,10 @@ function updateDays() {
             maxDays = 30;
         }
     }
-    
+
     // 現在の選択値を保存
     const currentDay = daySelect.value;
-    
+
     // 日のオプションをクリアして再生成
     daySelect.innerHTML = '<option value="">日</option>';
     for (let day = 1; day <= maxDays; day++) {
@@ -750,7 +750,7 @@ function updateDays() {
         option.textContent = day;
         daySelect.appendChild(option);
     }
-    
+
     // 可能であれば以前の選択値を復元
     if (currentDay && currentDay <= maxDays) {
         daySelect.value = currentDay;
@@ -761,7 +761,7 @@ function updateDays() {
 function generateAndShowShareImage(moonType) {
     const moonData = moonTypes[moonType];
     if (!moonData) return;
-    
+
     // 既存のcanvasを取得または作成
     let canvas = document.getElementById('shareCanvas');
     if (!canvas) {
@@ -771,7 +771,7 @@ function generateAndShowShareImage(moonType) {
     canvas.width = 1200;
     canvas.height = 630;
     const ctx = canvas.getContext('2d');
-    
+
     // グラデーション背景（月タイプごとに色を変える）
     const gradientColors = {
         '新月': ['#1a1a2e', '#16213e'],
@@ -783,32 +783,32 @@ function generateAndShowShareImage(moonType) {
         '下弦の月': ['#16a085', '#27ae60'],
         '暁': ['#34495e', '#2c3e50']
     };
-    
+
     const colors = gradientColors[moonType] || ['#667eea', '#764ba2'];
     const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
     gradient.addColorStop(0, colors[0]);
     gradient.addColorStop(1, colors[1]);
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    
+
     // 半透明の円形装飾（複数追加）
     ctx.fillStyle = 'rgba(255, 255, 255, 0.08)';
     ctx.beginPath();
     ctx.arc(150, 150, 120, 0, Math.PI * 2);
     ctx.fill();
-    
+
     ctx.beginPath();
     ctx.arc(1050, 480, 180, 0, Math.PI * 2);
     ctx.fill();
-    
+
     ctx.beginPath();
     ctx.arc(600, 100, 80, 0, Math.PI * 2);
     ctx.fill();
-    
+
     // タイトル背景
     ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
     ctx.fillRect(0, 60, canvas.width, 120);
-    
+
     // タイトル
     ctx.fillStyle = '#ffffff';
     ctx.font = 'bold 64px "Kiwi Maru", sans-serif';
@@ -817,20 +817,20 @@ function generateAndShowShareImage(moonType) {
     ctx.shadowBlur = 10;
     ctx.fillText('おつきさま診断', canvas.width / 2, 140);
     ctx.shadowBlur = 0;
-    
+
     // 月の絵文字（背景付き）
     ctx.fillStyle = 'rgba(255, 255, 255, 0.15)';
     ctx.beginPath();
     ctx.arc(canvas.width / 2, 280, 100, 0, Math.PI * 2);
     ctx.fill();
-    
+
     ctx.font = '160px serif';
     ctx.fillStyle = '#ffffff';
     ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
     ctx.shadowBlur = 15;
     ctx.fillText(moonData.emoji, canvas.width / 2, 320);
     ctx.shadowBlur = 0;
-    
+
     // 月タイプ名
     ctx.font = 'bold 48px "Kiwi Maru", sans-serif';
     ctx.fillStyle = '#ffd700';
@@ -838,25 +838,25 @@ function generateAndShowShareImage(moonType) {
     ctx.shadowBlur = 8;
     ctx.fillText(`${moonType}タイプ`, canvas.width / 2, 410);
     ctx.shadowBlur = 0;
-    
+
     // キャッチフレーズ（月タイプのタイトルを表示）
     ctx.font = '28px "Kiwi Maru", sans-serif';
     ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
     ctx.fillText(moonData.title, canvas.width / 2, 460);
-    
+
     // サブテキスト
     ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
     ctx.font = '24px "Kiwi Maru", sans-serif';
     ctx.fillText('生まれた日の月があなたの', canvas.width / 2, 515);
     ctx.fillText('本当の性格と恋愛スタイルを教えます', canvas.width / 2, 550);
-    
+
     // URL（背景付き）
     ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
     ctx.fillRect(0, 570, canvas.width, 60);
     ctx.font = '22px "Kiwi Maru", sans-serif';
     ctx.fillStyle = '#ffffff';
     ctx.fillText('🌙 love-tsukuyomi.com/moon', canvas.width / 2, 605);
-    
+
     // コンテナを表示
     const container = document.getElementById('shareImageContainer');
     if (container) {
@@ -876,7 +876,7 @@ function downloadShareImage(moonType) {
         setTimeout(() => downloadShareImage(moonType), 500);
         return;
     }
-    
+
     canvas.toBlob(function(blob) {
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
@@ -884,7 +884,7 @@ function downloadShareImage(moonType) {
         a.download = `おつきさま診断_${moonType}タイプ.png`;
         a.click();
         URL.revokeObjectURL(url);
-        
+
         // ダウンロード後にアラート
         setTimeout(() => {
             alert('画像を保存しました！この画像をSNSに投稿してシェアしてください♪');
@@ -896,22 +896,22 @@ function downloadShareImage(moonType) {
 function shareToSNS(platform, moonType) {
     const moonData = moonTypes[moonType];
     if (!moonData) return;
-    
+
     // まず画像を保存するよう促す
     alert('まず画像を保存してから、SNSアプリで投稿してください！');
-    
+
     // 画像をダウンロード
     downloadShareImage(moonType);
-    
+
     // テキストをコピー
     const shareText = `私は${moonType}タイプでした！${moonData.emoji}\n\n${moonData.title}\n\nおつきさま診断で自分の本当の性格と恋愛スタイルがわかる✨\n\nlove-tsukuyomi.com/moon`;
-    
+
     // クリップボードにコピー
     if (navigator.clipboard) {
         navigator.clipboard.writeText(shareText).then(() => {
             setTimeout(() => {
                 alert('投稿用のテキストをコピーしました！\nSNSアプリを開いて、画像と一緒に投稿してください。');
-                
+
                 // プラットフォームに応じてリンクを開く
                 if (platform === 'twitter') {
                     window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`, '_blank');
@@ -929,7 +929,7 @@ function shareToSNS(platform, moonType) {
 document.addEventListener('DOMContentLoaded', function() {
     // セレクトボックスを初期化
     populateDateSelectors();
-    
+
     // Enterキーで診断実行
     const selects = ['year', 'month', 'day'];
     selects.forEach(id => {
