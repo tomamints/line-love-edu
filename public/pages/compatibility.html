@@ -492,8 +492,8 @@
                     }
 
                     const { user, partner, compatibility, relationship, advice, shareText, theme, actions } = result.data;
-                    const userLabel = `${user.moonType || 'あなた'}`;
-                    const partnerLabel = `${partner.moonType || 'お相手'}`;
+                    const userLabel = `${user.emoji || ''}${user.moonType || 'あなた'}`;
+                    const partnerLabel = `${partner.emoji || ''}${partner.moonType || 'お相手'}`;
                     if (profileDetail) {
                         profileDetail.textContent = `${userLabel} × ${partnerLabel}`;
                     }

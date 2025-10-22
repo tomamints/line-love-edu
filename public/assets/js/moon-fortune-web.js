@@ -449,6 +449,7 @@ function displayResult(moonType, moonData, birthdate) {
     resultSection.innerHTML = `
         <div class="moon-type-card">
             <img class="moon-type-logo" src="/assets/images/web/fortune-logo.png" alt="おつきさま診断ロゴ">
+            <div class="moon-emoji">${moonData.emoji}</div>
             <div class="moon-type-name">${moonType}タイプ</div>
             <div class="moon-type-title">${moonData.title}</div>
         </div>
@@ -603,7 +604,7 @@ function displayResult(moonType, moonData, birthdate) {
             <p class="share-text">診断結果をシェアする</p>
             <div style="background: rgba(12, 9, 28, 0.55); border-radius: 12px; padding: 16px; margin-bottom: 16px; border: 1px solid rgba(255, 255, 255, 0.06);">
                 <div style="display: flex; align-items: center; gap: 16px; flex-wrap: wrap; justify-content: center;">
-                    <img src="/assets/images/web/fortune-logo.png" alt="おつきさま診断ロゴ" style="width:64px; height:64px; object-fit:contain;">
+                    <div style="font-size: 60px;">${moonData.emoji}</div>
                     <div style="text-align: center;">
                         <div style="font-size: 16px; font-weight: 600; color: #ffe4b5; margin-bottom: 6px; letter-spacing: 0.02em;">
                             私は${moonType}タイプでした！
