@@ -514,7 +514,7 @@ function displayResult(moonType, moonData, birthdate) {
             </ul>
         </div>
 
-        <div class="description-box" style="background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%); border-left: 4px solid #fdcb6e;">
+        <div class="description-box" style="background: rgba(18, 14, 40, 0.7); border: 1px solid rgba(255, 255, 255, 0.08);">
             <div class="description-title">
                 <span>🌙</span>
                 <span>あなたと他の月タイプとの相性</span>
@@ -526,19 +526,19 @@ function displayResult(moonType, moonData, birthdate) {
                     ◎ とても相性が良い月タイプ
                 </div>
                 ${bestMatch.map(c => `
-                    <div style="background: white; border-radius: 8px; padding: 12px; margin-bottom: 12px;">
-                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                    <div style="background: rgba(12, 9, 28, 0.55); border-radius: 12px; padding: 14px; margin-bottom: 14px; border: 1px solid rgba(255, 255, 255, 0.06);">
+                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px; color: rgba(255, 255, 255, 0.9);">
                             <span style="font-size: 24px;">${c.emoji}</span>
-                            <span style="font-weight: bold; color: #764ba2;">${c.type}タイプ</span>
-                            <span style="color: #d63031; font-weight: bold;">${c.score}%</span>
+                            <span style="font-weight: bold; color: #ffd27d;">${c.type}タイプ</span>
+                            <span style="color: #ff7675; font-weight: bold;">${c.score}%</span>
                         </div>
-                        <div style="font-size: 13px; color: #555; margin-bottom: 6px;">
+                        <div style="font-size: 13px; color: rgba(255, 255, 255, 0.75); margin-bottom: 6px;">
                             <strong>理由:</strong> ${c.reason || ''}
                         </div>
-                        <div style="font-size: 13px; color: #555; margin-bottom: 6px;">
+                        <div style="font-size: 13px; color: rgba(255, 255, 255, 0.75); margin-bottom: 6px;">
                             <strong>例:</strong> ${c.example || ''}
                         </div>
-                        <div style="font-size: 13px; color: #764ba2; font-weight: 500;">
+                        <div style="font-size: 13px; color: rgba(255, 240, 200, 0.9); font-weight: 500;">
                             ${c.advice || ''}
                         </div>
                     </div>
@@ -552,19 +552,19 @@ function displayResult(moonType, moonData, birthdate) {
                     ○ 相性が良い月タイプ
                 </div>
                 ${goodMatch.map(c => `
-                    <div style="background: white; border-radius: 8px; padding: 12px; margin-bottom: 12px;">
-                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                    <div style="background: rgba(12, 9, 28, 0.55); border-radius: 12px; padding: 14px; margin-bottom: 14px; border: 1px solid rgba(255, 255, 255, 0.05);">
+                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px; color: rgba(255, 255, 255, 0.9);">
                             <span style="font-size: 24px;">${c.emoji}</span>
-                            <span style="font-weight: bold; color: #764ba2;">${c.type}タイプ</span>
-                            <span style="color: #00b894; font-weight: bold;">${c.score}%</span>
+                            <span style="font-weight: bold; color: #a4ffdd;">${c.type}タイプ</span>
+                            <span style="color: #55efc4; font-weight: bold;">${c.score}%</span>
                         </div>
-                        <div style="font-size: 13px; color: #555; margin-bottom: 6px;">
+                        <div style="font-size: 13px; color: rgba(255, 255, 255, 0.75); margin-bottom: 6px;">
                             <strong>理由:</strong> ${c.reason || ''}
                         </div>
-                        <div style="font-size: 13px; color: #555; margin-bottom: 6px;">
+                        <div style="font-size: 13px; color: rgba(255, 255, 255, 0.75); margin-bottom: 6px;">
                             <strong>例:</strong> ${c.example || ''}
                         </div>
-                        <div style="font-size: 13px; color: #764ba2; font-weight: 500;">
+                        <div style="font-size: 13px; color: rgba(180, 255, 232, 0.9); font-weight: 500;">
                             ${c.advice || ''}
                         </div>
                     </div>
@@ -578,19 +578,19 @@ function displayResult(moonType, moonData, birthdate) {
                     △ 普通の相性の月タイプ
                 </div>
                 ${normalMatch.map(c => `
-                    <div style="background: white; border-radius: 8px; padding: 12px; margin-bottom: 12px;">
-                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                    <div style="background: rgba(12, 9, 28, 0.55); border-radius: 12px; padding: 14px; margin-bottom: 14px; border: 1px solid rgba(255, 255, 255, 0.04);">
+                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px; color: rgba(255, 255, 255, 0.9);">
                             <span style="font-size: 24px;">${c.emoji}</span>
-                            <span style="font-weight: bold; color: #764ba2;">${c.type}タイプ</span>
-                            <span style="color: #636e72; font-weight: bold;">${c.score}%</span>
+                            <span style="font-weight: bold; color: #dfe6e9;">${c.type}タイプ</span>
+                            <span style="color: #b2bec3; font-weight: bold;">${c.score}%</span>
                         </div>
-                        <div style="font-size: 13px; color: #555; margin-bottom: 6px;">
+                        <div style="font-size: 13px; color: rgba(255, 255, 255, 0.75); margin-bottom: 6px;">
                             <strong>理由:</strong> ${c.reason || ''}
                         </div>
-                        <div style="font-size: 13px; color: #555; margin-bottom: 6px;">
+                        <div style="font-size: 13px; color: rgba(255, 255, 255, 0.75); margin-bottom: 6px;">
                             <strong>例:</strong> ${c.example || ''}
                         </div>
-                        <div style="font-size: 13px; color: #764ba2; font-weight: 500;">
+                        <div style="font-size: 13px; color: rgba(220, 220, 255, 0.85); font-weight: 500;">
                             ${c.advice || ''}
                         </div>
                     </div>
@@ -601,14 +601,14 @@ function displayResult(moonType, moonData, birthdate) {
 
         <div class="share-section">
             <p class="share-text">診断結果をシェアする</p>
-            <div style="background: rgba(255,255,255,0.1); border-radius: 12px; padding: 16px; margin-bottom: 16px;">
+            <div style="background: rgba(12, 9, 28, 0.55); border-radius: 12px; padding: 16px; margin-bottom: 16px; border: 1px solid rgba(255, 255, 255, 0.06);">
                 <div style="display: flex; align-items: center; gap: 16px; flex-wrap: wrap; justify-content: center;">
                     <div style="font-size: 64px;">${moonData.emoji}</div>
                     <div style="text-align: center;">
-                        <div style="font-size: 18px; font-weight: bold; color: #764ba2; margin-bottom: 4px;">
+                        <div style="font-size: 16px; font-weight: 600; color: #ffe4b5; margin-bottom: 6px; letter-spacing: 0.02em;">
                             私は${moonType}タイプでした！
                         </div>
-                        <div style="font-size: 14px; color: #666;">
+                        <div style="font-size: 13px; color: rgba(255, 255, 255, 0.7);">
                             おつきさま診断で本当の自分がわかる
                         </div>
                     </div>
