@@ -390,24 +390,14 @@
                         <div class="card-brand-icon"><i class="fab fa-cc-mastercard"></i></div>
                         <div class="card-brand-name">Mastercard</div>
                     </div>
-                    <!-- 他のカードブランド（一時的にコメントアウト）
                     <div class="card-brand card-brand-jcb">
                         <div class="card-brand-icon"><i class="fab fa-cc-jcb"></i></div>
                         <div class="card-brand-name">JCB</div>
-                    </div>
-                    <div class="card-brand card-brand-discover">
-                        <div class="card-brand-icon"><i class="fab fa-cc-discover"></i></div>
-                        <div class="card-brand-name">Discover</div>
                     </div>
                     <div class="card-brand card-brand-amex">
                         <div class="card-brand-icon"><i class="fab fa-cc-amex"></i></div>
                         <div class="card-brand-name">American Express</div>
                     </div>
-                    <div class="card-brand card-brand-diners">
-                        <div class="card-brand-icon"><i class="fab fa-cc-diners-club"></i></div>
-                        <div class="card-brand-name">Diners Club</div>
-                    </div>
-                    -->
                 </div>
             </div>
         </div>
@@ -421,10 +411,6 @@
         <div class="success-message" id="successMessage"></div>
 
         <!-- デバッグ情報表示 -->
-        <div id="debugInfo" style="display: none; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.3); color: #ffffff; padding: 15px; border-radius: 10px; margin: 20px 0; font-size: 12px; word-break: break-all;">
-            <strong>デバッグ情報:</strong><br>
-        </div>
-
         <div class="features">
             <div class="feature">
                 <span class="feature-icon">🔒</span>
@@ -536,11 +522,7 @@
 
         // デバッグ情報表示用
         function showDebugInfo(message) {
-            const debugEl = document.getElementById('debugInfo');
-            if (debugEl) {
-                debugEl.innerHTML += message + '<br>';
-                debugEl.style.display = 'block';
-            }
+            console.log('[ApplePay]', message);
         }
 
         // Apple Pay初期化と処理
