@@ -350,20 +350,17 @@
         </div>
 
         <div class="payment-methods">
-            <!-- Apple Pay公式ボタン（一時的にコメントアウト） -->
-            <!--
-            <div id="applePayContainer" style="display: none;">
+            <div id="applePayContainer" style="display: none; margin-bottom: 18px;">
                 <button id="applePayButton" class="apple-pay-button-official"></button>
             </div>
 
             <div id="applePayNotSupported" style="display: none; text-align: center; padding: 20px; background: rgba(255, 255, 255, 0.05); border-radius: 12px; margin-bottom: 18px;">
-                <p style="color: rgba(255, 255, 255, 0.6); font-size: 14px;">Apple Payはこの環境ではご利用いただけません</p>
+                <p style="color: rgba(255, 255, 255, 0.6); font-size: 14px;">この環境ではApple Payをご利用いただけません</p>
             </div>
 
-            <div class="payment-separator">
+            <div class="payment-separator" id="paymentSeparator" style="display: none;">
                 または
             </div>
-            -->
 
             <!-- クレジットカードボタン（PAY.JP Checkout） -->
             <form action="/pages/payment-process.html" method="GET" id="checkout-form">
@@ -537,8 +534,6 @@
         document.getElementById('diagnosisIdField').value = diagnosisId || sessionStorage.getItem('diagnosisId');
         document.getElementById('userIdField').value = userId || sessionStorage.getItem('userId') || 'anonymous';
 
-        // Apple Pay関連機能（一時的にコメントアウト）
-        /*
         // デバッグ情報表示用
         function showDebugInfo(message) {
             const debugEl = document.getElementById('debugInfo');
@@ -555,8 +550,21 @@
             showDebugInfo(`PAY.JP applePay: ${typeof payjp?.applePay}`);
             showDebugInfo(`Public key: ${publicKey}`);
 
-            // Apple Payボタンを常に表示して実際にテスト可能にする
-            document.getElementById('applePayContainer').style.display = 'block';
+            const appleContainer = document.getElementById('applePayContainer');
+            const notSupported = document.getElementById('applePayNotSupported');
+            const separator = document.getElementById('paymentSeparator');
+
+            if (window.ApplePaySession && ApplePaySession.canMakePayments()) {
+                appleContainer.style.display = 'block';
+                if (separator) separator.style.display = 'block';
+                if (notSupported) notSupported.style.display = 'none';
+            } else {
+                appleContainer.style.display = 'none';
+                if (separator) separator.style.display = 'none';
+                if (notSupported) notSupported.style.display = 'block';
+                showDebugInfo('ApplePaySession not available or cannot make payments');
+                return;
+            }
 
             // Apple Payボタンのクリックイベント
             document.getElementById('applePayButton').addEventListener('click', function() {
@@ -674,7 +682,6 @@
 
         // Apple Pay初期化を実行
         initializeApplePay();
-        */
     </script>
 </body>
 </html>
