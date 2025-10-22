@@ -32,6 +32,54 @@
             flex-direction: column;
         }
 
+        .line-guard {
+            max-width: 520px;
+            margin: 80px auto;
+            padding: 40px 30px;
+            background: rgba(18, 12, 36, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 24px 60px rgba(10, 6, 30, 0.45);
+        }
+
+        .line-guard h2 {
+            font-size: 22px;
+            margin-bottom: 16px;
+            letter-spacing: 0.08em;
+            color: #ffe9b8;
+        }
+
+        .line-guard p {
+            font-size: 14px;
+            line-height: 1.8;
+            margin-bottom: 24px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .line-guard a {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 28px;
+            background: linear-gradient(135deg, #00b900, #35d955);
+            color: #fff;
+            border-radius: 999px;
+            text-decoration: none;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            box-shadow: 0 12px 28px rgba(0, 185, 0, 0.35);
+        }
+
+        .line-guard a:hover {
+            transform: translateY(-2px);
+        }
+
+        .line-guard .icon {
+            font-size: 26px;
+        }
+
         .container {
             max-width: 960px;
             width: min(94%, 960px);
@@ -399,7 +447,49 @@
     </div>
 
     <script>
+    function isLineBrowser() {
+        return /line/i.test(navigator.userAgent || '');
+    }
+
+    function ensureLineAccess() {
+        const params = new URLSearchParams(window.location.search);
+        let userId = params.get('userId');
+
+        if (userId) {
+            sessionStorage.setItem('moonCompatibilityUserId', userId);
+        } else {
+            userId = sessionStorage.getItem('moonCompatibilityUserId');
+        }
+
+        if (!isLineBrowser() || !userId) {
+            const container = document.querySelector('.container');
+            if (container) {
+                container.style.display = 'none';
+            }
+
+            const guard = document.createElement('div');
+            guard.className = 'line-guard';
+            guard.innerHTML = `
+                <h2>LINEからアクセスしてください</h2>
+                <p>月の相性診断は、LINEでプロフィールを登録いただいたユーザー限定の機能です。<br>
+                   LINE公式アカウントから相性診断メニューを開いてご利用ください。</p>
+                <a href="https://lin.ee/egmCXoG" target="_blank" rel="noopener">
+                    <span class="icon">💚</span>LINE公式アカウントを開く
+                </a>`;
+            document.body.appendChild(guard);
+
+            return null;
+        }
+
+        return userId;
+    }
+
         document.addEventListener('DOMContentLoaded', () => {
+            const authorizedUserId = ensureLineAccess();
+            if (!authorizedUserId) {
+                return;
+            }
+
             const form = document.getElementById('compatibilityForm');
             const resultSection = document.getElementById('resultSection');
             const errorMessage = document.getElementById('errorMessage');
@@ -445,6 +535,44 @@
                 }
             }
 
+            function setDateSelect(prefix, isoDate) {
+                if (!isoDate) return;
+                const date = new Date(isoDate);
+                if (Number.isNaN(date.getTime())) return;
+
+                const yearEl = document.getElementById(`${prefix}Year`);
+                const monthEl = document.getElementById(`${prefix}Month`);
+                const dayEl = document.getElementById(`${prefix}Day`);
+
+                if (!yearEl || !monthEl || !dayEl) return;
+
+                yearEl.value = String(date.getFullYear());
+                monthEl.value = String(date.getMonth() + 1);
+                dayEl.value = String(date.getDate());
+            }
+
+            async function prefillBirthdates(userId) {
+                try {
+                    const response = await fetch(`/api/get-love-profile?userId=${encodeURIComponent(userId)}`);
+                    if (!response.ok) {
+                        return;
+                    }
+
+                    const data = await response.json();
+                    if (!data?.profile) {
+                        return;
+                    }
+
+                    const userBirth = data.profile.birthDate || data.profile.birthdate;
+                    const partnerBirth = data.profile.partnerBirthDate || data.profile.partner_birth_date;
+
+                    setDateSelect('user', userBirth);
+                    setDateSelect('partner', partnerBirth);
+                } catch (error) {
+                    console.error('Prefill birthdate error:', error);
+                }
+            }
+
             function buildDate(prefix) {
                 const year = document.getElementById(`${prefix}Year`).value;
                 const month = document.getElementById(`${prefix}Month`).value;
@@ -457,6 +585,7 @@
 
             populateDateSelects('user');
             populateDateSelects('partner');
+            prefillBirthdates(authorizedUserId);
 
             form.addEventListener('submit', async (event) => {
                 event.preventDefault();

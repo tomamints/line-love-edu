@@ -226,6 +226,89 @@ function buildPremiumDiagnosisInviteMessage(userId) {
   };
 }
 
+function buildCompatibilityLaunchMessage(userId) {
+  const compatibilityUrl = `${process.env.BASE_URL || 'https://line-love-edu.vercel.app'}/pages/compatibility.html?userId=${userId || ''}`;
+
+  return {
+    type: 'flex',
+    altText: '🌙 月の相性診断',
+    contents: {
+      type: 'bubble',
+      size: 'mega',
+      header: {
+        type: 'box',
+        layout: 'vertical',
+        contents: [
+          {
+            type: 'text',
+            text: '🌙 月の相性診断',
+            size: 'xl',
+            weight: 'bold',
+            color: '#ffffff',
+            align: 'center'
+          }
+        ],
+        backgroundColor: '#5c4acb',
+        paddingAll: '20px'
+      },
+      body: {
+        type: 'box',
+        layout: 'vertical',
+        spacing: 'md',
+        contents: [
+          {
+            type: 'text',
+            text: 'LINEで登録したプロフィール情報をもとに、あなたと大切な人の月タイプ相性を診断します。',
+            size: 'sm',
+            color: '#ded9ff',
+            wrap: true
+          },
+          {
+            type: 'separator'
+          },
+          {
+            type: 'box',
+            layout: 'vertical',
+            spacing: 'sm',
+            contents: [
+              {
+                type: 'text',
+                text: '・生年月日が自動入力されます',
+                size: 'sm',
+                color: '#ffffff',
+                wrap: true
+              },
+              {
+                type: 'text',
+                text: '・総合スコアとテーマをお届け',
+                size: 'sm',
+                color: '#ffffff',
+                wrap: true
+              }
+            ]
+          }
+        ]
+      },
+      footer: {
+        type: 'box',
+        layout: 'vertical',
+        contents: [
+          {
+            type: 'button',
+            style: 'primary',
+            color: '#5c4acb',
+            action: {
+              type: 'uri',
+              label: '診断ページを開く',
+              uri: compatibilityUrl
+            }
+          }
+        ]
+      }
+    }
+  };
+}
+
 // 静的ファイルの提供
 app.use('/images', express.static(path.join(__dirname, 'images')));
 app.use(express.static(path.join(__dirname, 'public')));
@@ -463,11 +546,17 @@ app.get('/api/get-love-profile', async (req, res) => {
     const normalizedName = profile.userName || profile.name || profile.personalInfo?.userName || null;
     const normalizedBirthDate = profile.birthDate || profile.personalInfo?.userBirthdate || profile.birthdate || null;
 
+    const normalizedPartnerName = profile.partnerName || profile.personalInfo?.partnerName || profile.partner_name || null;
+    const normalizedPartnerBirthDate = profile.partnerBirthDate || profile.personalInfo?.partnerBirthdate || profile.partner_birth_date || null;
+
     const responseProfile = {
       userName: normalizedName,
       name: normalizedName,
       birthDate: normalizedBirthDate,
       birthdate: normalizedBirthDate,
+      partnerName: normalizedPartnerName,
+      partnerBirthDate: normalizedPartnerBirthDate,
+      partner_birth_date: normalizedPartnerBirthDate,
       moonPatternId: profile.moonPatternId,
       diagnosisType: profile.diagnosisType,
       emotionalExpression: profile.emotionalExpression || profile.personalInfo?.emotionalExpression,
@@ -2000,7 +2089,14 @@ async function handleTextMessage(event) {
       await client.replyMessage(event.replyToken, premiumMessage);
       return;
     }
-    
+
+    if (text === '相性診断') {
+      const userId = event.source?.userId || '';
+      const compatMessage = buildCompatibilityLaunchMessage(userId);
+      await client.replyMessage(event.replyToken, compatMessage);
+      return;
+    }
+
     // 占いを始める - 友達追加時と同じカードを表示
     if (text === '占いを始める' || text === 'start') {
       const userId = event.source.userId;
