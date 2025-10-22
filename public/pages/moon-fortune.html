@@ -54,16 +54,16 @@
         }
 
         .container {
-            max-width: 600px;
-            width: 100%;
+            max-width: 640px;
+            width: min(92%, 640px);
         }
 
         .card {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 24px;
-            padding: 40px 30px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(10px);
+            background: transparent;
+            border-radius: 0;
+            padding: 0;
+            box-shadow: none;
+            backdrop-filter: none;
             animation: fadeIn 0.8s ease;
         }
 
@@ -99,19 +99,23 @@
         }
 
         h1 {
-            color: #764ba2;
+            color: #f7f2ff;
             font-size: 32px;
             font-weight: 500;
             margin-bottom: 10px;
         }
 
         .subtitle {
-            color: #888;
+            color: rgba(255, 255, 255, 0.7);
             font-size: 14px;
             line-height: 1.6;
         }
 
         .input-section {
+            background: rgba(18, 12, 36, 0.78);
+            border-radius: 22px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 30px 26px;
             margin-bottom: 30px;
         }
 
@@ -121,7 +125,7 @@
 
         label {
             display: block;
-            color: #555;
+            color: rgba(255, 255, 255, 0.82);
             font-size: 14px;
             margin-bottom: 8px;
             font-weight: 500;
@@ -141,7 +145,7 @@
             font-size: 16px;
             font-family: inherit;
             transition: all 0.3s;
-            background: white;
+            background: rgba(255, 255, 255, 0.92);
             cursor: pointer;
             min-width: 80px;
         }
@@ -157,7 +161,7 @@
         }
 
         .date-separator {
-            color: #888;
+            color: rgba(255, 255, 255, 0.7);
             font-size: 14px;
             font-weight: 500;
         }
@@ -187,7 +191,12 @@
 
         .result-section {
             display: none;
+            background: rgba(18, 12, 36, 0.78);
+            border-radius: 22px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 32px 28px;
             animation: slideIn 0.5s ease;
+            margin-top: 30px;
         }
 
         @keyframes slideIn {
@@ -202,11 +211,12 @@
         }
 
         .moon-type-card {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            border-radius: 16px;
+            background: linear-gradient(145deg, rgba(118, 104, 255, 0.22), rgba(201, 173, 255, 0.16));
+            border-radius: 18px;
             padding: 30px;
             margin-bottom: 24px;
             text-align: center;
+            border: 1px solid rgba(200, 173, 255, 0.28);
         }
 
         .moon-emoji {
@@ -215,28 +225,29 @@
         }
 
         .moon-type-name {
-            font-size: 28px;
-            color: #764ba2;
-            font-weight: 500;
+            font-size: 26px;
+            color: #ffe9a2;
+            font-weight: 600;
             margin-bottom: 16px;
         }
 
         .moon-type-title {
-            font-size: 18px;
-            color: #555;
-            margin-bottom: 20px;
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 18px;
             font-weight: 400;
         }
 
         .description-box {
-            background: white;
-            border-radius: 12px;
+            background: rgba(12, 9, 28, 0.6);
+            border-radius: 14px;
             padding: 20px;
             margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
         }
 
         .description-title {
-            color: #764ba2;
+            color: #ffe4c4;
             font-size: 16px;
             font-weight: 500;
             margin-bottom: 12px;
@@ -246,7 +257,7 @@
         }
 
         .description-text {
-            color: #666;
+            color: rgba(255, 255, 255, 0.8);
             font-size: 14px;
             line-height: 1.8;
         }
@@ -258,7 +269,7 @@
 
         .traits-list li {
             padding: 8px 0;
-            color: #666;
+            color: rgba(255, 255, 255, 0.82);
             font-size: 14px;
             position: relative;
             padding-left: 24px;
@@ -271,26 +282,26 @@
         }
 
         .love-style-box {
-            background: #fff4f4;
-            border-left: 4px solid #ff69b4;
+            background: rgba(255, 180, 200, 0.15);
+            border-left: 4px solid rgba(255, 105, 180, 0.8);
         }
 
         .examples-box {
-            background: #f4f9ff;
-            border-left: 4px solid #4a90e2;
+            background: rgba(132, 182, 255, 0.12);
+            border-left: 4px solid rgba(74, 144, 226, 0.75);
         }
 
         .advice-box {
-            background: #f4fff4;
-            border-left: 4px solid #52c41a;
+            background: rgba(154, 239, 178, 0.15);
+            border-left: 4px solid rgba(82, 196, 26, 0.8);
         }
 
         .btn-retry {
             width: 100%;
             padding: 14px;
-            background: white;
-            color: #764ba2;
-            border: 2px solid #764ba2;
+            background: transparent;
+            color: #f4efff;
+            border: 2px solid rgba(255, 255, 255, 0.25);
             border-radius: 12px;
             font-size: 16px;
             font-weight: 500;
@@ -301,19 +312,19 @@
         }
 
         .btn-retry:hover {
-            background: #764ba2;
+            background: rgba(255, 255, 255, 0.1);
             color: white;
         }
 
         .share-section {
             margin-top: 24px;
             padding-top: 24px;
-            border-top: 1px solid #e0e0e0;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
             text-align: center;
         }
 
         .share-text {
-            color: #888;
+            color: rgba(255, 255, 255, 0.65);
             font-size: 14px;
             margin-bottom: 12px;
         }
@@ -350,7 +361,7 @@
 
         @media (max-width: 480px) {
             .card {
-                padding: 30px 20px;
+                padding: 0;
             }
             
             h1 {
