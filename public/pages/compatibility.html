@@ -49,6 +49,12 @@
             margin-bottom: 36px;
         }
 
+        .header-logo {
+            width: 120px;
+            height: auto;
+            margin-bottom: 16px;
+        }
+
         .header h1 {
             font-size: clamp(26px, 4vw, 34px);
             margin-bottom: 12px;
@@ -300,10 +306,11 @@
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1>月の相性診断</h1>
-        <p>あなたとお相手の月タイプを照らし合わせ、恋愛の相性を読み解きます。</p>
-    </div>
+        <div class="header">
+            <img src="../assets/images/web/twin-logo.png" class="header-logo" alt="月の相性診断ロゴ">
+            <h1>月の相性診断</h1>
+            <p>あなたとお相手の月タイプを照らし合わせ、恋愛の相性を読み解きます。</p>
+        </div>
 
     <form id="compatibilityForm" class="form-section">
         <h2>あなたとお相手の情報を入力してください</h2>
@@ -485,8 +492,8 @@
                     }
 
                     const { user, partner, compatibility, relationship, advice, shareText, theme, actions } = result.data;
-                    const userLabel = `${user.emoji || ''}${user.moonType || 'あなた'}`;
-                    const partnerLabel = `${partner.emoji || ''}${partner.moonType || 'お相手'}`;
+                    const userLabel = `${user.moonType || 'あなた'}`;
+                    const partnerLabel = `${partner.moonType || 'お相手'}`;
                     if (profileDetail) {
                         profileDetail.textContent = `${userLabel} × ${partnerLabel}`;
                     }
@@ -506,12 +513,7 @@
                         themeDetail.textContent = '';
                         themePanel.style.display = 'none';
                     }
-                    const flowLines = [
-                        `スコア: ${compatibility.score} 点 / ${compatibility.level || ''}`
-                    ];
-                    if (compatibility.rank) {
-                        flowLines.push(`相性ランキング: 第${compatibility.rank}位 / 64組`);
-                    }
+                    const flowLines = [`スコア: ${compatibility.score} 点 / ${compatibility.level || ''}`];
                     flowDetail.innerHTML = flowLines.join('<br>');
 
                     const userAction = (actions?.user || '').trim();
