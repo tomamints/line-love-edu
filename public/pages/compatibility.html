@@ -300,96 +300,94 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>月の相性診断</h1>
-            <p>あなたとお相手の月タイプを照らし合わせ、恋愛の相性を読み解きます。</p>
+    <div class="header">
+        <h1>月の相性診断</h1>
+        <p>あなたとお相手の月タイプを照らし合わせ、恋愛の相性を読み解きます。</p>
+    </div>
+
+    <form id="compatibilityForm" class="form-section">
+        <h2>あなたとお相手の情報を入力してください</h2>
+        <div class="form-group">
+            <div class="input-block">
+                <label for="userYear">あなたの生年月日</label>
+                <div class="date-selects">
+                    <select id="userYear" required>
+                        <option value="">年</option>
+                    </select>
+                    <select id="userMonth" required>
+                        <option value="">月</option>
+                    </select>
+                    <select id="userDay" required>
+                        <option value="">日</option>
+                    </select>
+                </div>
+            </div>
+            <div class="input-block">
+                <label for="partnerYear">お相手の生年月日</label>
+                <div class="date-selects">
+                    <select id="partnerYear" required>
+                        <option value="">年</option>
+                    </select>
+                    <select id="partnerMonth" required>
+                        <option value="">月</option>
+                    </select>
+                    <select id="partnerDay" required>
+                        <option value="">日</option>
+                    </select>
+                </div>
+            </div>
         </div>
+        <div class="form-group">
+            <button type="submit" class="submit-button">
+                🌙 相性を診断する
+            </button>
+        </div>
+        <p class="error-message" id="errorMessage"></p>
+    </form>
 
-        <form id="compatibilityForm" class="form-section">
-            <h2>あなたとお相手の情報を入力してください</h2>
-            <div class="form-group">
-                <div class="input-block">
-                    <label for="userYear">あなたの生年月日</label>
-                    <div class="date-selects">
-                        <select id="userYear" required>
-                            <option value="">年</option>
-                        </select>
-                        <select id="userMonth" required>
-                            <option value="">月</option>
-                        </select>
-                        <select id="userDay" required>
-                            <option value="">日</option>
-                        </select>
+    <div class="result-section" id="resultSection">
+        <div class="result-header">
+            <h2>診断結果</h2>
+            <p class="pairing" id="profileDetail"></p>
+            <p class="summary-note" id="summaryNote"></p>
+        </div>
+        <div class="result-grid">
+            <div class="result-card">
+                <h3 id="compatibilitySummary"></h3>
+                <p id="compatibilityDetail"></p>
+            </div>
+            <div class="result-card highlight" id="themeCard" style="display:none;">
+                <h3>二人に流れるテーマ</h3>
+                <p id="themeDetail"></p>
+            </div>
+            <div class="result-card">
+                <h3>二人のストーリー</h3>
+                <p id="storyDetail"></p>
+            </div>
+            <div class="result-card">
+                <h3>これからの流れと心構え</h3>
+                <p id="flowDetail"></p>
+            </div>
+            <div class="result-card actions" id="actionsCard" style="display:none;">
+                <h3>今日のおすすめアクション</h3>
+                <div class="action-list">
+                    <div class="action-item">
+                        <h4>あなたにできること</h4>
+                        <p id="userActionDetail"></p>
+                    </div>
+                    <div class="action-item partner">
+                        <h4>お相手へ伝えたいひとこと</h4>
+                        <p id="partnerActionDetail"></p>
                     </div>
                 </div>
-                <div class="input-block">
-                    <label for="partnerYear">お相手の生年月日</label>
-                    <div class="date-selects">
-                        <select id="partnerYear" required>
-                            <option value="">年</option>
-                        </select>
-                        <select id="partnerMonth" required>
-                            <option value="">月</option>
-                        </select>
-                        <select id="partnerDay" required>
-                            <option value="">日</option>
-                        </select>
-                    </div>
-                </div>
             </div>
-            <div class="form-group">
-                <button type="submit" class="submit-button">
-                    🌙 相性を診断する
-                </button>
+            <div class="result-card">
+                <h3>月からのアドバイス</h3>
+                <p id="adviceDetail"></p>
             </div>
-            <p class="error-message" id="errorMessage"></p>
-        </form>
-
-        <div class="result-section" id="resultSection">
-            <div class="result-header">
-                <h2>診断結果</h2>
-                <p class="pairing" id="profileDetail"></p>
-                <p class="summary-note" id="summaryNote"></p>
-            </div>
-            <div class="result-grid">
-                <div class="result-card">
-                    <h3 id="compatibilitySummary"></h3>
-                    <p id="compatibilityDetail"></p>
-                </div>
-                <div class="result-card highlight" id="themeCard" style="display:none;">
-                    <h3>二人に流れるテーマ</h3>
-                    <p id="themeDetail"></p>
-                </div>
-                <div class="result-card">
-                    <h3>二人のストーリー</h3>
-                    <p id="storyDetail"></p>
-                </div>
-                <div class="result-card">
-                    <h3>これからの流れと心構え</h3>
-                    <p id="flowDetail"></p>
-                </div>
-                <div class="result-card actions" id="actionsCard" style="display:none;">
-                    <h3>今日のおすすめアクション</h3>
-                    <div class="action-list">
-                        <div class="action-item">
-                            <h4>あなたにできること</h4>
-                            <p id="userActionDetail"></p>
-                        </div>
-                        <div class="action-item partner">
-                            <h4>お相手へ伝えたいひとこと</h4>
-                            <p id="partnerActionDetail"></p>
-                        </div>
-                    </div>
-                </div>
-                <div class="result-card">
-                    <h3>月からのアドバイス</h3>
-                    <p id="adviceDetail"></p>
-                </div>
-            </div>
-            <div class="share-section">
-                <a href="#" class="share-button" id="shareButton">💬 LINEで結果をシェアする</a>
-            </div>
+        </div>
+        <div class="share-section">
+            <a href="#" class="share-button" id="shareButton">💬 LINEで結果をシェアする</a>
         </div>
     </div>
 
