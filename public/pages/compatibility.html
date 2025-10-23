@@ -30,6 +30,51 @@
             overflow-x: hidden;
             display: flex;
             flex-direction: column;
+            position: relative;
+        }
+
+        .background-aurora,
+        .background-stars {
+            position: fixed;
+            inset: 0;
+            z-index: -2;
+            pointer-events: none;
+        }
+
+        .background-aurora {
+            background: radial-gradient(55% 60% at 30% 20%, rgba(153, 120, 255, 0.35), transparent),
+                        radial-gradient(45% 55% at 75% 15%, rgba(255, 180, 200, 0.18), transparent),
+                        radial-gradient(70% 70% at 50% 75%, rgba(80, 120, 255, 0.22), transparent);
+            filter: blur(0.5px);
+            animation: auroraFlow 16s ease-in-out infinite alternate;
+        }
+
+        .background-stars::before,
+        .background-stars::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: radial-gradient(1px 1px at 20% 30%, rgba(255, 255, 255, 0.65), transparent),
+                              radial-gradient(1px 1px at 80% 55%, rgba(255, 255, 255, 0.45), transparent),
+                              radial-gradient(1.5px 1.5px at 55% 80%, rgba(255, 255, 255, 0.4), transparent),
+                              radial-gradient(1px 1px at 30% 65%, rgba(255, 255, 255, 0.35), transparent);
+            animation: twinkle 12s linear infinite;
+        }
+
+        .background-stars::after {
+            animation-delay: 6s;
+            opacity: 0.6;
+        }
+
+        @keyframes auroraFlow {
+            0% { transform: translateY(0px) scale(1); }
+            50% { transform: translateY(-8px) scale(1.02); }
+            100% { transform: translateY(6px) scale(1.04); }
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.85; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(1.05); }
         }
 
         .line-guard {
@@ -81,36 +126,88 @@
         }
 
         .container {
-            max-width: 960px;
-            width: min(94%, 960px);
-            margin: 60px auto 80px;
-            background: rgba(16, 10, 36, 0.82);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            padding: 40px 36px;
-            box-shadow: 0 18px 46px rgba(7, 2, 24, 0.38);
-            backdrop-filter: blur(6px);
+            max-width: 980px;
+            width: min(94%, 980px);
+            margin: 70px auto 90px;
+            background: rgba(16, 10, 36, 0.78);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 26px;
+            padding: 54px clamp(20px, 6vw, 52px);
+            box-shadow: 0 34px 68px rgba(6, 4, 24, 0.55), inset 0 0 0 1px rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(120% 80% at 50% -20%, rgba(255, 240, 200, 0.15), transparent 55%),
+                        radial-gradient(70% 60% at 20% 110%, rgba(118, 99, 239, 0.18), transparent 60%);
+            opacity: 0.6;
+            pointer-events: none;
         }
 
         .header {
             text-align: center;
-            margin-bottom: 36px;
+            margin-bottom: 40px;
+            position: relative;
         }
 
         .header-logo {
-            width: 120px;
+            width: clamp(105px, 18vw, 130px);
             height: auto;
-            margin-bottom: 16px;
+            margin-bottom: 20px;
+        }
+
+        .header::after {
+            content: '';
+            position: absolute;
+            inset: auto 50% -24px;
+            transform: translateX(-50%);
+            width: min(320px, 60%);
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 237, 253, 0.55), transparent);
         }
 
         .header h1 {
-            font-size: clamp(26px, 4vw, 34px);
-            margin-bottom: 12px;
+            font-size: clamp(28px, 4.5vw, 36px);
+            margin-bottom: 14px;
+            letter-spacing: 0.12em;
         }
 
         .header p {
             color: rgba(255, 255, 255, 0.75);
             line-height: 1.7;
+            max-width: 540px;
+            margin: 0 auto;
+        }
+
+        .header-badges {
+            margin: 26px auto 0;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 14px;
+        }
+
+        .header-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 18px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.84);
+            letter-spacing: 0.06em;
+            backdrop-filter: blur(4px);
+        }
+
+        .header-badge .icon {
+            font-size: 16px;
         }
 
         .form-section {
@@ -119,6 +216,8 @@
             border-radius: 16px;
             padding: 28px;
             border: 1px solid rgba(255, 255, 255, 0.08);
+            position: relative;
+            overflow: hidden;
         }
 
         .form-section h2 {
@@ -127,6 +226,33 @@
             color: #ffd27d;
             text-align: center;
             letter-spacing: 0.08em;
+        }
+
+        .form-section::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(160% 80% at 20% 10%, rgba(255, 216, 162, 0.12), transparent 55%);
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        .form-section > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        .form-note {
+            margin: 0 auto 24px;
+            max-width: 520px;
+            text-align: center;
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.65);
+            letter-spacing: 0.04em;
+        }
+
+        .form-note strong {
+            color: #ffe3b8;
         }
 
         .form-group {
@@ -169,30 +295,63 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
-            padding: 14px 28px;
-            border-radius: 28px;
-            background: linear-gradient(135deg, #7563df, #a384ff);
+            padding: 16px 36px;
+            border-radius: 36px;
+            background: linear-gradient(120deg, #ff9fb5, #9b8bff);
             color: #fff;
             font-weight: 600;
             letter-spacing: 0.08em;
             border: none;
             cursor: pointer;
             transition: transform 0.2s ease, box-shadow 0.2s ease;
+            font-size: 15px;
         }
 
         .submit-button:hover {
             transform: translateY(-2px);
-            box-shadow: 0 16px 32px rgba(118, 99, 239, 0.35);
+            box-shadow: 0 18px 36px rgba(255, 159, 181, 0.38);
         }
 
         .result-section {
             margin-top: 40px;
             display: none;
             border-radius: 24px;
-            background: rgba(18, 12, 36, 0.7);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            padding: 30px 28px;
-            box-shadow: 0 24px 54px rgba(10, 6, 30, 0.45);
+            background: rgba(18, 12, 36, 0.75);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            padding: 32px 30px;
+            box-shadow: 0 26px 56px rgba(10, 6, 30, 0.45);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .result-section::before {
+            content: '';
+            position: absolute;
+            inset: -40% -10% auto -10%;
+            height: 70%;
+            background: radial-gradient(60% 75% at 50% 100%, rgba(255, 206, 169, 0.2), transparent);
+            opacity: 0.65;
+            pointer-events: none;
+        }
+
+        .result-section > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        .result-section.show {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(16px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .result-header {
@@ -226,14 +385,16 @@
         .result-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 20px;
+            gap: 22px;
         }
 
         .result-card {
-            background: rgba(30, 22, 60, 0.65);
+            background: rgba(30, 22, 60, 0.7);
             border-radius: 18px;
-            padding: 20px;
+            padding: 22px;
             border: 1px solid rgba(255, 255, 255, 0.06);
+            position: relative;
+            overflow: hidden;
         }
 
         .result-card h3 {
@@ -251,14 +412,14 @@
         }
 
         .result-card.highlight {
-            background: linear-gradient(160deg, rgba(120, 108, 252, 0.22), rgba(204, 176, 255, 0.18));
-            border: 1px solid rgba(200, 173, 255, 0.4);
+            background: linear-gradient(160deg, rgba(120, 108, 252, 0.3), rgba(204, 176, 255, 0.2));
+            border: 1px solid rgba(200, 173, 255, 0.45);
             box-shadow: 0 18px 48px rgba(84, 62, 190, 0.32);
         }
 
         .result-card.actions {
             grid-column: 1 / -1;
-            background: rgba(18, 14, 40, 0.78);
+            background: rgba(18, 14, 40, 0.82);
             border: 1px solid rgba(255, 255, 255, 0.07);
         }
 
@@ -269,10 +430,10 @@
         }
 
         .action-item {
-            background: rgba(12, 9, 28, 0.55);
-            border-radius: 14px;
-            padding: 18px;
-            border: 1px solid rgba(255, 255, 255, 0.04);
+            background: rgba(12, 9, 28, 0.6);
+            border-radius: 16px;
+            padding: 18px 20px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
         .action-item.partner {
@@ -299,6 +460,13 @@
             text-align: center;
         }
 
+        .share-note {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.55);
+            margin-bottom: 10px;
+            letter-spacing: 0.04em;
+        }
+
         .share-button {
             display: inline-flex;
             align-items: center;
@@ -311,6 +479,12 @@
             text-decoration: none;
             font-size: 14px;
             letter-spacing: 0.05em;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .share-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px rgba(255, 255, 255, 0.18);
         }
 
         .error-message {
@@ -327,7 +501,16 @@
         @media (max-width: 768px) {
             .container {
                 margin: 40px auto 60px;
-                padding: 28px 18px;
+                padding: 36px 18px;
+            }
+
+            .header-badges {
+                gap: 10px;
+            }
+
+            .header-badge {
+                font-size: 12px;
+                padding: 9px 16px;
             }
 
             .form-group {
@@ -354,95 +537,107 @@
     </style>
 </head>
 <body>
+    <div class="background-aurora"></div>
+    <div class="background-stars"></div>
+
+    <div class="container">
         <div class="header">
             <img src="../assets/images/web/twin-logo.png" class="header-logo" alt="月の相性診断ロゴ">
             <h1>月の相性診断</h1>
-            <p>あなたとお相手の月タイプを照らし合わせ、恋愛の相性を読み解きます。</p>
+            <p>あなたとお相手の月タイプを照らし合わせ、恋愛のリズムと未来を読み解きます。</p>
+            <div class="header-badges">
+                <span class="header-badge"><span class="icon">🌓</span>月タイプの相性を即解析</span>
+                <span class="header-badge"><span class="icon">✨</span>スコアとテーマを自動生成</span>
+                <span class="header-badge"><span class="icon">💌</span>お相手への一言アドバイス付き</span>
+            </div>
         </div>
 
-    <form id="compatibilityForm" class="form-section">
-        <h2>あなたとお相手の情報を入力してください</h2>
-        <div class="form-group">
-            <div class="input-block">
-                <label for="userYear">あなたの生年月日</label>
-                <div class="date-selects">
-                    <select id="userYear" required>
-                        <option value="">年</option>
-                    </select>
-                    <select id="userMonth" required>
-                        <option value="">月</option>
-                    </select>
-                    <select id="userDay" required>
-                        <option value="">日</option>
-                    </select>
-                </div>
-            </div>
-            <div class="input-block">
-                <label for="partnerYear">お相手の生年月日</label>
-                <div class="date-selects">
-                    <select id="partnerYear" required>
-                        <option value="">年</option>
-                    </select>
-                    <select id="partnerMonth" required>
-                        <option value="">月</option>
-                    </select>
-                    <select id="partnerDay" required>
-                        <option value="">日</option>
-                    </select>
-                </div>
-            </div>
-        </div>
-        <div class="form-group">
-            <button type="submit" class="submit-button">
-                🌙 相性を診断する
-            </button>
-        </div>
-        <p class="error-message" id="errorMessage"></p>
-    </form>
-
-    <div class="result-section" id="resultSection">
-        <div class="result-header">
-            <h2>診断結果</h2>
-            <p class="pairing" id="profileDetail"></p>
-            <p class="summary-note" id="summaryNote"></p>
-        </div>
-        <div class="result-grid">
-            <div class="result-card">
-                <h3 id="compatibilitySummary"></h3>
-                <p id="compatibilityDetail"></p>
-            </div>
-            <div class="result-card highlight" id="themeCard" style="display:none;">
-                <h3>二人に流れるテーマ</h3>
-                <p id="themeDetail"></p>
-            </div>
-            <div class="result-card">
-                <h3>二人のストーリー</h3>
-                <p id="storyDetail"></p>
-            </div>
-            <div class="result-card">
-                <h3>これからの流れと心構え</h3>
-                <p id="flowDetail"></p>
-            </div>
-            <div class="result-card actions" id="actionsCard" style="display:none;">
-                <h3>今日のおすすめアクション</h3>
-                <div class="action-list">
-                    <div class="action-item">
-                        <h4>あなたにできること</h4>
-                        <p id="userActionDetail"></p>
+        <form id="compatibilityForm" class="form-section">
+            <h2>あなたとお相手の情報を入力してください</h2>
+            <p class="form-note">LINEで登録済みの生年月日は自動で反映されます。<br>未入力の場合は <strong>年・月・日を選択</strong>してください。</p>
+            <div class="form-group">
+                <div class="input-block">
+                    <label for="userYear">あなたの生年月日</label>
+                    <div class="date-selects">
+                        <select id="userYear" required>
+                            <option value="">年</option>
+                        </select>
+                        <select id="userMonth" required>
+                            <option value="">月</option>
+                        </select>
+                        <select id="userDay" required>
+                            <option value="">日</option>
+                        </select>
                     </div>
-                    <div class="action-item partner">
-                        <h4>お相手へ伝えたいひとこと</h4>
-                        <p id="partnerActionDetail"></p>
+                </div>
+                <div class="input-block">
+                    <label for="partnerYear">お相手の生年月日</label>
+                    <div class="date-selects">
+                        <select id="partnerYear" required>
+                            <option value="">年</option>
+                        </select>
+                        <select id="partnerMonth" required>
+                            <option value="">月</option>
+                        </select>
+                        <select id="partnerDay" required>
+                            <option value="">日</option>
+                        </select>
                     </div>
                 </div>
             </div>
-            <div class="result-card">
-                <h3>月からのアドバイス</h3>
-                <p id="adviceDetail"></p>
+            <div class="form-group">
+                <button type="submit" class="submit-button">
+                    🌙 相性を診断する
+                </button>
             </div>
-        </div>
-        <div class="share-section">
-            <a href="#" class="share-button" id="shareButton">💬 LINEで結果をシェアする</a>
+            <p class="error-message" id="errorMessage"></p>
+        </form>
+
+        <div class="result-section" id="resultSection">
+            <div class="result-header">
+                <h2>診断結果</h2>
+                <p class="pairing" id="profileDetail"></p>
+                <p class="summary-note" id="summaryNote"></p>
+            </div>
+            <div class="result-grid">
+                <div class="result-card">
+                    <h3 id="compatibilitySummary"></h3>
+                    <p id="compatibilityDetail"></p>
+                </div>
+                <div class="result-card highlight" id="themeCard" style="display:none;">
+                    <h3>二人に流れるテーマ</h3>
+                    <p id="themeDetail"></p>
+                </div>
+                <div class="result-card">
+                    <h3>二人のストーリー</h3>
+                    <p id="storyDetail"></p>
+                </div>
+                <div class="result-card">
+                    <h3>これからの流れと心構え</h3>
+                    <p id="flowDetail"></p>
+                </div>
+                <div class="result-card actions" id="actionsCard" style="display:none;">
+                    <h3>今日のおすすめアクション</h3>
+                    <div class="action-list">
+                        <div class="action-item">
+                            <h4>あなたにできること</h4>
+                            <p id="userActionDetail"></p>
+                        </div>
+                        <div class="action-item partner">
+                            <h4>お相手へ伝えたいひとこと</h4>
+                            <p id="partnerActionDetail"></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="result-card">
+                    <h3>月からのアドバイス</h3>
+                    <p id="adviceDetail"></p>
+                </div>
+            </div>
+            <div class="share-section">
+                <p class="share-note">診断結果をLINEでシェアして、二人の共通テーマを確かめましょう。</p>
+                <a href="#" class="share-button" id="shareButton">💬 LINEで結果をシェアする</a>
+            </div>
         </div>
     </div>
 
@@ -614,10 +809,12 @@
                     errorMessage.textContent = '生年月日をすべて選択してください。';
                     errorMessage.style.display = 'block';
                     resultSection.style.display = 'none';
+                    resultSection.classList.remove('show');
                     return;
                 }
 
                 errorMessage.style.display = 'none';
+                resultSection.classList.remove('show');
 
                 const currentUserId = ensureLineAccess();
                 if (!currentUserId) {
@@ -686,12 +883,14 @@
 
                     shareButton.href = `https://line.me/R/msg/text/?${encodeURIComponent(shareText)}`;
                     resultSection.style.display = 'block';
+                    resultSection.classList.add('show');
                     resultSection.scrollIntoView({ behavior: 'smooth' });
                 } catch (error) {
                     console.error('Compatibility error:', error);
                     errorMessage.textContent = error.message || '診断に失敗しました。少し時間をおいて再度お試しください。';
                     errorMessage.style.display = 'block';
                     resultSection.style.display = 'none';
+                    resultSection.classList.remove('show');
                 }
             });
         });
