@@ -545,9 +545,24 @@ app.get('/api/get-love-profile', async (req, res) => {
 
     const normalizedName = profile.userName || profile.name || profile.personalInfo?.userName || null;
     const normalizedBirthDate = profile.birthDate || profile.personalInfo?.userBirthdate || profile.birthdate || null;
-
     const normalizedPartnerName = profile.partnerName || profile.personalInfo?.partnerName || profile.partner_name || null;
-    const normalizedPartnerBirthDate = profile.partnerBirthDate || profile.personalInfo?.partnerBirthdate || profile.partner_birth_date || null;
+    const normalizedPartnerBirthDate =
+      profile.partnerBirthDate ||
+      profile.partner_birth_date ||
+      profile.personalInfo?.partnerBirthdate ||
+      null;
+
+    let partnerBirthday = normalizedPartnerBirthDate;
+    if (!partnerBirthday && profile.personalInfo?.partnerBirthdate) {
+      try {
+        const parsed = new Date(profile.personalInfo.partnerBirthdate);
+        if (!Number.isNaN(parsed.getTime())) {
+          partnerBirthday = parsed.toISOString().split('T')[0];
+        }
+      } catch (error) {
+        partnerBirthday = null;
+      }
+    }
 
     const responseProfile = {
       userName: normalizedName,
@@ -555,8 +570,8 @@ app.get('/api/get-love-profile', async (req, res) => {
       birthDate: normalizedBirthDate,
       birthdate: normalizedBirthDate,
       partnerName: normalizedPartnerName,
-      partnerBirthDate: normalizedPartnerBirthDate,
-      partner_birth_date: normalizedPartnerBirthDate,
+      partnerBirthDate: partnerBirthday,
+      partner_birth_date: partnerBirthday,
       moonPatternId: profile.moonPatternId,
       diagnosisType: profile.diagnosisType,
       emotionalExpression: profile.emotionalExpression || profile.personalInfo?.emotionalExpression,

@@ -461,34 +461,39 @@
             userId = sessionStorage.getItem('moonCompatibilityUserId');
         }
 
-        if (!isLineBrowser() || !userId) {
-            const container = document.querySelector('.container');
-            if (container) {
-                container.style.display = 'none';
-            }
+        if (!userId) {
+            return null;
+        }
 
-            const guard = document.createElement('div');
-            guard.className = 'line-guard';
-            guard.innerHTML = `
-                <h2>LINEからアクセスしてください</h2>
-                <p>月の相性診断は、LINEでプロフィールを登録いただいたユーザー限定の機能です。<br>
-                   LINE公式アカウントから相性診断メニューを開いてご利用ください。</p>
-                <a href="https://lin.ee/egmCXoG" target="_blank" rel="noopener">
-                    <span class="icon">💚</span>LINE公式アカウントを開く
-                </a>`;
-            document.body.appendChild(guard);
-
+        if (!isLineBrowser()) {
             return null;
         }
 
         return userId;
     }
 
+    function showLineAccessGuard() {
+        if (document.querySelector('.line-guard')) return;
+
+        const container = document.querySelector('.container');
+        if (container) {
+            container.style.display = 'none';
+        }
+
+        const guard = document.createElement('div');
+        guard.className = 'line-guard';
+        guard.innerHTML = `
+                <h2>LINEからアクセスしてください</h2>
+                <p>月の相性診断は、LINEでプロフィールを登録いただいたユーザー限定の機能です。<br>
+                   LINE公式アカウントから相性診断メニューを開いてご利用ください。</p>
+                <a href="https://lin.ee/egmCXoG" target="_blank" rel="noopener">
+                    <span class="icon">💚</span>LINE公式アカウントを開く
+                </a>`;
+        document.body.appendChild(guard);
+    }
+
         document.addEventListener('DOMContentLoaded', () => {
-            const authorizedUserId = ensureLineAccess();
-            if (!authorizedUserId) {
-                return;
-            }
+            let authorizedUserId = ensureLineAccess();
 
             const form = document.getElementById('compatibilityForm');
             const resultSection = document.getElementById('resultSection');
@@ -585,7 +590,10 @@
 
             populateDateSelects('user');
             populateDateSelects('partner');
-            prefillBirthdates(authorizedUserId);
+
+            if (authorizedUserId) {
+                prefillBirthdates(authorizedUserId);
+            }
 
             form.addEventListener('submit', async (event) => {
                 event.preventDefault();
@@ -601,6 +609,12 @@
                 }
 
                 errorMessage.style.display = 'none';
+
+                const currentUserId = ensureLineAccess();
+                if (!currentUserId) {
+                    showLineAccessGuard();
+                    return;
+                }
 
                 try {
                     const response = await fetch('/api/moon-compatibility', {
