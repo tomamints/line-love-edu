@@ -72,7 +72,7 @@ module.exports = async (req, res) => {
     // フルプロファイル取得
     const { data: profile, error } = await supabase
       .from('profiles')
-      .select('user_name, birth_date, user_id')
+      .select('user_name, birth_date, user_id,partner_birth_date')
       .eq('user_id', userId)
       .single();
 
