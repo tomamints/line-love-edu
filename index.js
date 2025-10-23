@@ -306,14 +306,14 @@ function buildCompatibilityLaunchMessage(userId) {
             contents: [
               {
                 type: 'text',
-                text: '✅ 登録済みの生年月日を自動でセット',
+                text: '💫 登録済みの生年月日を自動でセット',
                 size: 'sm',
                 color: '#EEDCFF',
                 wrap: true
               },
               {
                 type: 'text',
-                text: '✅ 相性スコアと今後のポイントを詳しく表示',
+                text: '💫 相性スコアと今後のポイントを詳しく表示',
                 size: 'sm',
                 color: '#EEDCFF',
                 wrap: true
