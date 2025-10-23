@@ -546,33 +546,29 @@ app.get('/api/get-love-profile', async (req, res) => {
     const normalizedName = profile.userName || profile.name || profile.personalInfo?.userName || null;
     const normalizedBirthDate = profile.birthDate || profile.personalInfo?.userBirthdate || profile.birthdate || null;
     const normalizedPartnerName = profile.partnerName || profile.personalInfo?.partnerName || profile.partner_name || null;
-    const normalizedPartnerBirthDate =
-      profile.partnerBirthDate ||
-      profile.partner_birth_date ||
-      profile.partnerBirthdate ||
-      profile.partner?.birthDate ||
-      profile.partner?.birthdate ||
-      profile.personalInfo?.partnerBirthDate ||
-      profile.personalInfo?.partner_birth_date ||
-      profile.personalInfo?.partnerBirthdate ||
-      null;
+    const partnerBirthday = (() => {
+      const candidates = [
+        profile.partnerBirthDate,
+        profile.partner_birth_date,
+        profile.partnerBirthdate,
+        profile.partner?.birthDate,
+        profile.partner?.birthdate,
+        profile.personalInfo?.partnerBirthDate,
+        profile.personalInfo?.partner_birth_date,
+        profile.personalInfo?.partnerBirthdate
+      ];
 
-    let partnerBirthday = normalizedPartnerBirthDate ?? null;
-    if (typeof partnerBirthday === 'string') {
-      const parsed = new Date(partnerBirthday);
-      partnerBirthday = Number.isNaN(parsed.getTime()) ? partnerBirthday : parsed.toISOString().split('T')[0];
-    }
-
-    if (!partnerBirthday && profile.personalInfo?.partnerBirthdate) {
-      try {
-        const parsed = new Date(profile.personalInfo.partnerBirthdate);
+      for (const value of candidates) {
+        if (!value) continue;
+        const parsed = new Date(value);
         if (!Number.isNaN(parsed.getTime())) {
-          partnerBirthday = parsed.toISOString().split('T')[0];
+          return parsed.toISOString().split('T')[0];
         }
-      } catch (error) {
-        partnerBirthday = null;
+        return value;
       }
-    }
+
+      return null;
+    })();
 
     const responseProfile = {
       userName: normalizedName,
