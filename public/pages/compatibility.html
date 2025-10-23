@@ -362,6 +362,74 @@
             text-align: center;
         }
 
+        .result-overview {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 24px;
+            margin-top: 8px;
+        }
+
+        .pair-summary {
+            display: inline-flex;
+            align-items: center;
+            gap: clamp(18px, 4vw, 26px);
+            padding: 14px 24px;
+            background: rgba(56, 40, 90, 0.6);
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow: inset 0 0 12px rgba(255, 255, 255, 0.05);
+        }
+
+        .pair-item {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            align-items: center;
+            min-width: 90px;
+        }
+
+        .pair-label {
+            font-size: 13px;
+            letter-spacing: 0.08em;
+            color: rgba(255, 255, 255, 0.76);
+        }
+
+        .pair-moon {
+            font-size: clamp(20px, 4.6vw, 30px);
+            font-weight: 600;
+            color: #ffe9b8;
+            letter-spacing: 0.12em;
+        }
+
+        .pair-divider {
+            font-size: clamp(22px, 5vw, 30px);
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .score-card {
+            text-align: center;
+            padding: 20px 32px;
+            background: linear-gradient(145deg, rgba(255, 176, 200, 0.35), rgba(123, 106, 255, 0.32));
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            box-shadow: 0 18px 40px rgba(120, 86, 255, 0.25);
+        }
+
+        .score-value {
+            font-size: clamp(36px, 7vw, 56px);
+            font-weight: 700;
+            color: #ffffff;
+            letter-spacing: 0.16em;
+        }
+
+        .score-level {
+            margin-top: 10px;
+            font-size: clamp(16px, 3.6vw, 24px);
+            color: #ffe3f5;
+            letter-spacing: 0.1em;
+        }
+
         .result-header h2 {
             font-size: 22px;
             color: #ffe9b8;
@@ -370,10 +438,7 @@
         }
 
         .result-header .pairing {
-            font-size: 18px;
-            color: #fef6ff;
-            margin: 0;
-            letter-spacing: 0.02em;
+            display: none;
         }
 
         .result-header .summary-note {
@@ -533,6 +598,25 @@
             .submit-button {
                 width: 100%;
             }
+
+            .result-overview {
+                gap: 18px;
+            }
+
+            .pair-summary {
+                flex-direction: column;
+                padding: 12px 16px;
+                gap: 10px;
+            }
+
+            .pair-divider {
+                display: none;
+            }
+
+            .score-card {
+                width: 100%;
+                padding: 18px 20px;
+            }
         }
     </style>
 </head>
@@ -540,105 +624,120 @@
     <div class="background-aurora"></div>
     <div class="background-stars"></div>
 
-    <div class="header">
-        <img src="../assets/images/web/twin-logo.png" class="header-logo" alt="月の相性診断ロゴ">
-        <h1>月の相性診断</h1>
-        <p>あなたとお相手の月タイプを照らし合わせ、恋愛のリズムと未来を読み解きます。</p>
-        <div class="header-badges">
-            <span class="header-badge"><span class="icon">🌓</span>月タイプの相性を即解析</span>
-            <span class="header-badge"><span class="icon">✨</span>スコアとテーマを自動生成</span>
-            <span class="header-badge"><span class="icon">💌</span>お相手への一言アドバイス付き</span>
+    <div class="container">
+        <div class="header">
+            <img src="../assets/images/web/twin-logo.png" class="header-logo" alt="月の相性診断ロゴ">
+            <h1>月の相性診断</h1>
+            <p>あなたとお相手の月タイプを照らし合わせ、恋愛のリズムと未来を読み解きます。</p>
+            <div class="header-badges">
+                <span class="header-badge"><span class="icon">🌓</span>月タイプの相性を即解析</span>
+                <span class="header-badge"><span class="icon">✨</span>スコアとテーマを自動生成</span>
+                <span class="header-badge"><span class="icon">💌</span>お相手への一言アドバイス付き</span>
+            </div>
         </div>
-    </div>
 
-    <form id="compatibilityForm" class="form-section">
-        <h2>あなたとお相手の情報を入力してください</h2>
-        <p class="form-note">LINEで登録済みの生年月日は自動で反映されます。<br>未入力の場合は <strong>年・月・日を選択</strong>してください。</p>
-        <div class="form-group">
-            <div class="input-block">
-                <label for="userYear">あなたの生年月日</label>
-                <div class="date-selects">
-                    <select id="userYear" required>
-                        <option value="">年</option>
-                    </select>
-                    <select id="userMonth" required>
-                        <option value="">月</option>
-                    </select>
-                    <select id="userDay" required>
-                        <option value="">日</option>
-                    </select>
-                </div>
-            </div>
-            <div class="input-block">
-                <label for="partnerYear">お相手の生年月日</label>
-                <div class="date-selects">
-                    <select id="partnerYear" required>
-                        <option value="">年</option>
-                    </select>
-                    <select id="partnerMonth" required>
-                        <option value="">月</option>
-                    </select>
-                    <select id="partnerDay" required>
-                        <option value="">日</option>
-                    </select>
-                </div>
-            </div>
-        </div>
-        <div class="form-group">
-            <button type="submit" class="submit-button">
-                🌙 相性を診断する
-            </button>
-        </div>
-        <p class="error-message" id="errorMessage"></p>
-    </form>
-
-    <div class="result-section" id="resultSection">
-        <div class="result-header">
-            <h2>診断結果</h2>
-            <p class="pairing" id="profileDetail"></p>
-            <p class="summary-note" id="summaryNote"></p>
-        </div>
-        <div class="result-grid">
-            <div class="result-card">
-                <h3 id="compatibilitySummary"></h3>
-                <p id="compatibilityDetail"></p>
-            </div>
-            <div class="result-card highlight" id="themeCard" style="display:none;">
-                <h3>二人に流れるテーマ</h3>
-                <p id="themeDetail"></p>
-            </div>
-            <div class="result-card">
-                <h3>二人のストーリー</h3>
-                <p id="storyDetail"></p>
-            </div>
-            <div class="result-card">
-                <h3>これからの流れと心構え</h3>
-                <p id="flowDetail"></p>
-            </div>
-            <div class="result-card actions" id="actionsCard" style="display:none;">
-                <h3>今日のおすすめアクション</h3>
-                <div class="action-list">
-                    <div class="action-item">
-                        <h4>あなたにできること</h4>
-                        <p id="userActionDetail"></p>
+        <form id="compatibilityForm" class="form-section">
+            <h2>あなたとお相手の情報を入力してください</h2>
+            <p class="form-note">LINEで登録済みの生年月日は自動で反映されます。<br>未入力の場合は <strong>年・月・日を選択</strong>してください。</p>
+            <div class="form-group">
+                <div class="input-block">
+                    <label for="userYear">あなたの生年月日</label>
+                    <div class="date-selects">
+                        <select id="userYear" required>
+                            <option value="">年</option>
+                        </select>
+                        <select id="userMonth" required>
+                            <option value="">月</option>
+                        </select>
+                        <select id="userDay" required>
+                            <option value="">日</option>
+                        </select>
                     </div>
-                    <div class="action-item partner">
-                        <h4>お相手へ伝えたいひとこと</h4>
-                        <p id="partnerActionDetail"></p>
+                </div>
+                <div class="input-block">
+                    <label for="partnerYear">お相手の生年月日</label>
+                    <div class="date-selects">
+                        <select id="partnerYear" required>
+                            <option value="">年</option>
+                        </select>
+                        <select id="partnerMonth" required>
+                            <option value="">月</option>
+                        </select>
+                        <select id="partnerDay" required>
+                            <option value="">日</option>
+                        </select>
                     </div>
                 </div>
             </div>
-            <div class="result-card">
-                <h3>月からのアドバイス</h3>
-                <p id="adviceDetail"></p>
+            <div class="form-group">
+                <button type="submit" class="submit-button">
+                    🌙 相性を診断する
+                </button>
+            </div>
+            <p class="error-message" id="errorMessage"></p>
+        </form>
+
+        <div class="result-section" id="resultSection">
+            <div class="result-header">
+                <h2>診断結果</h2>
+                <div class="result-overview">
+                    <div class="pair-summary">
+                        <div class="pair-item">
+                            <span class="pair-label">あなた</span>
+                            <span class="pair-moon" id="userMoonType">-</span>
+                        </div>
+                        <span class="pair-divider">×</span>
+                        <div class="pair-item">
+                            <span class="pair-label">お相手</span>
+                            <span class="pair-moon" id="partnerMoonType">-</span>
+                        </div>
+                    </div>
+                    <div class="score-card">
+                        <div class="score-value" id="scoreValue">--点</div>
+                        <div class="score-level" id="scoreLevel">◎ 相性を診断中...</div>
+                    </div>
+                </div>
+                <p class="pairing" id="profileDetail"></p>
+                <p class="summary-note" id="summaryNote">診断が完了すると結果が表示されます。</p>
+            </div>
+            <div class="result-grid">
+                <div class="result-card">
+                    <h3 id="compatibilitySummary"></h3>
+                    <p id="compatibilityDetail"></p>
+                </div>
+                <div class="result-card highlight" id="themeCard" style="display:none;">
+                    <h3>二人に流れるテーマ</h3>
+                    <p id="themeDetail"></p>
+                </div>
+                <div class="result-card">
+                    <h3>二人のストーリー</h3>
+                    <p id="storyDetail"></p>
+                </div>
+                <div class="result-card actions" id="actionsCard" style="display:none;">
+                    <h3>今日のおすすめアクション</h3>
+                    <div class="action-list">
+                        <div class="action-item">
+                            <h4>あなたにできること</h4>
+                            <p id="userActionDetail"></p>
+                        </div>
+                        <div class="action-item partner">
+                            <h4>お相手へ伝えたいひとこと</h4>
+                            <p id="partnerActionDetail"></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="result-card">
+                    <h3>月からのアドバイス</h3>
+                    <p id="adviceDetail"></p>
+                </div>
+            </div>
+            <div class="share-section">
+                <p class="share-note">診断結果をLINEでシェアして、二人の共通テーマを確かめましょう。</p>
+                <a href="#" class="share-button" id="shareButton">💬 LINEで結果をシェアする</a>
             </div>
         </div>
-        <div class="share-section">
-            <p class="share-note">診断結果をLINEでシェアして、二人の共通テーマを確かめましょう。</p>
-            <a href="#" class="share-button" id="shareButton">💬 LINEで結果をシェアする</a>
-        </div>
     </div>
-    
+
     <script>
     function isLineBrowser() {
         return /line/i.test(navigator.userAgent || '');
@@ -695,7 +794,6 @@
             const compatibilitySummary = document.getElementById('compatibilitySummary');
             const compatibilityDetail = document.getElementById('compatibilityDetail');
             const storyDetail = document.getElementById('storyDetail');
-            const flowDetail = document.getElementById('flowDetail');
             const adviceDetail = document.getElementById('adviceDetail');
             const shareButton = document.getElementById('shareButton');
             const profileDetail = document.getElementById('profileDetail');
@@ -705,6 +803,21 @@
             const actionsPanel = document.getElementById('actionsCard');
             const userActionDetail = document.getElementById('userActionDetail');
             const partnerActionDetail = document.getElementById('partnerActionDetail');
+            const userMoonTypeEl = document.getElementById('userMoonType');
+            const partnerMoonTypeEl = document.getElementById('partnerMoonType');
+            const scoreValueEl = document.getElementById('scoreValue');
+            const scoreLevelEl = document.getElementById('scoreLevel');
+
+            const toFullWidthNumber = value =>
+                String(value).replace(/\d/g, d => String.fromCharCode(d.charCodeAt(0) + 0xFEE0));
+
+            const upliftLevelText = (levelText = '') => {
+                if (!levelText) return '相性がとても良い';
+                if (levelText.includes('良い') && !levelText.includes('とても')) {
+                    return levelText.replace('良い', 'とても良い');
+                }
+                return levelText;
+            };
 
             function populateDateSelects(prefix) {
                 const yearSelect = document.getElementById(`${prefix}Year`);
@@ -839,14 +952,32 @@
                     }
 
                     const { user, partner, compatibility, relationship, advice, shareText, theme, actions } = result.data;
-                    const userLabel = `${user.emoji || ''}${user.moonType || 'あなた'}`;
-                    const partnerLabel = `${partner.emoji || ''}${partner.moonType || 'お相手'}`;
+                    const userLabel = `${user.emoji || ''}${user.moonType ? `${user.moonType}タイプ` : 'あなた'}`;
+                    const partnerLabel = `${partner.emoji || ''}${partner.moonType ? `${partner.moonType}タイプ` : 'お相手'}`;
                     if (profileDetail) {
                         profileDetail.textContent = `${userLabel} × ${partnerLabel}`;
                     }
+                    if (userMoonTypeEl) {
+                        const userMoonText = user.moonType ? `${user.moonType}タイプ` : '';
+                        userMoonTypeEl.textContent = `${user.emoji || ''} ${userMoonText}`.trim() || '―';
+                    }
+                    if (partnerMoonTypeEl) {
+                        const partnerMoonText = partner.moonType ? `${partner.moonType}タイプ` : '';
+                        partnerMoonTypeEl.textContent = `${partner.emoji || ''} ${partnerMoonText}`.trim() || '―';
+                    }
+                    if (scoreValueEl) {
+                        const numericScore = Number(compatibility.score);
+                        const scoreText = Number.isFinite(numericScore)
+                            ? `${toFullWidthNumber(Math.round(numericScore))}点`
+                            : '--点';
+                        scoreValueEl.textContent = scoreText;
+                    }
+                    if (scoreLevelEl) {
+                        const elevatedLevel = upliftLevelText(compatibility.level || '');
+                        scoreLevelEl.textContent = `◎ ${elevatedLevel || '相性がとても良い'}`;
+                    }
                     if (summaryNote) {
-                        const rankText = compatibility.rank ? ` / 全64組中 第${compatibility.rank}位` : '';
-                        summaryNote.textContent = `総合スコア ${compatibility.score}点 / ${compatibility.level || ''}${rankText}`;
+                        summaryNote.textContent = '月相が導くふたりの調和バランスです。';
                     }
 
                     compatibilitySummary.textContent = compatibility.summary;
@@ -860,9 +991,6 @@
                         themeDetail.textContent = '';
                         themePanel.style.display = 'none';
                     }
-                    const flowLines = [`スコア: ${compatibility.score} 点 / ${compatibility.level || ''}`];
-                    flowDetail.innerHTML = flowLines.join('<br>');
-
                     const userAction = (actions?.user || '').trim();
                     const partnerAction = (actions?.partner || '').trim();
                     if (userAction || partnerAction) {
