@@ -18,12 +18,12 @@ const defaultRichMenuObject = {
   name: `月の占いメニュー_${Date.now()}`, // タイムスタンプを追加してユニークにする
   chatBarText: 'メニューを開く',
   areas: [
-    // 左側: 月タロット占い
+    // 左: 月タロット占い
     {
       bounds: {
         x: 0,
         y: 0,
-        width: 1250,
+        width: 833,
         height: 843
       },
       action: {
@@ -32,12 +32,25 @@ const defaultRichMenuObject = {
         displayText: '🔮 月タロット占い'
       }
     },
-    // 右側: おつきさま診断（完全版）
+    // 中央: 月の相性診断
     {
       bounds: {
-        x: 1250,
+        x: 833,
         y: 0,
-        width: 1250,
+        width: 834,
+        height: 843
+      },
+      action: {
+        type: 'message',
+        text: '相性診断'
+      }
+    },
+    // 右: おつきさま診断（完全版）
+    {
+      bounds: {
+        x: 1667,
+        y: 0,
+        width: 833,
         height: 843
       },
       action: {
@@ -58,11 +71,12 @@ const premiumRichMenuObject = {
   name: `月の占いプレミアム_${Date.now()}`,
   chatBarText: 'プレミアムメニュー',
   areas: [
+    // 左: 月タロット占い
     {
       bounds: {
         x: 0,
         y: 0,
-        width: 1250,
+        width: 833,
         height: 843
       },
       action: {
@@ -71,11 +85,25 @@ const premiumRichMenuObject = {
         displayText: '🔮 月タロット占い'
       }
     },
+    // 中央: 月の相性診断
     {
       bounds: {
-        x: 1250,
+        x: 833,
         y: 0,
-        width: 1250,
+        width: 834,
+        height: 843
+      },
+      action: {
+        type: 'message',
+        text: '相性診断'
+      }
+    },
+    // 右: 購入者向け履歴
+    {
+      bounds: {
+        x: 1667,
+        y: 0,
+        width: 833,
         height: 843
       },
       action: {
@@ -143,35 +171,48 @@ async function forceUpdateRichMenu() {
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, 2500, 843);
 
-    // 左側: 月タロット占い
+    // 左: 月タロット占い
     ctx.fillStyle = 'white';
     ctx.font = 'bold 120px sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText('🔮', 625, 300);
+    ctx.fillText('🔮', 416, 300);
     ctx.font = 'bold 80px sans-serif';
-    ctx.fillText('月タロット占い', 625, 500);
+    ctx.fillText('月タロット占い', 416, 500);
     ctx.font = '50px sans-serif';
-    ctx.fillText('1日1回の運命カード', 625, 650);
+    ctx.fillText('1日1回の運命カード', 416, 650);
 
-    // 中央線
+    // 中央: 月の相性診断
+    ctx.fillStyle = 'white';
+    ctx.font = 'bold 120px sans-serif';
+    ctx.fillText('💞', 1250, 280);
+    ctx.font = 'bold 70px sans-serif';
+    ctx.fillText('月の相性診断', 1250, 460);
+    ctx.font = '45px sans-serif';
+    ctx.fillText('お相手との相性をチェック', 1250, 620);
+
+    // 区切り線
     ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
     ctx.lineWidth = 3;
     ctx.beginPath();
-    ctx.moveTo(1250, 50);
-    ctx.lineTo(1250, 793);
+    ctx.moveTo(833, 50);
+    ctx.lineTo(833, 793);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(1667, 50);
+    ctx.lineTo(1667, 793);
     ctx.stroke();
 
-    // 右側: おつきさま診断（完全版）
+    // 右: おつきさま診断（完全版）
     ctx.fillStyle = 'white';
     ctx.font = 'bold 120px sans-serif';
-    ctx.fillText('🌙', 1875, 280);
+    ctx.fillText('🌙', 2084, 280);
     ctx.font = 'bold 70px sans-serif';
-    ctx.fillText('おつきさま診断', 1875, 460);
+    ctx.fillText('おつきさま診断', 2084, 460);
     ctx.font = 'bold 60px sans-serif';
-    ctx.fillText('完全版はこちら', 1875, 550);
+    ctx.fillText('完全版はこちら', 2084, 550);
     ctx.font = '45px sans-serif';
-    ctx.fillText('本気で占いたい方向け✨', 1875, 660);
+    ctx.fillText('本気で占いたい方向け✨', 2084, 660);
 
     const buffer = canvas.toBuffer('image/png');
 
@@ -229,33 +270,46 @@ async function forceUpdateRichMenu() {
     premiumCtx.fillStyle = premiumGradient;
     premiumCtx.fillRect(0, 0, 2500, 843);
 
-    // 左側: 月タロット占い
+    // 左: 月タロット占い
     premiumCtx.fillStyle = 'white';
     premiumCtx.font = 'bold 120px sans-serif';
     premiumCtx.textAlign = 'center';
     premiumCtx.textBaseline = 'middle';
-    premiumCtx.fillText('🔮', 625, 280);
+    premiumCtx.fillText('🔮', 416, 280);
     premiumCtx.font = 'bold 70px sans-serif';
-    premiumCtx.fillText('月タロット占い', 625, 460);
+    premiumCtx.fillText('月タロット占い', 416, 460);
     premiumCtx.font = '48px sans-serif';
-    premiumCtx.fillText('今日のメッセージを確認', 625, 600);
+    premiumCtx.fillText('今日のメッセージを確認', 416, 600);
 
-    // 中央線
+    // 中央: 月の相性診断
+    premiumCtx.fillStyle = 'white';
+    premiumCtx.font = 'bold 120px sans-serif';
+    premiumCtx.fillText('💞', 1250, 260);
+    premiumCtx.font = 'bold 70px sans-serif';
+    premiumCtx.fillText('月の相性診断', 1250, 430);
+    premiumCtx.font = '48px sans-serif';
+    premiumCtx.fillText('プレミアム特典とあわせて活用', 1250, 580);
+
+    // 区切り線
     premiumCtx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
     premiumCtx.lineWidth = 3;
     premiumCtx.beginPath();
-    premiumCtx.moveTo(1250, 50);
-    premiumCtx.lineTo(1250, 793);
+    premiumCtx.moveTo(833, 50);
+    premiumCtx.lineTo(833, 793);
+    premiumCtx.stroke();
+    premiumCtx.beginPath();
+    premiumCtx.moveTo(1667, 50);
+    premiumCtx.lineTo(1667, 793);
     premiumCtx.stroke();
 
-    // 右側: 購入履歴
+    // 右: 購入履歴
     premiumCtx.fillStyle = 'white';
     premiumCtx.font = 'bold 120px sans-serif';
-    premiumCtx.fillText('🧾', 1875, 280);
+    premiumCtx.fillText('🧾', 2084, 280);
     premiumCtx.font = 'bold 70px sans-serif';
-    premiumCtx.fillText('購入履歴', 1875, 460);
+    premiumCtx.fillText('購入履歴', 2084, 460);
     premiumCtx.font = '48px sans-serif';
-    premiumCtx.fillText('「履歴」で最新レポート', 1875, 600);
+    premiumCtx.fillText('「履歴」で最新レポート', 2084, 600);
 
     const premiumBuffer = premiumCanvas.toBuffer('image/png');
 
@@ -281,9 +335,11 @@ async function forceUpdateRichMenu() {
     console.log(`🆔 プレミアムメニューID : ${premiumMenuId}`);
     console.log('\n📱 デフォルトメニュー構成:');
     console.log('  左ボタン: 🔮 月タロット占い (Postback)');
+    console.log('  中央ボタン: 💞 月の相性診断 (メッセージ: "相性診断")');
     console.log('  右ボタン: 🌙 おつきさま診断 (メッセージ: "おつきさま診断")');
     console.log('\n💎 プレミアムメニュー構成:');
     console.log('  左ボタン: 🔮 月タロット占い (Postback)');
+    console.log('  中央ボタン: 💞 月の相性診断 (メッセージ: "相性診断")');
     console.log('  右ボタン: 🧾 購入履歴 (メッセージ: "履歴")');
     console.log('\n📝 次の手順:');
     console.log('  1. `.env` などに DEFAULT_RICH_MENU_ID と PREMIUM_RICH_MENU_ID を設定');

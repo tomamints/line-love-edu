@@ -231,10 +231,21 @@ function buildCompatibilityLaunchMessage(userId) {
 
   return {
     type: 'flex',
-    altText: '🌙 月の相性診断',
+    altText: '🌙 月の相性診断のご案内',
     contents: {
       type: 'bubble',
       size: 'mega',
+      styles: {
+        header: {
+          backgroundColor: '#3F2C78'
+        },
+        body: {
+          backgroundColor: '#251B4A'
+        },
+        footer: {
+          backgroundColor: '#251B4A'
+        }
+      },
       header: {
         type: 'box',
         layout: 'vertical',
@@ -244,45 +255,67 @@ function buildCompatibilityLaunchMessage(userId) {
             text: '🌙 月の相性診断',
             size: 'xl',
             weight: 'bold',
-            color: '#ffffff',
+            color: '#FFEDFD',
             align: 'center'
+          },
+          {
+            type: 'text',
+            text: 'LINEで登録した情報をもとに、ふたりの相性をすぐに診断します。',
+            size: 'sm',
+            color: '#D5C8FF',
+            align: 'center',
+            wrap: true,
+            margin: 'md'
           }
         ],
-        backgroundColor: '#5c4acb',
         paddingAll: '20px'
       },
       body: {
         type: 'box',
         layout: 'vertical',
-        spacing: 'md',
+        spacing: 'lg',
         contents: [
-          {
-            type: 'text',
-            text: 'LINEで登録したプロフィール情報をもとに、あなたと大切な人の月タイプ相性を診断します。',
-            size: 'sm',
-            color: '#ded9ff',
-            wrap: true
-          },
-          {
-            type: 'separator'
-          },
           {
             type: 'box',
             layout: 'vertical',
-            spacing: 'sm',
+            backgroundColor: '#362362',
+            cornerRadius: '16px',
+            paddingAll: '16px',
             contents: [
               {
                 type: 'text',
-                text: '・生年月日が自動入力されます',
+                text: 'ふたりの月タイプや得意な距離感、惹かれ合う理由をまとめてご案内。',
                 size: 'sm',
-                color: '#ffffff',
+                color: '#F0E6FF',
                 wrap: true
               },
               {
                 type: 'text',
-                text: '・総合スコアとテーマをお届け',
+                text: '診断ページではスコアやテーマ、これからの流れもチェックできます。',
                 size: 'sm',
-                color: '#ffffff',
+                color: '#F0E6FF',
+                wrap: true,
+                margin: 'md'
+              }
+            ]
+          },
+          {
+            type: 'box',
+            layout: 'vertical',
+            spacing: 'xs',
+            contents: [
+              {
+                type: 'text',
+                text: '✅ 登録済みの生年月日を自動でセット',
+                size: 'sm',
+                color: '#EEDCFF',
+                wrap: true
+              },
+              {
+                type: 'text',
+                text: '✅ 相性スコアと今後のポイントを詳しく表示',
+                size: 'sm',
+                color: '#EEDCFF',
                 wrap: true
               }
             ]
@@ -292,16 +325,24 @@ function buildCompatibilityLaunchMessage(userId) {
       footer: {
         type: 'box',
         layout: 'vertical',
+        spacing: 'sm',
         contents: [
           {
             type: 'button',
             style: 'primary',
-            color: '#5c4acb',
+            color: '#FF8A65',
             action: {
               type: 'uri',
-              label: '診断ページを開く',
+              label: '今すぐ相性を占う',
               uri: compatibilityUrl
             }
+          },
+          {
+            type: 'text',
+            text: '※ ブラウザで診断ページが開きます',
+            size: 'xs',
+            color: '#CBB9FF',
+            align: 'center'
           }
         ]
       }
