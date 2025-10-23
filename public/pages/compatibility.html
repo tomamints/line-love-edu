@@ -569,7 +569,7 @@
                     }
 
                     const userBirth = data.profile.birthDate || data.profile.birthdate;
-                    const partnerBirth = data.profile.partnerBirthDate || data.profile.partner_birth_date;
+                    const partnerBirth = data.profile.partnerBirthDate || data.profile.partner_birth_date || data.profile.partnerBirthdate;
 
                     setDateSelect('user', userBirth);
                     setDateSelect('partner', partnerBirth);

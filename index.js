@@ -572,6 +572,7 @@ app.get('/api/get-love-profile', async (req, res) => {
       partnerName: normalizedPartnerName,
       partnerBirthDate: partnerBirthday,
       partner_birth_date: partnerBirthday,
+      partnerBirthdate: partnerBirthday,
       moonPatternId: profile.moonPatternId,
       diagnosisType: profile.diagnosisType,
       emotionalExpression: profile.emotionalExpression || profile.personalInfo?.emotionalExpression,
