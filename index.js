@@ -549,10 +549,20 @@ app.get('/api/get-love-profile', async (req, res) => {
     const normalizedPartnerBirthDate =
       profile.partnerBirthDate ||
       profile.partner_birth_date ||
+      profile.partnerBirthdate ||
+      profile.partner?.birthDate ||
+      profile.partner?.birthdate ||
+      profile.personalInfo?.partnerBirthDate ||
+      profile.personalInfo?.partner_birth_date ||
       profile.personalInfo?.partnerBirthdate ||
       null;
 
-    let partnerBirthday = normalizedPartnerBirthDate;
+    let partnerBirthday = normalizedPartnerBirthDate ?? null;
+    if (typeof partnerBirthday === 'string') {
+      const parsed = new Date(partnerBirthday);
+      partnerBirthday = Number.isNaN(parsed.getTime()) ? partnerBirthday : parsed.toISOString().split('T')[0];
+    }
+
     if (!partnerBirthday && profile.personalInfo?.partnerBirthdate) {
       try {
         const parsed = new Date(profile.personalInfo.partnerBirthdate);

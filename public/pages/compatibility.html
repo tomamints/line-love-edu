@@ -570,7 +570,15 @@
                     }
 
                     const userBirth = data.profile.birthDate || data.profile.birthdate;
-                    const partnerBirth = data.profile.partnerBirthDate || data.profile.partner_birth_date || data.profile.partnerBirthdate;
+                    const partnerBirth =
+                        data.profile.partnerBirthDate ||
+                        data.profile.partner_birth_date ||
+                        data.profile.partnerBirthdate ||
+                        data.profile.partner?.birthDate ||
+                        data.profile.partner?.birthdate ||
+                        data.profile.personalInfo?.partnerBirthDate ||
+                        data.profile.personalInfo?.partner_birth_date ||
+                        data.profile.personalInfo?.partnerBirthdate;
 
                     setDateSelect('user', userBirth);
                     setDateSelect('partner', partnerBirth);
