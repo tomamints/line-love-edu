@@ -125,34 +125,11 @@
             font-size: 26px;
         }
 
-        .container {
-            max-width: 980px;
-            width: min(94%, 980px);
-            margin: 70px auto 90px;
-            background: rgba(16, 10, 36, 0.78);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 26px;
-            padding: 54px clamp(20px, 6vw, 52px);
-            box-shadow: 0 34px 68px rgba(6, 4, 24, 0.55), inset 0 0 0 1px rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(10px);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .container::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: radial-gradient(120% 80% at 50% -20%, rgba(255, 240, 200, 0.15), transparent 55%),
-                        radial-gradient(70% 60% at 20% 110%, rgba(118, 99, 239, 0.18), transparent 60%);
-            opacity: 0.6;
-            pointer-events: none;
-        }
-
         .header {
             text-align: center;
-            margin-bottom: 40px;
-            position: relative;
+            margin: 70px auto 32px;
+            max-width: 980px;
+            padding: 0 clamp(20px, 6vw, 52px);
         }
 
         .header-logo {
@@ -211,7 +188,8 @@
         }
 
         .form-section {
-            margin-bottom: 36px;
+            margin: 0 auto 36px;
+            max-width: 980px;
             background: rgba(25, 18, 53, 0.65);
             border-radius: 16px;
             padding: 28px;
@@ -313,7 +291,8 @@
         }
 
         .result-section {
-            margin-top: 40px;
+            margin: 40px auto 60px;
+            max-width: 980px;
             display: none;
             border-radius: 24px;
             background: rgba(18, 12, 36, 0.75);
@@ -564,11 +543,6 @@
         }
 
         @media (max-width: 768px) {
-            .container {
-                margin: 40px auto 60px;
-                padding: 36px 18px;
-            }
-
             .header-badges {
                 gap: 10px;
             }
@@ -624,19 +598,18 @@
     <div class="background-aurora"></div>
     <div class="background-stars"></div>
 
-    <div class="container">
-        <div class="header">
-            <img src="../assets/images/web/twin-logo.png" class="header-logo" alt="月の相性診断ロゴ">
-            <h1>月の相性診断</h1>
-            <p>あなたとお相手の月タイプを照らし合わせ、恋愛のリズムと未来を読み解きます。</p>
-            <div class="header-badges">
-                <span class="header-badge"><span class="icon">🌓</span>月タイプの相性を即解析</span>
-                <span class="header-badge"><span class="icon">✨</span>スコアとテーマを自動生成</span>
-                <span class="header-badge"><span class="icon">💌</span>お相手への一言アドバイス付き</span>
-            </div>
+    <div class="header">
+        <img src="../assets/images/web/twin-logo.png" class="header-logo" alt="月の相性診断ロゴ">
+        <h1>月の相性診断</h1>
+        <p>あなたとお相手の月タイプを照らし合わせ、恋愛のリズムと未来を読み解きます。</p>
+        <div class="header-badges">
+            <span class="header-badge"><span class="icon">🌓</span>月タイプの相性を即解析</span>
+            <span class="header-badge"><span class="icon">✨</span>スコアとテーマを自動生成</span>
+            <span class="header-badge"><span class="icon">💌</span>お相手への一言アドバイス付き</span>
         </div>
+    </div>
 
-        <form id="compatibilityForm" class="form-section">
+    <form id="compatibilityForm" class="form-section">
             <h2>あなたとお相手の情報を入力してください</h2>
             <p class="form-note">LINEで登録済みの生年月日は自動で反映されます。<br>未入力の場合は <strong>年・月・日を選択</strong>してください。</p>
             <div class="form-group">
@@ -677,7 +650,7 @@
             <p class="error-message" id="errorMessage"></p>
         </form>
 
-        <div class="result-section" id="resultSection">
+    <div class="result-section" id="resultSection">
             <div class="result-header">
                 <h2>診断結果</h2>
                 <div class="result-overview">
@@ -690,8 +663,7 @@
                         <div class="pair-item">
                             <span class="pair-label">お相手</span>
                             <span class="pair-moon" id="partnerMoonType">-</span>
-                        </div>
-                    </div>
+    </div>
                     <div class="score-card">
                         <div class="score-value" id="scoreValue">--点</div>
                         <div class="score-level" id="scoreLevel">◎ 相性を診断中...</div>
@@ -736,7 +708,6 @@
                 <a href="#" class="share-button" id="shareButton">💬 LINEで結果をシェアする</a>
             </div>
         </div>
-    </div>
 
     <script>
     function isLineBrowser() {
@@ -767,10 +738,15 @@
     function showLineAccessGuard() {
         if (document.querySelector('.line-guard')) return;
 
-        const container = document.querySelector('.container');
-        if (container) {
-            container.style.display = 'none';
-        }
+        const header = document.querySelector('.header');
+        const formSection = document.getElementById('compatibilityForm');
+        const resultSection = document.getElementById('resultSection');
+
+        [header, formSection, resultSection].forEach(element => {
+            if (element) {
+                element.style.display = 'none';
+            }
+        });
 
         const guard = document.createElement('div');
         guard.className = 'line-guard';
@@ -810,14 +786,6 @@
 
             const toFullWidthNumber = value =>
                 String(value).replace(/\d/g, d => String.fromCharCode(d.charCodeAt(0) + 0xFEE0));
-
-            const upliftLevelText = (levelText = '') => {
-                if (!levelText) return '相性がとても良い';
-                if (levelText.includes('良い') && !levelText.includes('とても')) {
-                    return levelText.replace('良い', 'とても良い');
-                }
-                return levelText;
-            };
 
             function populateDateSelects(prefix) {
                 const yearSelect = document.getElementById(`${prefix}Year`);
@@ -973,8 +941,7 @@
                         scoreValueEl.textContent = scoreText;
                     }
                     if (scoreLevelEl) {
-                        const elevatedLevel = upliftLevelText(compatibility.level || '');
-                        scoreLevelEl.textContent = `◎ ${elevatedLevel || '相性がとても良い'}`;
+                        scoreLevelEl.textContent = `◯ ${compatibility.level || '相性が良い'}`;
                     }
                     if (summaryNote) {
                         summaryNote.textContent = '月相が導くふたりの調和バランスです。';
