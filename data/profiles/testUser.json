@@ -1,0 +1,8 @@
+{
+  "userId": "testUser",
+  "personalInfo": {
+    "partnerBirthdate": "1999-12-31",
+    "userBirthdate": "1990-01-01"
+  },
+  "updatedAt": "2025-10-23T10:04:19.388Z"
+}

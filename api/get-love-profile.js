@@ -89,7 +89,8 @@ module.exports = async (req, res) => {
       userName: profile.user_name,
       name: profile.user_name,
       birthDate: profile.birth_date,
-      birthdate: profile.birth_date
+      birthdate: profile.birth_date,
+      partnerBirthDate: profile.partner_birth_date
     };
 
     return res.status(200).json({
