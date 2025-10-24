@@ -600,8 +600,22 @@ function displayResult(moonType, moonData, birthdate) {
             ` : ''}
         </div>
 
+        <div style="margin-top: 28px; padding: 20px; border-radius: 18px; background: linear-gradient(135deg, rgba(118, 99, 239, 0.14), rgba(118, 99, 239, 0.06)); border: 1px solid rgba(118, 99, 239, 0.18); text-align: center;">
+            <div style="font-size: 16px; font-weight: 600; color: #ffe4b5; margin-bottom: 8px;">
+                もし気になるあの人との相性を知りたい方は
+            </div>
+            <p style="font-size: 14px; color: rgba(255, 255, 255, 0.78); line-height: 1.8; margin-bottom: 16px;">
+                LINE限定の月の相性診断で、お互いの月タイプを照らし合わせながら<br>
+                詳しいスコアと今後のポイントをチェックできます。
+            </p>
+            <a href="https://lin.ee/egmCXoG" target="_blank" rel="noopener"
+               style="display: inline-block; padding: 12px 28px; border-radius: 999px; background: linear-gradient(135deg, #ff9fb5, #7f77ff); color: #fff; text-decoration: none; font-weight: 600; letter-spacing: 0.05em; box-shadow: 0 12px 24px rgba(127, 119, 255, 0.28);">
+                今すぐ診断する
+            </a>
+        </div>
+
         <div class="share-section">
-            <p class="share-text">診断結果をシェアする</p>
+            <p class="share-text">友達に送ろう！ 気になる人にもこの診断をシェアしてみてください。</p>
             <div style="background: rgba(12, 9, 28, 0.55); border-radius: 12px; padding: 16px; margin-bottom: 16px; border: 1px solid rgba(255, 255, 255, 0.06);">
                 <div style="display: flex; align-items: center; gap: 16px; flex-wrap: wrap; justify-content: center;">
                     <div style="font-size: 60px;">${moonData.emoji}</div>
