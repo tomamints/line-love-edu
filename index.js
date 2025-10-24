@@ -13,23 +13,23 @@ const logger = require('./utils/logger');
 function generateTestMessages() {
   const messages = [];
   const now = new Date();
-  
+
   for (let i = 30; i >= 0; i--) {
     const date = new Date(now.getTime() - i * 24 * 60 * 60 * 1000);
-    
+
     messages.push({
       text: 'こんにちは！今日も元気です',
       timestamp: new Date(date.getTime() + Math.random() * 8 * 60 * 60 * 1000).toISOString(),
       isUser: true
     });
-    
+
     messages.push({
       text: 'こちらこそ！良い一日を',
       timestamp: new Date(date.getTime() + Math.random() * 8 * 60 * 60 * 1000 + 1000).toISOString(),
       isUser: false
     });
   }
-  
+
   return messages;
 }
 
@@ -700,7 +700,7 @@ app.post('/api/send-premium-invite', async (req, res) => {
 app.get('/tarot', (req, res) => {
   // LINEからのアクセスでユーザーIDが渡される場合
   const userId = req.query.userId || req.headers['x-line-userid'];
-  
+
   if (userId) {
     // ユーザーIDがある場合はパラメータ付きでリダイレクト
     res.redirect(`/moon-tarot.html?userId=${userId}`);
@@ -718,7 +718,7 @@ const recentPostbackIds = new Set();
 app.post('/webhook', middleware(config), async (req, res) => {
   logger.log("🔮 恋愛お告げボット - リクエスト受信");
   logger.log("📝 イベント数:", req.body.events?.length || 0);
-  
+
   // X-Line-Retryヘッダーをチェック（リトライ回数）
   const retryCount = req.headers['x-line-retry'] || 0;
   if (retryCount > 0) {
@@ -735,17 +735,17 @@ app.post('/webhook', middleware(config), async (req, res) => {
           console.error('❌ スタック:', err.stack);
         });
       }
-      
+
       // テキストメッセージの処理（プロファイル入力）
       if (event.type === 'message' && event.message.type === 'text') {
         const userId = event.source.userId;
         const messageText = event.message.text;
         loadHeavyModules();
-        
+
         // 本格テストコマンド - 完全版表示（テスト用）
         if (messageText === '本格テスト') {
           logger.log('🧪 本格テストコマンド受信:', userId);
-          
+
           try {
             // 最新の診断IDを取得
             const { createClient } = require('@supabase/supabase-js');
@@ -753,7 +753,7 @@ app.post('/webhook', middleware(config), async (req, res) => {
               process.env.SUPABASE_URL,
               process.env.SUPABASE_ANON_KEY
             );
-          
+
           // ユーザーの最新診断を取得
           const { data: diagnosis } = await supabase
             .from('diagnoses')
@@ -762,10 +762,10 @@ app.post('/webhook', middleware(config), async (req, res) => {
             .order('created_at', { ascending: false })
             .limit(1)
             .single();
-          
+
             if (diagnosis) {
               const testUrl = `${process.env.BASE_URL || 'https://line-love-edu.vercel.app'}/lp-otsukisama-unified.html?id=${diagnosis.id}&userId=${userId}&test=true`;
-              
+
               return client.replyMessage(event.replyToken, {
               type: 'flex',
               altText: '🧪 テスト用完全版リンク',
@@ -883,12 +883,12 @@ app.post('/webhook', middleware(config), async (req, res) => {
             });
           }
         }
-        
+
         // プロフィール保存完了通知を受け取った場合
         if (messageText === '診断開始' || messageText === '保存完了') {
           const profile = await profileManager.getProfile(userId);
           let result = profile?.lastFortuneResult;
-          
+
           // データベースにない場合はファイルから読み込み
           if (!result) {
             try {
@@ -904,7 +904,7 @@ app.post('/webhook', middleware(config), async (req, res) => {
               console.log('診断結果ファイルが見つかりません:', err.message);
             }
           }
-          
+
           if (result) {
             const message = {
               type: 'flex',
@@ -1003,8 +1003,8 @@ app.post('/webhook', middleware(config), async (req, res) => {
                     },
                     {
                       type: 'text',
-                      text: Array.isArray(result.compatibility.advice) 
-                        ? result.compatibility.advice.join(' ') 
+                      text: Array.isArray(result.compatibility.advice)
+                        ? result.compatibility.advice.join(' ')
                         : result.compatibility.advice,
                       wrap: true,
                       size: 'sm',
@@ -1014,7 +1014,7 @@ app.post('/webhook', middleware(config), async (req, res) => {
                 }
               }
             };
-            
+
             return client.replyMessage(event.replyToken, message);
           } else {
             return client.replyMessage(event.replyToken, {
@@ -1023,11 +1023,11 @@ app.post('/webhook', middleware(config), async (req, res) => {
             });
           }
         }
-        
+
         // プロフィール設定（友だち登録時と同じデザイン）
         if (messageText === 'プロフィール設定' || messageText === 'プロフィール') {
           const formUrl = `${process.env.BASE_URL || 'https://line-love-edu.vercel.app'}/api/profile-form?userId=${userId}`;
-          
+
           return client.replyMessage(event.replyToken, {
             type: 'flex',
             altText: '🌙 おつきさま診断',
@@ -1156,28 +1156,28 @@ app.post('/webhook', middleware(config), async (req, res) => {
             }
           });
         }
-        
+
         // 生成中の注文がある場合の処理を削除
         // 「レポート状況」コマンドで適切に処理される
-        
+
         // Batch APIデバッグコマンド（後で削除）
         if (messageText === 'バッチ' || messageText === 'batch') {
           console.log('🔍 Batch debug command received from:', userId);
-          
+
           try {
             const batchResult = await ordersDB.getBatchResult(userId);
-            
+
             if (!batchResult) {
               return client.replyMessage(event.replyToken, {
                 type: 'text',
                 text: '⚠️ Batch結果が見つかりません\n\nまだレポート生成を実行していないか、データが削除されています。'
               });
             }
-            
+
             // AI Insightsの内容を整形
             let aiInsightsInfo = '';
             let parsedAIContent = null;
-            
+
             // Raw contentからAI分析結果を抽出
             if (batchResult.rawContent) {
               try {
@@ -1199,30 +1199,30 @@ app.post('/webhook', middleware(config), async (req, res) => {
                 console.error('Error parsing batch content:', e);
               }
             }
-            
+
             // AI Insightsの内容を表示用に整形（全文表示）
             if (parsedAIContent || batchResult.aiInsights || batchResult.aiInsightsPreview) {
               const insights = parsedAIContent || batchResult.aiInsights || batchResult.aiInsightsPreview;
-              
+
               // 完全な内容をJSON形式で表示（見やすく整形）
               aiInsightsInfo = '\n\n🤖 === AI分析結果（完全版） ===\n';
               aiInsightsInfo += JSON.stringify(insights, null, 2);
-              
+
               // LINEの文字数制限（5000文字）を考慮
               if (aiInsightsInfo.length > 4500) {
                 // 制限に収まるように分割情報を追加
                 const truncated = aiInsightsInfo.substring(0, 4400);
                 aiInsightsInfo = truncated + '\n\n⚠️ 文字数制限により一部省略されています。\n完全な内容は複数回に分けて送信します。';
-                
+
                 // 残りの部分を保存（後で別メッセージとして送信可能）
                 console.log('📄 AI Insights完全版（コンソール出力）:');
                 console.log(JSON.stringify(insights, null, 2));
               }
             }
-            
+
             // メッセージを分割して送信する準備
             const messages = [];
-            
+
             // 1. 基本情報
             const basicInfo = `📦 Batch API Debug Info
 ━━━━━━━━━━━━━━━━━
@@ -1232,22 +1232,22 @@ app.post('/webhook', middleware(config), async (req, res) => {
 📊 Parsed: ${batchResult.parsedResults?.length || 0} results
 📝 Raw Size: ${Math.round((batchResult.rawContent?.length || 0) / 1024)}KB
 ${parsedAIContent || batchResult.aiInsights || batchResult.aiInsightsPreview ? '✅ AI Insights: 取得成功' : '❌ AI Insights: なし'}`;
-            
+
             // 2. AI分析結果がある場合は人間が理解しやすい形式で表示
             if (parsedAIContent || batchResult.aiInsights || batchResult.aiInsightsPreview) {
               const insights = parsedAIContent || batchResult.aiInsights || batchResult.aiInsightsPreview;
-              
+
               // 基本情報を最初のメッセージとして追加
               messages.push({
                 type: 'text',
                 text: basicInfo
               });
-              
+
               // 個別化された手紙があるか確認（最優先で表示）
               if (insights.personalizedLetter) {
                 let letterText = '🌙 === 月詠からの特別なメッセージ ===\n\n';
                 letterText += insights.personalizedLetter;
-                
+
                 // 文字数制限を考慮して分割
                 if (letterText.length > 4500) {
                   const part1 = letterText.substring(0, 4400);
@@ -1269,12 +1269,12 @@ ${parsedAIContent || batchResult.aiInsights || batchResult.aiInsightsPreview ? '
                   });
                 }
               }
-              
+
               // 月詠コメントがあるか確認
               if (insights.tsukuyomiComments) {
                 let tsukuyomiText = '🌙 === 月詠からのメッセージ ===\n\n';
                 const comments = insights.tsukuyomiComments;
-                
+
                 if (comments.weeklyPattern) {
                   tsukuyomiText += '【曜日別パターン】\n' + comments.weeklyPattern + '\n\n';
                 }
@@ -1293,7 +1293,7 @@ ${parsedAIContent || batchResult.aiInsights || batchResult.aiInsightsPreview ? '
                 if (comments.futurePrediction) {
                   tsukuyomiText += '【未来予測】\n' + comments.futurePrediction;
                 }
-                
+
                 // 文字数制限を考慮して分割
                 if (tsukuyomiText.length > 4500) {
                   const part1 = tsukuyomiText.substring(0, 4400);
@@ -1315,31 +1315,31 @@ ${parsedAIContent || batchResult.aiInsights || batchResult.aiInsightsPreview ? '
                   });
                 }
               }
-              
+
               // 関係性タイプ
               if (insights.relationshipType) {
                 let relationText = '💕 === 関係性の分析 ===\n\n';
                 relationText += `【関係性タイプ】\n${insights.relationshipType.title || '不明'}\n\n`;
                 relationText += `【説明】\n${insights.relationshipType.description || '詳細なし'}\n\n`;
-                
+
                 if (insights.relationshipStage) {
                   relationText += `【関係性ステージ】${insights.relationshipStage}/10\n\n`;
                 }
-                
+
                 if (insights.personality && insights.personality.length > 0) {
                   relationText += `【性格特徴】\n• ${insights.personality.join('\n• ')}\n\n`;
                 }
-                
+
                 if (insights.interests && insights.interests.length > 0) {
                   relationText += `【共通の興味】\n• ${insights.interests.join('\n• ')}\n\n`;
                 }
-                
+
                 messages.push({
                   type: 'text',
                   text: relationText
                 });
               }
-              
+
               // アクションプラン
               if (insights.suggestedActions && insights.suggestedActions.length > 0) {
                 let actionText = '🎯 === アクションプラン ===\n\n';
@@ -1352,13 +1352,13 @@ ${parsedAIContent || batchResult.aiInsights || batchResult.aiInsightsPreview ? '
                   actionText += `⏰ タイミング: ${action.timing}\n`;
                   actionText += `📊 成功率: ${action.successRate}%\n\n`;
                 });
-                
+
                 messages.push({
                   type: 'text',
                   text: actionText
                 });
               }
-              
+
               // 未来予測
               if (insights.futureSigns) {
                 let futureText = '🔮 === 未来予測（3ヶ月後） ===\n\n';
@@ -1368,13 +1368,13 @@ ${parsedAIContent || batchResult.aiInsights || batchResult.aiInsightsPreview ? '
                 futureText += `【より深い対話】${insights.futureSigns.deepTalk || '不明'}\n`;
                 futureText += `【新しい始まり】${insights.futureSigns.newBeginning || '不明'}\n`;
                 futureText += `【感情の深まり】${insights.futureSigns.emotionalDepth || '不明'}\n`;
-                
+
                 messages.push({
                   type: 'text',
                   text: futureText
                 });
               }
-              
+
               // 最大5メッセージまで（LINE APIの制限）
               if (messages.length > 5) {
                 // 重要な情報を優先して5つに収める
@@ -1385,9 +1385,9 @@ ${parsedAIContent || batchResult.aiInsights || batchResult.aiInsightsPreview ? '
                   messages[3], // アクションプラン
                   messages[4]  // 未来予測
                 ].filter(msg => msg);
-                
+
                 messages.splice(0, messages.length, ...prioritized.slice(0, 5));
-                
+
                 if (messages.length === 5) {
                   messages[4] = {
                     type: 'text',
@@ -1402,9 +1402,9 @@ ${parsedAIContent || batchResult.aiInsights || batchResult.aiInsightsPreview ? '
                 text: basicInfo + '\n\n❌ AI分析結果が見つかりません\n\n考えられる原因:\n• まだAI分析が完了していない\n• バッチ処理でエラーが発生した\n• プロンプトの応答形式に問題がある\n\n「レポート状況」で現在の状態を確認してください。'
               });
             }
-            
+
             return client.replyMessage(event.replyToken, messages);
-            
+
           } catch (error) {
             console.error('Batch debug error:', error);
             return client.replyMessage(event.replyToken, {
@@ -1413,14 +1413,14 @@ ${parsedAIContent || batchResult.aiInsights || batchResult.aiInsightsPreview ? '
             });
           }
         }
-        
+
         // 「レポート」コマンドで最新のレポートを表示
         if (messageText === 'レポート' || messageText === 'れぽーと') {
           const orders = await ordersDB.getUserOrders(userId);
-          const completedOrder = orders.find(order => 
+          const completedOrder = orders.find(order =>
             order.status === 'completed' && order.report_url
           );
-          
+
           if (completedOrder) {
             // 完成したレポートがある場合
             const completionMessage = paymentHandler.generateCompletionMessage({
@@ -1430,13 +1430,13 @@ ${parsedAIContent || batchResult.aiInsights || batchResult.aiInsightsPreview ? '
             });
             return client.replyMessage(event.replyToken, completionMessage);
           }
-          
+
           // 生成中の注文を確認
-          const generatingOrder = orders.find(order => 
+          const generatingOrder = orders.find(order =>
             order.status === 'generating' || order.status === 'paid' ||
             (order.status && order.status.startsWith('generating_step_'))
           );
-          
+
           if (generatingOrder) {
             // ステータスから進捗を取得
             let progressText = '生成中...';
@@ -1444,51 +1444,51 @@ ${parsedAIContent || batchResult.aiInsights || batchResult.aiInsightsPreview ? '
               const step = generatingOrder.status.replace('generating_step_', '');
               progressText = `ステップ ${step}/5 処理中...`;
             }
-            
+
             return client.replyMessage(event.replyToken, {
               type: 'text',
               text: `⏳ レポート生成中\n\n${progressText}\n\n完成まで約1-2分お待ちください。\n完成後は「レポート」と送信して確認してください。`
             });
           }
-          
+
           // レポートがない場合
           return client.replyMessage(event.replyToken, {
             type: 'text',
             text: '📊 レポートはありません\n\nプレミアムレポートを購入するには「占いを始める」と送信してください。'
           });
         }
-        
+
         // 「レポート履歴」コマンドの処理
         if (messageText === 'レポート履歴' || messageText === '購入履歴') {
           const orders = await ordersDB.getUserOrders(userId);
-          const completedOrders = orders.filter(order => 
+          const completedOrders = orders.filter(order =>
             order.status === 'completed' && order.report_url
           );
-          
+
           if (completedOrders.length === 0) {
             return client.replyMessage(event.replyToken, {
               type: 'text',
               text: '📚 購入履歴はありません\n\nプレミアムレポートを購入すると、ここに履歴が表示されます。'
             });
           }
-          
+
           // 履歴リストを作成
           const historyText = completedOrders.slice(0, 5).map((order, index) => {
             const date = new Date(order.created_at).toLocaleDateString('ja-JP');
             return `${index + 1}. ${date} - 完成済み`;
           }).join('\n');
-          
+
           return client.replyMessage(event.replyToken, {
             type: 'text',
             text: `📚 購入履歴（最新5件）\n\n${historyText}\n\n最新のレポートを見るには「レポート」と送信してください。`
           });
         }
-        
+
         // 「レポート状況」コマンドの処理
         if (messageText === 'レポート状況') {
           const orders = await ordersDB.getUserOrders(userId);
           const latestOrder = orders[0];
-          
+
           if (!latestOrder) {
             // 未購入
             return client.replyMessage(event.replyToken, {
@@ -1496,7 +1496,7 @@ ${parsedAIContent || batchResult.aiInsights || batchResult.aiInsightsPreview ? '
               text: '📢 レポート未購入\n\nプレミアム恋愛レポートをご希望の場合は、まず「占いを始める」と送信してください🌙'
             });
           }
-          
+
           // ステータスに応じた返信
           if (latestOrder.status === 'completed' && latestOrder.report_url) {
             // 完成済み - カードを送信
@@ -1507,21 +1507,21 @@ ${parsedAIContent || batchResult.aiInsights || batchResult.aiInsightsPreview ? '
               success: true
             });
             return client.replyMessage(event.replyToken, completionMessage);
-            
+
           } else if (latestOrder.status === 'generating' || latestOrder.status === 'paid') {
             // 生成中
             return client.replyMessage(event.replyToken, {
               type: 'text',
               text: '⏳ レポート生成中...\n\n現在あなた専用のレポートを作成しています。\nもう少しお待ちください（約2-3分）📝✨'
             });
-            
+
           } else if (latestOrder.status === 'pending') {
             // 決済待ち
             return client.replyMessage(event.replyToken, {
               type: 'text',
               text: '💳 決済待ち\n\n決済が完了していません。\n決済ページをご確認ください。'
             });
-            
+
           } else if (latestOrder.status === 'error') {
             // エラー
             return client.replyMessage(event.replyToken, {
@@ -1530,9 +1530,9 @@ ${parsedAIContent || batchResult.aiInsights || batchResult.aiInsightsPreview ? '
             });
           }
         }
-        
+
         // pendingNotificationsは使用しない（削除）
-        
+
         // 通常のメッセージ処理
         return handleTextMessage(event).catch(err => {
           console.error('テキストメッセージ処理エラー:', err);
@@ -1542,7 +1542,7 @@ ${parsedAIContent || batchResult.aiInsights || batchResult.aiInsightsPreview ? '
           });
         });
       }
-      
+
       // ファイルメッセージ（トーク履歴）の処理
       if (event.type === 'message' && event.message.type === 'file') {
         // 重複チェック
@@ -1551,19 +1551,19 @@ ${parsedAIContent || batchResult.aiInsights || batchResult.aiInsightsPreview ? '
           return Promise.resolve();
         }
         recentMessageIds.add(event.message.id);
-        
+
         // サイズ制限（1000件まで保持）
         if (recentMessageIds.size > 1000) {
           const firstKey = recentMessageIds.values().next().value;
           recentMessageIds.delete(firstKey);
         }
-        
+
         return handleFortuneEvent(event).catch(err => {
           console.error('=== お告げ生成中にエラー ===', err);
           // エラーハンドリングはhandleFortuneEvent内で行うので、ここでは何もしない
         });
       }
-      
+
       // postbackイベント（課金処理）の処理
       if (event.type === 'postback') {
         // postbackの重複チェック
@@ -1573,13 +1573,13 @@ ${parsedAIContent || batchResult.aiInsights || batchResult.aiInsightsPreview ? '
           return Promise.resolve();
         }
         recentPostbackIds.add(postbackId);
-        
+
         // サイズ制限
         if (recentPostbackIds.size > 1000) {
           const firstKey = recentPostbackIds.values().next().value;
           recentPostbackIds.delete(firstKey);
         }
-        
+
         return handlePostbackEvent(event).catch(err => {
           console.error('=== Postback処理中にエラー ===', err);
           return client.replyMessage(event.replyToken, {
@@ -1588,9 +1588,9 @@ ${parsedAIContent || batchResult.aiInsights || batchResult.aiInsightsPreview ? '
           });
         });
       }
-      
+
       // テスト用：テキストメッセージでレポート生成をテスト
-      if (event.type === 'message' && event.message.type === 'text' && 
+      if (event.type === 'message' && event.message.type === 'text' &&
           event.message.text === 'テストレポート') {
         return handleTestReport(event).catch(err => {
           console.error('=== テストレポート生成エラー ===', err);
@@ -1600,11 +1600,11 @@ ${parsedAIContent || batchResult.aiInsights || batchResult.aiInsightsPreview ? '
           }).catch(pushErr => console.error('Push message error:', pushErr));
         });
       }
-      
-      
+
+
       return Promise.resolve();
     });
-    
+
     await Promise.all(promises);
   } catch (fatal) {
     console.error('🌋 致命的なエラー', fatal);
@@ -1622,10 +1622,10 @@ async function handleFollowEvent(event) {
   logger.log('👤 User ID:', event.source.userId);
   logger.log('🔑 Client exists:', !!client);
   logger.log('🔑 Access Token exists:', !!config.channelAccessToken);
-  
+
   const userId = event.source.userId;
   const formUrl = `${process.env.BASE_URL || 'https://line-love-edu.vercel.app'}/api/profile-form?userId=${userId}`;
-  
+
   try {
     logger.log('📤 プロフィール設定カード送信開始...');
     // プロフィール設定カードを送信
@@ -1741,7 +1741,7 @@ async function handleFollowEvent(event) {
                 },
                 {
                   type: 'text',
-                  text: '　　優しくお伝えします',
+                  text: '優しくお伝えします',
                   size: 'sm'
                 }
               ]
@@ -1759,7 +1759,7 @@ async function handleFollowEvent(event) {
               height: 'md',
               action: {
                 type: 'uri',
-                label: '🔮 情報を入力する',
+                label: '🔮 診断を始める',
                 uri: formUrl
               },
               color: '#764ba2'
@@ -1774,13 +1774,13 @@ async function handleFollowEvent(event) {
     console.error('❌ ウェルカムカード送信失敗:', error);
     console.error('❌ エラー詳細:', error.message);
     console.error('❌ エラースタック:', error.stack);
-    
+
     // フォールバック：シンプルなテキストメッセージ
     try {
       logger.log('📤 フォールバックメッセージ送信開始...');
       const fallbackResult = await client.replyMessage(event.replyToken, {
         type: 'text', 
-        text: '🌙 私は月詠（つくよみ）と申します…\n\nあなたと大切な方の心に映る月の姿を視させていただきましょう\n\n「診断を始める」と… 囁いてください…'
+        text: '🌙 私は月詠（つくよみ）です。\n\n「診断を始める」と入力して、月にあなたの想いを伝えましょう。'
       });
       logger.log('✅ フォールバックメッセージ送信成功:', fallbackResult);
     } catch (fallbackError) {
@@ -1795,7 +1795,7 @@ async function handleFollowEvent(event) {
 async function handleTextMessage(event) {
   const userId = event.source.userId;
   const text = event.message.text;
-  
+
   try {
     // 「履歴」キーワードで購入履歴を表示
     if (text === '履歴') {
@@ -1804,7 +1804,7 @@ async function handleTextMessage(event) {
       const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
       const supabaseKey = process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
       const supabase = supabaseUrl && supabaseKey ? createClient(supabaseUrl, supabaseKey) : null;
-      
+
       if (!supabase) {
         await client.replyMessage(event.replyToken, {
           type: 'text',
@@ -1812,7 +1812,7 @@ async function handleTextMessage(event) {
         });
         return;
       }
-      
+
       // ユーザーの購入履歴を取得
       const { data: purchases, error } = await supabase
         .from('purchases')
@@ -1829,7 +1829,7 @@ async function handleTextMessage(event) {
         .eq('status', 'completed')
         .order('created_at', { ascending: false })
         .limit(10);
-      
+
       if (error || !purchases || purchases.length === 0) {
         await client.replyMessage(event.replyToken, {
           type: 'text',
@@ -1837,7 +1837,7 @@ async function handleTextMessage(event) {
         });
         return;
       }
-      
+
       // Flex Messageで履歴を表示
       const historyItems = purchases.map(p => ({
         type: 'box',
@@ -1886,7 +1886,7 @@ async function handleTextMessage(event) {
         backgroundColor: '#f7f7f7',
         cornerRadius: 'md'
       }));
-      
+
       await client.replyMessage(event.replyToken, {
         type: 'flex',
         altText: '購入履歴',
@@ -1939,11 +1939,11 @@ async function handleTextMessage(event) {
       });
       return;
     }
-    
+
     // 簡易版（月の運勢占い）への誘導
     if (['簡易版', '簡易診断', '月の運勢占い'].includes(text)) {
       const webUrl = `${process.env.BASE_URL || 'https://line-love-edu.vercel.app'}/moon-fortune.html?userId=${userId}`;
-      
+
       await client.replyMessage(event.replyToken, [
         {
           type: 'text',
@@ -2058,7 +2058,7 @@ async function handleTextMessage(event) {
       ]);
       return;
     }
-    
+
     // 「おつきさま診断」（旧: 本格）キーワードでLPへ誘導
     if (['おつきさま診断', '本格'].includes(text)) {
       const inputStatus = await getProfileManager().getInputStatus(userId);
@@ -2164,7 +2164,7 @@ async function handleTextMessage(event) {
     if (text === '占いを始める' || text === 'start') {
       const userId = event.source.userId;
       const formUrl = `${process.env.BASE_URL || 'https://line-love-edu.vercel.app'}/api/profile-form?userId=${userId}`;
-      
+
       await client.replyMessage(event.replyToken, {
         type: 'flex',
         altText: '🌙 月タロット占いへようこそ！',
@@ -2306,11 +2306,11 @@ async function handleTextMessage(event) {
       });
       return;
     }
-    
+
     // 新しい診断コマンド（プロファイルリセットして新規開始）
     if (text === '新しい診断' || text === '新規診断') {
       await getProfileManager().deleteProfile(userId);
-      
+
       // 新しい診断を開始
       await client.replyMessage(event.replyToken, [
         {
@@ -2332,7 +2332,7 @@ async function handleTextMessage(event) {
       ]);
       return;
     }
-    
+
     // 月タロット占いコマンド
     if (text === '月タロット占い' || text === 'タロット占い') {
       // プロフィールが完成しているか確認
@@ -2515,11 +2515,11 @@ async function handleTextMessage(event) {
       // 月タロット占いにリダイレクト
       return handleTextMessage({ ...event, message: { ...event.message, text: '月タロット占い' } });
     }
-    
+
     // リセットコマンド（互換性のため残す）
     if (text === 'リセット' || text === 'reset') {
       await getProfileManager().deleteProfile(userId);
-      
+
       // リセット後、占いを始めるボタンを送信
       await client.replyMessage(event.replyToken, [
         {
@@ -2541,7 +2541,7 @@ async function handleTextMessage(event) {
       ]);
       return;
     }
-    
+
     // プロファイルが完成していない場合
     const hasComplete = await getProfileManager().hasCompleteProfile(userId);
     if (!hasComplete) {
@@ -2689,10 +2689,10 @@ async function handleTextMessage(event) {
       });
       return;
     }
-    
+
     // プロファイルが完成している場合 - 何も返さない
     return;
-    
+
   } catch (error) {
     console.error('テキストメッセージ処理エラー:', error);
     await client.replyMessage(event.replyToken, {
@@ -2714,25 +2714,25 @@ async function sendMoonFortuneResult(replyToken, userId) {
       });
       return;
     }
-    
+
     // ファイルから診断結果を読み込み
     let result = null;
     let savedProfile = null;
     let shouldRegenerate = false;
-    
+
     try {
       const fs = require('fs').promises;
       const path = require('path');
       // Vercel環境では/tmpを使用
-      const dataDir = process.env.VERCEL 
+      const dataDir = process.env.VERCEL
         ? '/tmp/profiles'
         : path.join(__dirname, 'data/profiles');
       const profileFile = path.join(dataDir, `${userId}.json`);
-      
+
       const profileData = await fs.readFile(profileFile, 'utf8');
       savedProfile = JSON.parse(profileData);
       result = savedProfile.lastFortuneResult;
-      
+
       // プロフィールが更新されているかチェック
       if (savedProfile.birthDate !== profile.birthDate ||
           savedProfile.partnerBirthDate !== profile.partnerBirthDate ||
@@ -2750,34 +2750,34 @@ async function sendMoonFortuneResult(replyToken, userId) {
       console.log('診断結果ファイルが見つかりません:', err.message);
       shouldRegenerate = true;
     }
-    
+
     // 診断結果がないか、再生成が必要な場合
     if (!result) {
-      
+
       loadHeavyModules();
       const moonEngine = new MoonFortuneEngineV2();
-      
+
       // おつきさま診断レポートを生成
       result = moonEngine.generateCompleteReading(
         profile.birthDate,
         profile.partnerBirthDate
       );
-      
+
       // 結果をファイルに保存（エラーを無視）
       try {
         const fs = require('fs').promises;
         const path = require('path');
         // Vercel環境では/tmpを使用
-        const dataDir = process.env.VERCEL 
+        const dataDir = process.env.VERCEL
           ? '/tmp/profiles'
           : path.join(__dirname, 'data/profiles');
         await fs.mkdir(dataDir, { recursive: true });
-        
+
         const profileData = {
           ...profile,
           lastFortuneResult: result
         };
-        
+
         await fs.writeFile(
           path.join(dataDir, `${userId}.json`),
           JSON.stringify(profileData, null, 2)
@@ -2788,17 +2788,17 @@ async function sendMoonFortuneResult(replyToken, userId) {
         console.log('⚠️ 診断結果の保存をスキップ:', saveErr.message);
       }
     }
-    
+
     // V2フォーマッターを使用して診断結果を表示
     const message = {
       type: 'flex',
       altText: '🌙 おつきさま診断の結果',
       contents: formatMoonReportV2(result)
     };
-    
+
     // 結果を送信
     await client.replyMessage(replyToken, message);
-    
+
   } catch (error) {
     console.error('おつきさま診断結果送信エラー:', error);
     await client.replyMessage(replyToken, {
@@ -2813,9 +2813,9 @@ async function handleFortuneEvent(event) {
   logger.log('🔮 恋愛お告げ生成開始');
   logger.log('📱 イベントタイプ:', event.type);
   logger.log('📱 メッセージタイプ:', event.message?.type);
-  
+
   const rateLimiter = require('./utils/rate-limiter');
-  
+
   if (event.type !== 'message' || event.message.type !== 'file') {
     logger.log('⏭️ ファイルメッセージではないためスキップ');
     return;
@@ -2823,7 +2823,7 @@ async function handleFortuneEvent(event) {
 
   const userId = event.source.userId;
   const startTime = Date.now();
-  
+
   // タイムアウト設定（25秒）
   const timeout = setTimeout(() => {
     console.error('⏱️ タイムアウト: 処理が25秒を超えました');
@@ -2832,17 +2832,17 @@ async function handleFortuneEvent(event) {
       text: '⏱️ 処理がタイムアウトしました。\nファイルサイズが大きすぎる可能性があります。\n\nもう一度お試しください。'
     }).catch(err => console.error('タイムアウトメッセージ送信エラー:', err));
   }, 25000);
-  
+
   try {
     logger.log('📢 Step 1: 分析開始（メッセージは最後にまとめて送信）');
     // replyTokenは1回しか使えないので、分析開始メッセージはスキップし、
     // 最後の結果送信時にreplyTokenを使用する
-    
+
     // ファイルダウンロード
     logger.log('📥 Step 2: トーク履歴を読み込み中...');
     const stream = await client.getMessageContent(event.message.id);
     logger.log('📥 Stream取得完了');
-    
+
     const chunks = [];
     let chunkCount = 0;
     for await (const c of stream) {
@@ -2861,7 +2861,7 @@ async function handleFortuneEvent(event) {
     loadHeavyModules();
     const messages = parser.parseTLText(rawText);
     logger.log(`💬 メッセージ数: ${messages.length}`);
-    
+
     // プロフィール取得
     let profile;
     try {
@@ -2870,23 +2870,23 @@ async function handleFortuneEvent(event) {
       console.warn('プロフィール取得エラー:', err);
       profile = { displayName: 'あなた' };
     }
-    
+
     // お告げ生成
     logger.log('🔮 運命のお告げを生成中...');
     loadHeavyModules();
     const fortuneEngine = new FortuneEngine();
     const fortune = await fortuneEngine.generateFortune(messages, userId, profile.displayName);
-    
+
     // 波動系占いも生成
     logger.log('💫 波動恋愛診断を実行中...');
     loadHeavyModules();
     const waveEngine = new WaveFortuneEngine();
     const waveAnalysis = waveEngine.analyzeWaveVibration(messages);
     const waveResult = waveEngine.formatWaveFortuneResult(waveAnalysis);
-    
+
     // 占い結果に波動診断を追加
     fortune.waveAnalysis = waveResult;
-    
+
     // カルーセル用にメッセージデータと分析データを追加
     fortune.messages = messages;
     fortune.analysis = {
@@ -2895,7 +2895,7 @@ async function handleFortuneEvent(event) {
       avgResponseTime: 0, // TODO: 実装
       responseRate: 75 // TODO: 実装
     };
-    
+
     // パースしたメッセージを保存（プレミアムレポート用）
     try {
       const messagesDB = require('./core/database/messages-db');
@@ -2912,12 +2912,12 @@ async function handleFortuneEvent(event) {
     } catch (saveError) {
       console.error('⚠️ メッセージ保存エラー（続行）:', saveError.message);
     }
-    
+
     // おつきさま診断も生成
     logger.log('🌙 おつきさま診断を実行中...');
     loadHeavyModules();
     const moonEngine = new MoonFortuneEngineV2();
-    
+
     // ユーザープロファイルを取得（エラーを防ぐためtry-catch追加）
     let userProfile = null;
     try {
@@ -2925,9 +2925,9 @@ async function handleFortuneEvent(event) {
     } catch (profileErr) {
       console.warn('プロファイル取得エラー（正常）:', profileErr.message);
     }
-    
+
     let moonReport = null;
-    
+
     if (userProfile && await getProfileManager().hasCompleteProfile(userId)) {
       // プロファイルが完成している場合は実際のデータを使用
       const userMoonProfile = {
@@ -2961,26 +2961,26 @@ async function handleFortuneEvent(event) {
         testPartnerProfile.birthDate
       );
     }
-    
+
     fortune.moonAnalysis = moonReport;
-    
+
     // カルーセル作成
     logger.log('🎨 お告げカルーセルを作成中...');
     loadHeavyModules();
     const builder = new FortuneCarouselBuilder(fortune, profile);
     const carousel = builder.build();
-    
+
     // サイズチェック
     const totalSize = Buffer.byteLength(JSON.stringify(carousel), 'utf8');
     logger.log(`📦 カルーセルサイズ: ${totalSize} bytes`);
     if (totalSize > 25000) {
       console.warn('⚠️ Flex Message が 25KB を超えています！');
     }
-    
+
     // 送信
     logger.log('📮 お告げを送信中...');
     logger.log('📊 カルーセル構造:', JSON.stringify(carousel, null, 2));
-    
+
     try {
       // replyTokenが有効な場合はreplyMessageを使用（無料・無制限）
       if (event.replyToken && !event.replyToken.startsWith('00000000')) {
@@ -2999,17 +2999,17 @@ async function handleFortuneEvent(event) {
       }
       throw apiError;
     }
-    
+
     // 完了ログ
     clearTimeout(timeout); // タイムアウトをクリア
     const endTime = Date.now();
     logger.log(`✨ お告げ生成完了！ (処理時間: ${endTime - startTime}ms)`);
-    
+
   } catch (error) {
     clearTimeout(timeout); // タイムアウトをクリア
     console.error('❌ エラー発生:', error);
     console.error('❌ エラースタック:', error.stack);
-    
+
     // エラー時のフォールバック（429エラーの場合は送信しない）
     if (error.statusCode !== 429) {
       try {
@@ -3028,11 +3028,11 @@ async function handleFortuneEvent(event) {
 
 // 深掘り分析のレスポンスを送信する関数
 async function sendDeepAnalysisResponse(replyToken, type) {
-  const selectedText = type === 'feelings_reach' 
+  const selectedText = type === 'feelings_reach'
     ? 'お相手に今のあなたの想いが伝わるのかどうか'
     : 'お相手が今あなたに向ける気持ち';
-    
-  const details = type === 'feelings_reach' 
+
+  const details = type === 'feelings_reach'
     ? [
         '・お相手があなたの言葉や態度をどう受け取っているか',
         '・ふたりの会話から"温度差"や"誤解のポイント"',
@@ -3043,7 +3043,7 @@ async function sendDeepAnalysisResponse(replyToken, type) {
         '・ふたりの会話から"お相手の隠れた感情の動き"を見える化します',
         '・お相手の気持ちを理解することで、関係を前に進めるヒントが見つかります'
       ];
-  
+
   await client.replyMessage(replyToken, [
     {
       type: 'flex',
@@ -3168,9 +3168,9 @@ async function sendDeepAnalysisResponse(replyToken, type) {
 async function handlePostbackEvent(event) {
   logger.log('💳 Postback処理開始:', event.postback.data);
   logger.log('📅 Postback params:', event.postback.params);
-  
+
   const userId = event.source.userId;
-  
+
   // タロット占いへのアクセス（リッチメニューから）
   if (event.postback.data === 'action=tarot') {
     logger.log('🔮 タロット占いへのアクセス要求:', userId);
@@ -3179,14 +3179,14 @@ async function handlePostbackEvent(event) {
     event.message = { text: '月タロット占い' };
     return handleTextMessage(event);
   }
-  
+
   // postback処理（日付選択と性別選択）
   if (event.postback.data.startsWith('action=')) {
     const params = new URLSearchParams(event.postback.data);
     const action = params.get('action');
     const value = params.get('value');
     const selectedDate = event.postback.params?.date; // YYYY-MM-DD format
-    
+
     // ユーザーの生年月日選択
     if (action === 'userBirthDate') {
       // 即座にレスポンスを返す（重要）
@@ -3196,21 +3196,21 @@ async function handlePostbackEvent(event) {
           text: '✅ 生年月日を選択しました\n\n次に、上のカードから性別を選んでください'
         }
       ]);
-      
+
       // プロファイル保存は非同期で実行（エラーが出ても無視）
       getProfileManager().saveProfile(userId, {
         birthDate: selectedDate
       }).catch(err => {
         console.error('生年月日保存エラー（無視）:', err);
       });
-      
+
       return;
     }
-    
+
     // ユーザーの性別選択（生年月日入力後）
     if (action === 'userGenderWithBirthDate') {
       const profile = await getProfileManager().getProfile(userId);
-      
+
       // 生年月日が入力されているか確認
       if (!profile || !profile.birthDate) {
         await client.replyMessage(event.replyToken, [
@@ -3221,12 +3221,12 @@ async function handlePostbackEvent(event) {
         ]);
         return;
       }
-      
+
       // 性別を保存
       await getProfileManager().saveProfile(userId, {
         gender: value
       });
-      
+
       // お相手の情報入力カード
       await client.replyMessage(event.replyToken, [
         {
@@ -3334,14 +3334,14 @@ async function handlePostbackEvent(event) {
       ]);
       return;
     }
-    
+
     // お相手の生年月日選択
     if (action === 'partnerBirthDate') {
       // 生年月日を一時保存
       await getProfileManager().saveProfile(userId, {
         partnerBirthDate: selectedDate
       });
-      
+
       // 生年月日選択後のメッセージ
       await client.replyMessage(event.replyToken, [
         {
@@ -3351,19 +3351,19 @@ async function handlePostbackEvent(event) {
       ]);
       return;
     }
-    
+
     // 「想いが伝わるか」ボタンが押された時
     if (action === 'want_feelings_reach') {
       await sendDeepAnalysisResponse(event.replyToken, 'feelings_reach');
       return;
     }
-    
+
     // 「相手の気持ち」ボタンが押された時
     if (action === 'want_partner_feelings') {
       await sendDeepAnalysisResponse(event.replyToken, 'partner_feelings');
       return;
     }
-    
+
     // 「知りたい！」ボタンが押された時（既存）
     if (action === 'want_more_analysis') {
       // トーク履歴送信の案内を送信
@@ -3581,11 +3581,11 @@ async function handlePostbackEvent(event) {
       ]);
       return;
     }
-    
+
     // お相手の性別選択（生年月日入力後）
     if (action === 'partnerGenderWithBirthDate') {
       const profile = await getProfileManager().getProfile(userId);
-      
+
       // お相手の生年月日が入力されているか確認
       if (!profile || !profile.partnerBirthDate) {
         await client.replyMessage(event.replyToken, [
@@ -3596,13 +3596,13 @@ async function handlePostbackEvent(event) {
         ]);
         return;
       }
-      
+
       // 性別を保存してプロフィールを完成
       await getProfileManager().saveProfile(userId, {
         partnerGender: value,
         status: 'complete'
       });
-      
+
       // おつきさま診断結果を生成
       loadHeavyModules();
       const moonEngine = new MoonFortuneEngineV2();
@@ -3610,24 +3610,24 @@ async function handlePostbackEvent(event) {
         profile.birthDate,
         profile.partnerBirthDate
       );
-      
+
       // V2フォーマッターを使用して表示
       const flexMessage = {
         type: 'flex',
         altText: '🌙 おつきさま診断の結果',
         contents: formatMoonReportV2(moonReport)
       };
-      
+
       await client.replyMessage(event.replyToken, flexMessage);
-      
+
       logger.log('✨ おつきさま診断を送信しました');
       return;
     }
   }
-  
+
   // 既存の課金処理用のJSONパース
   const postbackData = JSON.parse(event.postback.data);
-  
+
   try {
     // プロフィール取得
     let profile;
@@ -3637,23 +3637,23 @@ async function handlePostbackEvent(event) {
       console.warn('プロフィール取得エラー:', err);
       profile = { displayName: 'あなた', userId };
     }
-    
+
     // アクションに応じて処理を分岐
     switch (postbackData.action) {
       case 'order_premium_report':
         return await handlePremiumReportOrder(event, userId, profile);
-        
+
       case 'payment_success':
         return await handlePaymentSuccess(postbackData.orderId, userId);
-        
+
       default:
         logger.log('未知のpostbackアクション:', postbackData.action);
         return;
     }
-    
+
   } catch (error) {
     console.error('Postbackイベント処理エラー:', error);
-    
+
     // 429エラー（レート制限）の場合はエラーメッセージを送信しない
     if (error.statusCode !== 429) {
       try {
@@ -3676,7 +3676,7 @@ const processingOrders = new Set();
 // ── ⑦ プレミアムレポート注文処理
 async function handlePremiumReportOrder(event, userId, profile) {
   logger.log('📋 プレミアムレポート注文処理開始');
-  
+
   // 連打防止チェック
   if (processingOrders.has(userId)) {
     logger.log('⚠️ 注文処理中のため無視:', userId);
@@ -3685,29 +3685,29 @@ async function handlePremiumReportOrder(event, userId, profile) {
       text: '⏳ 処理中です...\n\n現在注文を処理しています。\nしばらくお待ちください。'
     });
   }
-  
+
   // 処理中フラグを立てる
   processingOrders.add(userId);
-  
+
   try {
     // 注文を処理
     const orderResult = await getPaymentHandler().handlePremiumOrderRequest(userId, profile);
-    
+
     // 注文が作成できない場合（生成中のみ）
     if (!orderResult.success) {
       // 処理中フラグを即座にクリア
       processingOrders.delete(userId);
-      
+
       // 生成中またはその他のメッセージ
       return client.replyMessage(event.replyToken, {
         type: 'text',
         text: orderResult.message
       });
     }
-    
+
     // 決済案内メッセージを送信
     const paymentMessage = getPaymentHandler().generatePaymentMessage(orderResult);
-    
+
     // replyTokenが有効な場合はreplyMessageを使用（無料・無制限）
     if (event.replyToken && !event.replyToken.startsWith('00000000')) {
       logger.log('📮 replyMessageを使用（Postback応答・無料）');
@@ -3717,12 +3717,12 @@ async function handlePremiumReportOrder(event, userId, profile) {
       const rateLimiter = require('./utils/rate-limiter');
       await rateLimiter.sendMessage(client, userId, paymentMessage);
     }
-    
+
     logger.log('✅ 決済案内送信完了');
-    
+
   } catch (error) {
     console.error('プレミアムレポート注文エラー:', error);
-    
+
     // 429エラー（レート制限）の場合はエラーメッセージを送信しない
     if (error.statusCode !== 429) {
       try {
@@ -3748,7 +3748,7 @@ async function handlePremiumReportOrder(event, userId, profile) {
 // ── ⑧ 決済完了処理
 async function handlePaymentSuccess(orderId, userId) {
   logger.log('💰 決済完了処理開始:', orderId);
-  
+
   try {
     // まず購入完了メッセージを送信
     await client.pushMessage(userId, [
@@ -3762,17 +3762,17 @@ async function handlePaymentSuccess(orderId, userId) {
         stickerId: '52002750' // LINEのローディングスタンプ
       }
     ]);
-    
+
     // 注文に関連するメッセージ履歴を取得（実際の実装では保存されたデータから取得）
     // ここではプレースホルダーとして空配列を使用
     const messages = []; // 実際はデータベースから取得
-    
+
     // 決済完了後の処理（レポート生成）
     const completionResult = await getPaymentHandler().handlePaymentSuccess(orderId, messages);
-    
+
     // 完成通知メッセージを送信
     const completionMessages = getPaymentHandler().generateCompletionMessage(completionResult);
-    
+
     if (Array.isArray(completionMessages)) {
       for (const message of completionMessages) {
         await client.pushMessage(userId, message);
@@ -3780,12 +3780,12 @@ async function handlePaymentSuccess(orderId, userId) {
     } else {
       await client.pushMessage(userId, completionMessages);
     }
-    
+
     logger.log('✅ レポート完成通知送信完了');
-    
+
   } catch (error) {
     console.error('決済完了処理エラー:', error);
-    
+
     await client.pushMessage(userId, {
       type: 'text',
       text: '決済は完了しましたが、レポート生成中にエラーが発生しました。サポートまでお問い合わせください。'
@@ -3796,9 +3796,9 @@ async function handlePaymentSuccess(orderId, userId) {
 // ── テスト用：レポート生成テスト
 async function handleTestReport(event) {
   logger.log('🧪 テストレポート生成開始');
-  
+
   const userId = event.source.userId;
-  
+
   try {
     // プロフィール取得
     let profile;
@@ -3808,31 +3808,31 @@ async function handleTestReport(event) {
       console.warn('プロフィール取得エラー:', err);
       profile = { displayName: 'テストユーザー', userId };
     }
-    
+
     // テスト用のメッセージ履歴を作成
     const testMessages = generateTestMessages();
-    
+
     // レポート生成
     await client.pushMessage(userId, {
       type: 'text',
       text: '🔮 テスト用プレミアムレポートを生成中です...\nしばらくお待ちください。'
     });
-    
+
     // プレミアムレポートを生成
     const reportData = await getPaymentHandler().reportGenerator.generatePremiumReport(
       testMessages,
       userId,
       profile.displayName
     );
-    
+
     // レポート内容をテキストで送信（PDF生成の代わり）
     await sendReportAsText(userId, reportData, profile.displayName);
-    
+
     logger.log('✅ テストレポート送信完了');
-    
+
   } catch (error) {
     console.error('テストレポート生成エラー:', error);
-    
+
     await client.pushMessage(userId, {
       type: 'text',
       text: 'テストレポートの生成中にエラーが発生しました。'
@@ -3844,18 +3844,18 @@ async function handleTestReport(event) {
 function generateTestMessages() {
   const now = new Date();
   const testMessages = [];
-  
+
   // 過去1ヶ月のメッセージを生成
   for (let i = 30; i >= 0; i--) {
     const date = new Date(now.getTime() - i * 24 * 60 * 60 * 1000);
-    
+
     // ユーザーのメッセージ
     testMessages.push({
       text: getRandomMessage(true, i),
       timestamp: new Date(date.getTime() + Math.random() * 8 * 60 * 60 * 1000 + 9 * 60 * 60 * 1000).toISOString(),
       isUser: true
     });
-    
+
     // 相手のメッセージ（返信）
     testMessages.push({
       text: getRandomMessage(false, i),
@@ -3863,7 +3863,7 @@ function generateTestMessages() {
       isUser: false
     });
   }
-  
+
   return testMessages.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
 }
 
@@ -3881,7 +3881,7 @@ function getRandomMessage(isUser, dayIndex) {
     'いつも優しくしてくれてありがとう',
     '一緒にいると楽しいです'
   ];
-  
+
   const partnerMessages = [
     'おはよう！今日もよろしくお願いします',
     'それいいですね！私も見てみたいです',
@@ -3894,17 +3894,17 @@ function getRandomMessage(isUser, dayIndex) {
     'いつも気にかけてくれて嬉しいです',
     '私も一緒にいると安心します'
   ];
-  
+
   const messages = isUser ? userMessages : partnerMessages;
   const randomIndex = (dayIndex + (isUser ? 0 : 5)) % messages.length;
-  
+
   return messages[randomIndex];
 }
 
 // レポート内容をテキストメッセージで送信
 async function sendReportAsText(userId, reportData, userName) {
   const messages = [];
-  
+
   // 1. エグゼクティブサマリー
   messages.push({
     type: 'text',
@@ -3923,7 +3923,7 @@ ${reportData.executiveSummary.keyFindings.map(finding => `• ${finding}`).join(
 💡 重要な推奨事項:
 ${reportData.executiveSummary.recommendations.map(rec => `• ${rec}`).join('\n')}`
   });
-  
+
   // 2. 詳細相性分析（一部）
   const compatibility = reportData.compatibilityAnalysis;
   messages.push({
@@ -3933,21 +3933,21 @@ ${reportData.executiveSummary.recommendations.map(rec => `• ${rec}`).join('\n'
 総合相性スコア: ${compatibility.overallCompatibilityScore}%
 
 📈 カテゴリー別分析:
-${Object.entries(compatibility.categoryBreakdown).map(([category, score]) => 
+${Object.entries(compatibility.categoryBreakdown).map(([category, score]) =>
   `• ${category}: ${score}%`
 ).join('\n')}
 
 ⭐ 強みの分野:
-${compatibility.strengthAreas.slice(0, 3).map(item => 
+${compatibility.strengthAreas.slice(0, 3).map(item =>
   `• ${item.item}: ${item.score}%`
 ).join('\n')}
 
 ⚠️ 改善が必要な分野:
-${compatibility.improvementAreas.slice(0, 2).map(item => 
+${compatibility.improvementAreas.slice(0, 2).map(item =>
   `• ${item.item}: ${item.score}%`
 ).join('\n')}`
   });
-  
+
   // 3. 月別予測（3ヶ月分）
   const forecast = reportData.monthlyForecast;
   messages.push({
@@ -3957,14 +3957,14 @@ ${compatibility.improvementAreas.slice(0, 2).map(item =>
 🌟 年間概要: ${forecast.yearlyOverview}
 
 📝 今後3ヶ月の詳細:
-${forecast.monthlyDetails.slice(0, 3).map(month => 
+${forecast.monthlyDetails.slice(0, 3).map(month =>
   `${month.month} (${month.loveScore}%)
   テーマ: ${month.theme}
   チャンス: ${month.opportunities.slice(0, 2).join(', ')}
   注意点: ${month.cautions.slice(0, 1).join(', ')}`
 ).join('\n\n')}`
   });
-  
+
   // 4. アクションプラン（優先度高のみ）
   messages.push({
     type: 'text',
@@ -3973,14 +3973,14 @@ ${forecast.monthlyDetails.slice(0, 3).map(month =>
 総アクション数: ${reportData.actionPlan.totalActions}個
 
 🔥 最優先アクション (Top 5):
-${reportData.actionPlan.priorityActions.slice(0, 5).map((action, index) => 
+${reportData.actionPlan.priorityActions.slice(0, 5).map((action, index) =>
   `${index + 1}. ${action.title}
      成功率: ${action.successRate}%
      タイミング: ${action.timing}
      説明: ${action.description.substring(0, 50)}...`
 ).join('\n\n')}`
   });
-  
+
   // 5. 告白戦略
   const strategy = reportData.confessionStrategy;
   messages.push({
@@ -3998,7 +3998,7 @@ ${reportData.actionPlan.priorityActions.slice(0, 5).map((action, index) =>
 📝 必要なステップ:
 ${strategy.readinessAssessment.requiredSteps.slice(0, 3).map(step => `• ${step}`).join('\n')}`
   });
-  
+
   // 6. 関係構築ロードマップ
   const roadmap = reportData.relationshipRoadmap;
   messages.push({
@@ -4010,7 +4010,7 @@ ${strategy.readinessAssessment.requiredSteps.slice(0, 3).map(step => `• ${step
 評価: ${roadmap.currentStage.assessment}
 
 🛤️ 次のステップ:
-${roadmap.roadmap.slice(0, 2).map(milestone => 
+${roadmap.roadmap.slice(0, 2).map(milestone =>
   `レベル ${milestone.stage}: ${milestone.title}
   期間: ${milestone.estimatedTimeframe}
   目標: ${milestone.objectives.slice(0, 2).join(', ')}`
@@ -4018,7 +4018,7 @@ ${roadmap.roadmap.slice(0, 2).map(milestone =>
 
 ⭐ 全体タイムライン: ${roadmap.overallTimeline}`
   });
-  
+
   // 7. 統計データ
   messages.push({
     type: 'text',
@@ -4039,7 +4039,7 @@ ${roadmap.roadmap.slice(0, 2).map(milestone =>
 💎 実際のPDF版では、さらに詳細な
    グラフや図表も含まれます！`
   });
-  
+
   // メッセージを順次送信
   for (let i = 0; i < messages.length; i++) {
     await client.pushMessage(userId, messages[i]);
@@ -4088,7 +4088,7 @@ if (!process.env.VERCEL || process.env.VERCEL !== '1') {
   // ローカル環境でのみサーバーを起動
   const port = process.env.PORT || 3000;
   console.log(`ポート ${port} でサーバー起動中...`);
-  
+
   const server = app.listen(port, () => {
     console.log(`サーバー起動成功！`);
     logger.log(`🔮 恋愛お告げボット起動: http://localhost:${port}`);
@@ -4096,7 +4096,7 @@ if (!process.env.VERCEL || process.env.VERCEL !== '1') {
     logger.log(`💳 決済成功URL: http://localhost:${port}/payment/success`);
     logger.log('✨ 準備完了！トーク履歴を送信してください');
   });
-  
+
   server.on('error', (err) => {
     console.error('サーバー起動エラー:', err);
     if (err.code === 'EADDRINUSE') {
