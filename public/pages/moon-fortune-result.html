@@ -99,6 +99,73 @@
         .back-button:hover {
             background: #5a67d8;
         }
+
+        .cta-section {
+            margin-top: 40px;
+            padding: 24px;
+            background: linear-gradient(135deg, rgba(118, 99, 239, 0.12), rgba(118, 99, 239, 0.06));
+            border-radius: 16px;
+            text-align: center;
+            border: 1px solid rgba(118, 99, 239, 0.25);
+        }
+
+        .cta-section h2 {
+            font-size: 18px;
+            color: #3b2f7f;
+            margin-bottom: 12px;
+        }
+
+        .cta-section p {
+            font-size: 14px;
+            color: #4b3f94;
+            line-height: 1.8;
+            margin-bottom: 18px;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 12px 26px;
+            border-radius: 999px;
+            background: linear-gradient(135deg, #ff8fb1, #7f77ff);
+            color: #fff;
+            text-decoration: none;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 14px 28px rgba(127, 119, 255, 0.32);
+        }
+
+        .share-section {
+            margin-top: 28px;
+            text-align: center;
+        }
+
+        .share-section p {
+            color: #555;
+            font-size: 13px;
+            margin-bottom: 12px;
+        }
+
+        .share-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 22px;
+            border-radius: 999px;
+            border: 1px solid #667eea;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+        }
+
+        .share-button:hover {
+            background: rgba(102, 126, 234, 0.08);
+        }
     </style>
 </head>
 <body>
@@ -109,12 +176,26 @@
         <div id="resultContainer">
             <div class="loading">診断結果を読み込んでいます...</div>
         </div>
-        
+
+        <div class="cta-section">
+            <h2>もし気になるあの人との相性を知りたい方へ</h2>
+            <p>
+                LINE限定の相性診断では、お互いの生年月日から月タイプを照らし合わせ、<br>
+                二人の相性スコアや今後のポイントを詳しくお届けします。
+            </p>
+            <a href="https://lin.ee/egmCXoG" class="cta-button" target="_blank" rel="noopener">今すぐ診断する</a>
+        </div>
+
+        <div class="share-section">
+            <p>友達に送ろう！気になる人にもこの診断を教えてあげてください。</p>
+            <a href="#" class="share-button" id="lineShareButton">💬 LINEでシェアする</a>
+        </div>
+
         <div style="text-align: center;">
             <a href="/api/profile-form" class="back-button">もう一度診断する</a>
         </div>
     </div>
-    
+
     <script>
         // URLパラメータからprofileIdを取得
         const urlParams = new URLSearchParams(window.location.search);
@@ -163,8 +244,18 @@
             container.innerHTML = html;
         }
         
+        // シェアリンク設定
+        function setupShareLink() {
+            const shareButton = document.getElementById('lineShareButton');
+            if (!shareButton) return;
+
+            const shareMessage = `\n🌙 おつきさま診断で恋愛運を占ってみたよ！\n\n結果はこちら：${window.location.href}\n\nLINE限定の相性診断で、気になるあの人との相性もチェックできるよ✨`;
+            shareButton.href = `https://line.me/R/msg/text/?${encodeURIComponent(shareMessage.trim())}`;
+        }
+
         // ページ読み込み時に実行
         document.addEventListener('DOMContentLoaded', function() {
+            setupShareLink();
             // 1秒後に結果を表示（APIレスポンスを待つ演出）
             setTimeout(displayResult, 1000);
         });
