@@ -448,7 +448,6 @@ function displayResult(moonType, moonData, birthdate) {
 
     resultSection.innerHTML = `
         <div class="moon-type-card">
-            <img class="moon-type-logo" src="/assets/images/web/fortune-logo.png" alt="おつきさま診断ロゴ">
             <div class="moon-emoji">${moonData.emoji}</div>
             <div class="moon-type-name">${moonType}タイプ</div>
             <div class="moon-type-title">${moonData.title}</div>
