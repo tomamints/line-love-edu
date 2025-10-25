@@ -711,7 +711,7 @@
                     完全版「おつきさま診断」では、あなたとお相手の月タイプから<br>
                     恋愛ストーリー、3ヶ月の運勢、行動アドバイスまで丁寧にお届けします。
                 </p>
-                <a href="/lp-otsukisama-input.html" class="share-button" style="border: none; padding: 14px 28px; background: linear-gradient(135deg, #ff9fb5, #7f77ff); color: #fff; font-weight: 600; letter-spacing: 0.05em;">
+                <a href="#" id="fullDiagnosisLink" class="share-button" style="border: none; padding: 14px 28px; background: linear-gradient(135deg, #ff9fb5, #7f77ff); color: #fff; font-weight: 600; letter-spacing: 0.05em;">
                     🌙 完全版おつきさま診断を受ける
                 </a>
             </div>
@@ -884,6 +884,10 @@
 
             if (authorizedUserId) {
                 prefillBirthdates(authorizedUserId);
+                const fullDiagnosisLink = document.getElementById('fullDiagnosisLink');
+                if (fullDiagnosisLink) {
+                    fullDiagnosisLink.href = `/lp-otsukisama-input.html?userId=${encodeURIComponent(authorizedUserId)}`;
+                }
             }
 
             form.addEventListener('submit', async (event) => {
