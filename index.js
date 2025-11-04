@@ -1629,7 +1629,9 @@ async function handleFollowEvent(event) {
   try {
     logger.log('📤 プロフィール設定カード送信開始...');
     // プロフィール設定カードを送信
-    const result = await client.replyMessage(event.replyToken, {
+    const messages = [];
+
+    messages.push({
       type: 'flex',
       altText: '🌙 月タロット占いへようこそ！',
       contents: {
@@ -1768,7 +1770,21 @@ async function handleFollowEvent(event) {
         }
       }
     });
-    logger.log('✅ ウェルカムカード送信成功:', result);
+
+    messages.push({
+      type: 'text',
+      text:
+        'さらに、診断完了後に「おつきさま診断」と入力すると、先着5名さま限定でお電話恋愛鑑定付きプランをご案内いたします。📞💕'
+    });
+
+    messages.push({
+      type: 'image',
+      originalContentUrl: `${process.env.BASE_URL || 'https://line-love-edu.vercel.app'}/assets/images/LINE/supermoon-lp.jpg`,
+      previewImageUrl: `${process.env.BASE_URL || 'https://line-love-edu.vercel.app'}/assets/images/LINE/supermoon-lp.jpg`
+    });
+
+    const result = await client.replyMessage(event.replyToken, messages);
+    logger.log('✅ ウェルカムメッセージ送信成功:', result);
     return;
   } catch (error) {
     console.error('❌ ウェルカムカード送信失敗:', error);
