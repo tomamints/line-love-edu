@@ -849,7 +849,7 @@ app.post('/webhook', middleware(config), async (req, res) => {
                       type: 'button',
                       action: {
                         type: 'uri',
-                        label: '💳 中秋の名月割で購入（¥2,980）',
+                        label: '💳 スーパームーン企画で購入（¥2,980）',
                         uri: `${process.env.BASE_URL || 'https://line-love-edu.vercel.app'}/pages/payjp-checkout.html?diagnosisId=${diagnosis.id}&userId=${userId}`
                       },
                       style: 'primary',
