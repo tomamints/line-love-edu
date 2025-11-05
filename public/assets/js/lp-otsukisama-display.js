@@ -140,6 +140,18 @@ function ensureBlurTarget(contentWrapper) {
     return blurTarget;
 }
 
+function initializePreviewBlurTargets() {
+    const blurWrappers = document.querySelectorAll('.content-locked-mini .text-blur');
+    blurWrappers.forEach(blurWrapper => {
+        const firstChild = blurWrapper.firstElementChild;
+        if (firstChild) {
+            ensureBlurTarget(firstChild);
+        }
+    });
+}
+
+document.addEventListener('DOMContentLoaded', initializePreviewBlurTargets);
+
 function ensurePreviewSnippet(element, fullText, options = {}) {
     if (!element) return;
     const lockedContainer = element.closest('.content-locked-mini');
