@@ -292,26 +292,12 @@ class DiagnosisRenderer {
                     </div>
                 </div>
                 
-                <div class="price-section" style="background: rgba(255, 255, 255, 0.96); padding: 18px 20px; border-radius: 14px; border: 1px solid rgba(118, 75, 162, 0.2); text-align: center; color: #4a0e6b; box-shadow: 0 10px 22px rgba(0, 0, 0, 0.08);">
-                    <div class="campaign-price" style="display: flex; flex-direction: column; align-items: center; gap: 6px;">
-                    <div class="campaign-title" style="font-size: 15px; color: #d67b00; letter-spacing: 0.08em; font-weight: 600;">スーパームーン企画 第一弾</div>
-                        <div style="display: flex; flex-direction: column; align-items: center; gap: 4px;">
-                            <div class="original-price" style="font-size: 14px; color: rgba(74, 14, 107, 0.65); text-decoration: line-through;">通常価格 ¥9,980</div>
-                            <div style="font-size: 13px; color: #d67b00; font-weight: 600;">↓（7割引）</div>
-                        </div>
-                        <div class="special-price" style="display: flex; align-items: baseline; gap: 6px;">
-                            <span class="price-label" style="font-size: 16px; color: #4a0e6b; font-weight: 600;">今だけ</span>
-                            <span class="price-amount" style="font-size: 32px; font-weight: 700; color: #d67b00;">¥2,980</span>
-                            <span class="price-tax" style="font-size: 13px; color: rgba(74, 14, 107, 0.65);">（税込）</span>
-                        </div>
-                        <div style="font-size: 13px; color: rgba(74, 14, 107, 0.75);">70%OFF + お電話恋愛鑑定つき</div>
-                        </div>
-                    </div>
+                <div style="margin-bottom: 16px; text-align: center;">
+                    <img src="../assets/images/LINE/Supermoon_Special_Sale.png" alt="スーパームーン企画第一弾" style="max-width: 420px; width: 100%; display: inline-block;">
                 </div>
-                
-                <button class="cta-button" onclick="proceedToPayment()">
-                    今すぐ完全版を購入する
-                    <span class="button-subtitle">安全な決済で即座に閲覧可能</span>
+
+                <button class="cta-button" onclick="proceedToPayment()" style="padding: 0; border: none; background: none;">
+                    <img src="../assets/images/LINE/Checkout_Button.png" alt="今すぐ購入する" style="max-width: 320px; width: 100%;">
                 </button>
                 
                 <div class="payment-methods">
