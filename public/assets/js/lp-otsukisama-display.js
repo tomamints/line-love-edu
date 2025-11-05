@@ -45,6 +45,120 @@ function replaceMonthPlaceholders(text) {
     return text;
 }
 
+function normalizePreviewText(text) {
+    if (text === null || text === undefined) {
+        return '';
+    }
+    return typeof text === 'string' ? text : String(text);
+}
+
+function findNthNewlineIndex(text, count) {
+    let occurrences = 0;
+    for (let i = 0; i < text.length; i++) {
+        if (text[i] === '\n') {
+            occurrences += 1;
+            if (occurrences === count) {
+                return i + 1; // include the newline in the preview slice
+            }
+        }
+    }
+    return -1;
+}
+
+function splitPreviewSegments(fullText, previewLines = 2) {
+    const normalized = normalizePreviewText(fullText).replace(/\r\n/g, '\n');
+    if (!normalized.trim()) {
+        return { preview: '', remainder: '' };
+    }
+
+    const newlineSplitIndex = findNthNewlineIndex(normalized, previewLines);
+    if (newlineSplitIndex !== -1) {
+        const preview = normalized.slice(0, newlineSplitIndex).trim();
+        const remainder = normalized.slice(newlineSplitIndex).trim();
+        return { preview, remainder };
+    }
+
+    const sentenceRegex = /[^。！？!?]*[。！？!?]/gu;
+    const sentences = [];
+    let match;
+    let lastIndex = 0;
+
+    while ((match = sentenceRegex.exec(normalized)) !== null && sentences.length < previewLines) {
+        sentences.push(match[0]);
+        lastIndex = sentenceRegex.lastIndex;
+    }
+
+    if (sentences.length === previewLines) {
+        const preview = sentences.join('').trim();
+        const remainder = normalized.slice(lastIndex).trim();
+        return { preview, remainder };
+    }
+
+    return { preview: normalized.trim(), remainder: '' };
+}
+
+function ensurePreviewSnippet(element, fullText, options = {}) {
+    if (!element) return;
+    const lockedContainer = element.closest('.content-locked-mini');
+    if (!lockedContainer) return;
+
+    const blurWrapper = element.closest('.text-blur');
+    if (!blurWrapper) return;
+
+    const previewLines = typeof options.previewLines === 'number' ? options.previewLines : 2;
+    const segments = splitPreviewSegments(fullText, previewLines);
+
+    if (!segments.preview) {
+        const existingSnippet = lockedContainer.querySelector('.preview-snippet');
+        if (existingSnippet) existingSnippet.remove();
+        return;
+    }
+
+    let snippetEl = lockedContainer.querySelector('.preview-snippet');
+    if (!snippetEl) {
+        snippetEl = document.createElement('div');
+        snippetEl.className = 'preview-snippet';
+        lockedContainer.insertBefore(snippetEl, blurWrapper);
+    }
+
+    const hasRemainder = Boolean(segments.remainder);
+    const snippetText = hasRemainder ? `${segments.preview}\n…` : segments.preview;
+    if (snippetEl.textContent !== snippetText) {
+        snippetEl.textContent = snippetText;
+    }
+    if (element.id) {
+        snippetEl.dataset.previewTarget = element.id;
+    }
+
+    if (!document.body.classList.contains('preview-mode')) {
+        snippetEl.style.display = 'none';
+    } else {
+        snippetEl.style.display = '';
+    }
+}
+
+function setTextContentWithPreview(element, text, options = {}) {
+    if (!element) return;
+    const finalText = normalizePreviewText(text);
+    element.textContent = finalText;
+    element.dataset.fullText = finalText;
+    ensurePreviewSnippet(element, finalText, options);
+}
+
+function setHTMLWithPreview(element, html, options = {}) {
+    if (!element) return;
+    element.innerHTML = html || '';
+    const fullText = element.textContent || '';
+    element.dataset.fullText = fullText;
+    ensurePreviewSnippet(element, fullText, options);
+}
+
+window.OtsukisamaPreview = {
+    ensurePreviewSnippet,
+    setTextContentWithPreview,
+    setHTMLWithPreview
+};
+
 // データベースから取得した3つの力のキーを使って表示
 async function displayThreePowersFromKeys(keys, moonPhase) {
     if (!window.ThreePowersCalculator) {
@@ -1079,7 +1193,7 @@ async function updateDynamicContentFromPattern(pattern) {
         let loveText = pattern.love.mainText || '';
         loveText = replaceMonthPlaceholders(loveText);
         loveText = loveText.replace(/〇〇/g, userName);
-        loveMainText.textContent = loveText;
+        setTextContentWithPreview(loveMainText, loveText);
     }
     
     // 恋愛運の新規セクション
@@ -1089,7 +1203,7 @@ async function updateDynamicContentFromPattern(pattern) {
             let text = pattern.love.destinyMeeting || '';
             text = replaceMonthPlaceholders(text);
             text = text.replace(/〇〇/g, userName);
-            destinyMeeting.textContent = text;
+            setTextContentWithPreview(destinyMeeting, text);
         }
         
         const admirerType = document.getElementById('fortune-love-admirer-type');
@@ -1097,7 +1211,7 @@ async function updateDynamicContentFromPattern(pattern) {
             let text = pattern.love.admirerType || '';
             text = replaceMonthPlaceholders(text);
             text = text.replace(/〇〇/g, userName);
-            admirerType.textContent = text;
+            setTextContentWithPreview(admirerType, text);
         }
         
         const dangerousType = document.getElementById('fortune-love-dangerous-type');
@@ -1105,7 +1219,7 @@ async function updateDynamicContentFromPattern(pattern) {
             let text = pattern.love.dangerousType || '';
             text = replaceMonthPlaceholders(text);
             text = text.replace(/〇〇/g, userName);
-            dangerousType.textContent = text;
+            setTextContentWithPreview(dangerousType, text);
         }
     }
     
@@ -1128,7 +1242,7 @@ async function updateDynamicContentFromPattern(pattern) {
         let text = pattern.work.mainText || '';
         text = replaceMonthPlaceholders(text);
         text = text.replace(/〇〇/g, userName);
-        workMainText.textContent = text;
+        setTextContentWithPreview(workMainText, text);
     }
     
     // 人間関係の転機と注意
@@ -1152,7 +1266,7 @@ async function updateDynamicContentFromPattern(pattern) {
             let text = pattern.relationship.newConnections || '';
             text = replaceMonthPlaceholders(text);
             text = text.replace(/〇〇/g, userName);
-            newConnections.textContent = text;
+            setTextContentWithPreview(newConnections, text);
         }
         
         const challenges = document.getElementById('fortune-relationship-challenges');
@@ -1162,7 +1276,7 @@ async function updateDynamicContentFromPattern(pattern) {
             let text = (pattern.relationship && pattern.relationship.challengesAndSolutions) || defaultChallengesText;
             text = replaceMonthPlaceholders(text);
             text = text.replace(/〇〇/g, userName);
-            challenges.textContent = text;
+            setTextContentWithPreview(challenges, text);
         }
     }
     
@@ -1182,7 +1296,7 @@ async function updateDynamicContentFromPattern(pattern) {
             let text = pattern.money.moneyTrouble || '';
             text = replaceMonthPlaceholders(text);
             text = text.replace(/〇〇/g, userName);
-            moneyTrouble.textContent = text;
+            setTextContentWithPreview(moneyTrouble, text);
         }
     }
     
@@ -1198,7 +1312,7 @@ async function updateDynamicContentFromPattern(pattern) {
         let text = pattern.overall.mainText;
         text = replaceMonthPlaceholders(text);
         text = text.replace(/〇〇/g, userName);
-        overallText.textContent = text;
+        setTextContentWithPreview(overallText, text);
         console.log('Overall text set successfully');
     } else {
         console.log('Failed to set overall text');
@@ -1210,7 +1324,7 @@ async function updateDynamicContentFromPattern(pattern) {
         let text = pattern.love.mainText;
         text = replaceMonthPlaceholders(text);
         text = text.replace(/〇〇/g, userName);
-        loveText.textContent = text;
+        setTextContentWithPreview(loveText, text);
         console.log('Love text set successfully');
     }
     
@@ -1220,7 +1334,7 @@ async function updateDynamicContentFromPattern(pattern) {
         let text = pattern.work.mainText;
         text = replaceMonthPlaceholders(text);
         text = text.replace(/〇〇/g, userName);
-        workText.textContent = text;
+        setTextContentWithPreview(workText, text);
         console.log('Work text set successfully');
     }
     
@@ -1232,7 +1346,7 @@ async function updateDynamicContentFromPattern(pattern) {
             let text = (pattern.work && pattern.work.newTalent) || defaultTalentText;
             text = replaceMonthPlaceholders(text);
             text = text.replace(/〇〇/g, userName);
-            newTalent.textContent = text;
+            setTextContentWithPreview(newTalent, text);
             console.log('Work new talent set successfully');
         }
         
@@ -1242,7 +1356,7 @@ async function updateDynamicContentFromPattern(pattern) {
             let text = (pattern.work && pattern.work.turningPoint) || defaultTurningText;
             text = replaceMonthPlaceholders(text);
             text = text.replace(/〇〇/g, userName);
-            turningPoint.textContent = text;
+            setTextContentWithPreview(turningPoint, text);
             console.log('Work turning point set successfully');
         }
     }
@@ -1253,7 +1367,7 @@ async function updateDynamicContentFromPattern(pattern) {
         let text = pattern.relationship.mainText;
         text = replaceMonthPlaceholders(text);
         text = text.replace(/〇〇/g, userName);
-        relationshipText.textContent = text;
+        setTextContentWithPreview(relationshipText, text);
         console.log('Relationship text set successfully');
     }
     
@@ -1263,7 +1377,7 @@ async function updateDynamicContentFromPattern(pattern) {
         let text = pattern.money.mainText;
         text = replaceMonthPlaceholders(text);
         text = text.replace(/〇〇/g, userName);
-        moneyText.textContent = text;
+        setTextContentWithPreview(moneyText, text);
         console.log('Money text set successfully');
     }
     

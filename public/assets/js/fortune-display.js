@@ -11,6 +11,15 @@ class FortuneDisplay {
         this.patternId = 1; // デフォルトパターン
     }
 
+    applyPreviewHTML(element, htmlContent, options = {}) {
+        if (!element) return;
+        if (window.OtsukisamaPreview && typeof window.OtsukisamaPreview.setHTMLWithPreview === 'function') {
+            window.OtsukisamaPreview.setHTMLWithPreview(element, htmlContent, options);
+        } else {
+            element.innerHTML = htmlContent || '';
+        }
+    }
+
     /**
      * 運勢データを読み込む
      */
@@ -95,8 +104,11 @@ class FortuneDisplay {
         // メインテキストを更新
         const textElement = document.getElementById('fortune-overall-text');
         if (textElement) {
-            textElement.innerHTML = this.dateCalculator.replaceDatePlaceholders(
-                pattern.description.replace(/〇〇/g, userName)
+            this.applyPreviewHTML(
+                textElement,
+                this.dateCalculator.replaceDatePlaceholders(
+                    pattern.description.replace(/〇〇/g, userName)
+                )
             );
         }
 
@@ -166,7 +178,7 @@ class FortuneDisplay {
         // メインテキストを更新
         const textElement = document.getElementById('fortune-love-text');
         if (textElement) {
-            textElement.innerHTML = htmlContent;
+            this.applyPreviewHTML(textElement, htmlContent);
         }
 
         // 運命の出会いセクション
@@ -194,7 +206,7 @@ class FortuneDisplay {
 
         const element = document.getElementById('fortune-love-destiny-meeting');
         if (element) {
-            element.innerHTML = htmlContent;
+            this.applyPreviewHTML(element, htmlContent);
         }
     }
 
@@ -240,7 +252,7 @@ class FortuneDisplay {
 
         const element = document.getElementById('fortune-love-admirer-type');
         if (element) {
-            element.innerHTML = htmlContent;
+            this.applyPreviewHTML(element, htmlContent);
         }
     }
 
@@ -286,7 +298,7 @@ class FortuneDisplay {
 
         const element = document.getElementById('fortune-love-dangerous-type');
         if (element) {
-            element.innerHTML = htmlContent;
+            this.applyPreviewHTML(element, htmlContent);
         }
     }
 
@@ -363,7 +375,7 @@ class FortuneDisplay {
 
         const textElement = document.getElementById('fortune-relationship-text');
         if (textElement) {
-            textElement.innerHTML = htmlContent;
+            this.applyPreviewHTML(textElement, htmlContent);
         }
 
         // 新しい人間関係セクション
@@ -391,7 +403,7 @@ class FortuneDisplay {
 
         const element = document.getElementById('fortune-relationship-new-connections');
         if (element) {
-            element.innerHTML = htmlContent;
+            this.applyPreviewHTML(element, htmlContent);
         }
     }
 
@@ -413,7 +425,7 @@ class FortuneDisplay {
 
         const element = document.getElementById('fortune-relationship-challenges');
         if (element) {
-            element.innerHTML = htmlContent;
+            this.applyPreviewHTML(element, htmlContent);
         }
     }
 
@@ -481,7 +493,7 @@ class FortuneDisplay {
 
         const textElement = document.getElementById('fortune-work-text');
         if (textElement) {
-            textElement.innerHTML = htmlContent;
+            this.applyPreviewHTML(textElement, htmlContent);
         }
 
         // 新しい才能セクション
@@ -509,7 +521,7 @@ class FortuneDisplay {
 
         const element = document.getElementById('fortune-work-new-talent');
         if (element) {
-            element.innerHTML = htmlContent;
+            this.applyPreviewHTML(element, htmlContent);
         }
     }
 
@@ -531,7 +543,7 @@ class FortuneDisplay {
 
         const element = document.getElementById('fortune-work-turning-point');
         if (element) {
-            element.innerHTML = htmlContent;
+            this.applyPreviewHTML(element, htmlContent);
         }
     }
 
@@ -589,7 +601,7 @@ class FortuneDisplay {
 
         const textElement = document.getElementById('fortune-money-text');
         if (textElement) {
-            textElement.innerHTML = htmlContent;
+            this.applyPreviewHTML(textElement, htmlContent);
         }
 
         // ラッキーアクションセクション
@@ -622,7 +634,7 @@ class FortuneDisplay {
 
         const element = document.getElementById('fortune-money-lucky');
         if (element) {
-            element.innerHTML = htmlContent;
+            this.applyPreviewHTML(element, htmlContent);
         } else {
             console.log('Lucky actions element not found');
         }
@@ -643,7 +655,7 @@ class FortuneDisplay {
 
         const element = document.getElementById('fortune-money-trouble');
         if (element) {
-            element.innerHTML = `<p>${formattedText}</p>`;
+            this.applyPreviewHTML(element, `<p>${formattedText}</p>`);
         }
     }
 
@@ -751,7 +763,7 @@ class FortuneDisplay {
             // HTMLに挿入
             const element = document.getElementById('fortune-important-message');
             if (element) {
-                element.innerHTML = htmlContent;
+                this.applyPreviewHTML(element, htmlContent);
                 console.log('Important message displayed for theme:', theme.theme);
             } else {
                 console.error('Element not found: fortune-important-message');
