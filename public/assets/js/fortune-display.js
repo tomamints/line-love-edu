@@ -601,7 +601,7 @@ class FortuneDisplay {
 
         const textElement = document.getElementById('fortune-money-text');
         if (textElement) {
-            this.applyPreviewHTML(textElement, htmlContent);
+            this.applyPreviewHTML(textElement, htmlContent, { previewChars: 50 });
         }
 
         // ラッキーアクションセクション
@@ -634,7 +634,7 @@ class FortuneDisplay {
 
         const element = document.getElementById('fortune-money-lucky');
         if (element) {
-            this.applyPreviewHTML(element, htmlContent);
+            this.applyPreviewHTML(element, htmlContent, { disablePreview: true });
         } else {
             console.log('Lucky actions element not found');
         }

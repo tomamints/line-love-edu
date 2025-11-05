@@ -65,17 +65,27 @@ function findNthNewlineIndex(text, count) {
     return -1;
 }
 
-function splitPreviewSegments(fullText, previewLines = 2) {
+function computePreviewSegment(fullText, options = {}) {
     const normalized = normalizePreviewText(fullText).replace(/\r\n/g, '\n');
-    if (!normalized.trim()) {
-        return { preview: '', remainder: '' };
+    const trimmed = normalized.trim();
+    if (!trimmed) {
+        return { preview: '', hasMore: false };
     }
 
+    const previewChars = typeof options.previewChars === 'number' ? options.previewChars : null;
+    if (previewChars && previewChars > 0) {
+        const chars = Array.from(trimmed);
+        const hasMore = chars.length > previewChars;
+        const preview = chars.slice(0, previewChars).join('');
+        return { preview: preview.trim(), hasMore };
+    }
+
+    const previewLines = typeof options.previewLines === 'number' ? options.previewLines : 2;
     const newlineSplitIndex = findNthNewlineIndex(normalized, previewLines);
     if (newlineSplitIndex !== -1) {
         const preview = normalized.slice(0, newlineSplitIndex).trim();
         const remainder = normalized.slice(newlineSplitIndex).trim();
-        return { preview, remainder };
+        return { preview, hasMore: Boolean(remainder) };
     }
 
     const sentenceRegex = /[^。！？!?]*[。！？!?]/gu;
@@ -91,10 +101,38 @@ function splitPreviewSegments(fullText, previewLines = 2) {
     if (sentences.length === previewLines) {
         const preview = sentences.join('').trim();
         const remainder = normalized.slice(lastIndex).trim();
-        return { preview, remainder };
+        return { preview, hasMore: Boolean(remainder) };
     }
 
-    return { preview: normalized.trim(), remainder: '' };
+    const hasMore = false;
+    return { preview: trimmed, hasMore };
+}
+
+function removePreviewSnippet(lockedContainer, elementId) {
+    if (!lockedContainer) return;
+    const selectors = [];
+    if (elementId) {
+        selectors.push(`.preview-snippet-wrapper[data-preview-target="${elementId}"]`);
+        selectors.push(`.preview-snippet[data-preview-target="${elementId}"]`);
+    } else {
+        selectors.push('.preview-snippet-wrapper');
+        selectors.push('.preview-snippet');
+    }
+    selectors.forEach(selector => {
+        lockedContainer.querySelectorAll(selector).forEach(node => node.remove());
+    });
+}
+
+function findContentWrapper(blurWrapper, element) {
+    if (!blurWrapper || !element) return null;
+    let current = element;
+    while (current && current.parentElement && current.parentElement !== blurWrapper) {
+        current = current.parentElement;
+    }
+    if (current && current.parentElement === blurWrapper) {
+        return current;
+    }
+    return null;
 }
 
 function ensurePreviewSnippet(element, fullText, options = {}) {
@@ -105,36 +143,72 @@ function ensurePreviewSnippet(element, fullText, options = {}) {
     const blurWrapper = element.closest('.text-blur');
     if (!blurWrapper) return;
 
-    const previewLines = typeof options.previewLines === 'number' ? options.previewLines : 2;
-    const segments = splitPreviewSegments(fullText, previewLines);
-
-    if (!segments.preview) {
-        const existingSnippet = lockedContainer.querySelector('.preview-snippet');
-        if (existingSnippet) existingSnippet.remove();
+    if (options.disablePreview) {
+        removePreviewSnippet(lockedContainer, element.id);
         return;
     }
 
-    let snippetEl = lockedContainer.querySelector('.preview-snippet');
-    if (!snippetEl) {
-        snippetEl = document.createElement('div');
-        snippetEl.className = 'preview-snippet';
-        lockedContainer.insertBefore(snippetEl, blurWrapper);
+    const { preview, hasMore } = computePreviewSegment(fullText, options);
+
+    if (!preview) {
+        removePreviewSnippet(lockedContainer, element.id);
+        return;
     }
 
-    const hasRemainder = Boolean(segments.remainder);
-    const snippetText = hasRemainder ? `${segments.preview}\n…` : segments.preview;
+    const targetId = element.id || '';
+    const existingWrapperSelector = targetId
+        ? `.preview-snippet-wrapper[data-preview-target="${targetId}"]`
+        : '.preview-snippet-wrapper';
+    let snippetWrapper = lockedContainer.querySelector(existingWrapperSelector);
+    let snippetEl = snippetWrapper ? snippetWrapper.querySelector('.preview-snippet') : null;
+
+    if (!snippetWrapper) {
+        const newWrapper = document.createElement('div');
+        newWrapper.classList.add('preview-snippet-wrapper');
+        if (targetId) {
+            newWrapper.dataset.previewTarget = targetId;
+        }
+
+        const templateWrapper = findContentWrapper(blurWrapper, element);
+        if (templateWrapper) {
+            templateWrapper.classList.forEach(cls => {
+                if (!newWrapper.classList.contains(cls)) {
+                    newWrapper.classList.add(cls);
+                }
+            });
+        }
+
+        snippetEl = document.createElement(element.tagName === 'P' ? 'p' : 'div');
+        snippetEl.classList.add('preview-snippet');
+        element.classList.forEach(cls => {
+            if (!snippetEl.classList.contains(cls)) {
+                snippetEl.classList.add(cls);
+            }
+        });
+        newWrapper.appendChild(snippetEl);
+        lockedContainer.insertBefore(newWrapper, blurWrapper);
+        snippetWrapper = newWrapper;
+    } else if (!snippetEl) {
+        snippetEl = document.createElement(element.tagName === 'P' ? 'p' : 'div');
+        snippetEl.classList.add('preview-snippet');
+        element.classList.forEach(cls => {
+            if (!snippetEl.classList.contains(cls)) {
+                snippetEl.classList.add(cls);
+            }
+        });
+        snippetWrapper.appendChild(snippetEl);
+    }
+
+    const snippetText = hasMore ? `${preview}${preview.endsWith('…') ? '' : '…'}` : preview;
     if (snippetEl.textContent !== snippetText) {
         snippetEl.textContent = snippetText;
     }
-    if (element.id) {
-        snippetEl.dataset.previewTarget = element.id;
+    if (targetId) {
+        snippetEl.dataset.previewTarget = targetId;
     }
 
-    if (!document.body.classList.contains('preview-mode')) {
-        snippetEl.style.display = 'none';
-    } else {
-        snippetEl.style.display = '';
-    }
+    const isPreviewMode = document.body.classList.contains('preview-mode');
+    snippetWrapper.style.display = isPreviewMode ? '' : 'none';
 }
 
 function setTextContentWithPreview(element, text, options = {}) {
@@ -1377,7 +1451,7 @@ async function updateDynamicContentFromPattern(pattern) {
         let text = pattern.money.mainText;
         text = replaceMonthPlaceholders(text);
         text = text.replace(/〇〇/g, userName);
-        setTextContentWithPreview(moneyText, text);
+        setTextContentWithPreview(moneyText, text, { previewChars: 50 });
         console.log('Money text set successfully');
     }
     

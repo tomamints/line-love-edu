@@ -339,6 +339,10 @@
             font-size: 14px;
         }
 
+        .preview-snippet-wrapper {
+            filter: none;
+        }
+
         .preview-snippet {
             font-size: 14px;
             line-height: 1.8;
@@ -347,8 +351,9 @@
             color: inherit;
         }
 
-        .complete-mode .preview-snippet {
-            display: none;
+        .complete-mode .preview-snippet,
+        .complete-mode .preview-snippet-wrapper {
+            display: none !important;
         }
 
         @media (max-width: 560px) {
