@@ -141,7 +141,7 @@ function ensureBlurTarget(contentWrapper) {
 }
 
 function initializePreviewBlurTargets() {
-    const blurWrappers = document.querySelectorAll('.content-locked-mini .text-blur');
+    const blurWrappers = document.querySelectorAll('.content-locked .text-blur, .content-locked-mini .text-blur');
     blurWrappers.forEach(blurWrapper => {
         const firstChild = blurWrapper.firstElementChild;
         if (firstChild) {
