@@ -296,8 +296,9 @@ class DiagnosisRenderer {
                     <img src="../assets/images/LINE/Supermoon_Special_Sale.png" alt="スーパームーン企画第一弾" style="max-width: 420px; width: 100%; display: inline-block;">
                 </div>
 
-                <button class="cta-button" onclick="proceedToPayment()" style="padding: 0; border: none; background: none;">
-                    <img src="../assets/images/LINE/Checkout_Button.png" alt="今すぐ購入する" style="max-width: 320px; width: 100%;">
+                <button class="cta-button" onclick="proceedToPayment()">
+                    今すぐ完全版を購入する
+                    <span class="button-subtitle">安全な決済で即座に閲覧可能</span>
                 </button>
                 
                 <div class="payment-methods">
