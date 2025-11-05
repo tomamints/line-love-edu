@@ -264,7 +264,9 @@ async function displayThreePowersFromKeys(keys, moonPhase) {
                 const titleEl = item.querySelector('.energy-title');
                 const descEl = item.querySelector('.energy-description');
                 if (titleEl) titleEl.textContent = formattedPowers[index].title;
-                if (descEl) descEl.innerHTML = formattedPowers[index].desc;
+                if (descEl) {
+                    setHTMLWithPreview(descEl, formattedPowers[index].desc, { previewLines: 1 });
+                }
             }
         });
     }
@@ -445,7 +447,9 @@ async function updateMoonPhaseContent(patternId) {
                         const titleEl = item.querySelector('.energy-title');
                         const descEl = item.querySelector('.energy-description');
                         if (titleEl) titleEl.textContent = formattedPowers[index].title;
-                        if (descEl) descEl.textContent = formattedPowers[index].desc;
+                        if (descEl) {
+                            setHTMLWithPreview(descEl, formattedPowers[index].desc, { previewLines: 1 });
+                        }
                     }
                 });
             }
@@ -460,7 +464,9 @@ async function updateMoonPhaseContent(patternId) {
                     const titleEl = item.querySelector('.energy-title');
                     const descEl = item.querySelector('.energy-description');
                     if (titleEl) titleEl.textContent = threePowers[index].title;
-                    if (descEl) descEl.textContent = threePowers[index].desc;
+                    if (descEl) {
+                        setTextContentWithPreview(descEl, threePowers[index].desc, { previewLines: 1 });
+                    }
                 }
             });
         }
