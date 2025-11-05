@@ -108,19 +108,10 @@ function computePreviewSegment(fullText, options = {}) {
     return { preview: trimmed, hasMore };
 }
 
-function removePreviewSnippet(lockedContainer, elementId) {
-    if (!lockedContainer) return;
-    const selectors = [];
-    if (elementId) {
-        selectors.push(`.preview-snippet-wrapper[data-preview-target="${elementId}"]`);
-        selectors.push(`.preview-snippet[data-preview-target="${elementId}"]`);
-    } else {
-        selectors.push('.preview-snippet-wrapper');
-        selectors.push('.preview-snippet');
-    }
-    selectors.forEach(selector => {
-        lockedContainer.querySelectorAll(selector).forEach(node => node.remove());
-    });
+function removePreviewSnippet(contentWrapper, elementId) {
+    if (!contentWrapper) return;
+    const selector = elementId ? `.preview-snippet[data-preview-target="${elementId}"]` : '.preview-snippet';
+    contentWrapper.querySelectorAll(selector).forEach(node => node.remove());
 }
 
 function findContentWrapper(blurWrapper, element) {
@@ -135,6 +126,20 @@ function findContentWrapper(blurWrapper, element) {
     return null;
 }
 
+function ensureBlurTarget(contentWrapper) {
+    if (!contentWrapper) return null;
+    let blurTarget = contentWrapper.querySelector('.preview-blur-target');
+    if (!blurTarget) {
+        blurTarget = document.createElement('div');
+        blurTarget.classList.add('preview-blur-target');
+        while (contentWrapper.firstChild) {
+            blurTarget.appendChild(contentWrapper.firstChild);
+        }
+        contentWrapper.appendChild(blurTarget);
+    }
+    return blurTarget;
+}
+
 function ensurePreviewSnippet(element, fullText, options = {}) {
     if (!element) return;
     const lockedContainer = element.closest('.content-locked-mini');
@@ -143,41 +148,32 @@ function ensurePreviewSnippet(element, fullText, options = {}) {
     const blurWrapper = element.closest('.text-blur');
     if (!blurWrapper) return;
 
+    const contentWrapper = findContentWrapper(blurWrapper, element);
+    if (!contentWrapper) return;
+
+    const blurTarget = ensureBlurTarget(contentWrapper);
+    if (!blurTarget) return;
+
     if (options.disablePreview) {
-        removePreviewSnippet(lockedContainer, element.id);
+        removePreviewSnippet(contentWrapper, element.id);
+        blurTarget.style.display = '';
         return;
     }
 
     const { preview, hasMore } = computePreviewSegment(fullText, options);
 
     if (!preview) {
-        removePreviewSnippet(lockedContainer, element.id);
+        removePreviewSnippet(contentWrapper, element.id);
+        blurTarget.style.display = '';
         return;
     }
 
     const targetId = element.id || '';
-    const existingWrapperSelector = targetId
-        ? `.preview-snippet-wrapper[data-preview-target="${targetId}"]`
-        : '.preview-snippet-wrapper';
-    let snippetWrapper = lockedContainer.querySelector(existingWrapperSelector);
-    let snippetEl = snippetWrapper ? snippetWrapper.querySelector('.preview-snippet') : null;
+    let snippetEl = contentWrapper.querySelector(
+        targetId ? `.preview-snippet[data-preview-target="${targetId}"]` : '.preview-snippet'
+    );
 
-    if (!snippetWrapper) {
-        const newWrapper = document.createElement('div');
-        newWrapper.classList.add('preview-snippet-wrapper');
-        if (targetId) {
-            newWrapper.dataset.previewTarget = targetId;
-        }
-
-        const templateWrapper = findContentWrapper(blurWrapper, element);
-        if (templateWrapper) {
-            templateWrapper.classList.forEach(cls => {
-                if (!newWrapper.classList.contains(cls)) {
-                    newWrapper.classList.add(cls);
-                }
-            });
-        }
-
+    if (!snippetEl) {
         snippetEl = document.createElement(element.tagName === 'P' ? 'p' : 'div');
         snippetEl.classList.add('preview-snippet');
         element.classList.forEach(cls => {
@@ -185,30 +181,23 @@ function ensurePreviewSnippet(element, fullText, options = {}) {
                 snippetEl.classList.add(cls);
             }
         });
-        newWrapper.appendChild(snippetEl);
-        lockedContainer.insertBefore(newWrapper, blurWrapper);
-        snippetWrapper = newWrapper;
-    } else if (!snippetEl) {
-        snippetEl = document.createElement(element.tagName === 'P' ? 'p' : 'div');
-        snippetEl.classList.add('preview-snippet');
-        element.classList.forEach(cls => {
-            if (!snippetEl.classList.contains(cls)) {
-                snippetEl.classList.add(cls);
-            }
-        });
-        snippetWrapper.appendChild(snippetEl);
+        contentWrapper.insertBefore(snippetEl, blurTarget);
+    }
+
+    if (targetId) {
+        snippetEl.dataset.previewTarget = targetId;
     }
 
     const snippetText = hasMore ? `${preview}${preview.endsWith('…') ? '' : '…'}` : preview;
     if (snippetEl.textContent !== snippetText) {
         snippetEl.textContent = snippetText;
     }
-    if (targetId) {
-        snippetEl.dataset.previewTarget = targetId;
-    }
 
     const isPreviewMode = document.body.classList.contains('preview-mode');
-    snippetWrapper.style.display = isPreviewMode ? '' : 'none';
+    snippetEl.style.display = isPreviewMode ? '' : 'none';
+    if (blurTarget) {
+        blurTarget.style.display = '';
+    }
 }
 
 function setTextContentWithPreview(element, text, options = {}) {

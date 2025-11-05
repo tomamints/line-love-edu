@@ -84,7 +84,7 @@
         }
 
         /* テキストコンテンツのみにblurを適用 */
-        .preview-mode .text-blur {
+        .preview-mode .preview-blur-target {
             filter: blur(8px);
             user-select: none;
             pointer-events: none;
@@ -339,10 +339,6 @@
             font-size: 14px;
         }
 
-        .preview-snippet-wrapper {
-            filter: none;
-        }
-
         .preview-snippet {
             font-size: 14px;
             line-height: 1.8;
@@ -351,8 +347,7 @@
             color: inherit;
         }
 
-        .complete-mode .preview-snippet,
-        .complete-mode .preview-snippet-wrapper {
+        .complete-mode .preview-snippet {
             display: none !important;
         }
 
