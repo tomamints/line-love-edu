@@ -4,17 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>お支払い | おつきさま診断</title>
-    
+
     <!-- PAY.JP -->
     <script src="https://js.pay.jp/v2/pay.js"></script>
-    
+
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
             background: linear-gradient(135deg, #1a0033 0%, #2d1b69 100%);
@@ -25,60 +25,60 @@
             justify-content: center;
             padding: 20px;
         }
-        
+
         .container {
             max-width: 450px;
             width: 100%;
             text-align: center;
         }
-        
+
         .logo {
             font-size: 48px;
             margin-bottom: 20px;
         }
-        
+
         .title {
             font-size: 24px;
             color: #ffd700;
             margin-bottom: 10px;
         }
-        
+
         .subtitle {
             font-size: 14px;
             color: rgba(255, 255, 255, 0.8);
             margin-bottom: 30px;
         }
-        
+
         .price-box {
             background: rgba(255, 255, 255, 0.1);
             border-radius: 15px;
             padding: 30px;
             margin-bottom: 30px;
         }
-        
+
         .price-label {
             font-size: 14px;
             color: rgba(255, 255, 255, 0.8);
             margin-bottom: 10px;
         }
-        
+
         .price {
             font-size: 36px;
             font-weight: bold;
             color: #ffd700;
             margin-bottom: 10px;
         }
-        
+
         .price-note {
             font-size: 12px;
             color: rgba(255, 255, 255, 0.7);
         }
-        
+
         /* Payment Options */
         .payment-options {
             margin: 30px 0;
         }
-        
+
         .payment-method {
             background: rgba(255, 255, 255, 0.05);
             border: 2px solid rgba(255, 255, 255, 0.1);
@@ -89,49 +89,49 @@
             transition: all 0.3s ease;
             position: relative;
         }
-        
+
         .payment-method:hover {
             background: rgba(255, 255, 255, 0.1);
             border-color: rgba(255, 215, 0, 0.5);
             transform: translateY(-2px);
         }
-        
+
         .payment-method.selected {
             background: rgba(255, 215, 0, 0.1);
             border-color: #ffd700;
         }
-        
+
         .payment-method-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
         }
-        
+
         .payment-method-info {
             display: flex;
             align-items: center;
         }
-        
+
         .payment-method-icon {
             font-size: 24px;
             margin-right: 15px;
         }
-        
+
         .payment-method-text {
             text-align: left;
         }
-        
+
         .payment-method-title {
             font-size: 16px;
             font-weight: bold;
             margin-bottom: 4px;
         }
-        
+
         .payment-method-desc {
             font-size: 12px;
             color: rgba(255, 255, 255, 0.7);
         }
-        
+
         .payment-method-badge {
             background: #ffd700;
             color: #1a0033;
@@ -140,7 +140,7 @@
             font-size: 10px;
             font-weight: bold;
         }
-        
+
         /* Apple Pay Button */
         .apple-pay-button {
             -webkit-appearance: -apple-pay-button;
@@ -152,11 +152,11 @@
             cursor: pointer;
             margin-top: 20px;
         }
-        
+
         .apple-pay-button:active {
             opacity: 0.8;
         }
-        
+
         /* Card Form */
         .card-form {
             display: none;
@@ -165,23 +165,23 @@
             border-radius: 12px;
             padding: 20px;
         }
-        
+
         .card-form.active {
             display: block;
         }
-        
+
         .form-group {
             margin-bottom: 20px;
             text-align: left;
         }
-        
+
         .form-label {
             display: block;
             font-size: 12px;
             color: rgba(255, 255, 255, 0.8);
             margin-bottom: 8px;
         }
-        
+
         .form-input {
             width: 100%;
             padding: 12px;
@@ -191,18 +191,18 @@
             color: #ffffff;
             font-size: 16px;
         }
-        
+
         .form-input:focus {
             outline: none;
             border-color: #ffd700;
         }
-        
+
         .form-row {
             display: grid;
             grid-template-columns: 2fr 1fr;
             gap: 15px;
         }
-        
+
         /* PAY.JP Elements用のコンテナ */
         #card-element {
             background: rgba(255, 255, 255, 0.1);
@@ -211,7 +211,7 @@
             padding: 12px;
             min-height: 50px;
         }
-        
+
         /* Submit Button */
         .submit-button {
             background: linear-gradient(135deg, #ffd700, #ffed4e);
@@ -227,18 +227,18 @@
             max-width: 300px;
             margin-top: 20px;
         }
-        
+
         .submit-button:hover {
             transform: translateY(-2px);
             box-shadow: 0 10px 30px rgba(255, 215, 0, 0.3);
         }
-        
+
         .submit-button:disabled {
             background: #666;
             cursor: not-allowed;
             transform: none;
         }
-        
+
         /* Payment Request Button for Chrome/Edge */
         .payment-request-button {
             background: #000;
@@ -254,17 +254,17 @@
             margin-top: 20px;
             display: none;
         }
-        
+
         .payment-request-button.visible {
             display: block;
         }
-        
+
         .features {
             margin-top: 30px;
             padding-top: 30px;
             border-top: 1px solid rgba(255, 255, 255, 0.1);
         }
-        
+
         .feature {
             display: flex;
             align-items: center;
@@ -273,17 +273,17 @@
             font-size: 14px;
             color: rgba(255, 255, 255, 0.9);
         }
-        
+
         .feature-icon {
             margin-right: 10px;
             font-size: 18px;
         }
-        
+
         .loading {
             display: none;
             margin: 30px 0;
         }
-        
+
         .loading-spinner {
             width: 40px;
             height: 40px;
@@ -293,16 +293,16 @@
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
-        
+
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
-        
+
         .loading-text {
             font-size: 14px;
             color: rgba(255, 255, 255, 0.8);
         }
-        
+
         .error-message, .success-message {
             display: none;
             padding: 15px;
@@ -310,19 +310,19 @@
             margin: 20px 0;
             font-size: 14px;
         }
-        
+
         .error-message {
             background: rgba(255, 0, 0, 0.1);
             border: 1px solid rgba(255, 0, 0, 0.3);
             color: #ff6b6b;
         }
-        
+
         .success-message {
             background: rgba(0, 255, 0, 0.1);
             border: 1px solid rgba(0, 255, 0, 0.3);
             color: #51cf66;
         }
-        
+
         .back-link {
             margin-top: 20px;
             color: rgba(255, 255, 255, 0.7);
@@ -331,7 +331,7 @@
             transition: color 0.3s;
             display: inline-block;
         }
-        
+
         .back-link:hover {
             color: #ffd700;
         }
@@ -342,13 +342,13 @@
         <div class="logo">🌙</div>
         <h1 class="title">おつきさま診断 完全版</h1>
         <p class="subtitle">お好きな方法でお支払いください</p>
-        
+
         <div class="price-box">
             <div class="price-label">お支払い金額</div>
             <div class="price">¥2,980</div>
             <div class="price-note">（税込・買い切り）</div>
         </div>
-        
+
         <div class="payment-options">
             <!-- Apple Pay (すべてのブラウザで試行) -->
             <div class="payment-method" id="applePayOption" style="display: none;">
@@ -364,7 +364,7 @@
                 </div>
                 <button class="apple-pay-button" id="applePayButton" style="display: none;"></button>
             </div>
-            
+
             <!-- Payment Request API (Chrome/Edge) -->
             <div class="payment-method" id="paymentRequestOption" style="display: none;">
                 <div class="payment-method-header">
@@ -380,7 +380,7 @@
                     ブラウザ決済で支払う
                 </button>
             </div>
-            
+
             <!-- クレジットカード -->
             <div class="payment-method" id="creditCardOption">
                 <div class="payment-method-header">
@@ -394,7 +394,7 @@
                 </div>
             </div>
         </div>
-        
+
         <!-- カードフォーム -->
         <div class="card-form" id="cardForm">
             <div id="card-element"></div>
@@ -402,48 +402,35 @@
                 決済する
             </button>
         </div>
-        
+
         <!-- ローディング -->
         <div class="loading" id="loading">
             <div class="loading-spinner"></div>
             <div class="loading-text">決済を処理中です...</div>
         </div>
-        
+
         <!-- メッセージ -->
         <div class="error-message" id="errorMessage"></div>
         <div class="success-message" id="successMessage"></div>
-        
-        <div class="features">
-            <div class="feature">
-                <span class="feature-icon">🔒</span>
-                <span>SSL暗号化通信で安全</span>
-            </div>
-            <div class="feature">
-                <span class="feature-icon">⚡</span>
-                <span>簡単・スピーディな決済</span>
-            </div>
-            <div class="feature">
-                <span class="feature-icon">🛡️</span>
-                <span>カード情報は保護されます</span>
-            </div>
-        </div>
-        
+
+
+
         <a href="#" class="back-link" onclick="history.back(); return false;">
             ← 前のページに戻る
         </a>
     </div>
-    
+
     <script>
         // URLパラメータ
         const urlParams = new URLSearchParams(window.location.search);
         const diagnosisId = urlParams.get('id');
         const userId = urlParams.get('userId');
-        
+
         // PAY.JP設定
         const publicKey = 'pk_test_0383a1b8f91e8a6e3ea0e2a9';
         let payjp = null;
         let cardElement = null;
-        
+
         // エラー表示
         function showError(message) {
             const errorEl = document.getElementById('errorMessage');
@@ -451,7 +438,7 @@
             errorEl.style.display = 'block';
             document.getElementById('loading').style.display = 'none';
         }
-        
+
         // 成功表示
         function showSuccess(message) {
             const successEl = document.getElementById('successMessage');
@@ -459,18 +446,18 @@
             successEl.style.display = 'block';
             document.getElementById('loading').style.display = 'none';
         }
-        
+
         // ローディング表示
         function showLoading() {
             document.getElementById('loading').style.display = 'block';
             document.getElementById('errorMessage').style.display = 'none';
             document.getElementById('successMessage').style.display = 'none';
         }
-        
+
         // 決済処理
         async function processPayment(token) {
             showLoading();
-            
+
             try {
                 const response = await fetch('/api/payjp-create-charge', {
                     method: 'POST',
@@ -484,9 +471,9 @@
                         amount: 2980
                     })
                 });
-                
+
                 const result = await response.json();
-                
+
                 if (result.success) {
                     showSuccess('決済が完了しました！診断結果ページへ戻ります...');
                     setTimeout(() => {
@@ -501,28 +488,28 @@
                 showError('決済処理中にエラーが発生しました。もう一度お試しください。');
             }
         }
-        
+
         // Apple Pay初期化（全ブラウザで試行）
         async function initializeApplePay() {
             if (!window.ApplePaySession) {
                 return false;
             }
-            
+
             try {
                 if (!ApplePaySession.canMakePayments()) {
                     return false;
                 }
-                
+
                 // PAY.JPのApple Pay可用性チェック
                 const isAvailable = await payjp.applePay.checkAvailability();
                 if (!isAvailable) {
                     return false;
                 }
-                
+
                 // Apple Payオプションを表示
                 document.getElementById('applePayOption').style.display = 'block';
                 document.getElementById('applePayButton').style.display = 'block';
-                
+
                 // Apple Payボタンクリック
                 document.getElementById('applePayButton').addEventListener('click', function() {
                     const paymentRequest = {
@@ -535,7 +522,7 @@
                         supportedNetworks: ['visa', 'masterCard', 'amex', 'jcb'],
                         merchantCapabilities: ['supports3DS']
                     };
-                    
+
                     try {
                         const session = payjp.applePay.buildSession(
                             paymentRequest,
@@ -555,20 +542,20 @@
                         showError('Apple Payセッションの作成に失敗しました。');
                     }
                 });
-                
+
                 return true;
             } catch (error) {
                 console.error('Apple Pay initialization error:', error);
                 return false;
             }
         }
-        
+
         // Payment Request API初期化（Chrome/Edge用）
         async function initializePaymentRequest() {
             if (!window.PaymentRequest) {
                 return false;
             }
-            
+
             try {
                 const supportedMethods = [
                     {
@@ -578,31 +565,31 @@
                         }
                     }
                 ];
-                
+
                 const details = {
                     total: {
                         label: 'おつきさま診断 完全版',
                         amount: { currency: 'JPY', value: '2980' }
                     }
                 };
-                
+
                 const request = new PaymentRequest(supportedMethods, details);
-                
+
                 // 利用可能かチェック
                 const canMakePayment = await request.canMakePayment();
                 if (!canMakePayment) {
                     return false;
                 }
-                
+
                 // Payment Request オプションを表示
                 document.getElementById('paymentRequestOption').style.display = 'block';
                 document.getElementById('paymentRequestButton').classList.add('visible');
-                
+
                 // ボタンクリック処理
                 document.getElementById('paymentRequestButton').addEventListener('click', async function() {
                     try {
                         const paymentResponse = await request.show();
-                        
+
                         // PAY.JPトークンを作成
                         const token = await payjp.createToken({
                             card: {
@@ -612,7 +599,7 @@
                                 cvc: paymentResponse.details.cardSecurityCode
                             }
                         });
-                        
+
                         await processPayment(token);
                         await paymentResponse.complete('success');
                     } catch (error) {
@@ -620,14 +607,14 @@
                         showError('決済がキャンセルされました。');
                     }
                 });
-                
+
                 return true;
             } catch (error) {
                 console.error('Payment Request initialization error:', error);
                 return false;
             }
         }
-        
+
         // カードフォーム初期化
         function initializeCardForm() {
             // PAY.JP Elements作成
@@ -641,39 +628,39 @@
                     }
                 }
             });
-            
+
             cardElement.mount('#card-element');
-            
+
             // カード入力の変更を監視
             cardElement.on('change', function(event) {
                 const submitButton = document.getElementById('submitButton');
                 submitButton.disabled = !event.complete;
-                
+
                 if (event.error) {
                     showError(event.error.message);
                 } else {
                     document.getElementById('errorMessage').style.display = 'none';
                 }
             });
-            
+
             // クレジットカードオプションクリック
             document.getElementById('creditCardOption').addEventListener('click', function() {
                 document.getElementById('cardForm').classList.add('active');
                 this.classList.add('selected');
             });
-            
+
             // 送信ボタンクリック
             document.getElementById('submitButton').addEventListener('click', async function(e) {
                 e.preventDefault();
-                
+
                 if (this.disabled) return;
-                
+
                 this.disabled = true;
                 showLoading();
-                
+
                 try {
                     const { error, token } = await payjp.createToken(cardElement);
-                    
+
                     if (error) {
                         showError(error.message);
                         this.disabled = false;
@@ -687,26 +674,26 @@
                 }
             });
         }
-        
+
         // 初期化
         window.addEventListener('DOMContentLoaded', async function() {
             if (!diagnosisId) {
                 showError('診断IDが見つかりません。診断結果ページから再度お試しください。');
                 return;
             }
-            
+
             // PAY.JP初期化
             payjp = Payjp(publicKey);
-            
+
             // 各決済方法を初期化（並行処理）
             const [applePayAvailable, paymentRequestAvailable] = await Promise.all([
                 initializeApplePay(),
                 initializePaymentRequest()
             ]);
-            
+
             // カードフォームは常に利用可能
             initializeCardForm();
-            
+
             // 利用可能な決済方法をログ出力
             console.log('Payment methods available:', {
                 applePay: applePayAvailable,
