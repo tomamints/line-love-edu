@@ -1772,15 +1772,15 @@ async function handleFollowEvent(event) {
     });
 
     messages.push({
-      type: 'text',
-      text:
-        'さらに、診断完了後に「おつきさま診断」と入力すると、先着5名さま限定でお電話恋愛鑑定付きプランをご案内いたします。📞💕'
+      type: 'image',
+      originalContentUrl: `${process.env.BASE_URL || 'https://line-love-edu.vercel.app'}/assets/images/LINE/review1.png`,
+      previewImageUrl: `${process.env.BASE_URL || 'https://line-love-edu.vercel.app'}/assets/images/LINE/review1.png`
     });
 
     messages.push({
       type: 'image',
-      originalContentUrl: `${process.env.BASE_URL || 'https://line-love-edu.vercel.app'}/assets/images/LINE/supermoon-lp.jpg`,
-      previewImageUrl: `${process.env.BASE_URL || 'https://line-love-edu.vercel.app'}/assets/images/LINE/supermoon-lp.jpg`
+      originalContentUrl: `${process.env.BASE_URL || 'https://line-love-edu.vercel.app'}/assets/images/LINE/review2.png`,
+      previewImageUrl: `${process.env.BASE_URL || 'https://line-love-edu.vercel.app'}/assets/images/LINE/review2.png`
     });
 
     const result = await client.replyMessage(event.replyToken, messages);
@@ -1795,7 +1795,7 @@ async function handleFollowEvent(event) {
     try {
       logger.log('📤 フォールバックメッセージ送信開始...');
       const fallbackResult = await client.replyMessage(event.replyToken, {
-        type: 'text', 
+        type: 'text',
         text: '🌙 私は月詠（つくよみ）です。\n\n「診断を始める」と入力して、月にあなたの想いを伝えましょう。'
       });
       logger.log('✅ フォールバックメッセージ送信成功:', fallbackResult);
