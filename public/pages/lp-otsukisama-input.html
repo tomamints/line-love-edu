@@ -179,6 +179,9 @@
             submitButton.innerHTML = '<span style="display: inline-block;">🌙</span> 診断中...';
 
             // 全画面ローディングオーバーレイを表示
+            const participantNameRaw = document.getElementById('name').value.trim();
+            const participantDisplay = participantNameRaw ? `${participantNameRaw}さん` : 'あなた';
+
             const overlay = document.createElement('div');
             overlay.style.cssText = `
                 position: fixed;
@@ -197,11 +200,15 @@
             `;
             overlay.innerHTML = `
                 <div style="font-size: 48px; margin-bottom: 20px;">🌙</div>
-                <div>おつきさまに〇〇さんのことをお伝えしています
-                    月詠のメッセージ企画
-                    【お話おつきさま診断】に参加してくれた〇〇さんには
-                    今だけ特別に直近1ヶ月の〇〇さんの運勢カレンダーを無料公開しておみせします
-                    ぜひここ最近の自分と照らし合わせて見てみてくださいね💫</div>
+                <div style="font-size: 22px; font-weight: 600; margin-bottom: 18px; text-align: center; line-height: 1.4;">
+                    おつきさまに<span style="color: #ffd6ff;">${participantDisplay}</span>のことをお伝えしています
+                </div>
+                <div style="font-size: 15px; line-height: 1.7; text-align: left; max-width: 420px;">
+                    &nbsp;&nbsp;月詠のメッセージ企画<br>
+                    &nbsp;&nbsp;【お話おつきさま診断】に参加してくれた<span style="font-weight: 600;">${participantDisplay}</span>には<br>
+                    &nbsp;&nbsp;今だけ特別に直近1ヶ月の<span style="font-weight: 600;">${participantDisplay}</span>の運勢カレンダーを無料公開しておみせします<br><br>
+                    &nbsp;&nbsp;ぜひここ最近の自分と照らし合わせて見てみてくださいね💫
+                </div>
             `;
             document.body.appendChild(overlay);
             document.body.style.overflow = 'hidden';
