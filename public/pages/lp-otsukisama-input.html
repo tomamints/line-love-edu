@@ -14,6 +14,40 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>おつきさま診断 - 月が導くあなたの運命</title>
     <link rel="stylesheet" href="../assets/css/lp-otsukisama.css">
+    <style>
+        .loading-message {
+            text-align: center;
+            margin-top: 12px;
+            font-size: 16px;
+            line-height: 1.8;
+            color: #f8f4ff;
+            max-width: 420px;
+        }
+
+        .loading-message-title {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            line-height: 1.4;
+        }
+
+        .loading-message-body {
+            text-align: left;
+            font-size: 15px;
+            white-space: pre-line;
+        }
+
+        .loading-message-body .indent {
+            display: block;
+            padding-left: 18px;
+            line-height: 1.7;
+        }
+
+        .loading-message-body .highlight {
+            color: #ffd6ff;
+            font-weight: 600;
+        }
+    </style>
 </head>
 <body>
     <!-- スクロール進捗バー -->
@@ -199,15 +233,16 @@
                 font-size: 18px;
             `;
             overlay.innerHTML = `
-                <div style="font-size: 48px; margin-bottom: 20px;">🌙</div>
-                <div style="font-size: 22px; font-weight: 600; margin-bottom: 18px; text-align: center; line-height: 1.4;">
-                    おつきさまに<span style="color: #ffd6ff;">${participantDisplay}</span>のことをお伝えしています
+                <div class="loading-message">
+                    <div class="loading-message-title">
+                        おつきさまに<span>${participantDisplay}</span>のことをお伝えしています
+                    </div>
+                <div class="loading-message-body">
+                    <span class="indent">月詠のメッセージ企画</span>
+                    <span class="indent">【お話おつきさま診断】に参加してくれた<span class="highlight">${participantDisplay}</span>には</span>
+                    <span class="indent">今だけ特別に直近1ヶ月の<span class="highlight">${participantDisplay}</span>の運勢カレンダーを無料公開しておみせします</span>
+                    <span class="indent">ぜひここ最近の自分と照らし合わせて見てみてくださいね💫</span>
                 </div>
-                <div style="font-size: 15px; line-height: 1.7; text-align: left; max-width: 420px;">
-                    &nbsp;&nbsp;月詠のメッセージ企画<br>
-                    &nbsp;&nbsp;【お話おつきさま診断】に参加してくれた<span style="font-weight: 600;">${participantDisplay}</span>には<br>
-                    &nbsp;&nbsp;今だけ特別に直近1ヶ月の<span style="font-weight: 600;">${participantDisplay}</span>の運勢カレンダーを無料公開しておみせします<br><br>
-                    &nbsp;&nbsp;ぜひここ最近の自分と照らし合わせて見てみてくださいね💫
                 </div>
             `;
             document.body.appendChild(overlay);
