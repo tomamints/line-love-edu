@@ -153,6 +153,33 @@
             margin-bottom: 10px;
         }
 
+        .loading-message {
+            text-align: center;
+            margin-top: 12px;
+            font-size: 16px;
+            line-height: 1.8;
+            color: #f8f4ff;
+            max-width: 420px;
+        }
+
+        .loading-message-title {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            line-height: 1.4;
+        }
+
+        .loading-message-body {
+            text-align: left;
+            font-size: 15px;
+            white-space: pre-line;
+        }
+
+        .loading-message-body span {
+            color: #ffd6ff;
+            font-weight: 600;
+        }
+
         .lock-message {
             font-size: 12px !important;
             margin-bottom: 5px !important;
@@ -396,7 +423,17 @@
     <div class="loading-overlay" id="loadingOverlay" style="display: flex;">
         <div class="loading-content">
             <div class="loading-spinner"></div>
-            <div class="loading-text">診断結果を読み込んでいます...</div>
+            <div class="loading-message">
+                <div class="loading-message-title">
+                    おつきさまに<span class="user-name-display">あなた</span>のことをお伝えしています
+                </div>
+                <div class="loading-message-body">
+                    &nbsp;&nbsp;月詠のメッセージ企画<br>
+                    &nbsp;&nbsp;【お話おつきさま診断】に参加してくれた<span class="user-name-display">あなた</span>には<br>
+                    &nbsp;&nbsp;今だけ特別に直近1ヶ月の<span class="user-name-display">あなた</span>の運勢カレンダーを無料公開しておみせします<br><br>
+                    &nbsp;&nbsp;ぜひここ最近の自分と照らし合わせて見てみてくださいね💫
+                </div>
+            </div>
             <div class="loading-progress-container">
                 <div class="loading-progress-bar" id="loadingProgress">
                     <span class="loading-moon-character">🌙</span>
