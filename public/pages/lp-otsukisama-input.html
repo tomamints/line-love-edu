@@ -20,7 +20,7 @@
     <div class="scroll-progress" id="scrollProgress"></div>
     <!-- 星空背景 -->
     <div class="stars-container" id="starsContainer"></div>
-    
+
     <!-- メインコンテンツ -->
     <div class="container">
         <!-- ヘッダー -->
@@ -32,17 +32,18 @@
                 生まれた日の月相から読み解く、あなただけの特別な運勢メッセージ
             </p>
         </div>
-        
+
         <!-- フォームセクション -->
         <div class="form-section" id="formSection">
             <h2 class="form-title">あなたの生年月日を教えてください</h2>
-            
+            <p class="sub-description">※あなた以外の方を占うことも可能です</p>
+
             <form id="moonForm">
                 <div class="form-group">
                     <label>お名前（ニックネーム可）<span class="required">*必須</span></label>
                     <input type="text" id="name" placeholder="例：月読みゆき" required>
                 </div>
-                
+
                 <div class="form-group">
                     <label>生年月日<span class="required">*必須</span></label>
                     <div class="date-selects">
@@ -57,15 +58,15 @@
                         </select>
                     </div>
                 </div>
-                
+
                 <button type="submit">
                     診断する
-                    <div class="button-subtitle">無料で診断結果が見れます</div>
+                    <div class="button-subtitle">一部無料で診断結果が見れます</div>
                 </button>
             </form>
         </div>
     </div>
-    
+
     <!-- JavaScript（元のlp-otsukisama.htmlと同じ構成） -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="../assets/js/otsukisama-data-loader.js?v=20250901001"></script>
@@ -75,14 +76,14 @@
     <script src="../assets/js/lp-otsukisama-display-line.js?v=20250901001"></script>
     <script src="../assets/js/lp-otsukisama-calendar.js?v=20250901001"></script>
     <script src="../assets/js/lp-otsukisama-graph.js?v=20250901001"></script>
-    
+
     <!-- 入力ページ専用のJavaScript -->
     <script>
         // 星空背景の生成
         function createStars() {
             const container = document.getElementById('starsContainer');
             const starCount = 100;
-            
+
             for (let i = 0; i < starCount; i++) {
                 const star = document.createElement('div');
                 star.className = 'star';
@@ -93,13 +94,13 @@
                 container.appendChild(star);
             }
         }
-        
+
         // 年月日セレクトボックスの初期化
         function initDateSelects() {
             const yearSelect = document.getElementById('year');
             const monthSelect = document.getElementById('month');
             const daySelect = document.getElementById('day');
-            
+
             // 年（1920年から現在年まで）
             const currentYear = new Date().getFullYear();
             for (let y = currentYear; y >= 1920; y--) {
@@ -108,7 +109,7 @@
                 option.textContent = y + '年';
                 yearSelect.appendChild(option);
             }
-            
+
             // 月
             for (let m = 1; m <= 12; m++) {
                 const option = document.createElement('option');
@@ -116,7 +117,7 @@
                 option.textContent = m + '月';
                 monthSelect.appendChild(option);
             }
-            
+
             // 日
             for (let d = 1; d <= 31; d++) {
                 const option = document.createElement('option');
@@ -125,13 +126,13 @@
                 daySelect.appendChild(option);
             }
         }
-        
+
         // URLからuserIdを取得
         function getUserIdFromUrl() {
             const params = new URLSearchParams(window.location.search);
             return params.get('userId');
         }
-        
+
         // ユーザープロファイルを取得して自動入力
         async function loadUserProfile() {
             const userId = getUserIdFromUrl();
@@ -139,11 +140,11 @@
                 console.log('No userId in URL');
                 return;
             }
-            
+
             try {
                 const response = await fetch(`/api/get-love-profile?userId=${userId}`);
                 const data = await response.json();
-                
+
                 if (data.profile) {
                     const profile = data.profile;
                     const nameValue = profile.userName || profile.name;
@@ -153,7 +154,7 @@
                     if (nameValue) {
                         document.getElementById('name').value = nameValue;
                     }
-                    
+
                     // 生年月日の自動入力
                     if (birthdateValue) {
                         const birthDate = new Date(birthdateValue);
@@ -166,17 +167,17 @@
                 console.error('プロファイル取得エラー:', error);
             }
         }
-        
+
         // フォーム送信処理
         async function handleFormSubmit(e) {
             e.preventDefault();
-            
+
             // 即座にローディング表示を開始
             const submitButton = e.target.querySelector('button[type="submit"]');
             const originalButtonContent = submitButton.innerHTML;
             submitButton.disabled = true;
             submitButton.innerHTML = '<span style="display: inline-block;">🌙</span> 診断中...';
-            
+
             // 全画面ローディングオーバーレイを表示
             const overlay = document.createElement('div');
             overlay.style.cssText = `
@@ -200,7 +201,7 @@
             `;
             document.body.appendChild(overlay);
             document.body.style.overflow = 'hidden';
-            
+
             const userId = getUserIdFromUrl();
             const formData = {
                 name: document.getElementById('name').value,
@@ -208,10 +209,10 @@
                 month: parseInt(document.getElementById('month').value),
                 day: parseInt(document.getElementById('day').value)
             };
-            
+
             // 月相の計算（lp-otsukisama-moon.jsのgeneratePatternId関数を使用）
             const patternId = generatePatternId(formData.year, formData.month, formData.day);
-            
+
             // データを保存してプレビューページへ遷移
             try {
                 // 新しいAPI構造でデータベースに保存（userIdの有無にかかわらず保存）
@@ -220,18 +221,18 @@
                     const moonPhaseIndex = Math.floor(patternId / 8);
                     const hiddenPhaseIndex = patternId % 8;
                     const moonPhaseNames = ['新月', '三日月', '上弦の月', '十三夜', '満月', '十六夜', '下弦の月', '暁'];
-                    
+
                     // profilesテーブルから4つの軸データを取得
                     let emotionalExpression = 'straight';
                     let distanceStyle = 'moderate';
                     let loveValues = 'romantic';
                     let loveEnergy = 'intense';
-                    
+
                     // プロフィールから4つの軸データを取得
                     try {
                         const profileResponse = await fetch(`/api/get-love-profile?userId=${userId}`);
                         const profileData = await profileResponse.json();
-                        
+
                         if (profileData.success && profileData.profile) {
                             // profilesテーブルからデータを使用
                             emotionalExpression = profileData.profile.emotionalExpression || 'straight';
@@ -250,7 +251,7 @@
                     } catch (error) {
                         console.error('プロフィール取得エラー:', error);
                     }
-                    
+
                     const resultData = {
                         moon_pattern_id: patternId,
                         moon_phase: moonPhaseNames[moonPhaseIndex],
@@ -263,7 +264,7 @@
                         moon_power_2: '創造力',
                         moon_power_3: '浄化力'
                     };
-                    
+
                     const saveResponse = await fetch('/api/profile-form-v2', {
                         method: 'POST',
                         headers: {
@@ -278,9 +279,9 @@
                             resultData: resultData
                         })
                     });
-                    
+
                     const result = await saveResponse.json();
-                    
+
                     if (result.success && result.diagnosisId) {
                         // データベースに保存されたIDを使用してプレビューページへ
                         const userParam = userId ? `&userId=${userId}` : '';
@@ -291,7 +292,7 @@
                         throw new Error('データベース保存に失敗');
                     }
                 }
-                
+
                 // フォールバック：ローカルストレージを使用（ブロック内のコードが失敗した場合のみ）
                 const diagnosisData = {
                     name: formData.name,
@@ -300,13 +301,13 @@
                     timestamp: new Date().toISOString(),
                     userId: userId
                 };
-                
+
                 localStorage.setItem('otsukisama_diagnosis', JSON.stringify(diagnosisData));
-                
+
                 // プレビューページへ遷移
                 const diagnosisId = `temp_${Date.now()}`;
                 window.location.href = `/pages/lp-otsukisama-unified.html?id=${diagnosisId}`;
-                
+
             } catch (error) {
                 console.error('診断データの保存に失敗しました:', error);
                 // エラー時はオーバーレイを削除
@@ -319,20 +320,20 @@
                 alert('エラーが発生しました。もう一度お試しください。');
             }
         }
-        
+
         // 初期化
         document.addEventListener('DOMContentLoaded', async function() {
             createStars();
             initDateSelects();
-            
+
             // ユーザープロファイルを読み込んで自動入力
             await loadUserProfile();
-            
+
             // フォーム送信イベント
             document.getElementById('moonForm').addEventListener('submit', handleFormSubmit);
         });
     </script>
-    
+
     <!-- フッターセクション -->
     <footer style="
         background: linear-gradient(135deg, #0a001a 0%, #1a0033 100%);
@@ -371,7 +372,7 @@
                     ※ デジタルコンテンツの性質上、購入後の返品・交換はお受けしておりません。
                 </p>
             </div>
-            
+
             <!-- リンク集 -->
             <div style="
                 margin-bottom: 30px;
@@ -405,7 +406,7 @@
                     プライバシーポリシー
                 </a>
             </div>
-            
+
             <!-- コピーライト -->
             <div style="
                 padding-top: 20px;
