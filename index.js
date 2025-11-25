@@ -1633,7 +1633,7 @@ async function handleFollowEvent(event) {
 
     messages.push({
       type: 'flex',
-      altText: '🌙 月タロット占いへようこそ！',
+      altText: '🌙 おつきさま診断へようこそ！',
       contents: {
         type: 'bubble',
         size: 'mega',
@@ -1654,7 +1654,7 @@ async function handleFollowEvent(event) {
                 },
                 {
                   type: 'text',
-                  text: '月タロット占いへようこそ',
+                  text: 'おつきさま診断へようこそ',
                   size: 'xl',
                   color: '#ffffff',
                   align: 'center',
@@ -1686,7 +1686,7 @@ async function handleFollowEvent(event) {
             },
             {
               type: 'text',
-              text: '月のカードが',
+              text: 'おつきさま診断の前に',
               size: 'md',
               wrap: true,
               align: 'center',
@@ -1694,7 +1694,7 @@ async function handleFollowEvent(event) {
             },
             {
               type: 'text',
-              text: 'あなたの今日を',
+              text: 'まずはあなたの今日の運勢を',
               size: 'md',
               wrap: true,
               align: 'center',
@@ -1702,7 +1702,7 @@ async function handleFollowEvent(event) {
             },
             {
               type: 'text',
-              text: '優しく照らします',
+              text: 'タロットで占います',
               size: 'md',
               wrap: true,
               align: 'center',
@@ -1727,13 +1727,13 @@ async function handleFollowEvent(event) {
                 },
                 {
                   type: 'text',
-                  text: '一、あなたの情報を入力',
+                  text: '一、あなたの生年月日、お悩みを入力',
                   size: 'sm',
                   margin: 'sm'
                 },
                 {
                   type: 'text',
-                  text: '二、月にメッセージを送信',
+                  text: '二、おつきさまにお伝えする',
                   size: 'sm'
                 },
                 {
