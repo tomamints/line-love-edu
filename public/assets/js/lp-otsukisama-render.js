@@ -22,7 +22,7 @@ class DiagnosisRenderer {
                 try {
                     const response = await fetch(`/api/get-love-profile?userId=${userId}`);
                     const data = await response.json();
-                    
+
                     if (data.profile) {
                         const profile = data.profile;
                         const birthdateValue = profile.birthDate || profile.birthdate;
@@ -32,10 +32,10 @@ class DiagnosisRenderer {
                         const rawPatternId = profile.moonPatternId || (birthDate ? this.calculatePatternFromDate(birthDate) : 0);
                         const patternIdNumber = Number(rawPatternId);
                         const patternId = Number.isFinite(patternIdNumber) ? patternIdNumber : 0;
-                        
+
                         // パターンデータの読み込み
                         await this.loadPatternData(patternId);
-                        
+
                         // 4軸データも取得
                         this.diagnosisData = {
                             name: nameValue,
@@ -49,7 +49,7 @@ class DiagnosisRenderer {
                             energyType: profile.loveEnergy || profile.love_energy,
                             ...this.patternData
                         };
-                        
+
                         return this.diagnosisData;
                     }
                 } catch (apiError) {
@@ -61,32 +61,32 @@ class DiagnosisRenderer {
             const storedData = localStorage.getItem('otsukisama_diagnosis');
             if (storedData) {
                 const parsedData = JSON.parse(storedData);
-                
+
                 // パターンデータの読み込み
                 await this.loadPatternData(parsedData.patternId);
-                
+
                 this.diagnosisData = {
                     ...parsedData,
                     ...this.patternData
                 };
-                
+
                 return this.diagnosisData;
             }
-            
+
             throw new Error('診断データが見つかりません');
         } catch (error) {
             console.error('診断データの読み込みに失敗しました:', error);
             throw error;
         }
     }
-    
+
     // 生年月日からパターンIDを計算
     calculatePatternFromDate(birthDate) {
         const date = new Date(birthDate);
         const dayOfMonth = date.getDate();
         const month = date.getMonth() + 1;
         const year = date.getFullYear();
-        
+
         // 表の月相（1-31日を8段階に分類）
         let moonPhaseIndex;
         if (dayOfMonth <= 4) moonPhaseIndex = 0;
@@ -97,10 +97,10 @@ class DiagnosisRenderer {
         else if (dayOfMonth <= 24) moonPhaseIndex = 5;
         else if (dayOfMonth <= 28) moonPhaseIndex = 6;
         else moonPhaseIndex = 7;
-        
+
         // 裏の月相
         const hiddenPhaseIndex = ((month - 1) + (year % 8)) % 8;
-        
+
         return moonPhaseIndex * 8 + hiddenPhaseIndex;
     }
 
@@ -111,7 +111,7 @@ class DiagnosisRenderer {
             const moonPhases = ['新月', '三日月', '上弦の月', '満月寄りの月', '満月', '欠けていく月', '下弦の月', '鎮静の月'];
             const moonPhaseIndex = Math.floor(patternId / 8);
             const hiddenPhaseIndex = patternId % 8;
-            
+
             this.patternData = {
                 moonPhase: moonPhases[moonPhaseIndex],
                 hiddenPhase: moonPhases[hiddenPhaseIndex],
@@ -160,10 +160,10 @@ class DiagnosisRenderer {
 
         // セクションを順番に表示
         const sections = DIAGNOSIS_CONTENT.getSortedSections();
-        
+
         for (const section of sections) {
             const shouldRender = this.shouldRenderSection(section);
-            
+
             if (shouldRender) {
                 const sectionElement = this.renderSection(section);
                 if (sectionElement) {
@@ -183,7 +183,7 @@ class DiagnosisRenderer {
         if (this.mode === 'full') {
             return true; // フルモードでは全て表示
         }
-        
+
         // プレビューモードでは無料コンテンツのみ、または有料コンテンツをぼかし表示
         return true; // ぼかし表示も含めて全セクション表示
     }
@@ -193,7 +193,7 @@ class DiagnosisRenderer {
         const wrapper = document.createElement('div');
         wrapper.className = `content-section section-${section.id}`;
         wrapper.setAttribute('data-section-id', section.id);
-        
+
         // プレビューモードで有料コンテンツの場合
         if (this.mode === 'preview' && !section.freePreview) {
             wrapper.classList.add('content-locked');
@@ -207,7 +207,7 @@ class DiagnosisRenderer {
             // 通常表示
             wrapper.innerHTML = section.html(this.diagnosisData || {});
         }
-        
+
         return wrapper;
     }
 
@@ -224,7 +224,7 @@ class DiagnosisRenderer {
             relationshipMainText: '人間関係運の詳細がここに表示されます...',
             moneyMainText: '金運の詳細がここに表示されます...'
         });
-        
+
         return `
             <div class="locked-content-wrapper">
                 <div class="blurred-background">
@@ -251,7 +251,7 @@ class DiagnosisRenderer {
             desc.style.filter = 'blur(5px)';
             desc.style.userSelect = 'none';
         });
-        
+
         const overlay = document.createElement('div');
         overlay.className = 'partial-overlay';
         overlay.innerHTML = `
@@ -272,7 +272,7 @@ class DiagnosisRenderer {
                 <h2 class="cta-title">
                     🌙 完全版で全ての運勢を解放しましょう
                 </h2>
-                
+
                 <div class="cta-benefits">
                     <div class="benefit-item">
                         <span class="benefit-icon">✨</span>
@@ -291,15 +291,15 @@ class DiagnosisRenderer {
                         <p>3ヶ月の詳細予測</p>
                     </div>
                 </div>
-                
+
                 <div style="margin-bottom: 16px; text-align: center;">
-                    <img src="../assets/images/LINE/Supermoon_Special_Sale.png" alt="スーパームーン企画第一弾" style="max-width: 420px; width: 100%; display: inline-block;">
+                    <img src="../assets/images/LINE/70%off.png" alt="70%off.png" style="max-width: 420px; width: 100%; display: inline-block;">
                 </div>
 
                 <button class="purchase-button" onclick="proceedToPayment()" aria-label="今すぐ完全版を購入する">
                     今すぐ完全版を購入する
                 </button>
-                
+
                 <div class="payment-methods">
                     <p>利用可能な決済方法</p>
                     <div class="payment-icons">
@@ -308,14 +308,14 @@ class DiagnosisRenderer {
                         <span>💠 Google Pay</span>
                     </div>
                 </div>
-                
+
                 <div class="guarantee">
                     <p>🔒 SSL暗号化通信で安全にお支払い</p>
                     <p>📧 購入後すぐにメールで結果をお届け</p>
                 </div>
             </div>
         `;
-        
+
         return ctaSection;
     }
 }
@@ -331,7 +331,7 @@ function scrollToCTA() {
 async function proceedToPayment() {
     // 決済処理（TODO: 実装）
     alert('決済機能は準備中です。');
-    
+
     // 将来的にはStripeなどの決済処理を実装
     // const diagnosisId = getDiagnosisId();
     // window.location.href = `/api/payment/checkout?diagnosis_id=${diagnosisId}`;
