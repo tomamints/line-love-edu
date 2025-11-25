@@ -293,7 +293,7 @@ class DiagnosisRenderer {
                 </div>
 
                 <div style="margin-bottom: 16px; text-align: center;">
-                    <img src="../assets/images/LINE/70%off.png" alt="70%off.png" style="max-width: 420px; width: 100%; display: inline-block;">
+                    <img src="../assets/images/LINE/thanks-sale.png" alt="感謝セール" style="max-width: 420px; width: 100%; display: inline-block;">
                 </div>
 
                 <button class="purchase-button" onclick="proceedToPayment()" aria-label="今すぐ完全版を購入する">
