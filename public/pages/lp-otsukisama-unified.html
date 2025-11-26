@@ -159,25 +159,43 @@
             font-size: 16px;
             line-height: 1.8;
             color: #f8f4ff;
-            max-width: 420px;
+            max-width: 460px;
         }
 
         .loading-message-title {
-            font-size: 22px;
+            font-size: 26px;
             font-weight: 700;
-            margin-bottom: 16px;
+            margin-bottom: 12px;
             line-height: 1.4;
+        }
+
+        .loading-message-title span {
+            display: block;
+        }
+
+        .loading-message-title .user-name-display {
+            color: #ffd6ff;
         }
 
         .loading-message-body {
             text-align: left;
             font-size: 15px;
-            white-space: pre-line;
+            line-height: 1.6;
         }
 
-        .loading-message-body span {
-            color: #ffd6ff;
+        .loading-message-body .subtitle-line {
             font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .loading-message-body .body-line {
+            display: block;
+            padding-left: 18px;
+        }
+
+        .loading-message-body .highlight-red {
+            color: #ff5a5a;
+            font-weight: 700;
         }
 
         .lock-message {
@@ -425,13 +443,18 @@
             <div class="loading-spinner"></div>
             <div class="loading-message">
                 <div class="loading-message-title">
-                    おつきさまに<span class="user-name-display">あなた</span>のことをお伝えしています
+                    <span>おつきさまに</span>
+                    <span class="user-name-display">あなた</span>
+                    <span>のことをお伝えしています</span>
                 </div>
                 <div class="loading-message-body">
-                    &nbsp;&nbsp;月詠のメッセージ企画<br>
-                    &nbsp;&nbsp;【お話おつきさま診断】に参加してくれた<span class="user-name-display">あなた</span>には<br>
-                    &nbsp;&nbsp;今だけ特別に直近1ヶ月の<span class="user-name-display">あなた</span>の運勢カレンダーを無料公開しておみせします<br><br>
-                    &nbsp;&nbsp;ぜひここ最近の自分と照らし合わせて見てみてくださいね💫
+                    <span class="subtitle-line">【月詠のメッセージ企画】</span>
+                    <span class="body-line">今だけ特別に直近1ヶ月の</span>
+                    <span class="body-line">
+                        <span class="user-name-display">あなた</span>の運勢カレンダーを
+                        <span class="highlight-red">無料公開</span>してお見せします
+                    </span>
+                    <span class="body-line">ぜひ最後まで見てくださいね✨</span>
                 </div>
             </div>
             <div class="loading-progress-container">

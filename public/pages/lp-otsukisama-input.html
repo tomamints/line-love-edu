@@ -21,31 +21,43 @@
             font-size: 16px;
             line-height: 1.8;
             color: #f8f4ff;
-            max-width: 420px;
+            max-width: 460px;
         }
 
         .loading-message-title {
-            font-size: 22px;
+            font-size: 26px;
             font-weight: 700;
-            margin-bottom: 16px;
+            margin-bottom: 12px;
             line-height: 1.4;
+        }
+
+        .loading-message-title span {
+            display: block;
+        }
+
+        .loading-message-title .highlight {
+            color: #ffd6ff;
         }
 
         .loading-message-body {
             text-align: left;
             font-size: 15px;
-            white-space: pre-line;
+            line-height: 1.6;
         }
 
-        .loading-message-body .indent {
+        .loading-message-body .subtitle-line {
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .loading-message-body .body-line {
             display: block;
             padding-left: 18px;
-            line-height: 1.7;
         }
 
-        .loading-message-body .highlight {
-            color: #ffd6ff;
-            font-weight: 600;
+        .loading-message-body .highlight-red {
+            color: #ff5a5a;
+            font-weight: 700;
         }
     </style>
 </head>
@@ -235,14 +247,19 @@
             overlay.innerHTML = `
                 <div class="loading-message">
                     <div class="loading-message-title">
-                        おつきさまに<span>${participantDisplay}</span>のことをお伝えしています
+                        <span>おつきさまに</span>
+                        <span class="highlight">${participantDisplay}</span>
+                        <span>のことをお伝えしています</span>
                     </div>
-                <div class="loading-message-body">
-                    <span class="indent">月詠のメッセージ企画</span>
-                    <span class="indent">【お話おつきさま診断】に参加してくれた<span class="highlight">${participantDisplay}</span>には</span>
-                    <span class="indent">今だけ特別に直近1ヶ月の<span class="highlight">${participantDisplay}</span>の運勢カレンダーを無料公開しておみせします</span>
-                    <span class="indent">ぜひここ最近の自分と照らし合わせて見てみてくださいね💫</span>
-                </div>
+                    <div class="loading-message-body">
+                        <span class="subtitle-line">【月詠のメッセージ企画】</span>
+                        <span class="body-line">今だけ特別に直近1ヶ月の</span>
+                        <span class="body-line">
+                            ${participantDisplay}の運勢カレンダーを
+                            <span class="highlight-red">無料公開</span>してお見せします
+                        </span>
+                        <span class="body-line">ぜひ最後まで見てくださいね✨</span>
+                    </div>
                 </div>
             `;
             document.body.appendChild(overlay);
